@@ -1,0 +1,53 @@
+# -*- org -*-
+
+#+TITLE: Plan du mémoire de maîtrise
+
+* TODO Macros Scheme [50%]
+   Démontrer que l'utilisation des macros de Scheme permet de
+   facilement modifier le langage de manière à permettre une écriture
+   du jeux plus concise.
+
+   Pour y arriver:
+   - [X] Écrire des extensions de Scheme permettant la simplification
+         du code d'un jeu.
+   - [ ] Illustrer des utilisations typiques de ces extensions
+         démontrant ainsi le code résultant est plus simple que le code
+         en Scheme "pur".
+
+* TODO Dynamisme [%]
+  ????
+   
+
+* TODO Puissance d'abstraction [50%]
+   Démontrer que les fonctions d'ordres supérieures permettent
+   l'encapsulations et la modularité de comportements d'objets dans
+   un jeu.
+
+   Pour y arriver:
+   - [X] Écrire des parties de code qui peuvent être modularisées en
+         fonction de fermetures passées en paramètre.
+   - [ ] Observer un taux de rafraîchissement acceptable (autour de
+         60 fps) pour au moins un jeu.
+
+
+* TODO Gestion de mémoire automatique [0%]
+   Démontrer que l'utilisation d'une gestion de mémoire automatique
+   n'influencera que peu ou pas sur les performances du jeux.
+
+   Pour y arriver:
+   - [ ] Arriver à écrire un jeu relativement complex dont la
+         performance sera celle attendue 
+   - [ ] Observer que la distrubution des temps de gc semble normale
+         et de moyenne basse.
+   - [ ] Observer une utilisation de la mémoire acceptable
+
+* TODO Cycles de développement [0%]
+   Démontrer que les cycles de développement de jeu écrits en Scheme
+   sont courts (voir plus court qu'un jeu écrit dans un langage
+   traditionnel).
+
+   Pour y arriver:
+   - [ ] Écrire plusieurs jeux et observer des temps de développement
+         courts.
+   - [ ] Augmenter la complexité des jeux et 
+

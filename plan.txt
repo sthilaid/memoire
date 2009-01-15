@@ -2,64 +2,76 @@
 
 #+TITLE: Plan du mémoire de maîtrise
 
-* TODO Écritures de langages spécifiques au domaine [50%]
+* TODO Écritures de langages spécifiques au domaine
    Démontrer que l'utilisation des macros de Scheme permet de
    facilement modifier le langage de manière à permettre une écriture
    de jeu plus concise.
 
    Pour y arriver:
-   - [X] Écrire des extensions de Scheme permettant la simplification
-         du code d'un jeu.
-   - [ ] Ajoute des nouvelles formes spéciales permettant de faire
-         facilement du "scripting" de niveaux.
+** Extensions de bases [%]
+   Écrire des extensions de Scheme permettant la simplification
+   du code d'un jeu.
 
-* TODO Dynamisme [0%]
+** Scripting de niveaux [%]
+   Ajoute des nouvelles formes spéciales permettant de faire
+   facilement du "scripting" de niveaux.
+
+* TODO Dynamisme
    Démontrer que le dynamisme du langage Scheme apporte une très
    grande flexibilité lors de la programmation de jeux.
 
    Pour y arriver:
-  - [ ] Utilisation de "REPL" pour le développement interactif
-  - [ ] Utilisation potentielle des fonctions "eval" et "load" afin de
-        d'évaluer ou charger dynamiquement des expressions/librairies.
+** REPL
+   Utilisation de "REPL" pour le développement interactif
 
-* TODO Structures et stockage de données [0%]
+** eval/load
+   Utilisation potentielle des fonctions "eval" et "load" afin de
+   d'évaluer ou charger dynamiquement des expressions/librairies.
+
+* TODO Structures et stockage de données
    Démontrer que l'utilisation des S-expressions de scheme comme
    structure de données externes permet d'obtenir facilement des
    représentations externes facilement manipulables et utilisables.
    
    Pour y arriver:
-   - [ ] Utiliser des S-expressions comme representation de niveaux ou
-     objets de tableaux d'un jeu.
+** Representations de nivaux
+   Utiliser des S-expressions comme representation de niveaux ou
+   objets de tableaux d'un jeu.
    
-* TODO Puissance d'abstraction [50%]
+* TODO Puissance d'abstraction
    Démontrer que les fonctions d'ordres supérieures permettent
    l'encapsulations et la modularité de comportements d'objets dans
    un jeu et que coût associé est faible.
 
    Pour y arriver:
-   - [X] Écrire des parties de code qui peuvent être modularisées en
-         fonction de fermetures passées en paramètre.
-   - [ ] Observer un taux de rafraîchissement acceptable (autour de
-         60 fps) pour tous les jeux implantés.
+** Modularisation par fonctions de 1er ordre
+   Écrire des parties de code qui peuvent être modularisées en
+   fonction de fermetures passées en paramètre.
+** 60 FPS
+   Observer un taux de rafraîchissement acceptable (autour de 60 fps)
+   pour tous les jeux implantés.
 
-* TODO Gestion de mémoire automatique [0%]
+* TODO Gestion de mémoire automatique
    Démontrer que l'utilisation d'une gestion de mémoire automatique
    n'influencera que peu ou pas sur les performances du jeux.
 
    Pour y arriver:
-   - [ ] Arriver à écrire un jeu relativement complex dont la
-         performance sera celle attendue .
-   - [ ] Observer que la distrubution des temps de gc semble normale
-         et de moyenne basse.
-   - [ ] Observer une utilisation de la mémoire acceptable.
+** Temps de GC non significatifs
+   Observer que la distrubution des temps de gc semble normale et de
+   moyenne basse.
 
-* TODO Cycles de développement [0%]
+** Utiliation de mémoire raisonnable
+   Observer une utilisation de la mémoire acceptable.
+
+* TODO Cycles de développement
    Démontrer que les cycles de développement de jeu écrits en Scheme
    sont courts (voir plus court qu'un jeu écrit dans un langage
    traditionnel).
 
    Pour y arriver:
-   - [ ] Écrire plusieurs jeux et observer des temps de développement.
-         courts.
-   - [ ] Utilisation de debugger à distance
+** Développement rapide
+   Écrire plusieurs jeux et observer des temps de développement.
+   courts.
+** Debugger
+   Utilisation de debugger à distance
          

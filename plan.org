@@ -1,28 +1,39 @@
 # -*- org -*-
 
 #+TITLE: Plan du mémoire de maîtrise
+#+STYLE: <link rel="stylesheet" type="text/css" href="style.css" />
 
-* TODO Écritures de langages spécifiques au domaine
+*  Écritures de langages spécifiques au domaine
    Démontrer que l'utilisation des macros de Scheme permet de
    facilement modifier le langage de manière à permettre une écriture
    de jeu plus concise.
 
    Pour y arriver:
-** Extensions de bases [%]
+** Extensions de bases [100%]
    Écrire des extensions de Scheme permettant la simplification
    du code d'un jeu.
+   - [X] Écrire un système orienté objet
+   - [X] Écrire un ou des systèmes de simulations permettant une
+         écriture plus naturelle du comportement des objets du jeu.
 
-** Scripting de niveaux [%]
+** Scripting de niveaux [66%]
    Ajoute des nouvelles formes spéciales permettant de faire
    facilement du "scripting" de niveaux.
+   - [X] Ajouter des formes spéciales permettant l'importation et la
+         création d'objets graphiques ("fonts").
+   - [X] Ajouter des formes spéciales permettant de pouvoir faire
+         facilement des animations.
+   - [ ] Ajouter des formes spéciales permettant la création de
+         niveaux de manière simplifié
 
 * TODO Dynamisme
    Démontrer que le dynamisme du langage Scheme apporte une très
    grande flexibilité lors de la programmation de jeux.
 
    Pour y arriver:
-** REPL
+** REPL [0%]
    Utilisation de "REPL" pour le développement interactif
+   - [ ] 
 
 ** eval/load
    Utilisation potentielle des fonctions "eval" et "load" afin de
@@ -75,3 +86,4 @@
 ** Debugger
    Utilisation de debugger à distance
          
+

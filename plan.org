@@ -3,7 +3,7 @@
 #+TITLE: Plan du mémoire de maîtrise
 #+STYLE: <link rel="stylesheet" type="text/css" href="style.css" />
 
-*  Écritures de langages spécifiques au domaine
+* TODO Écritures de langages spécifiques au domaine
    Démontrer que l'utilisation des macros de Scheme permet de
    facilement modifier le langage de manière à permettre une écriture
    de jeu plus concise.
@@ -12,7 +12,7 @@
 ** Extensions de bases [100%]
    Écrire des extensions de Scheme permettant la simplification
    du code d'un jeu.
-   - [X] Écrire un système orienté objet
+   - [X] Écrire un système orienté objet.
    - [X] Écrire un ou des systèmes de simulations permettant une
          écriture plus naturelle du comportement des objets du jeu.
 
@@ -24,7 +24,7 @@
    - [X] Ajouter des formes spéciales permettant de pouvoir faire
          facilement des animations.
    - [ ] Ajouter des formes spéciales permettant la création de
-         niveaux de manière simplifié
+         niveaux de manière simplifié.
 
 * TODO Dynamisme
    Démontrer que le dynamisme du langage Scheme apporte une très
@@ -33,11 +33,16 @@
    Pour y arriver:
 ** REPL [0%]
    Utilisation de "REPL" pour le développement interactif
-   - [ ] 
+   - [ ] Ajouter une boucle "read-eval-print" a un jeu.
+   - [ ] Utiliser une REPL afin d'effectuer du scripting temps réel de
+         niveaux.
 
-** eval/load
+** eval/load [0%]
    Utilisation potentielle des fonctions "eval" et "load" afin de
    d'évaluer ou charger dynamiquement des expressions/librairies.
+   - [ ] Utiliser eval ou load afin de charger dynamiquement des
+         composantes de jeux et de permettre ainsi une plus grande
+         modularité et rapidité de développement.
 
 * TODO Structures et stockage de données
    Démontrer que l'utilisation des S-expressions de scheme comme
@@ -45,9 +50,16 @@
    représentations externes facilement manipulables et utilisables.
    
    Pour y arriver:
-** Representations de nivaux
+** Representations de nivaux [0%]
    Utiliser des S-expressions comme representation de niveaux ou
-   objets de tableaux d'un jeu.
+   d'objets de niveaux d'un jeu.
+   - [ ] Utiliser des S-expressions pour la description de niveaux.
+   - [ ] Utiliser des S-expressions pour la description d'apparence
+         de types d'objets.
+   - [ ] Utiliesr des S-expressions pour la description de
+         comportements d'objets.
+   - [ ] Utiliesr des S-expressions pour la rédaction d'animations de
+         jeu.
    
 * TODO Puissance d'abstraction
    Démontrer que les fonctions d'ordres supérieures permettent
@@ -55,24 +67,39 @@
    un jeu et que coût associé est faible.
 
    Pour y arriver:
-** Modularisation par fonctions de 1er ordre
+** Modularisation par fonctions de 1er ordre [100%]
    Écrire des parties de code qui peuvent être modularisées en
    fonction de fermetures passées en paramètre.
-** 60 FPS
+   - [X] Utilisation de fermetures pour contenir des actions
+         d'animations qui peuvent être combinées arbitrairement.
+   - [X] Utilisations pertinentes des fonctions d'ordres supérieures
+         (pertinentes dans le sens où l'utiliation doit apporter une
+         solution simple à un problème complex à résoudre en programmation
+         impérative).
+
+** 60 FPS [0%]
    Observer un taux de rafraîchissement acceptable (autour de 60 fps)
    pour tous les jeux implantés.
+   - [ ] Obtenir un taux de rafraîchissement d'au moins 60 FPS pour
+         tout nos jeux.
 
 * TODO Gestion de mémoire automatique
    Démontrer que l'utilisation d'une gestion de mémoire automatique
    n'influencera que peu ou pas sur les performances du jeux.
 
    Pour y arriver:
-** Temps de GC non significatifs
+** Temps de GC non significatifs [0%]
    Observer que la distrubution des temps de gc semble normale et de
    moyenne basse.
+   - [ ] Observer un temps moyen de gc non significatif.
+   - [ ] Observer une variance d'échantillons relativement faible.
 
-** Utiliation de mémoire raisonnable
+** Utiliation de mémoire raisonnable [0%]
    Observer une utilisation de la mémoire acceptable.
+   - [ ] Avoir un taux d'allocation de mémoire raisonnable pour
+         l'ensemble de nos jeux.
+   - [ ] Observer des tailles d'utilisation mémoires moyennes
+         raisonnables.
 
 * TODO Cycles de développement
    Démontrer que les cycles de développement de jeu écrits en Scheme
@@ -80,10 +107,22 @@
    traditionnel).
 
    Pour y arriver:
-** Développement rapide
+** Développement rapide [33%]
    Écrire plusieurs jeux et observer des temps de développement.
    courts.
-** Debugger
-   Utilisation de debugger à distance
+   - [X] Écrire un jeu simple permettant d'observer les problématiques
+         de bases reliées à l'écriture de jeux vidéo en Scheme.
+   - [ ] Écrire une second jeu un peu plus complexe et tenter de
+         confirmer la pertinence de la méthodologie trouvée pour le
+         premier jeu. Possiblement aussi, résoudre de nouveaux défis
+         relié à la plus grande complexité du nouveau jeu.
+   - [ ] Écrire un jeu plus complexe dans de courts délais en
+         utilisant le savoir acquis.
+
+** Debugger [0%]
+   Démontrer que l'utilation de debugger dynamiques permet de réduire
+   de beaucoup le temps de déboggage de jeux.
+   - [ ] Utilisation de debugger à distance
+
          
 

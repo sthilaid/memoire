@@ -1,0 +1,57 @@
+
+* Besoins
+
+  Le besoin d'avoir un système orienté objet s'est fait rapidement
+  sentir lorsque space-invaders a été developpé. Entre autre, la
+  version initiale effectué de manière manuelle du "double dispatch",
+  ce qui est laborieux et pénible à écrire.
+
+  De plus, la nature des objets du jeux faisaient en sorte que
+  plusieurs champs pouvaient être hérités.
+
+  Afin que le système d'objets puisse être utilisé dans le jeu, le
+  coût associé à son utilisation doit être faible, afin de ne pas
+  ralentir la cadence du jeux.
+
+* Essaie d'implémentations existantes
+
+  Au départ, j'ai voulu utiliser des systèmes objets déjà existant
+  afin de ne pas perdre de temps. Ainsi, le système objets nommé
+  "oops" semblait un bon candidat, puisque ce dernier possédait
+  plusieurs "features" intéressantes comme l'héritage multiple et le
+  dispatch multiple. 
+
+  Après avoir réussi à intégrer ce système au jeu, des performances
+  pitoyables ont été observées. En effet, après avoir discuter avec
+  l'auteur du système, il m'a avoué que le système avait été écrit
+  sans soucis réel des performances. Ce fut donc un échec, mais le
+  code écrit semblait beaucoup plus élégant que la version "manuelle"
+  précédente.
+
+  Par la suite, nous avons regardé le système objet nommé Meroon. Ce
+  dernier semblait plus efficace, mais il paraissait plus limité en
+  terme de possibilité. Entre autre, il n'y avait pas d'héritage
+  multiple de permis. Aussi, il n'était pas possible d'avoir des
+  champs de classes statiques (communs à toutes les instances). Et
+  donc, nous n'avons pas voulu nous limiter nos possibilitées à cause
+  des choix fait par un autre développeur. C'est là que nous est venu
+  le besoin d'écrire nous même notre propre système, qui pourrait donc
+  être moulé directement à nos besoins.
+
+* Écriture
+
+  Après l'identification des besoins du système objets:
+
+  - Rapidité d'accès aux champs
+  - Rapidité de dispatch multiple
+  - Héritage multiple et polymorphisme
+  - Champs statiques
+  - blabla
+
+  L'écriture du système comme tel a débuté. Le developpement des
+  fonctionnalités principales a pris beaucoup moins de temps que je ne
+  l'aurais cru possible. Après environ deux semaines, nous avions déjà
+  des instances de classes effectuant de l'héritage et un certain
+  degré de polymorphisme (accès aux champs).
+
+  blabla

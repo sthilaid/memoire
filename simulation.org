@@ -1,0 +1,41 @@
+
+* Idée
+
+  L'idée d'utiliser des système de simulation afin de contrôler le
+  flot d'exécution m'est venue suite au cours de simulation
+  stochastiques que j'ai suivi. En effet, en décrivant des simulations
+  sous formes d'événements discrets ou de fils d'éxécution (threads),
+  on pouvait facilement écrire le comportement de chaque individu, et
+  ce de manière modulaire.
+
+* Simulation à événements discrets
+
+  La première forme de simulation utilisée fut une simulation à
+  événements discrets. Le résultat de son utilisation est moyen,
+  principalement dû au fait que les objets possèdent la pluspart du
+  temps des comportements + ou - infinis, ou dont la durée n'est pas
+  pré-déterminée. Par contre, cette approche semblait fonctionner
+  assez bien pour la création d'animation, où justement la durée est
+  décidée à l'avance.
+
+* Simulations par fils d'exécutions
+
+  Une approche qui nous a donc semblée plus naturelle pour la suite
+  fut donc de transformer le système de simulation à événements
+  discrets pour créer une simulations par "threads". Par contre, un
+  des désavantages majeurs de la programmation parallèle est la
+  difficulté, généralement reliée aux conditions de courses et aux
+  problèmes de synchronisations.
+
+  Ainsi, nous avons décider de créer un système de "threads"
+  co-opératifs, changeant de context avec des yields explicites ou
+  avec des sleeps. Ainsi, le comportement des objets était beaucoup
+  plus compacte et facile à écrire et comprendre. De plus, l'écriture
+  de quelques macros ont permis de pouvoir composer facilement
+  plusieurs animations.
+
+#+BEGIN_SRC scheme
+  (define (toto x) x)
+#+END_SRC
+
+  

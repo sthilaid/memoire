@@ -12,9 +12,10 @@
 ** Extensions de bases [100%]
    Écrire des extensions de Scheme permettant la simplification
    du code d'un jeu.
-   - [X] Écrire un système orienté objet.
-   - [X] Écrire un ou des systèmes de simulations permettant une
-         écriture plus naturelle du comportement des objets du jeu.
+   - [X] [[file:system-objet.org][Écrire un système orienté objet]].
+   - [X] Écrire un ou des [[file:simulation.org][systèmes de simulations]]
+         permettant une écriture plus naturelle du comportement des
+         objets du jeu.
 
 ** Scripting de niveaux [66%]
    Ajoute des nouvelles formes spéciales permettant de faire

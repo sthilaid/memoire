@@ -1,0 +1,38 @@
+
+#+TITLE: Création d'animations
+
+* Besoin
+  Les animations sont des éléments primordiaux à l'intérieur des jeux
+  vidéo. En effet, ces dernières se retrouvent à tous moments dans un
+  jeu: au début de celui-ci, durant l'introduction des niveaux,
+  pendant des moments clés de niveaux, à la fin du jeut, etc...
+
+  Le scripting d'animation se doit donc d'être très agréable et
+  simple, afin de permettre aux artistes responsable de leur création
+  de pouvoir exprimer comment celles-ci devraient se produire.
+
+* Space-invaders
+  Ce jeux contient un minimum d'animations, mais en contient déjà
+  suffisamment pour permettre de saisir l'importance de celles-ci dans
+  un jeu plus complex. C'est pour cette raison que lors de la
+  conception du système de simulation par fils d'exécutions
+  coopératifs, une attention spéciale a été apportée afin de permettre
+  de pouvoir facilement écrire les animations présentes dans le jeu.
+
+  C'est principalement par l'ajout de la macro compose-thunks que les
+  animations ont pu être écrites de façon simple et modulaire.
+
+#+BEGIN_SRC scheme
+(define-macro (compose-thunks . thunks)
+  (define (composition thunks)
+    (cond ((not (pair? thunks)) (error ...))
+          ((and (pair? thunks) (null? (cdr thunks)))
+           (car thunks))
+          (else 
+           `(lambda () (,(car thunks))
+                       (continue-with-thunk! ,(composition (cdr thunks)))))))
+  (composition thunks))
+#+END_SRC
+  
+  On peut ainsi écrire plusieurs thunks d'animations et les composer
+  en utilisant cette nouvelle forme spéciale.

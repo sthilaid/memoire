@@ -1,4 +1,6 @@
 
+#+TITLE: Utilisation de systèmes de simulations
+
 * Idée
 
   L'idée d'utiliser des système de simulation afin de contrôler le
@@ -43,18 +45,22 @@
   création d'animation, où justement la durée est décidée à l'avance.
 
 #+BEGIN_SRC scheme
-  (define (explode-mothership! level mothership)
-    (define expl-obj (make-game-object (gensym 'explosion) ...))
-    (object-type-score-value-set! (get-type 'mothership) score-val)
-    (level-remove-object! level mothership)
-    (level-add-object! level expl-obj)
-    (in animation-duration
-        (create-explosion-end-event!
-         level expl-obj
-         (show-points-event level pos score-val end-of-continuation-event)))) 
+(define (create-text-flash-animation-event level msg-obj duration continuation)
+  (define (flash-ev dt)
+    (lambda ()
+      (if (< dt duration)
+          (begin (cycle-msg-state! msg-obj)
+                 (in animation-delay (flash-ev (+ dt animation-delay))))
+          (begin
+            (game-object-color-set! msg-obj original-color)
+            (in 0 continuation)))))
+  (flash-ev 0)) 
 #+END_SRC
 
-  Come l'illustre cet exemple d'animation d'explosion,
+  Comme l'illustre cet exemple d'animation de scintillement de text,
+  on peut naturellement programmer une suite d'animations en utilisant
+  des événements continuations. Par contre, la manipulation et la
+  création de nouvelles continuations peut devienir fastidieuse.
 
 * Simulations par fils d'exécutions
 
@@ -73,7 +79,42 @@
   plusieurs animations.
 
 #+BEGIN_SRC scheme
-  (define (toto x) x)
+(define (create-mothership level)
+  (synchronized-thunk level
+    (let loop ((mothership (level-mothership level)))
+      (if mothership
+          (let ((collision-occured? (move-object! level mothership)))
+            (if (or (not collision-occured?)
+                    (explosion? collision-occured?)
+                    (eq? collision-occured? 'message))
+                (begin (sleep-for mothership-update-interval)
+                       (loop (level-mothership level)))))))))
 #+END_SRC
 
-  
+  Par exemple, on voit maintenant que le comportement d'un
+  "mothership" se retrouve encapsulé dans une boucle infinie qui
+  applique sont comportement à chaque itération.
+
+  Similairement, des simples macros permettent de pouvoir composer de
+  manière très élégante plusieurs animations. Par exemple, pour créer
+  l'animation du début de jeu, il n'a suffit que d'utiliser le code
+  suivant:
+
+#+BEGIN_SRC scheme
+(define (create-animation-A level)
+  (lambda ()
+    ;; messages declaration
+    (let* ((play   ...) (space  ...) (score  ...)
+           (mother ...) (hard   ...) (medium ...) (easy   ...)
+           (anim-messages
+            (list play space score mother hard medium easy)))
+      (for-each (lambda (m) (level-add-object! level m)) anim-messages )
+      (continue-with-thunk!
+       (compose-thunks
+        (animate-message play "PLAY")
+        (animate-message space "SPACE   INVADERS")
+        (create-animate-score-adv-table level))))))
+#+END_SRC
+
+  qui affiche de maniere successive du text et affiche par la suite la
+  liste des points que valent chaque type de vaisseaux.

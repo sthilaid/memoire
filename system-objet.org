@@ -1,4 +1,6 @@
 
+#+TITLE: Utilisation d'un système orienté objets
+
 * Besoins
 
   Le besoin d'avoir un système orienté objet s'est fait rapidement
@@ -12,6 +14,14 @@
   Afin que le système d'objets puisse être utilisé dans le jeu, le
   coût associé à son utilisation doit être faible, afin de ne pas
   ralentir la cadence du jeux.
+
+  Aussi, une interface à la CLOS semblait être une bonne approche,
+  tant parce que CLOS est un système connu (donc facile à utiliser)
+  qui a fait ses preuves et parce que le principe de fonction
+  génériques semble mieux adapté à un système ayant des fonctions de
+  premières classes, puisqu'en utilisant des fonctions génériques,
+  celle-ci peuvent être utilisées avec des fonctions d'ordre supérieur
+  très facilement.
 
 * Essaie d'implémentations existantes
 

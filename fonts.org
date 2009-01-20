@@ -1,0 +1,29 @@
+
+
+#+TITLE: Formes spéciales permettant l'importation de fontes graphiques
+
+* Sprites
+   Nous avons voulu initialement utiliser des "sprites" afin de
+   pouvoir représenter visuellement les objets du jeu. Ainsi, nous
+   voulions pouvoir charger à partir de fichiers d'images les
+   représentations visuelles des objets et de pouvoir les afficher sur
+   demande.
+
+   Cette idée fonctionnait assez bien initialement, mais quelques
+   problèmes sont survenus qui ont fait évoluer l'idée. En effet,
+   puisque les objets dans space-invaders sont animés (même si c'est
+   très limité), plusieurs images sont nécessaire, pour chaque type
+   d'objets. Il en résulte donc en une explosion de la quantité de
+   fichiers d'images à utiliser. De plus, il serait ingérable
+   d'utiliser ce système afin de pouvoir afficher du text à l'écran.
+
+   Ainsi, l'idée d'utiliser des fontes est venue naturellement par
+   elle-même.
+
+* Fontes
+  Donc avec les fontes, toutes images décrivant un objet se retrouve
+  dans une meta-image qui contiendra toutes les autres images pouvant
+  représenter cette objet. Ensuite, lorsque la fontes est chargée
+  (lors de la compilation ou l'exécution du programme) ces images sont
+  stockées dans des tableaux C, via du code généré par la macro de
+  création de fontes.

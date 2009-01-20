@@ -1,0 +1,35 @@
+
+#+TITLE: Création du jeu Space Invaders
+
+* Choix du jeu
+  Le jeu space invaders a été choisi comme premier jeu à implanter
+  pour plusieurs raisons. Premièrement, il s'agit d'un jeu très simple
+  et donc qui ne devrait pas requérir un très long temps de
+  développement. Par contre, le jeu possède plusieurs concepts
+  intéressant qui se retrouvent dans beaucoup de jeux vidéo:
+
+  - Interaction quasi temps réel avec l'usager
+  - Niveaux
+  - Parties multi-joueurs (locales)
+
+  
+* Version initiale
+
+  La première écriture de space invaders s'est faite assez rapidement
+  (environ 2 mois de développement). Étant donné qu'il a fallu écrit
+  des librairies pour faire l'affichage et tout, cela semble rapide
+  comme temps. Par contre, cette version souffait de plusieurs
+  défauts, principalement des problèmes reliés à la lisibilité et la
+  maintenabilité du code écrit. C'est ainsi que s'est présenté le
+  besoin d'avoir un système objet pour écrire le jeu et aussi de
+  modifier le système de simulation à évenements discrets en
+  simulation par fils d'exécutions.
+
+* Version améliorée
+  Par version améliorée, on entend ici qu'un système objet et une
+  simulation par threads ont été intégré au jeu (voir tag
+  "ameliorated-v1.0"). Cette version comporte une amélioration notable
+  de la qualité du code écrit. Par contre, certains problèmes de
+  performances se sont présentés, principalement après l'ajout de
+  notre système objet. Par contre, un problème présent est le fait que
+  le taux de rafraîchissement soit très variable. 

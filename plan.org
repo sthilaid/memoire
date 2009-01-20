@@ -17,13 +17,13 @@
          permettant une écriture plus naturelle du comportement des
          objets du jeu.
 
-** Scripting de niveaux [66%]
+** Scripting de niveaux [33%]
    Ajoute des nouvelles formes spéciales permettant de faire
    facilement du "scripting" de niveaux.
    - [X] Ajouter des formes spéciales permettant l'importation et la
-         création d'objets graphiques ("fonts").
-   - [X] Ajouter des formes spéciales permettant de pouvoir faire
-         facilement des animations.
+         [[file:fonts.org][création d'objets graphiques]] ("fonts").
+   - [ ] Ajouter des formes spéciales permettant de pouvoir faire
+         facilement des [[file:animation.org][animations]].
    - [ ] Ajouter des formes spéciales permettant la création de
          niveaux de manière simplifié.
 
@@ -111,7 +111,7 @@
 ** Développement rapide [33%]
    Écrire plusieurs jeux et observer des temps de développement.
    courts.
-   - [X] Écrire un jeu simple permettant d'observer les problématiques
+   - [X] Écrire un [[file:space-invaders.org][jeu simple]] permettant d'observer les problématiques
          de bases reliées à l'écriture de jeux vidéo en Scheme.
    - [ ] Écrire une second jeu un peu plus complexe et tenter de
          confirmer la pertinence de la méthodologie trouvée pour le

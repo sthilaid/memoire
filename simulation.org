@@ -14,9 +14,47 @@
   événements discrets. Le résultat de son utilisation est moyen,
   principalement dû au fait que les objets possèdent la pluspart du
   temps des comportements + ou - infinis, ou dont la durée n'est pas
-  pré-déterminée. Par contre, cette approche semblait fonctionner
-  assez bien pour la création d'animation, où justement la durée est
-  décidée à l'avance.
+  pré-déterminée. Par exemple, 
+
+#+BEGIN_SRC scheme
+;; Event that moves a mothership and handles its collisions.
+(define (create-mothership-event level)
+  (define mothership-event
+    (synchronized-event-thunk level
+      (let ((mothership (level-mothership level)))
+        (if mothership
+            (let ((collision-occured? (move-object! level mothership)))
+              (if (or (not collision-occured?)
+                      (is-explosion? collision-occured?)
+                      (eq? collision-occured? 'message))
+                  (in mothership-update-interval mothership-event)))))))
+  mothership-event) 
+#+END_SRC
+
+  où l'on constate que l'évènement principal contrôlant les entitées
+  de type "mothership" doit se re-schéduler plus tard dans le temps,
+  et vérifier que le vaiseau "mothership" est toujours en un seul
+  morceau avant de pouvoir continuer. Cela résulte donc en l'écriture
+  de code pouvant facilement mener à des bugs (par exemple par l'oubli
+  de la vérification de l'existance du "mothership" lors de
+  l'exécution du prochain évenement.
+  
+  Par contre, cette approche semblait fonctionner assez bien pour la
+  création d'animation, où justement la durée est décidée à l'avance.
+
+#+BEGIN_SRC scheme
+  (define (explode-mothership! level mothership)
+    (define expl-obj (make-game-object (gensym 'explosion) ...))
+    (object-type-score-value-set! (get-type 'mothership) score-val)
+    (level-remove-object! level mothership)
+    (level-add-object! level expl-obj)
+    (in animation-duration
+        (create-explosion-end-event!
+         level expl-obj
+         (show-points-event level pos score-val end-of-continuation-event)))) 
+#+END_SRC
+
+  Come l'illustre cet exemple d'animation d'explosion,
 
 * Simulations par fils d'exécutions
 
@@ -30,7 +68,7 @@
   Ainsi, nous avons décider de créer un système de "threads"
   co-opératifs, changeant de context avec des yields explicites ou
   avec des sleeps. Ainsi, le comportement des objets était beaucoup
-  plus compacte et facile à écrire et comprendre. De plus, l'écriture
+  plus compact et facile à écrire et comprendre. De plus, l'écriture
   de quelques macros ont permis de pouvoir composer facilement
   plusieurs animations.
 

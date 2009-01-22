@@ -77,12 +77,20 @@
          (pertinentes dans le sens où l'utiliation doit apporter une
          solution simple à un problème complex à résoudre en programmation
          impérative).
-
 ** 60 FPS [0%]
    Observer un taux de rafraîchissement acceptable (autour de 60 fps)
    pour tous les jeux implantés.
    - [ ] Obtenir un taux de rafraîchissement d'au moins 60 FPS pour
          tout nos jeux.
+
+** Facilité à l'ajout de nouvelles composantes secondaires [0%]
+   Lorsque le besoin s'en fait ressentir, faire l'ajout de nouvelles
+   composantes permettant de faire l'analyse du jeu afin de mieux
+   comprendre son exécution et pouvoir améliorer ses performances
+
+   - [ ] Faire l'ajout d'un module permettant de conserver des
+         [[file:stats.org][statistiques]] diverses de l'exécution du jeu.
+         
 
 * TODO Gestion de mémoire automatique
    Démontrer que l'utilisation d'une gestion de mémoire automatique

@@ -1,0 +1,29 @@
+
+#+TITLE: Module statistique
+
+* Besoin
+  Le besoin d'un module permettant d'analyser et illustrer de manière
+  visuelle les performances des jeux est essentiel pour l'amélioration
+  des performances de celui-ci. Ainsi, nous avons developpé un module
+  de statistiques permettant le calcul et l'affichage de données
+  recueillies durant une exécution d'un jeu.
+
+* Histogrammes
+  Une fonction permettant de générer du code permettant de créer un
+  histogramme pour un échantillon donné a été écrite. L'intérêt
+  d'utiliser des histogrammes, au lieu que de simplement observer la
+  moyenne et l'écart type réside dans la possibilité d'observer
+  visuelement la distrubution de l'échantillon obtenu. Il est possible
+  ainsi de pouvoir tirer des conclusions plus facilement sur quels
+  sont les points dans le code à améliorer.
+
+  L'utilisation de ces histogrammes est apparue lors de la phase
+  d'optimisation du jeux Space-Invaders. Avant d'avoir ceux-ci, il
+  était très difficile, même avec du profilage de code, de connaître
+  quelle était la situation réelle pour l'exécution du programme, en
+  termes de taux de refraîchissement, temps de gc, etc...
+
+  | [[file:images/histo-fps.png]]       | [[file:images/histo-gc.png]]             |
+  | [[file:images/histo-rendering.png]] | [[file:images/histo-corout-threads.png]] |
+
+  

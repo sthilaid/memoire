@@ -13,7 +13,7 @@
   - Parties multi-joueurs (locales)
 
   
-* Version initiale
+* Version initiale [2008-06-02 Mon]
 
   La première écriture de space invaders s'est faite assez rapidement
   (environ 2 mois de développement). Étant donné qu'il a fallu écrit
@@ -25,7 +25,7 @@
   modifier le système de simulation à évenements discrets en
   simulation par fils d'exécutions.
 
-* Version améliorée
+* Version améliorée [2009-01-16 Fri]
   Par version améliorée, on entend ici qu'un système objet et une
   simulation par threads ont été intégré au jeu (voir tag
   "ameliorated-v1.0"). Cette version comporte une amélioration notable
@@ -33,3 +33,132 @@
   performances se sont présentés, principalement après l'ajout de
   notre système objet. Par contre, un problème présent est le fait que
   le taux de rafraîchissement soit très variable. 
+
+* Amélioration des performances
+# <<amelioration>>
+
+
+** Amélioration des threads coopératifs [2009-01-22 Thu]
+  La version améliorée est écrite de manière très élegante, mais
+  comporte certains problèmes de performances. Entre autre, il semble
+  que ce n'est pas possible de pouvoir aller en dessous de 50
+  fps. Tout de même, la performances de plusieurs threads coopératifs
+  a pu être améliorée via l'utilisation du système d'affichage
+  [[file:stats.org][statistique]].
+
+  Entre autre, le mouvement des invaders a de beaucoup été accéléré
+  (facteur de 10). Initialement (révision 238), on avait quelque chose
+  comme:
+
+#+BEGIN_SRC scheme
+(define (create-init-invader-move level)
+  (synchronized-thunk level
+    (let* ((rows (get-all-invader-rows level))
+           (walls (game-level-walls level))
+           (wall-collision?
+            ;; FIXME: Kinda innefficient algo :S!
+            (exists
+             (lambda (row)
+               (exists (lambda (inv)
+                         (exists (lambda (wall)
+                                   (detect-collision? inv wall))
+                                 walls))
+                       row))
+             rows)))
+      (if (null? rows)
+          ;; Regenerate invaders when they all died
+          (continue-with-thunk!
+           (compose-thunks (generate-invaders level)
+                           (create-init-invader-move level)))
+          (let* ((old-dx (point-x (game-object-speed (caar rows))))
+                 (dt (get-invader-move-refresh-rate level))
+                 (duration (* (length rows) dt)))
+            (if wall-collision?
+                (continue-with-thunk!
+                  (compose-thunks
+                   (create-invader-row-move!
+                    0 (- invader-y-movement-speed) level)
+                   (lambda () (sleep-for dt))
+                   (create-invader-wall-movement-continuation
+                     old-dx level)
+                   (lambda () (sleep-for dt))
+                   ;; should this event creation be put after the sleep?
+                   (create-init-invader-move level)))
+                (continue-with-thunk!
+                 (compose-thunks
+                  (create-invader-row-move! old-dx 0 level)
+                  (lambda () (sleep-for dt))
+                  (create-init-invader-move level)))))))))
+#+END_SRC
+  
+  À l'aide du profilage de thread, on obtient le code:
+
+#+BEGIN_SRC scheme
+(define (create-init-invader-move level)
+  (synchronized-thunk level
+    (corout-id-set! (current-corout) 'invader-move)
+    (let* ((invaders (level-invaders level)))
+      (if (null? invaders)
+          ;; Regenerate invaders when they all died
+          (continue-with-thunk!
+           (compose-thunks (generate-invaders level)
+                           (create-init-invader-move level)))
+          (let* (;; sample an arbitrary invader's speed
+                 (old-dx (point-x (game-object-speed (car invaders))))
+                 (dt (get-invader-move-refresh-rate level)))
+            (if (game-level-wall-collision-detected? level)
+                (begin
+                  (continue-with-thunk!
+                   (compose-thunks
+                    (create-invader-row-move!
+                     0 (- invader-y-movement-speed) level)
+                    (lambda () (sleep-for dt))
+                    (create-invader-wall-movement-continuation
+                     old-dx level)
+                    (lambda ()
+                      ;; reset the colision flag
+                      (game-level-wall-collision-detected?-set! level #f)
+                      (sleep-for dt))
+                    ;; should this event creation be put after the sleep?
+                    (create-init-invader-move level))))
+                
+                (continue-with-thunk!
+                 (compose-thunks
+                  (create-invader-row-move! old-dx 0 level)
+                  (lambda () (sleep-for dt))
+                  (create-init-invader-move level)))))))))
+#+END_SRC
+
+
+** Amélioration du système de mise-en-attente [2009-01-23 Fri]
+
+  Un autre problème qui semble être à la base des mauvaises
+  performances du système serait relié à la façon dont la mise en
+  attente des threads est effectuée. Pour l'instant, un polling sur
+  les condititions de mise-en-attentes est fait lors de chaques retour
+  au schéduleur. 
+
+#+BEGIN_SRC scheme
+;; Appellée lors de chaque retour au scheduler
+(define (wake-up-sleepers)
+  (let loop ((sleeping-el (dequeue!? (sleep-q))) (still-sleeping '()))
+    (if sleeping-el
+        (if (sleep-q-el-condition? sleeping-el)
+            (begin
+              (corout-enqueue! (q) (sleep-q-el-coroutine sleeping-el))
+              (loop (dequeue!? (sleep-q)) still-sleeping))
+            (loop (dequeue!? (sleep-q))
+                  (cons sleeping-el still-sleeping)))
+        (for-each (lambda (el) (enqueue! (sleep-q) el))
+                  still-sleeping))))
+#+END_SRC
+
+  Afin de remédier à la situation, deux files d'attentes distinctes
+  seront utilisées. Une file dédiée aux threads en attentes sur le
+  temps (time-sleep-q) et une autre files independante pour les thread
+  bloqués. Ceux dans la file d'attente temporelle seront mis dans un
+  monceaux (arbre rouge-noir) et les autre dans une files d'attente
+  ordinaire. Lors de chaque retour au scheduler, on pourra vérifier
+  efficacement s'il peut y avoir des threads en attente temporelle à
+  réveiller. En ce qui concerne les threads bloqués, ils devront se
+  faire réveiller *explicitement* par celui qui les aura endormi.

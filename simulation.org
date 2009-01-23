@@ -10,7 +10,7 @@
   on pouvait facilement écrire le comportement de chaque individu, et
   ce de manière modulaire.
 
-* Simulation à événements discrets
+* Simulation à événements discrets [2008-05-15 Thu]
 
   La première forme de simulation utilisée fut une simulation à
   événements discrets. Le résultat de son utilisation est moyen,
@@ -62,7 +62,7 @@
   des événements continuations. Par contre, la manipulation et la
   création de nouvelles continuations peut devienir fastidieuse.
 
-* Simulations par fils d'exécutions
+* Simulations par fils d'exécutions [2008-07-07 Mon]
 
   Une approche qui nous a donc semblée plus naturelle pour la suite
   fut donc de transformer le système de simulation à événements

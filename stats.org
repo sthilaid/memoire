@@ -8,7 +8,7 @@
   de statistiques permettant le calcul et l'affichage de données
   recueillies durant une exécution d'un jeu.
 
-* Histogrammes
+* Histogrammes [2009-01-19 Mon]
   Une fonction permettant de générer du code permettant de créer un
   histogramme pour un échantillon donné a été écrite. L'intérêt
   d'utiliser des histogrammes, au lieu que de simplement observer la
@@ -21,9 +21,20 @@
   d'optimisation du jeux Space-Invaders. Avant d'avoir ceux-ci, il
   était très difficile, même avec du profilage de code, de connaître
   quelle était la situation réelle pour l'exécution du programme, en
-  termes de taux de refraîchissement, temps de gc, etc...
+  termes de taux de refraîchissement, temps de gc, etc... Par exemple:
 
-  | [[file:images/histo-fps.png]]       | [[file:images/histo-gc.png]]             |
-  | [[file:images/histo-rendering.png]] | [[file:images/histo-corout-threads.png]] |
+  | [[file:images/histo-rendering.png]] | [[file:images/histo-gc.png]] |
 
-  
+  Afin d'illustrer l'utilite des histogrammes. Voici un exemple de
+  cas. Afin d'ameliorer et stabiliser le taux de rafraîchissement,
+  nous avons fait appel aux histogrammes pour comparer les
+  distributions de durées d'exécution (entre chaque pauses pouvant
+  être causées par un yield ou un sleep) pour chaque thread
+  exécuté. On a pu ainsi cibler que le thread "invader-init-move"
+  était beaucoup plus lent que les autres, et après optimisé son
+  corps, on a obtenu des performances bien meilleures. De plus, comme
+  l'illustre aussi cet exemple, on a pu, une fois un thread ciblé,
+  détailler son corps en plusieurs sous-threads, pour déterminer
+  quelles parties étaiet les plus problématiques.
+
+  | [[file:images/histo-corout-threads1.png]] | [[file:images/histo-corout-threads2.png]] |

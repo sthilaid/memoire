@@ -23,7 +23,7 @@
   celle-ci peuvent être utilisées avec des fonctions d'ordre supérieur
   très facilement.
 
-* Essaie d'implémentations existantes
+* Essaie d'implémentations existantes [2008-08-15 Fri]
 
   Au départ, j'ai voulu utiliser des systèmes objets déjà existant
   afin de ne pas perdre de temps. Ainsi, le système objets nommé
@@ -48,7 +48,7 @@
   le besoin d'écrire nous même notre propre système, qui pourrait donc
   être moulé directement à nos besoins.
 
-* Écriture
+* Écriture [2008-10-15 Wed]
 
   Après l'identification des besoins du système objets:
 

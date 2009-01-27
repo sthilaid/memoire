@@ -118,3 +118,41 @@
 
   qui affiche de maniere successive du text et affiche par la suite la
   liste des points que valent chaque type de vaisseaux.
+
+** Problèmes [2009-01-27 Tue]
+   Après l'écriture et l'utilisation de ce système de thread (patch
+   #241), plusieurs problèmes en sont ressortis. 
+
+*** Problème de "polling" des threads endormis
+    Le système de thread écrits possédait une file d'attente où chaque
+    thread était associé à un thunk qui devra retourner #t lorsque le
+    thread devra être réveillé. 
+
+    Ainsi, lors de chaque retours aux scheduler, une vérification pour
+    tous les threads endormis était effectuée (polling). Aussi, l'idée
+    d'utiliser un thunk de conditions n'est pas bonne puisqu'il est
+    possible que la condition devienne vraie et redevienne fausse
+    avant de revenir au scheduler. Des variables de conditions
+    devraient plustôt être utilisées pour ce genre de synchronisation.
+
+*** Dépendance à l'horloge du système
+    Le système utilisais directement le temps réel comme temps de
+    simulation. Ceci comporte plusieurs problèmes, entre autre si l'on
+    met en sleep le programme, lors de son réveil, toutes les pauses
+    des threads seront désynchronisées.
+
+    Une horloge indépendante devrait donc être utilisée afin
+    d'abstraire le temps réel du temps de la simulation. Ceci
+    permettrait aussi de facilement mettre en pause la simulation, ou
+    encore l'accélérer.
+
+*** Trop restrictif en terme de possibilités
+    Le système écrit a été conçu de manière à ce que le modèle de la
+    simulation soit dans un état stable lors de chaque changements de
+    contextes, ce qui ne requiert pas de méchanisme de synchronisation
+    supplémentaires. Parcontre, ceci limite beaucoup ce qu'on peut
+    faire avec la simulation, ou plustôt comment on doit le
+    faire. Pour le jeu de space invaders, touts les invaders d'une
+    seule rangée soient bougés en même temps, et donc ne sont pas
+    contrôlés individuellement.
+

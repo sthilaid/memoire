@@ -124,7 +124,7 @@
    #241), plusieurs problèmes en sont ressortis. 
 
 *** Problème de "polling" des threads endormis
-    Le système de thread écrits possédait une file d'attente où chaque
+    Le système de thread écrit possédait une file d'attente où chaque
     thread était associé à un thunk qui devra retourner #t lorsque le
     thread devra être réveillé. 
 
@@ -155,4 +155,17 @@
     faire. Pour le jeu de space invaders, touts les invaders d'une
     seule rangée soient bougés en même temps, et donc ne sont pas
     contrôlés individuellement.
+
+** Solutions
+*** Nouveau système de mise en attente
+    Afin d'éviter les attentes actives, une file d'attente spécialisée
+    (file prioritaire) est utilisée afin de garder les threads mis en
+    attente sur le temps. Ainsi, on peut savoir très rapidement, pour
+    un temps donné si des threads endormi ont besoin d'être réveillés
+    ou non.
+
+    Aussi, les thread qui seront mis en attente autrement (mutex)
+    seront placés dans une file d'attente de l'objet de
+    synchronisation en question, tel que ce l'aurait toujours dû être.
+
 

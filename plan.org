@@ -16,6 +16,11 @@
    - [X] Écrire un ou des [[file:simulation.org][systèmes de simulations]]
          permettant une écriture plus naturelle du comportement des
          objets du jeu.
+         
+** Développement d'une forme adatpée du langage pour la description de jeu [%]
+   Conceveur des extenstions du langage permettant l'écriture de
+   manière simple du comportement des agents dans un jeu/simulation.
+   - [ ] Écriture du [[file:dsl.org][LSD]] (lang spéc domaine) pour l'écriture d'agents
 
 ** Scripting de niveaux [33%]
    Ajoute des nouvelles formes spéciales permettant de faire

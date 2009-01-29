@@ -1,0 +1,28 @@
+
+#+TITLE: Langage spécifique à l'écriture d'agents dans un jeu
+
+* Prototypage du langage [2009-01-29 Thu]
+  Afin de pouvoir concevoir un DSL, un prototype du jeu space-invaders
+  doit être écrit afin de permettre d'observer comment le comportement
+  d'agents pourrait être bien représenté sous forme de code abstrait,
+  qui serait par la suite traduit en Scheme.
+
+  Par exemple, pour un invader, on pourrait avoir du code ressemblant à:
+
+#+SRC_BEGIN scheme
+(define-agent (Invader stimulus)
+  (case stimulus
+    ((turn)
+     (unless (or (exists? player-explosion)
+                 (game-paused?))
+             (if (not (received-godown-warning?))
+                 (move dx)
+                 (move (- dy)))))
+    ((collision invader -> wall)
+     (send-godown-warining to all other invaders)
+     (set! dx (- dx))
+     (move dx)
+     (move (- dy)))
+    ((collision player <-> invader)
+     (game-over!))))
+#+SRC_END

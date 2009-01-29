@@ -9,7 +9,7 @@
 
   Par exemple, pour un invader, on pourrait avoir du code ressemblant à:
 
-#+SRC_BEGIN scheme
+#+BEGIN_SRC scheme
 (define-agent (Invader stimulus)
   (case stimulus
     ((turn)
@@ -25,4 +25,4 @@
      (move (- dy)))
     ((collision player <-> invader)
      (game-over!))))
-#+SRC_END
+#+END_SRC

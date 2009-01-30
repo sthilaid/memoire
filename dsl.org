@@ -15,14 +15,104 @@
     ((turn)
      (unless (or (exists? player-explosion)
                  (game-paused?))
-             (if (not (received-godown-warning?))
-                 (move dx)
-                 (move (- dy)))))
-    ((collision invader -> wall)
-     (send-godown-warining to all other invaders)
+             (begin (if (not (received-godown-warning?))
+                        (move self dx)
+                        (move self (- dy)))
+                    ;; Wake up the next invader
+                    (Invader (next-invader self) 'turn))))
+    ((collision self -> wall)
+     (for-each send-godown-warning other-invaders)
      (set! dx (- dx))
-     (move dx)
-     (move (- dy)))
-    ((collision player <-> invader)
+     (move self dx)
+     (move self (- dy)))
+    ((collision self <-> player)
      (game-over!))))
+#+END_SRC
+
+** Synchronisation des agents via les "fair threads"
+   L'utilisation des "[[http://www-sop.inria.fr/members/Manuel.Serrano/publi/sbs-ppdp04.html][fair threads]]" décrits par Manuel Serrano
+   permettrait de pouvoir expliciter les contraintes temporelles se
+   retrouvant dans le je de space invaders de manière assez élégante,
+   par exemple, pour la synchronisation d'affichage entre les
+   différentes lignes d'invaders, on pourrait avoir:
+     
+   |------------+---------------+---------------+---------------|
+   | time frame | Botom Inv     | Middle Inv    | Upper Inv     |
+   |------------+---------------+---------------+---------------|
+   |          1 | move          | [wait mid]    | [wait up]     |
+   |            | signal redraw |               |               |
+   |            | yield         |               |               |
+   |------------+---------------+---------------+---------------|
+   |          2 | signal mid    | move          |               |
+   |            | wait bot      | signal redraw |               |
+   |            |               | yield         |               |
+   |------------+---------------+---------------+---------------|
+   |          3 |               | signal up     | move          |
+   |            |               | wait mid      | signal redraw |
+   |            |               |               | yield         |
+   |------------+---------------+---------------+---------------|
+   |          4 |               |               | signal bottom |
+   |            |               |               | wait up       |
+   |------------+---------------+---------------+---------------|
+
+   Par contre, il semble y avoir un probleme lorsqu'il n'y a plus
+   d'invaders qui existent, pour une rangée donnée (deadlock). Ainsi,
+   le comportement des invaders doit être dynamique et modifié en
+   cours de route. Ainsi, si tous les invaders de la ligne du bas sont
+   tués, le comportement des lignes subsistance devra être modifiée
+   à:
+
+   | time frame | Middle Inv    | Upper Inv     |
+   |------------+---------------+---------------|
+   |          1 | move          |               |
+   |            | signal redraw |               |
+   |            | yield         |               |
+   |------------+---------------+---------------|
+   |          2 | signal up     | move          |
+   |            | wait mid      | signal redraw |
+   |            |               | yield         |
+   |------------+---------------+---------------|
+   |          3 |               | signal *mid*  |
+   |            |               | wait up       |
+   |------------+---------------+---------------|
+
+
+   De plus, l'utilisation d'un style de programmation à la FRP
+   (functionnal reactive programming), permettrait de pouvoir aussi
+   bien identifier toute les autres contrainte du jeu. Par exemple,
+   afin de mettre en pause le jeu, il ne suffit que de creer les
+   signaux correspondant.
+
+   Pour inclure de tels comportements, il faudrait ajouter au code
+   d'un invader:
+
+#+BEGIN_SRC scheme
+(define-agent (Invader stimulus)
+  (case stimulus
+    ((turn)
+     (wait (line-id self))
+     (begin (if (not (received-godown-warning?))
+                (move self dx)
+                (move self (- dy)))
+            ;; must yield to ensure all the inv of the row moved
+            (yield)
+            (signal 'redraw)
+            (yield) ; necessary?
+            (signal (next-row self))
+            (Invader self turn) ; temp patch to loop here...
+            ))
+    ((player-explosion)
+     (wait player-explosion-end))
+    ((game-paused)
+     (wait game-unpaused))
+    ((collision self -> wall)
+     (for-each send-godown-warning other-invaders)
+     (set! dx (- dx))
+     (move self dx)
+     (move self (- dy)))
+    ((collision self <-> player)
+     (game-over!))
+    ((destroyed invader)
+     (if (zero? (length (next-row self)))
+         (next-row-set! self (get-next-available-row))))))
 #+END_SRC

@@ -1,0 +1,283 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+lang="en" xml:lang="en">
+<head>
+<title>Création du jeu Space Invaders</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2009/02/02 09:47:47 AM"/>
+<meta name="author" content=""/>
+<style type="text/css">
+  html {
+	font-family: Times, serif;
+	font-size: 12pt;
+  }
+  .title { text-align: center; }
+  .todo  { color: red; }
+  .done { color: green; }
+  .timestamp { color: grey }
+  .timestamp-kwd { color: CadetBlue }
+  .tag { background-color:lightblue; font-weight:normal }
+  .target { }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+  }
+  table { border-collapse: collapse; }
+  td, th {
+	vertical-align: top;
+	<!--border: 1pt solid #ADB9CC;-->
+  }
+  dt { font-weight: bold; }
+</style>
+</head><body>
+<h1 class="title">Création du jeu Space Invaders</h1>
+
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 Choix du jeu</a></li>
+<li><a href="#sec-2">2 Version initiale</a></li>
+<li><a href="#sec-3">3 Version améliorée</a></li>
+<li><a href="#sec-4">4 Amélioration des performances</a>
+<ul>
+<li><a href="#sec-4.1">4.1 Amélioration des threads coopératifs</a></li>
+<li><a href="#sec-4.2">4.2 Amélioration du système de mise-en-attente</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1">1 Choix du jeu</h2>
+<div id="text-1">
+
+<p>Le jeu space invaders a été choisi comme premier jeu à implanter
+pour plusieurs raisons. Premièrement, il s'agit d'un jeu très simple
+et donc qui ne devrait pas requérir un très long temps de
+développement. Par contre, le jeu possède plusieurs concepts
+intéressant qui se retrouvent dans beaucoup de jeux vidéo:
+</p>
+<ul>
+<li>
+Interaction quasi temps réel avec l'usager
+</li>
+<li>
+Niveaux
+</li>
+<li>
+Parties multi-joueurs (locales)
+
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2">2 Version initiale <span class="timestamp">2008-06-02 Mon</span></h2>
+<div id="text-2">
+
+
+<p>
+La première écriture de space invaders s'est faite assez rapidement
+(environ 2 mois de développement). Étant donné qu'il a fallu écrit
+des librairies pour faire l'affichage et tout, cela semble rapide
+comme temps. Par contre, cette version souffait de plusieurs
+défauts, principalement des problèmes reliés à la lisibilité et la
+maintenabilité du code écrit. C'est ainsi que s'est présenté le
+besoin d'avoir un système objet pour écrire le jeu et aussi de
+modifier le système de simulation à évenements discrets en
+simulation par fils d'exécutions.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3">3 Version améliorée <span class="timestamp">2009-01-16 Fri</span></h2>
+<div id="text-3">
+
+<p>Par version améliorée, on entend ici qu'un système objet et une
+simulation par threads ont été intégré au jeu (voir tag
+"ameliorated-v1.0"). Cette version comporte une amélioration notable
+de la qualité du code écrit. Par contre, certains problèmes de
+performances se sont présentés, principalement après l'ajout de
+notre système objet. Par contre, un problème présent est le fait que
+le taux de rafraîchissement soit très variable. 
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4">4 Amélioration des performances</h2>
+<div id="text-4">
+
+
+
+
+</div>
+
+<div id="outline-container-4.1" class="outline-3">
+<h3 id="sec-4.1">4.1 Amélioration des threads coopératifs <span class="timestamp">2009-01-22 Thu</span></h3>
+<div id="text-4.1">
+
+<p>La version améliorée est écrite de manière très élegante, mais
+comporte certains problèmes de performances. Entre autre, il semble
+que ce n'est pas possible de pouvoir aller en dessous de 50
+fps. Tout de même, la performances de plusieurs threads coopératifs
+a pu être améliorée via l'utilisation du système d'affichage
+<a href="stats.html">statistique</a>.
+</p>
+<p>
+Entre autre, le mouvement des invaders a de beaucoup été accéléré
+(facteur de 10). Initialement (révision 238), on avait quelque chose
+comme:
+</p>
+
+
+<pre class="src">(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">create-init-invader-move</span> level)
+  (synchronized-thunk level
+    (<span style="color: #a020f0;">let*</span> ((rows (get-all-invader-rows level))
+           (walls (game-level-walls level))
+           (wall-collision?
+            <span style="color: #b22222;">;; </span><span style="color: #b22222;">FIXME: Kinda innefficient algo :S!
+</span>            (exists
+             (<span style="color: #a020f0;">lambda</span> (row)
+               (exists (<span style="color: #a020f0;">lambda</span> (inv)
+                         (exists (<span style="color: #a020f0;">lambda</span> (wall)
+                                   (detect-collision? inv wall))
+                                 walls))
+                       row))
+             rows)))
+      (<span style="color: #a020f0;">if</span> (null? rows)
+          <span style="color: #b22222;">;; </span><span style="color: #b22222;">Regenerate invaders when they all died
+</span>          (continue-with-thunk!
+           (compose-thunks (generate-invaders level)
+                           (create-init-invader-move level)))
+          (<span style="color: #a020f0;">let*</span> ((old-dx (point-x (game-object-speed (caar rows))))
+                 (dt (get-invader-move-refresh-rate level))
+                 (duration (* (length rows) dt)))
+            (<span style="color: #a020f0;">if</span> wall-collision?
+                (continue-with-thunk!
+                  (compose-thunks
+                   (create-invader-row-move!
+                    0 (- invader-y-movement-speed) level)
+                   (<span style="color: #a020f0;">lambda</span> () (sleep-for dt))
+                   (create-invader-wall-movement-continuation
+                     old-dx level)
+                   (<span style="color: #a020f0;">lambda</span> () (sleep-for dt))
+                   <span style="color: #b22222;">;; </span><span style="color: #b22222;">should this event creation be put after the sleep?
+</span>                   (create-init-invader-move level)))
+                (continue-with-thunk!
+                 (compose-thunks
+                  (create-invader-row-move! old-dx 0 level)
+                  (<span style="color: #a020f0;">lambda</span> () (sleep-for dt))
+                  (create-init-invader-move level)))))))))
+</pre>
+
+
+<p>
+À l'aide du profilage de thread, on obtient le code:
+</p>
+
+
+<pre class="src">(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">create-init-invader-move</span> level)
+  (synchronized-thunk level
+    (corout-id-set! (current-corout) 'invader-move)
+    (<span style="color: #a020f0;">let*</span> ((invaders (level-invaders level)))
+      (<span style="color: #a020f0;">if</span> (null? invaders)
+          <span style="color: #b22222;">;; </span><span style="color: #b22222;">Regenerate invaders when they all died
+</span>          (continue-with-thunk!
+           (compose-thunks (generate-invaders level)
+                           (create-init-invader-move level)))
+          (<span style="color: #a020f0;">let*</span> (<span style="color: #b22222;">;; </span><span style="color: #b22222;">sample an arbitrary invader's speed
+</span>                 (old-dx (point-x (game-object-speed (car invaders))))
+                 (dt (get-invader-move-refresh-rate level)))
+            (<span style="color: #a020f0;">if</span> (game-level-wall-collision-detected? level)
+                (<span style="color: #a020f0;">begin</span>
+                  (continue-with-thunk!
+                   (compose-thunks
+                    (create-invader-row-move!
+                     0 (- invader-y-movement-speed) level)
+                    (<span style="color: #a020f0;">lambda</span> () (sleep-for dt))
+                    (create-invader-wall-movement-continuation
+                     old-dx level)
+                    (<span style="color: #a020f0;">lambda</span> ()
+                      <span style="color: #b22222;">;; </span><span style="color: #b22222;">reset the colision flag
+</span>                      (game-level-wall-collision-detected?-set! level #f)
+                      (sleep-for dt))
+                    <span style="color: #b22222;">;; </span><span style="color: #b22222;">should this event creation be put after the sleep?
+</span>                    (create-init-invader-move level))))
+                
+                (continue-with-thunk!
+                 (compose-thunks
+                  (create-invader-row-move! old-dx 0 level)
+                  (<span style="color: #a020f0;">lambda</span> () (sleep-for dt))
+                  (create-init-invader-move level)))))))))
+</pre>
+
+
+
+</div>
+
+</div>
+
+<div id="outline-container-4.2" class="outline-3">
+<h3 id="sec-4.2">4.2 Amélioration du système de mise-en-attente <span class="timestamp">2009-01-23 Fri</span></h3>
+<div id="text-4.2">
+
+
+<p>
+Un autre problème qui semble être à la base des mauvaises
+performances du système serait relié à la façon dont la mise en
+attente des threads est effectuée. Pour l'instant, un polling sur
+les condititions de mise-en-attentes est fait lors de chaques retour
+au schéduleur. 
+</p>
+
+
+<pre class="src"><span style="color: #b22222;">;; </span><span style="color: #b22222;">Appell&#233;e lors de chaque retour au scheduler
+</span>(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">wake-up-sleepers</span>)
+  (<span style="color: #a020f0;">let</span> <span style="color: #0000ff;">loop</span> ((sleeping-el (dequeue!? (sleep-q))) (still-sleeping '()))
+    (<span style="color: #a020f0;">if</span> sleeping-el
+        (<span style="color: #a020f0;">if</span> (sleep-q-el-condition? sleeping-el)
+            (<span style="color: #a020f0;">begin</span>
+              (corout-enqueue! (q) (sleep-q-el-coroutine sleeping-el))
+              (loop (dequeue!? (sleep-q)) still-sleeping))
+            (loop (dequeue!? (sleep-q))
+                  (cons sleeping-el still-sleeping)))
+        (<span style="color: #a020f0;">for-each</span> (<span style="color: #a020f0;">lambda</span> (el) (enqueue! (sleep-q) el))
+                  still-sleeping))))
+</pre>
+
+
+<p>
+Afin de remédier à la situation, deux files d'attentes distinctes
+seront utilisées. Une file dédiée aux threads en attentes sur le
+temps (time-sleep-q) et une autre files independante pour les thread
+bloqués. Ceux dans la file d'attente temporelle seront mis dans un
+monceaux (arbre rouge-noir) et les autre dans une files d'attente
+ordinaire. Lors de chaque retour au scheduler, on pourra vérifier
+efficacement s'il peut y avoir des threads en attente temporelle à
+réveiller. En ce qui concerne les threads bloqués, ils devront se
+faire réveiller <b>explicitement</b> par celui qui les aura endormi.
+</p></div>
+</div>
+</div>
+<div id="postamble"><p class="author"> Author: 
+<a href="mailto:dave@david-laptop">&lt;dave@david-laptop&gt;</a>
+</p>
+<p class="date"> Date: 2009/02/02 09:47:47 AM</p>
+<p>HTML generated by org-mode 6.05b in emacs 22<p>
+</div></body>
+</html>

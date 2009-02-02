@@ -1,0 +1,450 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+lang="en" xml:lang="en">
+<head>
+<title>Plan du mémoire de maîtrise</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2009/02/02 09:47:46 AM"/>
+<meta name="author" content=""/>
+<style type="text/css">
+  html {
+	font-family: Times, serif;
+	font-size: 12pt;
+  }
+  .title { text-align: center; }
+  .todo  { color: red; }
+  .done { color: green; }
+  .timestamp { color: grey }
+  .timestamp-kwd { color: CadetBlue }
+  .tag { background-color:lightblue; font-weight:normal }
+  .target { }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+  }
+  table { border-collapse: collapse; }
+  td, th {
+	vertical-align: top;
+	<!--border: 1pt solid #ADB9CC;-->
+  }
+  dt { font-weight: bold; }
+</style>
+</head><body>
+<h1 class="title">Plan du mémoire de maîtrise</h1>
+
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 Écritures de langages spécifiques au domaine</a>
+<ul>
+<li><a href="#sec-1.1">1.1 Extensions de bases [100%]</a></li>
+<li><a href="#sec-1.2">1.2 Développement d'une forme adatpée du langage pour la description de jeu [%]</a></li>
+<li><a href="#sec-1.3">1.3 Scripting de niveaux [33%]</a></li>
+</ul>
+</li>
+<li><a href="#sec-2">2 Dynamisme</a>
+<ul>
+<li><a href="#sec-2.1">2.1 REPL [0%]</a></li>
+<li><a href="#sec-2.2">2.2 eval/load [0%]</a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3 Structures et stockage de données</a>
+<ul>
+<li><a href="#sec-3.1">3.1 Representations de nivaux [0%]</a></li>
+</ul>
+</li>
+<li><a href="#sec-4">4 Puissance d'abstraction</a>
+<ul>
+<li><a href="#sec-4.1">4.1 Modularisation par fonctions de 1er ordre [100%]</a></li>
+<li><a href="#sec-4.2">4.2 60 FPS [0%]</a></li>
+<li><a href="#sec-4.3">4.3 Facilité à l'ajout de nouvelles composantes secondaires [50%]</a></li>
+</ul>
+</li>
+<li><a href="#sec-5">5 Gestion de mémoire automatique</a>
+<ul>
+<li><a href="#sec-5.1">5.1 Temps de GC non significatifs [0%]</a></li>
+<li><a href="#sec-5.2">5.2 Utiliation de mémoire raisonnable [0%]</a></li>
+</ul>
+</li>
+<li><a href="#sec-6">6 Cycles de développement</a>
+<ul>
+<li><a href="#sec-6.1">6.1 Développement rapide [33%]</a></li>
+<li><a href="#sec-6.2">6.2 Debugger [0%]</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1">1 <span class="todo">TODO</span> Écritures de langages spécifiques au domaine</h2>
+<div id="text-1">
+
+<p>Démontrer que l'utilisation des macros de Scheme permet de
+facilement modifier le langage de manière à permettre une écriture
+de jeu plus concise.
+</p>
+<p>
+Pour y arriver:
+</p>
+</div>
+
+<div id="outline-container-1.1" class="outline-3">
+<h3 id="sec-1.1">1.1 Extensions de bases [100%]</h3>
+<div id="text-1.1">
+
+<p>Écrire des extensions de Scheme permettant la simplification
+du code d'un jeu.
+</p><ul>
+<li>
+<b>[X]</b> <a href="system-objet.html">Écrire un système orienté objet</a>.
+</li>
+<li>
+<b>[X]</b> Écrire un ou des <a href="simulation.html">systèmes de simulations</a>
+permettant une écriture plus naturelle du comportement des
+objets du jeu.
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-1.2" class="outline-3">
+<h3 id="sec-1.2">1.2 Développement d'une forme adatpée du langage pour la description de jeu [%]</h3>
+<div id="text-1.2">
+
+<p>Conceveur des extenstions du langage permettant l'écriture de
+manière simple du comportement des agents dans un jeu/simulation.
+</p><ul>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Écriture du <a href="dsl.html">LSD</a> (lang spéc domaine) pour l'écriture d'agents
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-1.3" class="outline-3">
+<h3 id="sec-1.3">1.3 Scripting de niveaux [33%]</h3>
+<div id="text-1.3">
+
+<p>Ajoute des nouvelles formes spéciales permettant de faire
+facilement du "scripting" de niveaux.
+</p><ul>
+<li>
+<b>[X]</b> Ajouter des formes spéciales permettant l'importation et la
+<a href="fonts.html">création d'objets graphiques</a> ("fonts").
+</li>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Ajouter des formes spéciales permettant de pouvoir faire
+facilement des <a href="animation.html">animations</a>.
+</li>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Ajouter des formes spéciales permettant la création de
+niveaux de manière simplifié.
+
+</li>
+</ul>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2">2 <span class="todo">TODO</span> Dynamisme</h2>
+<div id="text-2">
+
+<p>Démontrer que le dynamisme du langage Scheme apporte une très
+grande flexibilité lors de la programmation de jeux.
+</p>
+<p>
+Pour y arriver:
+</p>
+</div>
+
+<div id="outline-container-2.1" class="outline-3">
+<h3 id="sec-2.1">2.1 REPL [0%]</h3>
+<div id="text-2.1">
+
+<p>Utilisation de "REPL" pour le développement interactif
+</p><ul>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Ajouter une boucle "read-eval-print" a un jeu.
+</li>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Utiliser une REPL afin d'effectuer du scripting temps réel de
+niveaux.
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-2.2" class="outline-3">
+<h3 id="sec-2.2">2.2 eval/load [0%]</h3>
+<div id="text-2.2">
+
+<p>Utilisation potentielle des fonctions "eval" et "load" afin de
+d'évaluer ou charger dynamiquement des expressions/librairies.
+</p><ul>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Utiliser eval ou load afin de charger dynamiquement des
+composantes de jeux et de permettre ainsi une plus grande
+modularité et rapidité de développement.
+
+</li>
+</ul>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3">3 <span class="todo">TODO</span> Structures et stockage de données</h2>
+<div id="text-3">
+
+<p>Démontrer que l'utilisation des S-expressions de scheme comme
+structure de données externes permet d'obtenir facilement des
+représentations externes facilement manipulables et utilisables.
+</p>
+<p>
+Pour y arriver:
+</p>
+</div>
+
+<div id="outline-container-3.1" class="outline-3">
+<h3 id="sec-3.1">3.1 Representations de nivaux [0%]</h3>
+<div id="text-3.1">
+
+<p>Utiliser des S-expressions comme representation de niveaux ou
+d'objets de niveaux d'un jeu.
+</p><ul>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Utiliser des S-expressions pour la description de niveaux.
+</li>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Utiliser des S-expressions pour la description d'apparence
+de types d'objets.
+</li>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Utiliesr des S-expressions pour la description de
+comportements d'objets.
+</li>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Utiliesr des S-expressions pour la rédaction d'animations de
+jeu.
+
+</li>
+</ul>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4">4 <span class="todo">TODO</span> Puissance d'abstraction</h2>
+<div id="text-4">
+
+<p>Démontrer que les fonctions d'ordres supérieures permettent
+l'encapsulations et la modularité de comportements d'objets dans
+un jeu et que coût associé est faible.
+</p>
+<p>
+Pour y arriver:
+</p>
+</div>
+
+<div id="outline-container-4.1" class="outline-3">
+<h3 id="sec-4.1">4.1 Modularisation par fonctions de 1er ordre [100%]</h3>
+<div id="text-4.1">
+
+<p>Écrire des parties de code qui peuvent être modularisées en
+fonction de fermetures passées en paramètre.
+</p><ul>
+<li>
+<b>[X]</b> Utilisation de fermetures pour contenir des actions
+d'animations qui peuvent être combinées arbitrairement.
+</li>
+<li>
+<b>[X]</b> Utilisations pertinentes des fonctions d'ordres supérieures
+(pertinentes dans le sens où l'utiliation doit apporter une
+solution simple à un problème complex à résoudre en programmation
+impérative).
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-4.2" class="outline-3">
+<h3 id="sec-4.2">4.2 60 FPS [0%]</h3>
+<div id="text-4.2">
+
+<p>Observer un taux de rafraîchissement acceptable (autour de 60 fps)
+pour tous les jeux implantés.
+</p><ul>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> <a href="space-invaders.html#amelioration">Space-Invaders</a>
+</li>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> à voir..
+</li>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> à voir&hellip;
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-4.3" class="outline-3">
+<h3 id="sec-4.3">4.3 Facilité à l'ajout de nouvelles composantes secondaires [50%]</h3>
+<div id="text-4.3">
+
+<p>Lorsque le besoin s'en fait ressentir, faire l'ajout de nouvelles
+composantes permettant de faire l'analyse du jeu afin de mieux
+comprendre son exécution et pouvoir améliorer ses performances
+</p>
+<ul>
+<li>
+<b>[X]</b> Faire l'ajout d'un module permettant de conserver des
+<a href="stats.html">statistiques</a> diverses de l'exécution du jeu.
+</li>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> 
+
+
+</li>
+</ul>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-5" class="outline-2">
+<h2 id="sec-5">5 <span class="todo">TODO</span> Gestion de mémoire automatique</h2>
+<div id="text-5">
+
+<p>Démontrer que l'utilisation d'une gestion de mémoire automatique
+n'influencera que peu ou pas sur les performances du jeux.
+</p>
+<p>
+Pour y arriver:
+</p>
+</div>
+
+<div id="outline-container-5.1" class="outline-3">
+<h3 id="sec-5.1">5.1 Temps de GC non significatifs [0%]</h3>
+<div id="text-5.1">
+
+<p>Observer que la distrubution des temps de gc semble normale et de
+moyenne basse.
+</p><ul>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Observer un temps moyen de gc non significatif.
+</li>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Observer une variance d'échantillons relativement faible.
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-5.2" class="outline-3">
+<h3 id="sec-5.2">5.2 Utiliation de mémoire raisonnable [0%]</h3>
+<div id="text-5.2">
+
+<p>Observer une utilisation de la mémoire acceptable.
+</p><ul>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Avoir un taux d'allocation de mémoire raisonnable pour
+l'ensemble de nos jeux.
+</li>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Observer des tailles d'utilisation mémoires moyennes
+raisonnables.
+
+</li>
+</ul>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-6" class="outline-2">
+<h2 id="sec-6">6 <span class="todo">TODO</span> Cycles de développement</h2>
+<div id="text-6">
+
+<p>Démontrer que les cycles de développement de jeu écrits en Scheme
+sont courts (voir plus court qu'un jeu écrit dans un langage
+traditionnel).
+</p>
+<p>
+Pour y arriver:
+</p>
+</div>
+
+<div id="outline-container-6.1" class="outline-3">
+<h3 id="sec-6.1">6.1 Développement rapide [33%]</h3>
+<div id="text-6.1">
+
+<p>Écrire plusieurs jeux et observer des temps de développement.
+courts.
+</p><ul>
+<li>
+<b>[X]</b> Écrire un <a href="space-invaders.html">jeu simple</a> permettant d'observer les problématiques
+de bases reliées à l'écriture de jeux vidéo en Scheme.
+</li>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Écrire une second jeu un peu plus complexe et tenter de
+confirmer la pertinence de la méthodologie trouvée pour le
+premier jeu. Possiblement aussi, résoudre de nouveaux défis
+relié à la plus grande complexité du nouveau jeu.
+</li>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Écrire un jeu plus complexe dans de courts délais en
+utilisant le savoir acquis.
+
+</li>
+</ul>
+</div>
+
+</div>
+
+<div id="outline-container-6.2" class="outline-3">
+<h3 id="sec-6.2">6.2 Debugger [0%]</h3>
+<div id="text-6.2">
+
+<p>Démontrer que l'utilation de debugger dynamiques permet de réduire
+de beaucoup le temps de déboggage de jeux.
+</p><ul>
+<li>
+<b>[<span style="visibility:hidden;">X</span>]</b> Utilisation de debugger à distance
+
+
+
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="postamble"><p class="author"> Author: 
+<a href="mailto:dave@david-laptop">&lt;dave@david-laptop&gt;</a>
+</p>
+<p class="date"> Date: 2009/02/02 09:47:46 AM</p>
+<p>HTML generated by org-mode 6.05b in emacs 22<p>
+</div></body>
+</html>

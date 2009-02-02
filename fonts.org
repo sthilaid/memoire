@@ -1,6 +1,6 @@
 
-
 #+TITLE: Formes spéciales permettant l'importation de fontes graphiques
+#+STYLE: <link rel="stylesheet" type="text/css" href="style.css" />
 
 * Sprites
    Nous avons voulu initialement utiliser des "sprites" afin de

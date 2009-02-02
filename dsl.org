@@ -1,5 +1,6 @@
 
 #+TITLE: Langage spécifique à l'écriture d'agents dans un jeu
+#+STYLE: <link rel="stylesheet" type="text/css" href="style.css" />
 
 * Prototypage du langage [2009-01-29 Thu]
   Afin de pouvoir concevoir un DSL, un prototype du jeu space-invaders
@@ -87,32 +88,89 @@
    d'un invader:
 
 #+BEGIN_SRC scheme
-(define-agent (Invader stimulus)
-  (case stimulus
-    ((turn)
-     (wait (line-id self))
-     (begin (if (not (received-godown-warning?))
-                (move self dx)
-                (move self (- dy)))
-            ;; must yield to ensure all the inv of the row moved
-            (yield)
-            (signal 'redraw)
-            (yield) ; necessary?
-            (signal (next-row self))
-            (Invader self turn) ; temp patch to loop here...
-            ))
-    ((player-explosion)
-     (wait player-explosion-end))
-    ((game-paused)
-     (wait game-unpaused))
-    ((collision self -> wall)
-     (for-each send-godown-warning other-invaders)
-     (set! dx (- dx))
-     (move self dx)
-     (move self (- dy)))
-    ((collision self <-> player)
-     (game-over!))
-    ((destroyed invader)
-     (if (zero? (length (next-row self)))
-         (next-row-set! self (get-next-available-row))))))
+(define-agent Invader
+  (wait-for
+   ((turn (line-id self))
+    (move self dx)
+    (signal 'moved (find-barrier (invader-row self))))
+   ((wall-collision row)
+    ;; not very efficient...?
+    (if (= row (invader-row self))
+        (begin (move self (- dy))
+               (invader-invert-speed self)
+               ;; need to move back the invader so its no longer in the wall
+               (move self dx))))
+   ((player-explosion)
+    (wait player-explosion-end))
+   ((game-paused)
+    (wait game-unpaused))
+   ;; Must be integrated into collision resolution
+   #;
+   ((collision self -> wall)
+    ;; warn the barriers of a wall collision
+    (for-each (lambda (b) (signal 'go-down-warning b)) all-row-barriers))))
+
+(define-class Barrier () (slot: row) (slot: agent-arrived) (slot: warned?))
+(define-agent Barrier
+  (wait-for
+   ((go-down-warning)
+    (Barrier-warned?-set! self #t))
+   ((moved row)
+    (if (= row (Barrier-row self))
+        (update! self Barrier agent-arrived (lambda (n) (+ n 1)))
+        (begin
+         (if (>= (Barrier-agent-arrived self) (row-size (Barrier-row self)))
+             (begin
+               (Barrier-agent-arrived-set! self 0)
+               (if (Barrier-warned? self)
+                   (signal `(wall-collision ,(Barrier-row self))))
+               (Barrier-warned?-set! self #f)
+               ;; Sync with all the sent signals (wait until the next intant
+               (yield)
+               (signal `(redraw ,(Barrier-row self))))))))))
+
+
+(define-agent redraw-agent
+  (wait-for
+   ((redraw last-row)
+    (process-user-input)
+    (render current-level)
+    (yield) ; Beginning of the next instant
+    (signal `(turn ,(next-row last-row)))
+    (wait 'redraw))
+   ((destroyed invader)
+    (if (null? (invaders-from-row (invader-row invader)))
+        (next-row-set! self (get-next-available-row))))))
 #+END_SRC
+
+        Pour cette version, le flot des signaux est plus complexe, si
+        l'on suppose qu'il y aie 3 invaders par rangées, on peut
+        imaginer le flot comme étant le suivant:
+
+  | Instant | Inv1          | Inv2          | Inv3                  | Barrier-r1       | redraw        |
+  |---------+---------------+---------------+-----------------------+------------------+---------------|
+  |       1 | /[turn 1]/    | /[turn 1]/    | /[turn 1]/            |                  |               |
+  |         | move dx       | move dx       | move dx               |                  |               |
+  |         | *sig moved 1* | *sig moved 1* | -> *sig warn-go-down* | /[moved]/        |               |
+  |         | (_yield_)     | (_yield_)     | *sig moved 1*         | ar = 0+1         |               |
+  |         |               |               | (_yield_)             | /[moved]/        |               |
+  |         |               |               |                       | ar = 1+1         |               |
+  |         |               |               |                       | /[warn-go-down]/ |               |
+  |         |               |               |                       | warned = #t      |               |
+  |         |               |               |                       | /[moved]/        |               |
+  |         |               |               |                       | ar = 2+1         |               |
+  |         |               |               |                       | ar = 0           |               |
+  |         | /[wall-coll]/ | /[wall-coll]/ | /[wall-coll]/         | *sig wall-col*   |               |
+  |         | move -dy      | move -dy      | move -dy              | warned = #f      |               |
+  |         | dx = -dx      | dx = -dx      | dx = -dx              | _yield_          |               |
+  |         | move dx       | move dx       | move dx               |                  |               |
+  |         | (_yield_)     | (_yield_)     | (_yield_)             |                  |               |
+  |---------+---------------+---------------+-----------------------+------------------+---------------|
+  |       2 |               |               |                       | *sig redraw*     | /[redraw]/    |
+  |         |               |               |                       | (_yield_)        | process-input |
+  |         |               |               |                       |                  | render        |
+  |         |               |               |                       |                  | *yield*       |
+  |---------+---------------+---------------+-----------------------+------------------+---------------|
+  |       3 |               |               |                       |                  | sig turn 2    |
+  |         |               |               |                       |                  | (_yield_)     |
+

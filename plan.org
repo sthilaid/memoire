@@ -1,7 +1,7 @@
 # -*- org -*-
-#+STYLE: <link rel="stylesheet" type="text/css" href="style.css" />
-#+TITLE: Plan du mémoire de maîtrise
 
+#+TITLE: Plan du mémoire de maîtrise
+#+STYLE: <link rel="stylesheet" type="text/css" href="style.css" />
 
 * TODO Écritures de langages spécifiques au domaine
    Démontrer que l'utilisation des macros de Scheme permet de

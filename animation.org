@@ -1,5 +1,6 @@
 
 #+TITLE: Création d'animations
+#+STYLE: <link rel="stylesheet" type="text/css" href="style.css" />
 
 * Besoin
   Les animations sont des éléments primordiaux à l'intérieur des jeux

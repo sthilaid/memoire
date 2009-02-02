@@ -1,0 +1,370 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+lang="en" xml:lang="en">
+<head>
+<title>Utilisation de systèmes de simulations</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2009-02-02 15:25:55 EST"/>
+<meta name="author" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color:lightblue; font-weight:normal }
+  .target { }
+  .timestamp { color: grey }
+  .timestamp-kwd { color: CadetBlue }
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="style.css" />
+<script type="text/javascript">
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*/-->
+</script>
+</head><body>
+<h1 class="title">Utilisation de systèmes de simulations</h1>
+
+
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 Idée </a></li>
+<li><a href="#sec-2">2 Simulation à événements discrets </a></li>
+<li><a href="#sec-3">3 Simulations par fils d'exécutions </a>
+<ul>
+<li><a href="#sec-3.1">3.1 Problèmes </a>
+<ul>
+<li><a href="#sec-3.1.1">3.1.1 Problème de "polling" des threads endormis </a></li>
+<li><a href="#sec-3.1.2">3.1.2 Dépendance à l'horloge du système </a></li>
+<li><a href="#sec-3.1.3">3.1.3 Trop restrictif en terme de possibilités </a></li>
+</ul>
+</li>
+<li><a href="#sec-3.2">3.2 Solutions </a>
+<ul>
+<li><a href="#sec-3.2.1">3.2.1 Nouveau système de mise en attente </a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1">1 Idée </h2>
+<div id="text-1">
+
+
+<p>
+L'idée d'utiliser des système de simulation afin de contrôler le
+flot d'exécution m'est venue suite au cours de simulation
+stochastiques que j'ai suivi. En effet, en décrivant des simulations
+sous formes d'événements discrets ou de fils d'éxécution (threads),
+on pouvait facilement écrire le comportement de chaque individu, et
+ce de manière modulaire.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2">2 Simulation à événements discrets <span class="timestamp">2008-05-15 Thu</span> </h2>
+<div id="text-2">
+
+
+<p>
+La première forme de simulation utilisée fut une simulation à
+événements discrets. Le résultat de son utilisation est moyen,
+principalement dû au fait que les objets possèdent la pluspart du
+temps des comportements + ou - infinis, ou dont la durée n'est pas
+pré-déterminée. Par exemple, 
+</p>
+
+
+
+<pre class="src src-scheme">
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Event that moves a mothership and handles its collisions.
+</span>(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">create-mothership-event</span> level)
+  (<span style="color: #a020f0;">define</span> <span style="color: #0000ff;">mothership-event</span>
+    (synchronized-event-thunk level
+      (<span style="color: #a020f0;">let</span> ((mothership (level-mothership level)))
+        (<span style="color: #a020f0;">if</span> mothership
+            (<span style="color: #a020f0;">let</span> ((collision-occured? (move-object! level mothership)))
+              (<span style="color: #a020f0;">if</span> (<span style="color: #a020f0;">or</span> (not collision-occured?)
+                      (is-explosion? collision-occured?)
+                      (eq? collision-occured? 'message))
+                  (in mothership-update-interval mothership-event)))))))
+  mothership-event) 
+</pre>
+
+
+
+
+<p>
+où l'on constate que l'évènement principal contrôlant les entitées
+de type "mothership" doit se re-schéduler plus tard dans le temps,
+et vérifier que le vaiseau "mothership" est toujours en un seul
+morceau avant de pouvoir continuer. Cela résulte donc en l'écriture
+de code pouvant facilement mener à des bugs (par exemple par l'oubli
+de la vérification de l'existance du "mothership" lors de
+l'exécution du prochain évenement.
+</p>
+<p>
+Par contre, cette approche semblait fonctionner assez bien pour la
+création d'animation, où justement la durée est décidée à l'avance.
+</p>
+
+
+
+<pre class="src src-scheme">
+(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">create-text-flash-animation-event</span> level msg-obj duration continuation)
+  (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">flash-ev</span> dt)
+    (<span style="color: #a020f0;">lambda</span> ()
+      (<span style="color: #a020f0;">if</span> (&lt; dt duration)
+          (<span style="color: #a020f0;">begin</span> (cycle-msg-state! msg-obj)
+                 (in animation-delay (flash-ev (+ dt animation-delay))))
+          (<span style="color: #a020f0;">begin</span>
+            (game-object-color-set! msg-obj original-color)
+            (in 0 continuation)))))
+  (flash-ev 0)) 
+</pre>
+
+
+
+
+<p>
+Comme l'illustre cet exemple d'animation de scintillement de text,
+on peut naturellement programmer une suite d'animations en utilisant
+des événements continuations. Par contre, la manipulation et la
+création de nouvelles continuations peut devienir fastidieuse.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3">3 Simulations par fils d'exécutions <span class="timestamp">2008-07-07 Mon</span> </h2>
+<div id="text-3">
+
+
+<p>
+Une approche qui nous a donc semblée plus naturelle pour la suite
+fut donc de transformer le système de simulation à événements
+discrets pour créer une simulations par "threads". Par contre, un
+des désavantages majeurs de la programmation parallèle est la
+difficulté, généralement reliée aux conditions de courses et aux
+problèmes de synchronisations.
+</p>
+<p>
+Ainsi, nous avons décider de créer un système de "threads"
+co-opératifs, changeant de context avec des yields explicites ou
+avec des sleeps. Ainsi, le comportement des objets était beaucoup
+plus compact et facile à écrire et comprendre. De plus, l'écriture
+de quelques macros ont permis de pouvoir composer facilement
+plusieurs animations.
+</p>
+
+
+
+<pre class="src src-scheme">
+(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">create-mothership</span> level)
+  (synchronized-thunk level
+    (<span style="color: #a020f0;">let</span> <span style="color: #0000ff;">loop</span> ((mothership (level-mothership level)))
+      (<span style="color: #a020f0;">if</span> mothership
+          (<span style="color: #a020f0;">let</span> ((collision-occured? (move-object! level mothership)))
+            (<span style="color: #a020f0;">if</span> (<span style="color: #a020f0;">or</span> (not collision-occured?)
+                    (explosion? collision-occured?)
+                    (eq? collision-occured? 'message))
+                (<span style="color: #a020f0;">begin</span> (sleep-for mothership-update-interval)
+                       (loop (level-mothership level)))))))))
+</pre>
+
+
+
+
+<p>
+Par exemple, on voit maintenant que le comportement d'un
+"mothership" se retrouve encapsulé dans une boucle infinie qui
+applique sont comportement à chaque itération.
+</p>
+<p>
+Similairement, des simples macros permettent de pouvoir composer de
+manière très élégante plusieurs animations. Par exemple, pour créer
+l'animation du début de jeu, il n'a suffit que d'utiliser le code
+suivant:
+</p>
+
+
+
+<pre class="src src-scheme">
+(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">create-animation-A</span> level)
+  (<span style="color: #a020f0;">lambda</span> ()
+    <span style="color: #b22222;">;; </span><span style="color: #b22222;">messages declaration
+</span>    (<span style="color: #a020f0;">let*</span> ((play   ...) (space  ...) (score  ...)
+           (mother ...) (hard   ...) (medium ...) (easy   ...)
+           (anim-messages
+            (list play space score mother hard medium easy)))
+      (<span style="color: #a020f0;">for-each</span> (<span style="color: #a020f0;">lambda</span> (m) (level-add-object! level m)) anim-messages )
+      (continue-with-thunk!
+       (compose-thunks
+        (animate-message play <span style="color: #bc8f8f;">"PLAY"</span>)
+        (animate-message space <span style="color: #bc8f8f;">"SPACE   INVADERS"</span>)
+        (create-animate-score-adv-table level))))))
+</pre>
+
+
+
+
+<p>
+qui affiche de maniere successive du text et affiche par la suite la
+liste des points que valent chaque type de vaisseaux.
+</p>
+
+</div>
+
+<div id="outline-container-3.1" class="outline-3">
+<h3 id="sec-3.1">3.1 Problèmes <span class="timestamp">2009-01-27 Tue</span> </h3>
+<div id="text-3.1">
+
+<p>Après l'écriture et l'utilisation de ce système de thread (patch
+#241), plusieurs problèmes en sont ressortis. 
+</p>
+
+</div>
+
+<div id="outline-container-3.1.1" class="outline-4">
+<h4 id="sec-3.1.1">3.1.1 Problème de "polling" des threads endormis </h4>
+<div id="text-3.1.1">
+
+<p>Le système de thread écrit possédait une file d'attente où chaque
+thread était associé à un thunk qui devra retourner #t lorsque le
+thread devra être réveillé. 
+</p>
+<p>
+Ainsi, lors de chaque retours aux scheduler, une vérification pour
+tous les threads endormis était effectuée (polling). Aussi, l'idée
+d'utiliser un thunk de conditions n'est pas bonne puisqu'il est
+possible que la condition devienne vraie et redevienne fausse
+avant de revenir au scheduler. Des variables de conditions
+devraient plustôt être utilisées pour ce genre de synchronisation.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-3.1.2" class="outline-4">
+<h4 id="sec-3.1.2">3.1.2 Dépendance à l'horloge du système </h4>
+<div id="text-3.1.2">
+
+<p>Le système utilisais directement le temps réel comme temps de
+simulation. Ceci comporte plusieurs problèmes, entre autre si l'on
+met en sleep le programme, lors de son réveil, toutes les pauses
+des threads seront désynchronisées.
+</p>
+<p>
+Une horloge indépendante devrait donc être utilisée afin
+d'abstraire le temps réel du temps de la simulation. Ceci
+permettrait aussi de facilement mettre en pause la simulation, ou
+encore l'accélérer.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-3.1.3" class="outline-4">
+<h4 id="sec-3.1.3">3.1.3 Trop restrictif en terme de possibilités </h4>
+<div id="text-3.1.3">
+
+<p>Le système écrit a été conçu de manière à ce que le modèle de la
+simulation soit dans un état stable lors de chaque changements de
+contextes, ce qui ne requiert pas de méchanisme de synchronisation
+supplémentaires. Parcontre, ceci limite beaucoup ce qu'on peut
+faire avec la simulation, ou plustôt comment on doit le
+faire. Pour le jeu de space invaders, touts les invaders d'une
+seule rangée soient bougés en même temps, et donc ne sont pas
+contrôlés individuellement.
+</p>
+</div>
+</div>
+
+</div>
+
+<div id="outline-container-3.2" class="outline-3">
+<h3 id="sec-3.2">3.2 Solutions </h3>
+<div id="text-3.2">
+
+
+</div>
+
+<div id="outline-container-3.2.1" class="outline-4">
+<h4 id="sec-3.2.1">3.2.1 Nouveau système de mise en attente </h4>
+<div id="text-3.2.1">
+
+<p>Afin d'éviter les attentes actives, une file d'attente spécialisée
+(file prioritaire) est utilisée afin de garder les threads mis en
+attente sur le temps. Ainsi, on peut savoir très rapidement, pour
+un temps donné si des threads endormi ont besoin d'être réveillés
+ou non.
+</p>
+<p>
+Aussi, les thread qui seront mis en attente autrement (mutex)
+seront placés dans une file d'attente de l'objet de
+synchronisation en question, tel que ce l'aurait toujours dû être.
+</p>
+
+</div>
+</div>
+</div>
+</div>
+<div id="postamble"><p class="author"> Author: 
+<a href="mailto:dave@david-laptop">&lt;dave@david-laptop&gt;</a>
+</p>
+<p class="date"> Date: 2009-02-02 15:25:55 EST</p>
+<p>HTML generated by org-mode 6.21a in emacs 22</p>
+</div></body>
+</html>

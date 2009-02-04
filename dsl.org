@@ -174,3 +174,13 @@
   |       3 |               |               |                       |                  | sig turn 2    |
   |         |               |               |                       |                  | (_yield_)     |
 
+** Animations en RFP
+
+   Les animations sembleraient à première vue, faciles à implenter en
+   utilisant un modèle de programmation basé sur la programmation
+   réactive. Voici comment on pourraît programmer l'animation du début
+   de jeu, par exemple.
+
+#+BEGIN_SRC scheme
+
+#+END_SRC

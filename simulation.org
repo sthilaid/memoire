@@ -169,4 +169,12 @@
     seront placés dans une file d'attente de l'objet de
     synchronisation en question, tel que ce l'aurait toujours dû être.
 
+    [2009-02-03 Tue]
 
+    La version du système de thread a été simplifiée en retirant la
+    forme spéciale dynamic-corout-extent qui était difficile à
+    implenter et maintenir, et qui semblait superflue à Marc. Par
+    contre, le retrait de cette dernière pose problème à space
+    invaders puisque celui-ci dépendait de cette fonctionnalité pour
+    implanter les pauses dans le jeu. Ainsi, ces contraintes devront
+    être exprimées autrement.

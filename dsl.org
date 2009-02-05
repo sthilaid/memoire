@@ -30,7 +30,7 @@
      (game-over!))))
 #+END_SRC
 
-** Synchronisation des agents via les "fair threads"
+** Synchronisation des agents via les "fair threads" <2009-02-03 Tue>
 
    L'utilisation des "[[http://www-sop.inria.fr/members/Manuel.Serrano/publi/sbs-ppdp04.html][fair threads]]" décrits par Manuel Serrano
    permettrait de pouvoir expliciter les contraintes temporelles se
@@ -187,11 +187,11 @@
   (lambda ()
     (let loop ()
       (recv
-       (('turn ,(line-id self)) ; NOTE: ',' escape not supported by termite
+       ('turn
         (begin (move self dx)
                (! (find-barrier (invader-row self))
                   `(moved ,(invader-row self)))))
-       (('wall-collision ,(invader-row self))
+       ('wall-collision
         (begin (move self (- dy))
                (invader-invert-speed self)
                ;; need to move back the invader so its no longer in the wall
@@ -210,7 +210,7 @@
        (('go-down-warning)
         (begin (Barrier-warned?-set! self #t)
                (state1)))
-       (('moved ,(Barrier-row self))
+       (('moved ,(Barrier-row self)) ; ',' escape not supported by termite
         (begin
           (update! self Barrier agent-arrived (lambda (n) (+ n 1)))
           (if (>= (Barrier-agent-arrived self) (row-size (Barrier-row self)))
@@ -218,8 +218,8 @@
                 (Barrier-agent-arrived-set! self 0)
                 (if (Barrier-warned? self)
                     (for-each (lambda (i)
-                                (! i `(wall-collision ,(Barrier-row self))))
-                              all-invaders))
+                                (! i `wall-collision))
+                              (row-invaders (Barrier-row self))))
                 (Barrier-warned?-set! self #f)
                 (state2))
               (state1))))))
@@ -243,8 +243,8 @@
       (('redraw last-row)
        (process-user-input)
        (render current-level)
-       (for-each (lambda (i) (! i `(turn ,(next-row last-row))))
-                 all-invaders)
+       (for-each (lambda (i) (! i `turn))
+                 (row-invaders (next-row last-row)))
        (loop))))))
 #+END_SRC
 
@@ -262,8 +262,11 @@
    De plus, le pseudo-code utilise aussi des features non-existants de
    Termites, comme les échappement de patterns (effectués avec le
    charactère #\,). De plus, la doc de Termite stipule clairement que
-   les effets de bords ne doivent pas être utilisés, ce qui n'est pas
+   les *effets de bords* ne doivent pas être utilisés, ce qui n'est pas
    du tout le cas du code de cet exemple...
+
+** D'autres exemples de synchronisation d'agents
+   
 
 ** Animations en RFP
 

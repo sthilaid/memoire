@@ -31,6 +31,7 @@
 #+END_SRC
 
 ** Synchronisation des agents via les "fair threads"
+
    L'utilisation des "[[http://www-sop.inria.fr/members/Manuel.Serrano/publi/sbs-ppdp04.html][fair threads]]" décrits par Manuel Serrano
    permettrait de pouvoir expliciter les contraintes temporelles se
    retrouvant dans le je de space invaders de manière assez élégante,
@@ -173,6 +174,96 @@
   |---------+---------------+---------------+-----------------------+------------------+---------------|
   |       3 |               |               |                       |                  | sig turn 2    |
   |         |               |               |                       |                  | (_yield_)     |
+        
+** Synchronisation des agents avec une syntax à la Termite <2009-02-05 Thu 14:15>
+   Nous voulons ici essayer de reprenre les exemples de code abstraits
+   écrits dans une syntax à la Termite. Puisque Termite utilise du
+   pattern matching sur la reception de messages, on peut également
+   arriver à écrire facilement les contraintes de synchronisations
+   données plus haut dans un tel language.
+
+#+BEGIN_SRC scheme
+(define (invader self)
+  (lambda ()
+    (let loop ()
+      (recv
+       (('turn ,(line-id self)) ; NOTE: ',' escape not supported by termite
+        (begin (move self dx)
+               (! (find-barrier (invader-row self))
+                  `(moved ,(invader-row self)))))
+       (('wall-collision ,(invader-row self))
+        (begin (move self (- dy))
+               (invader-invert-speed self)
+               ;; need to move back the invader so its no longer in the wall
+               (move self dx)))
+       (('player-explosion)
+        (begin (wait player-explosion-end)))
+       (('game-paused)
+        (begin (wait game-unpaused))))
+      (loop))))
+  
+(define-class Barrier () (slot: row) (slot: agent-arrived) (slot: warned?))
+(define (barrier self)
+  (lambda ()
+    (define (state1)
+      (recv
+       (('go-down-warning)
+        (begin (Barrier-warned?-set! self #t)
+               (state1)))
+       (('moved ,(Barrier-row self))
+        (begin
+          (update! self Barrier agent-arrived (lambda (n) (+ n 1)))
+          (if (>= (Barrier-agent-arrived self) (row-size (Barrier-row self)))
+              (begin
+                (Barrier-agent-arrived-set! self 0)
+                (if (Barrier-warned? self)
+                    (for-each (lambda (i)
+                                (! i `(wall-collision ,(Barrier-row self))))
+                              all-invaders))
+                (Barrier-warned?-set! self #f)
+                (state2))
+              (state1))))))
+    (define (state2)
+      (recv
+       (('moved ,(Barrier-row self))
+        (begin
+          (update! self Barrier agent-arrived (lambda (n) (+ n 1)))
+          (if (>= (Barrier-agent-arrived self) (row-size (Barrier-row self)))
+              (begin
+                (Barrier-agent-arrived-set! self 0)
+                (! redraw-agent `(redraw ,(Barrier-row self)))
+                (state1))
+              (state2))))))
+    state1))
+
+(define (redraw-agent self)
+  (lambda ()
+    (let loop ()
+     (recv
+      (('redraw last-row)
+       (process-user-input)
+       (render current-level)
+       (for-each (lambda (i) (! i `(turn ,(next-row last-row))))
+                 all-invaders)
+       (loop))))))
+#+END_SRC
+
+   Puisqu'il n'existe pas de moyen de synchronisation autre que les
+   messages en Termite, il est nécessaire que la barrière soit
+   utilisée une 2ième fois lorsque l'on attend que la correction de
+   mouvement effectuée soit terminée, après une collision avec un
+   mur. Quoi que plus simple syntaxiquement, l'utilisation directe de
+   Termite pause quelques problèmes, entre autres:
+
+   - On doit connaître tous les threads à qui l'ont envoi un
+     message
+   - Problème de fuite de mémoire pour les événements non gérés
+
+   De plus, le pseudo-code utilise aussi des features non-existants de
+   Termites, comme les échappement de patterns (effectués avec le
+   charactère #\,). De plus, la doc de Termite stipule clairement que
+   les effets de bords ne doivent pas être utilisés, ce qui n'est pas
+   du tout le cas du code de cet exemple...
 
 ** Animations en RFP
 

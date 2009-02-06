@@ -1,6 +1,7 @@
 
 #+TITLE: Module statistique
 #+STYLE: <link rel="stylesheet" type="text/css" href="style.css" />
+#+FILETAGS: maîtrise
 
 * Besoin
   Le besoin d'un module permettant d'analyser et illustrer de manière

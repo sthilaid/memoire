@@ -1,6 +1,7 @@
 
 #+TITLE: Création du jeu Space Invaders
 #+STYLE: <link rel="stylesheet" type="text/css" href="style.css" />
+#+FILETAGS: maîtrise
 
 * Choix du jeu
   Le jeu space invaders a été choisi comme premier jeu à implanter

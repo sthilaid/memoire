@@ -6,7 +6,7 @@ lang="en" xml:lang="en">
 <title>Langage spécifique à l'écriture d'agents dans un jeu</title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2009-02-06 10:58:12 EST"/>
+<meta name="generated" content="2009-02-06 14:37:17 EST"/>
 <meta name="author" content=""/>
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
@@ -445,38 +445,57 @@ nouveau. Voici un pseudo-code effectuant plus ou moins la tâche:
   (<span style="color: #a020f0;">cond</span> ((table-ref messaging-lists list-id #f)
          =&gt; (<span style="color: #a020f0;">lambda</span> (lst) (cons agent lst)))
         (<span style="color: #a020f0;">else</span> (table-set! messaging-lists list-id (list agent)))))
+(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">unsubscribe</span> id agent)
+  (<span style="color: #a020f0;">let</span> ((msg-list (get-msg-list list-id)))
+    (<span style="color: #a020f0;">and</span> msg-list
+         (list-remove! msg-list agent))))
 (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">broadcast</span> list-idmsg)
   (<span style="color: #a020f0;">let</span> ((msg-list (get-msg-list list-id)))
     (<span style="color: #a020f0;">and</span> msg-list
          (<span style="color: #a020f0;">for-each</span> (<span style="color: #a020f0;">lambda</span> (subscriber) (! subscriber msg))
                    msg-list))))
 
-(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">invader</span> self)
-  (<span style="color: #a020f0;">lambda</span> ()
-    (<span style="color: #a020f0;">let</span> <span style="color: #0000ff;">loop</span> ()
-      (recv
-       ('move
-        (<span style="color: #a020f0;">begin</span> (move self dx)
-               (! (find-barrier (invader-row self)) 'moved)
-               (loop)))
-       ('change-color
-        (<span style="color: #a020f0;">begin</span> (update! self invader color (<span style="color: #a020f0;">lambda</span> (c) (next-color c)))
-               (! (find-barrier (invader-row self)) 'changed-color)
-               (loop)))
-       ('wall-collision
-        (<span style="color: #a020f0;">begin</span> (move self (- dy))
-               (invader-invert-speed self)
-               <span style="color: #b22222;">;; </span><span style="color: #b22222;">need to move back the invader so its no longer in the wall
-</span>               (move self dx)
-               (! (find-barrier (invader-row self)) 'moved)
-               (loop)))
-       (('player-explosion)
-        (<span style="color: #a020f0;">begin</span> (recv ('player-explosion-end (flush-messages!) (loop)))))
-       (('game-paused)
-        (<span style="color: #a020f0;">begin</span> (recv ('game-unpaused (flush-messages!) (loop)))))))))
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Space Invader behaviour states
+</span>(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">invader</span> self)
+  (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">main-state</span>)
+    (recv
+     ('move
+      (<span style="color: #a020f0;">begin</span> (move self dx)
+             (! (find-barrier (invader-row self)) 'moved)
+             (main-state)))
+
+     ('change-color
+      (<span style="color: #a020f0;">begin</span> (update! self invader color (<span style="color: #a020f0;">lambda</span> (c) (next-color c)))
+             (! (find-barrier (invader-row self)) 'changed-color)
+             (main-state)))
+
+     ('wall-collision
+      (<span style="color: #a020f0;">begin</span> (move self (- dy))
+             (invader-invert-speed self)
+             <span style="color: #b22222;">;; </span><span style="color: #b22222;">need to move back the invader so its no longer in the wall
+</span>             (move self dx)
+             (! (find-barrier (invader-row self)) 'moved)
+             (main-state)))
+
+     ('player-explosion
+      (<span style="color: #a020f0;">begin</span> (player-expl-state)))
+
+     ('game-paused
+      (<span style="color: #a020f0;">begin</span> (paused-state)))))
+
+  (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">player-expl-state</span>)
+    (recv
+     ('game-paused (player-expl-state)) <span style="color: #b22222;">; </span><span style="color: #b22222;">assuming that the expl obj gets paused
+</span>     ('player-explosion-end (main-state))))
+
+  (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">paused-state</span>)
+    (recv 
+     ('game-unpaused (main-state))))
+  <span style="color: #b22222;">;; </span><span style="color: #b22222;">init state
+</span>  main-state)
   
-(<span style="color: #a020f0;">define-class</span> <span style="color: #228b22;">Barrier</span> () (slot: row) (slot: agent-arrived) (slot: warned?))
-(<span style="color: #a020f0;">define-class</span> <span style="color: #228b22;">Inv-Barrier</span> (Barrier) (slot: row) (slot: warned?))
+(<span style="color: #a020f0;">define-class</span> <span style="color: #228b22;">Barrier</span> () (slot: agent-arrived))
+(<span style="color: #a020f0;">define-class</span> <span style="color: #228b22;">Inv-Controller</span> (Barrier) (slot: row))
 (<span style="color: #a020f0;">define-macro</span> (<span style="color: #b8860b;">wait-for-state</span> state-name msg condition . barrier-open-code)
   `(<span style="color: #a020f0;">define</span> (,state-name)
      (recv (,msg
@@ -489,23 +508,27 @@ nouveau. Voici un pseudo-code effectuant plus ou moins la tâche:
                   (,state-name)))))))
 
 <span style="color: #b22222;">;; </span><span style="color: #b22222;">Problemes ici au niveau du redraw!! doit etre fait entre chaque etat...
-</span>(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">barrier</span> self)
+</span>(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">invader-controller</span> self)
   (<span style="color: #a020f0;">lambda</span> ()
-    (wait-for-state state1 'changed-color (row-size (Inv-Barrier-row self))
-                    (broadcast (row-invaders (Inv-Barrier-row self) 'move))
+    (wait-for-state state1 'changed-color (row-size (Inv-Controller-row self))
+                    (broadcast (row-invaders (Inv-Controller-row self) 'move))
                     (state2))
-    <span style="color: #b22222;">;; </span><span style="color: #b22222;">missing the go-down-warning check here!
-</span>    (wait-for-state state2 'moved (row-size (Inv-Barrier-row self))
-                    (<span style="color: #a020f0;">if</span> (Inv-Barrier-warned? self)
-                        (<span style="color: #a020f0;">begin</span> (Inv-Barrier-warned?-set! self #f)
-                               (broadcast (row-invaders (Inv-Barrier-row self))
-                                          'wall-collision)
-                               (state2))
-                        (state3)))
-    (wait-for-state state3 'changed-color (row-size (Inv-Barrier-row self))
-                    (! redraw-agent `(redraw ,(Inv-Barrier-row self)))
+    
+    (wait-for-state state2 'moved (row-size (Inv-Controller-row self))
+                    (recv 
+                     ('go-down-warning
+                      (<span style="color: #a020f0;">begin</span> (Inv-Controller-warned?-set! self #f)
+                             (broadcast (row-invaders (Inv-Controller-row self))
+                                        'wall-collision)
+                             (state2)))
+                     <span style="color: #b22222;">;; </span><span style="color: #b22222;">if no wall collision, then proceed to the next state
+</span>                     (after 0 (state3))))
+    
+    (wait-for-state state3 'changed-color (row-size (Inv-Controller-row self))
+                    (! redraw-agent `(redraw ,(Inv-Controller-row self)))
                     (state1))
-    state1))
+    <span style="color: #b22222;">;; </span><span style="color: #b22222;">init state
+</span>    state1))
 
 (<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">redraw-agent</span> self)
   (<span style="color: #a020f0;">lambda</span> ()
@@ -534,16 +557,65 @@ concurence. Marc a suggéré d'utilisé un "double buffer" d'états
 afin de prévenir le problème. Ceci impliquerait donc que chaques
 objets devraient possèder en <b>double l'espace utilisé</b>. Aussi, le
 moment pour le changement de buffer n'est pas clair. Tout des être
-en arrêt afin que le redraw et le changement puisse être correcte,
-mais cela semble très peu raisonnable si on veut avoir du code
-modulaire&hellip;
-</p></div>
+en arrêt afin que le redraw et le changement puissent être
+correctes.
+</p>
+<p>
+On peut modéliser les états du thread invader de la manière suivante:
+</p>
+
+
+
+<pre class="example">
+             +-----------+     'player-expl     +-----------------------+
+             |           |---------------------&gt;|                       |
+             | main-loop |                      | player-explosion-wait |
+             |           |&lt;---------------------|                       |
+             +-----------+   'player-expl-end   +-----------------------+
+               |    ^
+               |    |
+  'game-paused |    | 'game-unpaused
+               v    |
+             +--------+
+             |        |
+             | paused |
+             |        |
+             +--------+
+</pre>
+
+
+
+
+<p>
+On peut aussi d'écrire les états du controlleur d'invaders ainsi:
+</p>
+
+
+
+<pre class="example">
+               +---------------------------------------+
+               |                                       |
+               v                                       |
+          +--------+          +--------+          +--------+
+          |        |          |        |          |        |
+          | state1 |---------&gt;| state2 +---------&gt;| state3 |
+          |        |          |        | timeout  |        |
+          +--------+          +--------+          +--------+
+                                ^    |     
+                                |    |     
+                                +----+     
+                           'go-down-warning
+</pre>
+
+
+
+</div>
 </div>
 </div>
 <div id="postamble"><p class="author"> Author: 
 <a href="mailto:dave@david-laptop">&lt;dave@david-laptop&gt;</a>
 </p>
-<p class="date"> Date: 2009-02-06 10:58:12 EST</p>
+<p class="date"> Date: 2009-02-06 14:37:17 EST</p>
 <p>HTML generated by org-mode 6.21a in emacs 22</p>
 </div></body>
 </html>

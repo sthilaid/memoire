@@ -1,6 +1,7 @@
 
 #+TITLE: Utilisation d'un système orienté objets
 #+STYLE: <link rel="stylesheet" type="text/css" href="style.css" />
+#+FILETAGS: maîtrise
 
 * Besoins
 

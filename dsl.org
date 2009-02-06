@@ -1,6 +1,7 @@
 
 #+TITLE: Langage spécifique à l'écriture d'agents dans un jeu
 #+STYLE: <link rel="stylesheet" type="text/css" href="style.css" />
+#+FILETAGS: maîtrise
 
 * Prototypage du langage [2009-01-29 Thu]
   Afin de pouvoir concevoir un DSL, un prototype du jeu space-invaders
@@ -280,38 +281,57 @@
   (cond ((table-ref messaging-lists list-id #f)
          => (lambda (lst) (cons agent lst)))
         (else (table-set! messaging-lists list-id (list agent)))))
+(define (unsubscribe id agent)
+  (let ((msg-list (get-msg-list list-id)))
+    (and msg-list
+         (list-remove! msg-list agent))))
 (define (broadcast list-idmsg)
   (let ((msg-list (get-msg-list list-id)))
     (and msg-list
          (for-each (lambda (subscriber) (! subscriber msg))
                    msg-list))))
 
+;; Space Invader behaviour states
 (define (invader self)
-  (lambda ()
-    (let loop ()
-      (recv
-       ('move
-        (begin (move self dx)
-               (! (find-barrier (invader-row self)) 'moved)
-               (loop)))
-       ('change-color
-        (begin (update! self invader color (lambda (c) (next-color c)))
-               (! (find-barrier (invader-row self)) 'changed-color)
-               (loop)))
-       ('wall-collision
-        (begin (move self (- dy))
-               (invader-invert-speed self)
-               ;; need to move back the invader so its no longer in the wall
-               (move self dx)
-               (! (find-barrier (invader-row self)) 'moved)
-               (loop)))
-       (('player-explosion)
-        (begin (recv ('player-explosion-end (flush-messages!) (loop)))))
-       (('game-paused)
-        (begin (recv ('game-unpaused (flush-messages!) (loop)))))))))
+  (define (main-state)
+    (recv
+     ('move
+      (begin (move self dx)
+             (! (find-barrier (invader-row self)) 'moved)
+             (main-state)))
+
+     ('change-color
+      (begin (update! self invader color (lambda (c) (next-color c)))
+             (! (find-barrier (invader-row self)) 'changed-color)
+             (main-state)))
+
+     ('wall-collision
+      (begin (move self (- dy))
+             (invader-invert-speed self)
+             ;; need to move back the invader so its no longer in the wall
+             (move self dx)
+             (! (find-barrier (invader-row self)) 'moved)
+             (main-state)))
+
+     ('player-explosion
+      (begin (player-expl-state)))
+
+     ('game-paused
+      (begin (paused-state)))))
+
+  (define (player-expl-state)
+    (recv
+     ('game-paused (player-expl-state)) ; assuming that the expl obj gets paused
+     ('player-explosion-end (main-state))))
+
+  (define (paused-state)
+    (recv 
+     ('game-unpaused (main-state))))
+  ;; init state
+  main-state)
   
-(define-class Barrier () (slot: row) (slot: agent-arrived) (slot: warned?))
-(define-class Inv-Barrier (Barrier) (slot: row) (slot: warned?))
+(define-class Barrier () (slot: agent-arrived))
+(define-class Inv-Controller (Barrier) (slot: row))
 (define-macro (wait-for-state state-name msg condition . barrier-open-code)
   `(define (,state-name)
      (recv (,msg
@@ -324,22 +344,26 @@
                   (,state-name)))))))
 
 ;; Problemes ici au niveau du redraw!! doit etre fait entre chaque etat...
-(define (barrier self)
+(define (invader-controller self)
   (lambda ()
-    (wait-for-state state1 'changed-color (row-size (Inv-Barrier-row self))
-                    (broadcast (row-invaders (Inv-Barrier-row self) 'move))
+    (wait-for-state state1 'changed-color (row-size (Inv-Controller-row self))
+                    (broadcast (row-invaders (Inv-Controller-row self) 'move))
                     (state2))
-    ;; missing the go-down-warning check here!
-    (wait-for-state state2 'moved (row-size (Inv-Barrier-row self))
-                    (if (Inv-Barrier-warned? self)
-                        (begin (Inv-Barrier-warned?-set! self #f)
-                               (broadcast (row-invaders (Inv-Barrier-row self))
-                                          'wall-collision)
-                               (state2))
-                        (state3)))
-    (wait-for-state state3 'changed-color (row-size (Inv-Barrier-row self))
-                    (! redraw-agent `(redraw ,(Inv-Barrier-row self)))
+    
+    (wait-for-state state2 'moved (row-size (Inv-Controller-row self))
+                    (recv 
+                     ('go-down-warning
+                      (begin (Inv-Controller-warned?-set! self #f)
+                             (broadcast (row-invaders (Inv-Controller-row self))
+                                        'wall-collision)
+                             (state2)))
+                     ;; if no wall collision, then proceed to the next state
+                     (after 0 (state3))))
+    
+    (wait-for-state state3 'changed-color (row-size (Inv-Controller-row self))
+                    (! redraw-agent `(redraw ,(Inv-Controller-row self)))
                     (state1))
+    ;; init state
     state1))
 
 (define (redraw-agent self)
@@ -364,6 +388,41 @@
    afin de prévenir le problème. Ceci impliquerait donc que chaques
    objets devraient possèder en *double l'espace utilisé*. Aussi, le
    moment pour le changement de buffer n'est pas clair. Tout des être
-   en arrêt afin que le redraw et le changement puisse être correcte,
-   mais cela semble très peu raisonnable si on veut avoir du code
-   modulaire...
+   en arrêt afin que le redraw et le changement puissent être
+   correctes.
+
+   On peut modéliser les états du thread invader de la manière suivante:
+
+#+BEGIN_EXAMPLE
+             +-----------+     'player-expl     +-----------------------+
+             |           |--------------------->|                       |
+             | main-loop |                      | player-explosion-wait |
+             |           |<---------------------|                       |
+             +-----------+   'player-expl-end   +-----------------------+
+               |    ^
+               |    |
+  'game-paused |    | 'game-unpaused
+               v    |
+             +--------+
+             |        |
+             | paused |
+             |        |
+             +--------+
+#+END_EXAMPLE
+
+   On peut aussi d'écrire les états du controlleur d'invaders ainsi:
+
+#+BEGIN_EXAMPLE
+               +---------------------------------------+
+               |                                       |
+               v                                       |
+          +--------+          +--------+          +--------+
+          |        |          |        |          |        |
+          | state1 |--------->| state2 +--------->| state3 |
+          |        |          |        | timeout  |        |
+          +--------+          +--------+          +--------+
+                                ^    |     
+                                |    |     
+                                +----+     
+                           'go-down-warning
+#+END_EXAMPLE

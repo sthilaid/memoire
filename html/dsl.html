@@ -6,7 +6,7 @@ lang="en" xml:lang="en">
 <title>Langage spécifique à l'écriture d'agents dans un jeu</title>
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2009-02-05 15:34:46 EST"/>
+<meta name="generated" content="2009-02-06 10:58:12 EST"/>
 <meta name="author" content=""/>
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
@@ -77,7 +77,7 @@ lang="en" xml:lang="en">
 <ul>
 <li><a href="#sec-1.1">1.1 Synchronisation des agents via les "fair threads" </a></li>
 <li><a href="#sec-1.2">1.2 Synchronisation des agents avec une syntax à la Termite </a></li>
-<li><a href="#sec-1.3">1.3 Animations en RFP </a></li>
+<li><a href="#sec-1.3">1.3 D'autres exemples de synchronisation d'agents </a></li>
 </ul>
 </li>
 </ul>
@@ -126,7 +126,7 @@ Par exemple, pour un invader, on pourrait avoir du code ressemblant à:
 </div>
 
 <div id="outline-container-1.1" class="outline-3">
-<h3 id="sec-1.1">1.1 Synchronisation des agents via les "fair threads" </h3>
+<h3 id="sec-1.1">1.1 Synchronisation des agents via les "fair threads" <span class="timestamp">2009-02-03 Tue</span> </h3>
 <div id="text-1.1">
 
 
@@ -331,11 +331,11 @@ données plus haut dans un tel language.
   (<span style="color: #a020f0;">lambda</span> ()
     (<span style="color: #a020f0;">let</span> <span style="color: #0000ff;">loop</span> ()
       (recv
-       (('turn ,(line-id self)) <span style="color: #b22222;">; </span><span style="color: #b22222;">NOTE: ',' escape not supported by termite
-</span>        (<span style="color: #a020f0;">begin</span> (move self dx)
+       ('turn
+        (<span style="color: #a020f0;">begin</span> (move self dx)
                (! (find-barrier (invader-row self))
                   `(moved ,(invader-row self)))))
-       (('wall-collision ,(invader-row self))
+       ('wall-collision
         (<span style="color: #a020f0;">begin</span> (move self (- dy))
                (invader-invert-speed self)
                <span style="color: #b22222;">;; </span><span style="color: #b22222;">need to move back the invader so its no longer in the wall
@@ -354,16 +354,16 @@ données plus haut dans un tel language.
        (('go-down-warning)
         (<span style="color: #a020f0;">begin</span> (Barrier-warned?-set! self #t)
                (state1)))
-       (('moved ,(Barrier-row self))
-        (<span style="color: #a020f0;">begin</span>
+       (('moved ,(Barrier-row self)) <span style="color: #b22222;">; </span><span style="color: #b22222;">',' escape not supported by termite
+</span>        (<span style="color: #a020f0;">begin</span>
           (update! self Barrier agent-arrived (<span style="color: #a020f0;">lambda</span> (n) (+ n 1)))
           (<span style="color: #a020f0;">if</span> (&gt;= (Barrier-agent-arrived self) (row-size (Barrier-row self)))
               (<span style="color: #a020f0;">begin</span>
                 (Barrier-agent-arrived-set! self 0)
                 (<span style="color: #a020f0;">if</span> (Barrier-warned? self)
                     (<span style="color: #a020f0;">for-each</span> (<span style="color: #a020f0;">lambda</span> (i)
-                                (! i `(wall-collision ,(Barrier-row self))))
-                              all-invaders))
+                                (! i `wall-collision))
+                              (row-invaders (Barrier-row self))))
                 (Barrier-warned?-set! self #f)
                 (state2))
               (state1))))))
@@ -387,8 +387,8 @@ données plus haut dans un tel language.
       (('redraw last-row)
        (process-user-input)
        (render current-level)
-       (<span style="color: #a020f0;">for-each</span> (<span style="color: #a020f0;">lambda</span> (i) (! i `(turn ,(next-row last-row))))
-                 all-invaders)
+       (<span style="color: #a020f0;">for-each</span> (<span style="color: #a020f0;">lambda</span> (i) (! i `turn))
+                 (row-invaders (next-row last-row)))
        (loop))))))
 </pre>
 
@@ -416,31 +416,134 @@ Problème de fuite de mémoire pour les événements non gérés
 
 <p>De plus, le pseudo-code utilise aussi des features non-existants de
 Termites, comme les échappement de patterns (effectués avec le
-charactère #\,).
+charactère #\,). De plus, la doc de Termite stipule clairement que
+les <b>effets de bords</b> ne doivent pas être utilisés, ce qui n'est pas
+du tout le cas du code de cet exemple&hellip;
 </p>
 </div>
 
 </div>
 
 <div id="outline-container-1.3" class="outline-3">
-<h3 id="sec-1.3">1.3 Animations en RFP </h3>
+<h3 id="sec-1.3">1.3 D'autres exemples de synchronisation d'agents <span class="timestamp">2009-02-06 Fri 10:48</span> </h3>
 <div id="text-1.3">
+
+<p>Ici, l'exemple du déplacement des invaders a été repris, mais leur
+comportement a été légèrement modifié. Maintenant, les invaders
+doivent changer de couleurs, se déplacer, puis changer de couleur à
+nouveau. Voici un pseudo-code effectuant plus ou moins la tâche:
+</p>
+
+
+
+<pre class="src src-scheme">
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Messaging lists
+</span>(<span style="color: #a020f0;">define</span> <span style="color: #0000ff;">messaging-lists</span> (make-table test: equal?))
+(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">get-msg-list</span> list-id)
+  (table-ref messaging-lists list-id #f))
+(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">subscribe</span> id agent)
+  (<span style="color: #a020f0;">cond</span> ((table-ref messaging-lists list-id #f)
+         =&gt; (<span style="color: #a020f0;">lambda</span> (lst) (cons agent lst)))
+        (<span style="color: #a020f0;">else</span> (table-set! messaging-lists list-id (list agent)))))
+(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">broadcast</span> list-idmsg)
+  (<span style="color: #a020f0;">let</span> ((msg-list (get-msg-list list-id)))
+    (<span style="color: #a020f0;">and</span> msg-list
+         (<span style="color: #a020f0;">for-each</span> (<span style="color: #a020f0;">lambda</span> (subscriber) (! subscriber msg))
+                   msg-list))))
+
+(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">invader</span> self)
+  (<span style="color: #a020f0;">lambda</span> ()
+    (<span style="color: #a020f0;">let</span> <span style="color: #0000ff;">loop</span> ()
+      (recv
+       ('move
+        (<span style="color: #a020f0;">begin</span> (move self dx)
+               (! (find-barrier (invader-row self)) 'moved)
+               (loop)))
+       ('change-color
+        (<span style="color: #a020f0;">begin</span> (update! self invader color (<span style="color: #a020f0;">lambda</span> (c) (next-color c)))
+               (! (find-barrier (invader-row self)) 'changed-color)
+               (loop)))
+       ('wall-collision
+        (<span style="color: #a020f0;">begin</span> (move self (- dy))
+               (invader-invert-speed self)
+               <span style="color: #b22222;">;; </span><span style="color: #b22222;">need to move back the invader so its no longer in the wall
+</span>               (move self dx)
+               (! (find-barrier (invader-row self)) 'moved)
+               (loop)))
+       (('player-explosion)
+        (<span style="color: #a020f0;">begin</span> (recv ('player-explosion-end (flush-messages!) (loop)))))
+       (('game-paused)
+        (<span style="color: #a020f0;">begin</span> (recv ('game-unpaused (flush-messages!) (loop)))))))))
+  
+(<span style="color: #a020f0;">define-class</span> <span style="color: #228b22;">Barrier</span> () (slot: row) (slot: agent-arrived) (slot: warned?))
+(<span style="color: #a020f0;">define-class</span> <span style="color: #228b22;">Inv-Barrier</span> (Barrier) (slot: row) (slot: warned?))
+(<span style="color: #a020f0;">define-macro</span> (<span style="color: #b8860b;">wait-for-state</span> state-name msg condition . barrier-open-code)
+  `(<span style="color: #a020f0;">define</span> (,state-name)
+     (recv (,msg
+            (<span style="color: #a020f0;">begin</span>
+              (update! self Barrier agent-arrived (<span style="color: #a020f0;">lambda</span> (n) (+ n 1)))
+              (<span style="color: #a020f0;">if</span> (&gt;= (Barrier-agent-arrived self) ,condition)
+                  (<span style="color: #a020f0;">begin</span>
+                    (Barrier-agent-arrived-set! self 0)
+                    ,@barrier-open-code)
+                  (,state-name)))))))
+
+<span style="color: #b22222;">;; </span><span style="color: #b22222;">Problemes ici au niveau du redraw!! doit etre fait entre chaque etat...
+</span>(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">barrier</span> self)
+  (<span style="color: #a020f0;">lambda</span> ()
+    (wait-for-state state1 'changed-color (row-size (Inv-Barrier-row self))
+                    (broadcast (row-invaders (Inv-Barrier-row self) 'move))
+                    (state2))
+    <span style="color: #b22222;">;; </span><span style="color: #b22222;">missing the go-down-warning check here!
+</span>    (wait-for-state state2 'moved (row-size (Inv-Barrier-row self))
+                    (<span style="color: #a020f0;">if</span> (Inv-Barrier-warned? self)
+                        (<span style="color: #a020f0;">begin</span> (Inv-Barrier-warned?-set! self #f)
+                               (broadcast (row-invaders (Inv-Barrier-row self))
+                                          'wall-collision)
+                               (state2))
+                        (state3)))
+    (wait-for-state state3 'changed-color (row-size (Inv-Barrier-row self))
+                    (! redraw-agent `(redraw ,(Inv-Barrier-row self)))
+                    (state1))
+    state1))
+
+(<span style="color: #a020f0;">define</span> (<span style="color: #0000ff;">redraw-agent</span> self)
+  (<span style="color: #a020f0;">lambda</span> ()
+    (<span style="color: #a020f0;">let</span> <span style="color: #0000ff;">loop</span> ()
+     (recv
+      (('redraw last-row)
+       (<span style="color: #a020f0;">begin</span>
+        (process-user-input)
+        (render current-level)
+        (broadcast (row-invaders (next-row last-row)) 'change-color)
+        (loop)))))))
+</pre>
+
+
 
 
 <p>
-Les animations sembleraient à première vue, faciles à implenter en
-utilisant un modèle de programmation basé sur la programmation
-réactive. Voici comment on pourraît programmer l'animation du début
-de jeu, par exemple.
+On voit que nous avons <b>réussi à mieux abstraire</b> ici le comportement
+des barrières. Par contre, ce comportement <b>n'est pas modulaire</b> et
+on peut difficilement y ajouter au besoin du traitement (comme pour
+le traitement du message "go-down-warning". 
 </p>
-
-</div>
+<p>
+Aussi, il semble y avoir toujours un problème au niveau de la
+concurence. Marc a suggéré d'utilisé un "double buffer" d'états
+afin de prévenir le problème. Ceci impliquerait donc que chaques
+objets devraient possèder en <b>double l'espace utilisé</b>. Aussi, le
+moment pour le changement de buffer n'est pas clair. Tout des être
+en arrêt afin que le redraw et le changement puisse être correcte,
+mais cela semble très peu raisonnable si on veut avoir du code
+modulaire&hellip;
+</p></div>
 </div>
 </div>
 <div id="postamble"><p class="author"> Author: 
 <a href="mailto:dave@david-laptop">&lt;dave@david-laptop&gt;</a>
 </p>
-<p class="date"> Date: 2009-02-05 15:34:46 EST</p>
+<p class="date"> Date: 2009-02-06 10:58:12 EST</p>
 <p>HTML generated by org-mode 6.21a in emacs 22</p>
 </div></body>
 </html>

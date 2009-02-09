@@ -332,7 +332,7 @@
   
 (define-class Barrier () (slot: agent-arrived))
 (define-class Inv-Controller (Barrier) (slot: row))
-(define-macro (wait-for-state state-name msg condition . barrier-open-code)
+(define-macro (define-wait-state state-name msg condition . barrier-open-code)
   `(define (,state-name)
      (recv (,msg
             (begin
@@ -345,12 +345,13 @@
 
 ;; Problemes ici au niveau du redraw!! doit etre fait entre chaque etat...
 (define (invader-controller self)
+  (define (inv-nb) (row-size (Inv-Controller-row self)))
   (lambda ()
-    (wait-for-state state1 'changed-color (row-size (Inv-Controller-row self))
+    (define-wait-state state1 'changed-color (inv-nb)
                     (broadcast (row-invaders (Inv-Controller-row self) 'move))
                     (state2))
     
-    (wait-for-state state2 'moved (row-size (Inv-Controller-row self))
+    (define-wait-state state2 'moved (inv-nb)
                     (recv 
                      ('go-down-warning
                       (begin (Inv-Controller-warned?-set! self #f)
@@ -360,7 +361,7 @@
                      ;; if no wall collision, then proceed to the next state
                      (after 0 (state3))))
     
-    (wait-for-state state3 'changed-color (row-size (Inv-Controller-row self))
+    (define-wait-state state3 'changed-color (inv-nb)
                     (! redraw-agent `(redraw ,(Inv-Controller-row self)))
                     (state1))
     ;; init state

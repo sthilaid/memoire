@@ -67,3 +67,38 @@
   degré de polymorphisme (accès aux champs).
 
   blabla
+
+** Ajout de fonctions génériques à arité variable et constructeurs <2009-02-17 Tue>
+   
+   Après avoir fait la ré-écriture du système de simulation par thread
+   avec le système objet, nous avons réalisé qu'il y avait un problème
+   au niveau de la construction d'instances du système objets. En
+   effet, les nouveau threads doivent toujours être initialisés
+   correctement avant de pouvoir être utilisé, mais rien ne permettait
+   facilement de pouvoir effectuer de tels initialisations chez les
+   sous-classes de la classe corout. Ainsi, il est maintenant possible
+   de définir un ou plusieurs constructeurs pour une classe données
+   avec le mot clé constructor:. Ils peuvent ensuite être invoqués via
+   la fonction générique init! ou plus facilement par la macro
+   "new". Par exemple:
+
+#+BEGIN_SRC scheme
+(define-class point () (slot: x) (slot: y)
+  (constructor: (lambda (obj x) (point-x-set! obj x)
+                                (point-y-set! obj x)))
+  (constructor: (lambda (obj x y) (point-x-set! obj x)
+                                  (point-y-set! obj y))))
+(new point 1)   ; ~> (1,1)
+(new point 1 2) ; ~> (1,2)
+#+END_SRC
+
+   Afin de pouvoir implanter ces fonctionnalitées, des modifications
+   ont dû être apportées aux fonctions génériques afin que celles-ci
+   supportent une arité multiple. On peut ainsi, maintenant avoir:
+
+#+BEGIN_SRC scheme
+(define-generic toto)
+(define-method (f (p point)) (point-x p))
+(define-method (f (p1 point) (p2 point)) (+ (f p1) (f p2)))
+(f (new point 1) (new point 2 4)) ; ~> 3
+#+END_SRC

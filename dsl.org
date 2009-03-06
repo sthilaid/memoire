@@ -380,7 +380,7 @@
 #+END_SRC
 
    On voit que nous avons *réussi à mieux abstraire* ici le comportement
-   des barrières. Par contre, ce comportement *n'est pas modulaire* et
+p   des barrières. Par contre, ce comportement *n'est pas modulaire* et
    on peut difficilement y ajouter au besoin du traitement (comme pour
    le traitement du message "go-down-warning". 
 
@@ -427,3 +427,59 @@
                                 +----+     
                            'go-down-warning
 #+END_EXAMPLE
+
+** Synchronisation des rafraîchissements <2009-03-06 Fri 11:27>
+
+   Afin de permettre le rafraîchissement d'écran au *bon* moments, un
+   synchronisations avec les agents présents s'impose. Pour y arriver,
+   le concept de list de message sera utilisé en combinaison avec des
+   barrières dynamiques. En effet, on dira qu'un rafraîchissemnt sera
+   fait chaque /instant/, où le concept d'instants est similaire à
+   celui retrouvé dans les [[Synchronisation des agents via les "fair threads"][fair threads]]. Par contre, les agents actifs
+   doivent eux-même s'inscrire à la liste de messagerie lorsqu'ils
+   considèrent qu'ils doivent être synchronisés avec les instants et
+   doivent se désinscrire lorsque ce n'est plus le cas.
+
+   Ainsi, l'agent virtuel de rafraîchissement n'est rien d'autre
+   qu'une barrière dynamique attendant tous les agents actifs. La
+   barrière est dite dynamique puisqu'à la reception de chaque
+   message, le nombre d'agents actifs est recalculé, pour prendre en
+   compte les potentiels nouveaux agents actifs. On obtient un code
+   ressemblant à:
+
+#+BEGIN_SRC scheme
+(define-class Barrier (corout) (slot: agent-arrived)
+  (constructor: (lambda (obj thunk)
+                  (init! cast: '(corout * *) obj
+                         (gensym 'barrier)
+                         thunk)
+                  (Barrier-agent-arrived-set! obj 0))))
+
+(define-class redraw-agent (Barrier)
+  (constructor: (lambda (obj level)
+                  (init! cast: '(Barrier *) obj (behaviour obj level)))))
+
+(define-macro (define-wait-state state-name msg condition . barrier-open-code)
+  `(define (,state-name)
+     (recv (,msg
+            (begin
+              (update! (self) Barrier agent-arrived (lambda (n) (+ n 1)))
+              (if (>= (Barrier-agent-arrived (self)) ,condition)
+                  (begin
+                    (Barrier-agent-arrived-set! (self) 0)
+                    ,@barrier-open-code)
+                  (,state-name)))))))
+
+(define-method (behaviour (obj redraw-agent) level)
+  (define-wait-state main-state redraw
+    (msg-list-size 'instant-components)
+    (begin
+        (process-user-input level)
+        ;; FIXME: It would be better to either copy the level obj
+        ;; before passing it to redraw or do a syncronous remote call
+        ;; (in the termite !? style)
+        ;; Could also be done within this thread...
+        (thread-send user-interface-thread `(redraw ,level))
+        (main-state)))
+  main-state)
+#+END_SRC

@@ -475,11 +475,26 @@ p   des barrières. Par contre, ce comportement *n'est pas modulaire* et
     (msg-list-size 'instant-components)
     (begin
         (process-user-input level)
-        ;; FIXME: It would be better to either copy the level obj
-        ;; before passing it to redraw or do a syncronous remote call
-        ;; (in the termite !? style)
-        ;; Could also be done within this thread...
         (thread-send user-interface-thread `(redraw ,level))
         (main-state)))
   main-state)
 #+END_SRC
+
+
+** Gestion de la mort d'un agent
+
+   À priori, un agent représentant un objet du jeu /peut/ à *tout
+   moment* être détruit/mourir et donc un méchanisme permettant
+   d'uniformiser la mort d'objets doit être mis en place.
+
+   Afin de rester consitant avec notre paradigme d'envoi de message,
+   il serait conséquent d'utiliser l'envoi d'un message précis à un
+   objet pour lui annoncer sa mort. Ainsi, un gestionnaire de message
+   dynamique (dynamic handler) pourrait ainsi être utiliser afin de
+   capter un message représenter la mort d'un objet comme par exemple
+   'die', et ainsi traiter comme il se doit la mort de l'objet. On
+   peut ainsi utiliser une fonction générique afin de permettre de
+   faire le l'assignation dynamique du bon comportement à adopter en
+   fonction du type de l'instance.
+
+   Il y a par contre un problème qui peut se présenter?

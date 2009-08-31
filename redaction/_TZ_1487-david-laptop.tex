@@ -1,0 +1,61 @@
+\documentclass[12pt,oneside,letterpaper,francais]{book}
+
+%% \documentclass[12pt]{report}
+
+\usepackage[french, english]{babel}
+%\usepackage{isolatin1}
+\usepackage[latin1]{inputenc}
+\usepackage{url}
+\usepackage{setspace}
+\usepackage{verbatim}
+
+\usepackage{udem_these_fr}
+
+\newcommand{\todo}[1]{[TODO: {\it #1}]}
+
+%\newcommand{\object}[1]{$\#<#1 \ldots>$}
+\newcommand{\object}[1]{{\it #1}}
+
+\input{r5rscommands.tex}
+
+\newcommand{\codeinput}[1]{\begin{singlespace}\verbatiminput{#1}\end{singlespace}}
+\newcommand{\schemeinput}[1]{\begin{schemecode}\input{#1}\end{schemecode}}
+
+\newcommand{\scheme}[1]{\selectlanguage{english}{\tt #1}\selectlanguage{french}}
+\newcommand{\schemeresult}[1]{{\tt #1}}
+
+%% \hyphenation{ex-écu-tion} %% marche pas a cause de l'accent
+
+\title{Development de jeux vidéo en Scheme}
+
+% remplir les champs...
+\Auteur{David}{St-Hilaire}
+
+\President{M.}{Mostapha}{Aboulhamid}{Ph.D.}
+
+\Directeur{M.}{Marc}{Feeley}{Ph.D.}
+
+\Membres{1}{M.}{Yann-Gaël}{Guéhéneuc}{Ph.D.}
+
+%pour le doctorat seulement
+
+%examinateur externe
+%\Membres{2}{M.}{Membre}{deux}{Ph.D.}
+%
+%%representant du doyen de la FES
+%\Membres{3}{M.}{Membre}{trois}{Ph.D.}
+
+%Pour un doctorat, changer simplement \MSc par \PhD
+%titre: 15 mots, max. 175 caractère
+\MSc{Dévelopment de jeux vidéo en Scheme}
+    {}
+    {d'informatique et de recherche op\'{e}rationnelle}
+    {informatique}
+    {Décembre}
+    {2009}
+
+\setstretch{2}
+\begin{document}
+Dévelopment de jeux vidéo}
+
+\end{document}

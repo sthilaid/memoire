@@ -1,0 +1,24 @@
+EXAMPLES=genserver.scm supervisor.scm
+
+memoire: memoire.pdf
+
+memoire.dvi : memoire.tex r5rscommands.tex              
+	latex memoire
+	bibtex memoire
+	latex memoire
+	latex memoire
+
+again :
+	latex memoire
+
+memoire.ps : memoire.dvi
+	dvips -t letter memoire.dvi -o memoire.ps
+
+memoire.pdf : memoire.ps
+	ps2pdf memoire.ps
+
+test : memoire.pdf
+	xpdf memoire.pdf
+
+clean :
+	rm -f *~ *.aux .Z* memoire.dvi memoire.log _TZ_* memoire.lof memoire.lot memoire.pdf memoire.toc memoire.bbl

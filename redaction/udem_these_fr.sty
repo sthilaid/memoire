@@ -1,0 +1,590 @@
+
+% udem_these_fr.sty
+%
+% Fichier pour la redaction de memoire et de these de
+% l'Universite de Montreal
+%
+% Version originale pour latex2.09: G. Marleau
+% Premiere version pour latex2e   : F. Leclerc ; G. Marleau
+% Troisieme version Pierre Carrier
+% Traduction en anglais et améliorations : Anne Broadbent, 2004
+
+\ProvidesPackage{udem_these_fr}[2001/09/05]
+\RequirePackage{doublespace,cite,indentfirst,epsfig,ifthen}
+
+\typeout{}
+%\typeout{SVP, signaler toutes erreurs ou commentaires \`a Pierre.Carrier@UMontreal.CA}
+\typeout{}
+%
+% Definir les termes francais
+%
+  \gdef\@dedicace{D\'edicace}
+  \gdef\@remerciements{Remerciements}
+    \gdef\@preface{Avant-propos}
+  \def\prefacename{Pr\'eface}
+  \def\refname{R\'ef\'erences}
+  \gdef\@resume{R\'esum\'e}
+  \gdef\@notation{Notation}
+   \gdef\@abbreviation{Liste des Sigles}
+  \gdef\abstractname{Abstract}
+  \def\bibname{R\'ef\'erences}
+  \gdef\@introduction{Introduction}
+ % \def\chaptername{Chapitre}
+  \gdef\@conclusion{Conclusion}
+  \def\appendixname{Appendice}
+  \gdef\@tabledesmatieres{Table des Mati\`eres}
+  \gdef\@listedesfigures{Liste des Figures}
+  \gdef\@listedestableaux{Liste des Tableaux}
+  \gdef\@listedesannexes{Liste des Appendices}
+  \def\indexname{Index}
+  \def\figurename{Figure}
+  \def\tablename{Tableau}
+  \def\partname{Part}
+  \def\ccname{Copie \`a}
+  \def\pagename{Page}
+\def\today{\ifnum\day=1\relax 1\/$^{\rm er}$\else
+  \number\day\fi \space\ifcase\month\or
+  janvier\or f\'evrier\or mars\or avril\or mai\or juin\or
+  juillet\or ao\^ut\or septembre\or octobre\or novembre\or
+  d\'ecembre\fi
+  \space\number\year}
+
+%
+% Definir les termes des pages de presentation
+% Valeurs de default des variables d'identification
+%
+\newif\if@doc   \@doctrue
+\newif\if@pdoc   \@docfalse
+\newif\if@codir \@codirfalse
+\newif\if@exex  \@exexfalse
+\def\doctorat{\@doctrue}
+\def\maitrise{\@docfalse}
+\def\inconnu{\hbox to 5truecm{\dotfill}}
+
+\def\examinateur#1{\gdef\@examinateur{#1}\@exextrue}
+\def\@universite{Universit\'e de Montr\'eal}
+\def\@facpresente{Facult\'e des \'etudes sup\'erieures}
+\def\@fac{Facult\'e des arts et des sciences}
+\def\fac#1{\gdef\@fac{#1}}
+\gdef\@titre{Titre de la th\`ese}
+\gdef\@specialisation{Sp\'ecialisation}
+\gdef\@these{1}
+\gdef\@pres{0}
+\gdef\@dir{0}
+\gdef\@codir{0}
+\gdef\@memba{0}
+\gdef\@membb{0}
+\gdef\@nomauteur{NonAuteur}
+\gdef\@prenomauteur{Pr\'enomAuteur}
+\gdef\@departement{D\'epartement}
+\gdef\@matiere{Matiere}
+\gdef\@mois{mois}
+\gdef\@annee{ann\'ee}
+%
+%  jury
+%
+\gdef\@titpresident{M.}
+\gdef\@prenompresident{Pr\'enomPr\'esident}
+\gdef\@nompresident{NomPr\'esident}
+\gdef\@dippresident{Ph.D.}
+
+\gdef\@titdirecteur{M.}
+\gdef\@prenomdirecteur{Pr\'enomDirecteur}
+\gdef\@nomdirecteur{NomDirecteur}
+\gdef\@dipdirecteur{Ph.D.}
+
+\gdef\@titcodirecteur{M.}
+\gdef\@prenomcodirecteur{Pr\'enomCoDirecteur}
+\gdef\@nomcodirecteur{NomCoDirecteur}
+\gdef\@dipcodirecteur{Ph.D.}
+
+\gdef\@titmembrea{M.}
+\gdef\@prenommembrea{Pr\'enomMembre1}
+\gdef\@nommembrea{NomMembre1}
+\gdef\@dipmembrea{Ph.D.}
+
+\gdef\@titmembreb{M.}
+\gdef\@prenommembreb{Pr\'enomMembre2}
+\gdef\@nommembreb{NomMembre2}
+\gdef\@dipmembreb{Ph.D.}
+
+\gdef\@titmembrec{M.}
+\gdef\@prenommembrec{Pr\'enomMembre3}
+\gdef\@nommembrec{NomMembre3}
+\gdef\@dipmembrec{Ph.D.}
+
+%
+% Definir les commandes d'identification qui redefinissent les
+% variables d'identification
+%
+
+\newcommand{\Auteur}[2]{\gdef\@prenomauteur{#1}\gdef\@nomauteur{#2}}
+\newcommand{\PhD}[6]{\gdef\@these{1}
+                       \gdef\@titre{#1}
+                       \gdef\@specialisation{#2}
+                       \gdef\@departement{#3}
+                       \gdef\@matiere{#4}
+                       \gdef\@mois{#5}
+                       \gdef\@annee{#6}}
+\newcommand{\MSc}[6]{\gdef\@these{2}
+                       \gdef\@titre{#1}
+                       \gdef\@specialisation{#2}
+                       \gdef\@departement{#3}
+                       \gdef\@matiere{#4}
+                       \gdef\@mois{#5}
+                       \gdef\@annee{#6}}
+\newcommand{\MIng}[5]{\gdef\@these{3}
+                       \gdef\@titre{#1}
+                       \gdef\@specialisation{#2}
+                       \gdef\@departement{#3}
+                       \gdef\@mois{#4}
+                       \gdef\@annee{#5}}
+\newcommand{\Proj}[5]{\gdef\@these{3}
+                       \gdef\@titre{#1}
+                       \gdef\@specialisation{#2}
+                       \gdef\@departement{#3}
+                       \gdef\@mois{#4}
+                       \gdef\@annee{#5}}
+\newcommand{\President}[4]{
+                        \gdef\@pres{1}
+                        \gdef\@titpresident{#1}
+                        \gdef\@prenompresident{#2}
+                        \gdef\@nompresident{#3}
+                        \gdef\@dippresident{#4}}
+\newcommand{\Directeur}[4]{
+                        \gdef\@dir{1}
+                        \gdef\@titdirecteur{#1}
+                        \gdef\@prenomdirecteur{#2}
+                        \gdef\@nomdirecteur{#3}
+                        \gdef\@dipdirecteur{#4}}
+\newcommand{\CoDirecteur}[4]{
+                        \gdef\@codir{1}
+                        \gdef\@titcodirecteur{#1}
+                        \gdef\@prenomcodirecteur{#2}
+                        \gdef\@nomcodirecteur{#3}
+                        \gdef\@dipcodirecteur{#4}}
+\newcommand{\Membres}[5]{\ifnum#1=1
+                         \gdef\@memba{1}
+                         \gdef\@titmembrea{#2}
+                         \gdef\@prenommembrea{#3}
+                         \gdef\@nommembrea{#4}
+                         \gdef\@dipmembrea{#5} \fi
+                        \ifnum\@these=1
+                          \ifnum#1=2
+                          \gdef\@membb{1}
+                          \gdef\@titmembreb{#2}
+                          \gdef\@prenommembreb{#3}
+                          \gdef\@nommembreb{#4}
+                          \gdef\@dipmembreb{#5}
+                         \else
+                        \gdef\@membc{1}
+                        \gdef\@titmembrec{#2}
+                        \gdef\@prenommembrec{#3}
+                        \gdef\@nommembrec{#4}
+                        \gdef\@dipmembrec{#5} \fi \fi}
+%
+%  Formattage des pages couverture
+%
+
+\newcommand{\PagesCouverture}{\begin{singlespace}
+                              \pagetitre
+                              %\clearpage\pagejury
+                              \clearpage\pagejuryfinal
+                              \end{singlespace}}
+
+\def\pagetitre{
+        \thispagestyle{empty}
+        \typeout{Page de presentation}
+        \null\vskip0.5cm
+        \begin{center}
+                {\@universite}
+        \end{center}
+        \vfill
+        \begin{center}
+                {\bf\@titre}
+        \end{center}
+        \vfill
+        \begin{center}
+                {par}\\
+                {{\@prenomauteur} {\@nomauteur}}\\
+        \end{center}
+        \vfill
+        \begin{center}
+               {D\'epartement \@departement} \\
+               {\@fac}
+        \end{center}
+        \vfill
+        \begin{center}
+            \ifnum\@these=3 {Partie \'ecrite \\ de l'examen pr\'e-doctoral}
+            \else
+                \ifnum\@these=1 {Th\`ese pr\'esent\'ee \`a la \@facpresente}\\
+                \else   {M\'emoire pr\'esent\'e \`a la \@facpresente}\\\fi
+                {en vue de l'obtention du grade de}
+                \ifnum\@these=1 {Philosophi\ae\ Doctor (Ph.D.)}\\
+                \else   {Ma\^\i tre \`es sciences (M.Sc.)}\\ \fi
+                {en \@matiere\\}
+            \fi
+        \end{center}
+        \vfill
+        \begin{center}
+                {\ \\ \@mois , \@annee }
+        \end{center}
+        \vfill
+        \begin{center}
+           \copyright~{\@prenomauteur}  {\@nomauteur}, {\@annee}.
+        \end{center}
+        \vskip.01cm\newpage}
+
+
+\def\pagejuryfinal{
+        \typeout{Page du jury}
+        \thispagestyle{empty}
+        \null\vskip0.5cm
+        \begin{center}
+                {\@universite\\}
+                {\@facpresente\\}
+        \end{center}
+        \vfill
+        \begin{center}
+                \ifnum\@these=1 {Cette th\`ese intitul\'ee:}
+                \else   {Ce m\'emoire intitul\'e:} \fi
+                {\ \\ \ \\}
+                {\bf\@titre}
+        \end{center}
+        \vfill
+        \begin{center}
+                \ifnum\@these=1 {pr\'esent\'ee par:\\}
+                \else   {pr\'esent\'e par:\\}\fi
+                {\ \\}
+                {{\@prenomauteur} {\@nomauteur}}
+        \end{center}
+        \vfill
+        \begin{center}
+                {a \'et\'e \ifnum\@these=1\'evalu\'ee \else\'evalu\'e \fi
+                  par un jury compos\'e des personnes suivantes:\\ \ \\}
+                \begin{centering}
+                  {{\@prenompresident} {\@nompresident}}\\
+                  {pr\'esident-rapporteur}\\ \ \\
+                  {{\@prenomdirecteur} {\@nomdirecteur}}
+                  \\{directeur de recherche}\\ \ \\
+                   \ifnum\@codir=1 {{{\@prenomcodirecteur} {\@nomcodirecteur}}\\ {codirecteur}\\ \ \\ }
+                  \else {  } \fi
+                   {{\@prenommembrea} {\@nommembrea}} \\
+                   {membre du jury}\\ \ \\
+                 \ifnum\@these=1
+                 {{{\@prenommembreb} {\@nommembreb}}\\     {examinateur externe}\\ \ \\
+                 {{\@prenommembrec} {\@nommembrec}}\\     {repr\'esentant du doyen de la FES}}\fi
+                \end{centering}
+        \end{center}
+        \vfill
+        \begin{center}
+                \ifnum\@these=1 {Th\`ese accept\'ee le \phantom{20 aout 2004}}
+                \else   {\bf M\'emoire accept\'e le \phantom{20 aout 2004}} \fi
+        \end{center}
+        \vskip.01cm\newpage}
+%
+%  Table of contents and lists description
+%
+\setcounter{secnumdepth}{4}
+
+\def\l@chapter#1#2{\addpenalty{-\@highpenalty}
+   \vskip 1.0em plus 1pt  % space above chapter line
+   \@tempdima 8.0em       % width of box holding chapter number
+   %\@dottedtocline{0}{0.0em}{1.5em}
+   \begingroup
+     \parindent \z@ \rightskip \@pnumwidth
+     \parfillskip -\@pnumwidth
+     \bf                  % Boldface.
+     \leavevmode          % TeX command to enter horizontal mode.
+      \advance\leftskip\@tempdima  %% added 5 Feb 88 to conform to
+      \hskip -\leftskip            %% 25 Jan 88 change to \numberline
+     #1\nobreak\leaders\hbox{$\m@th \mkern \@dotsep mu.\mkern \@dotsep
+       mu$}\hfill
+    \nobreak\hbox to\@pnumwidth{\hss #2}\par
+     \penalty\@highpenalty %% added 24 May 89 as suggested by J. Leichter
+   \endgroup}
+
+\def\l@section{\@dottedtocline{1}{1.5em}{2.3em}}
+\def\l@subsection{\@dottedtocline{2}{3.8em}{3.2em}}
+\def\l@subsubsection{\@dottedtocline{3}{7.0em}{4.1em}}
+\def\l@paragraph{\@dottedtocline{4}{10em}{5em}}
+\def\l@subparagraph{\@dottedtocline{5}{12em}{6em}}
+\let\l@table\l@figure
+\def\l@figure{\@dottedtocline{1}{1.5em}{2.3em}}
+
+%
+%  sectionning commands
+%
+
+\def\dedicace{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+  \fi\chapter*{~}
+  \addcontentsline{toc}{chapter}{\MakeUppercase{\@dedicace}}
+  \if@restonecol
+   \twocolumn\fi}
+\def\remerciements{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+  \fi\chapter*{\@remerciements}
+  \addcontentsline{toc}{chapter}{\MakeUppercase{\@remerciements}}
+  \if@restonecol
+   \twocolumn\fi}
+
+\def\preface{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+  \fi\chapter*{\@preface}
+  \addcontentsline{toc}{chapter}{\MakeUppercase{\@preface}}
+  \if@restonecol
+   \twocolumn\fi}
+
+\def\resume{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+  \fi\chapter*{\@resume}
+  \addcontentsline{toc}{chapter}{\MakeUppercase{\@resume}}
+  \if@restonecol
+   \twocolumn\fi}
+\def\abstract{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+  \fi\chapter*{Abstract}
+  \addcontentsline{toc}{chapter}{\MakeUppercase{Abstract}}
+  \if@restonecol
+   \twocolumn\fi}
+\def\tabledesmatieres{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+  \fi\chapter*{\@tabledesmatieres}
+  \addcontentsline{toc}{chapter}{\MakeUppercase{\@tabledesmatieres}}
+  \@starttoc{toc}\if@restonecol\twocolumn\fi}
+\def\listedestableaux{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+  \fi\chapter*{\@listedestableaux}
+  \addcontentsline{toc}{chapter}{\MakeUppercase{\@listedestableaux}}
+  \@starttoc{lot}\if@restonecol
+    \twocolumn\fi}
+\def\listedesfigures{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+  \fi\chapter*{\@listedesfigures}
+  \addcontentsline{toc}{chapter}{\MakeUppercase{\@listedesfigures}}
+  \@starttoc{lof}\if@restonecol
+   \twocolumn\fi}
+\def\listedesannexes{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+  \fi\chapter*{\@listedesannexes} \thispagestyle{empty}
+  \addcontentsline{toc}{chapter}{\MakeUppercase{\@listedesannexes}}
+  \@starttoc{loa}\if@restonecol
+   \twocolumn\fi}
+\def\notation{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+  \fi\chapter*{\@notation}
+  \addcontentsline{toc}{chapter}{\MakeUppercase{\@notation}}
+  \if@restonecol
+   \twocolumn\fi}
+\def\abbreviation{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+  \fi\chapter*{\@abbreviation}
+\addcontentsline{toc}{chapter}{\MakeUppercase{\@abbreviation}}
+  \if@restonecol
+   \twocolumn\fi}
+\def\introduction{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+  \fi\chapter*{\@introduction}
+  \addcontentsline{toc}{chapter}{\MakeUppercase{\@introduction}}
+  \if@restonecol
+   \twocolumn\fi}
+\def\conclusion{\@restonecolfalse\if@twocolumn\@restonecoltrue\onecolumn
+  \fi\chapter*{\@conclusion}
+  \addcontentsline{toc}{chapter}{\MakeUppercase{\@conclusion}}
+  \if@restonecol
+   \twocolumn\fi}
+
+\def\debutchapitres{\clearpage %
+     \pagenumbering{arabic}}
+
+%\renewcommand\chapter{\if@openright\cleardoublepage\else\clearpage\fi
+%                    \thispagestyle{empty}%
+%                    \global\@topnum\z@
+%                    \@afterindentfalse
+%                    \secdef\@chapter\@schapter}
+
+\def\debutannexes{
+\if@openright\cleardoublepage\else\clearpage\fi
+\par
+ \appendix
+ \setcounter{chapter}{0}
+ \setcounter{section}{0}
+ \pagenumbering{roman}
+ \def\thechapter{\Roman{chapter}}}
+
+\renewcommand\chapter{\if@openright\cleardoublepage\else\clearpage\fi
+                    \thispagestyle{empty}
+                    \global\@topnum\z@
+                    \@afterindentfalse
+                    \secdef\@newchapter\@snewchapter}
+
+\def\@newchapter[#1]#2{\ifnum \c@secnumdepth >\m@ne
+                       \if@mainmatter
+                         \refstepcounter{chapter}%
+                         \typeout{\@chapapp\space \thechapter.}%
+                         \addcontentsline{toc}{chapter}%
+                                   {\protect\numberline{\MakeUppercase{\@chapapp}\space\thechapter : \space}\MakeUppercase{#1}}%
+                       \else
+                         \typeout{#1}%
+                         \addcontentsline{toc}{chapter}\MakeUppercase{#1}%
+                       \fi
+                    \else
+                      \typeout{#1}%
+                      \addcontentsline{toc}{chapter}\MakeUppercase{#1}%
+                    \fi
+                    \chaptermark{#1}%
+                    \addtocontents{lof}{\protect\addvspace{10\p@}}%
+                    \addtocontents{lot}{\protect\addvspace{10\p@}}%
+                    \if@twocolumn
+                      \@topnewpage[\@makenewchapterhead{#2}]%
+                    \else
+                      \@makenewchapterhead{#2}\@afterheading
+                    \fi}
+\def\@makenewchapterhead#1{%
+  {\begin{center} \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+      \if@mainmatter
+        \normalsize\bfseries \MakeUppercase{\@chapapp}\space \thechapter
+        \par\nobreak
+        \vskip 20\p@
+      \fi
+    \fi
+    \interlinepenalty\@M
+    \normalsize\bfseries \MakeUppercase{#1}\par\nobreak
+    \vskip 20\p@
+    \end{center}
+  }}
+\def\@snewchapter#1{\if@twocolumn
+                   \@topnewpage[\@makesnewchapterhead{#1}]%
+                 \else
+                   \@makesnewchapterhead{#1}%
+                   \@afterheading
+                 \fi}
+\def\@makesnewchapterhead#1{%
+  {\begin{center} \normalfont
+    \interlinepenalty\@M
+    \normalsize \bfseries  \MakeUppercase{#1}\par\nobreak
+    \vskip 20\p@
+    \end{center}
+  }}
+
+\def\annexe{\clearpage \thispagestyle{empty} \global\@topnum\z@
+ \secdef\@newannexe\@newsannexe}
+\def\@newannexe[#1]#2{\ifnum \c@secnumdepth >\m@ne
+                       \if@mainmatter
+                         \refstepcounter{chapter}%
+                         \typeout{\@chapapp\space \thechapter.}%
+                         \addcontentsline{loa}{chapter}%
+                                   {\protect\numberline{\@chapapp\space\thechapter : \space} #1}%
+                       \else
+                         \addcontentsline{loa}{chapter}{#1}%
+                       \fi
+                    \else
+                      \addcontentsline{loa}{chapter}{#1}%
+                    \fi
+                    \chaptermark{#1}%
+                    \addtocontents{lof}{\protect\addvspace{10\p@}}%
+                    \addtocontents{lot}{\protect\addvspace{10\p@}}%
+                    \if@twocolumn
+                      \@topnewpage[\@makenewannexehead{#2}]%
+                    \else
+                      \@makenewannexehead{#2}\@afterheading
+                    \fi}
+\def\@makenewannexehead#1{%
+  {\begin{center} \normalfont
+    \ifnum \c@secnumdepth >\m@ne
+      \if@mainmatter
+        \normalsize\bfseries \@chapapp\space \thechapter
+        \par\nobreak
+        \vskip 20\p@
+      \fi
+    \fi
+    \interlinepenalty\@M
+    \normalsize\bfseries #1\par\nobreak
+    \vskip 20\p@
+    \end{center}
+  }}
+\def\@snewannexe#1{\if@twocolumn
+                   \@topnewpage[\@makesnewannexehead{#1}]%
+                 \else
+                   \@makesnewannexehead{#1}%
+                   \@afterheading
+                 \fi}
+\def\@makesnewannexehead#1{%
+  {\begin{center} \normalfont
+    \interlinepenalty\@M
+    \normalsize \bfseries  #1\par\nobreak
+    \vskip 20\p@
+    \end{center}
+  }}
+
+
+\def\section{\@startsection {section}{1}{\z@}{3.5ex plus 1ex minus
+ .2ex}{2.3ex plus .2ex}{\normalsize\bfseries}}
+\def\subsection{\@startsection{subsection}{2}{\z@}{3.25ex plus 1ex minus
+ .2ex}{1.5ex plus .2ex}{\normalsize\bfseries}}
+\def\subsubsection{\@startsection{subsubsection}{3}{\z@}{3.25ex plus
+ 1ex minus .2ex}{1.5ex plus .2ex}{\normalsize\bfseries}}
+
+\def\@astartsection#1#2#3#4#5#6{\if@noskipsec \leavevmode \fi
+   \par \@tempskipa #4\relax
+   \@afterindenttrue
+   \ifdim \@tempskipa <\z@ \@tempskipa -\@tempskipa \@afterindentfalse\fi
+   \if@nobreak \everypar{}\else
+     \addpenalty{\@secpenalty}\addvspace{\@tempskipa}\fi \@ifstar
+     {\@ssect{#3}{#4}{#5}{#6}}{\@dblarg{\@asect{#1}{#2}{#3}{#4}{#5}{#6}}}}
+
+\def\@asect#1#2#3#4#5#6[#7]#8{\ifnum #2>\c@secnumdepth
+     \def\@svsec{}\else
+     \refstepcounter{#1}\edef\@svsec{\csname the#1\endcsname\hskip 1em }\fi
+     \@tempskipa #5\relax
+      \ifdim \@tempskipa>\z@
+        \begingroup #6\relax
+          \@hangfrom{\hskip #3\relax\@svsec}{\interlinepenalty \@M #8\par}
+        \endgroup
+       \csname #1mark\endcsname{#7}\addcontentsline
+         {loa}{#1}{\ifnum #2>\c@secnumdepth \else
+                      \protect\numberline{\csname the#1\endcsname}\fi
+                    #7}\else
+        \def\@svsechd{#6\hskip #3\@svsec #8\csname #1mark\endcsname
+                      {#7}\addcontentsline
+                           {loa}{#1}{\ifnum #2>\c@secnumdepth \else
+                             \protect\numberline{\csname the#1\endcsname}\fi
+                       #7}}\fi
+     \@xsect{#5}}
+
+\def\secannexe{\@astartsection {section}{1}{\z@}{3.5ex plus 1ex minus
+ .2ex}{2.3ex plus .2ex}{\normalsize}}
+\def\subsecannexe{\@astartsection{subsection}{2}{\z@}{3.25ex plus 1ex minus
+ .2ex}{1.5ex plus .2ex}{\normalsize}}
+\def\subsubsecannexe{\@astartsection{subsubsection}{3}{\z@}{3.25ex plus
+ 1ex minus .2ex}{1.5ex plus .2ex}{\normalsize}}
+
+%
+%  type de citation modifie
+%
+\renewenvironment{thebibliography}[1]
+     {\chapter*{\bibname}%
+      \addcontentsline{toc}{chapter}{\MakeUppercase{\bibname}}
+      \list{\@biblabel{\@arabic\c@enumiv}}%
+           {\settowidth\labelwidth{\@biblabel{#1}}%
+            \leftmargin\labelwidth
+            \advance\leftmargin\labelsep
+            \@openbib@code
+            \usecounter{enumiv}%
+            \let\p@enumiv\@empty
+            \renewcommand\theenumiv{\@arabic\c@enumiv}}%
+      \sloppy
+      \clubpenalty4000
+      \@clubpenalty \clubpenalty
+      \widowpenalty4000%
+      \sfcode`\.\@m}
+     {\def\@noitemerr
+       {\@latex@warning{Empty `thebibliography' environment}}%
+      \endlist}
+%\renewcommand{\@cite}[2]{{\textsuperscript{[#1]}\ifthenelse{\boolean{@tempswa}}{,#2}{}}}
+
+
+\if@twoside
+\else
+  \setlength\topmargin      {0.0in}
+  \setlength\oddsidemargin  {1.6cm}
+  \setlength\textwidth      {14.8cm}
+  \setlength\textheight     {21.3cm}
+\fi
+\pagestyle{myheadings}
+\pagenumbering{roman}
+\if@twoside
+\else
+   \setcounter{page}{2}
+\fi
+\endinput

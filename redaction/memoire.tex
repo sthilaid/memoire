@@ -182,17 +182,22 @@ mettre ici une liste des attentes pour un jeu moderne
 \subsubsection{Magnavox Odyssey}
 \subsubsection{Atari XX00 et ColecoVision}
 
+\subsection{Ordinateurs personnels 1977-...}
+\subsubsection{Évolution parallèle constante}
+\subsubsection{Toujours été jusqu'à la venu des console modernes la plateforme offrant les meilleurs performances.}
+
+\subsection{Consoles portables 1980-...}
+\subsubsection{GameBoy etc...}
+
 \subsection{Consoles intermédiaires 1984-2006}
 \subsubsection{NES, SNES, N64, GameCube}
 
-\subsection{Consoles récentes 2005-...}
+\subsection{Consoles modernes 2005-...}
+\subsubsection{Interfaces plus 'casual' = Wii}
+\subsubsection{Consoles très performantes}
 
 
-\subsection{Ordinateurs personnels 1977-...}
-\subsubsection{Évolution parallèle constante}
 
-
-\subsection{Consoles portables}
 
 \section{Contraintes de programmation}
 
@@ -212,31 +217,135 @@ mettre ici une liste des attentes pour un jeu moderne
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Le langage Scheme}
 
-\cite{SICP}
+Référence temporaire pour pas faire planter le makefile\cite{SICP}
 
 
 \section{Programmation fonctionnelle}
+\subsection{Fonctions sont des données de premier ordre}
+\subsection{Fonctions d'ordres supérieures (avec exemples)}
+\subsection{Programmation fonctionnelle pure (exemples)}
+\subsection{Effets de bords dans Scheme}
+
+
+\section{Macros}
+\subsection{Introduction}
+\subsubsection{Explications sur la simplicite provenant que le code scheme est utilise aussi comme donnee a un programme scheme (macro) comme un ASA.}
+\subsubsection{Puissance de calcul lors de l'expansion.}
+
+\subsection{Exemples simples}
+\subsection{Problème de l'hygiène des macros}
+\subsection{Différentes formes spéciales (define-macro, define-syntax)}
 
 \section{Continuations}
+\subsection{Introductions du sujet et explications}
+\subsection{Réification de continuations}
+\subsection{Exemples d'utilisations}
+\subsection{Exemple d'implantations}
+\subsection{Forme d'écriture de code en CPS}
+
 
 \section{Gestion mémoire automatique}
-
+\subsection{Motivation}
+\subsection{Historique et survol des techniques}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Programmation orientée objet}
 
+\section{Motivation (ou Objectifs?)}
+\subsection{Parler des define-type de Gambit-C et du SRFI-9}
+\subsection{Parler de CLOS}
+
 \section{Description du langage}
+\subsection{Définition de classes}
+\subsubsection{Compatibilité avec les define-type}
+\subsubsection{Définitions simples (instance slots et class slots)}
+\subsection{Héritages des membres}
+\subsubsection{Utilisation de hook sur les slots}
+\subsubsection{Constructeurs}
+
+
+\subsection{Définition de fonctions génériques}
+\subsubsection{Dispatch simple}
+\subsubsection{Dispatch multiple (avec les problèmes reliés à la résolution de la méthode à choisir)}
+\subsubsection{call-next-method}
+\subsubsection{Type '*'}
+
 
 \section{Implantation}
+\subsection{Apercu global}
+\subsection{Séparation entre le travail fait durant l'expantion macro et l'exécution}
+\subsection{Implantation de define-class}
+\subsection{Structures de données (descripteurs de classes, format des instances, etc..)}
+\subsubsection{Polymorphisme}
+\subsubsection{Constructeur et describe comme fonction génériques}
+
+\subsection{Implantation de define-generic}
+\subsubsection{Vérifications de types}
+\subsubsection{Délégation à l'exécution}
+
+\subsection{Implantation de define-method}
+\subsubsection{Stockages des fermetures}
+
+
+\section{Conclusion}
+\subsection{Ouverture sur le fait qu'un meta-protocole serait très intéressant à ajouter, mais à quel prix?}
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Système de coroutines}
+\section{Motivation}
+\subsection{Contrôle fin du comportement de threads}
+\subsection{Parler de l'intérêt de Termite}
+\subsection{Motivation de l'utilisation de coroutines (contrôle exact sur le flot de contrôle == système toujours dans un état consistant).}
 
 \section{Description du langage}
+\subsection{Création de coroutines}
+\subsection{Manipulation du flot de contrôle}
+\subsubsection{yield}
+\subsubsection{super-yield}
+\subsubsection{terminate-corout, kill-all!, super-kill-all!}
+\subsubsection{sleep-for}
+\subsubsection{continue-with}
+\subsubsection{spawn-brother, spawn-brother-thunk}
+\subsubsection{Composition of coroutines}
+
+\subsection{Système de communication inter coroutines}
+\subsubsection{!}
+\subsubsection{?}
+\subsubsection{??}
+\subsubsection{recv, dynamic msg handlers}
+\subsubsection{timeouts}
+\subsubsection{Messaging lists}
+
+\subsection{Démarrage du système}
+\subsubsection{simple-boot}
+\subsubsection{boot}
+\subsubsection{Systèmes cascadés}
+
 
 \section{Implantation}
+
+\subsection{Implantation des coroutines}
+
+\subsubsection{Structure de données}
+\subsubsection{États d'une coroutines}
+
+\subsection{Scheduler}
+\subsubsection{Abstraction du temps via timer}
+\subsubsection{États du scheduler}
+\subsubsection{Algorithme de scheduling}
+
+\subsection{Système de messagerie}
+\subsubsection{Structures de données}
+\subsubsection{Envoi de messages}
+\subsubsection{Réception de messages}
+\subsubsection{Macro recv}
+
+
+\section{Conclusion}
+\subsection{Ouverture sur le profilage des coroutine}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -245,20 +354,49 @@ mettre ici une liste des attentes pour un jeu moderne
 \section{Développement de \og Space Invaders \fg}
 
 \subsection{Objectifs}
+\subsubsection{Expérimentation avec un jeu très simple}
+\subsubsection{Trouver les problèmes fondamentaux pour le développement de jeux}
+\subsubsection{Tenter de les résoudre}
 
-\subsection{Développement itératif}
+\subsection{Version initiale}
+\subsubsection{Premier jet dans le but de trouver des problèmes potitiels}
+\subsubsection{Comment faire des animations? => CPS}
+\subsubsection{Comment concevoir une partie a 2 joueurs? => coroutines}
+\subsubsection{Difficulté à décrire la résolution de collision de manière efficace}
+\subsubsection{Est-il possible d'écrire le comportement d'une entité de manière indépendante, i.e. que le code soit centralisé dans une même fonction?}
 
-\subsubsection{Version initiale}
+\subsection{Version orientée objet}
+\subsubsection{Motivation: Utilisation de fonctions génériques}
+\subsubsection{Code Highlight: Résolution de collisions}
 
-\subsubsection{Version orientée objet}
+\subsection{Version avec système de co-routine}
+\subsubsection{Motivation: Intégrer les coroutines a chaque objet de manière à ce que chaque instance soit une entité à part entière qui doit régir son propre comportement.}
+\subsubsection{Difficultés: synchronisation des entités}
+\subsubsection{Code Highlight: synchronisation des invaders}
 
-\subsubsection{Version avec système de co-routine}
-
+\subsection{Conclusion}
+\subsubsection{Trouvé plusieurs problèmes et pu résoudres ces derniers}
+\subsubsection{ouverture: Essayer ces techniques dans un jeu plus complexe pour voir si elles sont toujours valides}
 
 
 \section{Développement de \og Lode Runner \fg}
-
 \subsection{Objectifs}
+\subsubsection{Jeux plus complexe: plus d'interaction du joueur, intelligence artivicielle, niveaux, schema d'animations plus complexe, etc...}
+\subsubsection{Utiliser ce qui semblait de meilleur dans space-invaders de manière a non seulement confirmer la pertinance de ces methodes, mais aussi a potentiellement en developper de nouvelles dû aux nouvelles contraintes de ce jeu.}
+
+\subsection{Synchronisation}
+\subsubsection{Utilisation du concept de frame pour faire la synchro. Réduit de beaucoup la complexité.}
+\subsubsection{Danger si le framerate varie, la vitesse du jeu varie}
+
+\subsection{Machines à états}
+\subsubsection{Utiliation des fonctions génériques}
+\subsubsection{Utilisez un LSD pour ca??? Des idées?}
+
+\subsection{Intelligence Artificielle}
+\subsubsection{À venir...}
+
+\subsection{Conclusion}
+\subsubsection{À venir...}
 
 
 
@@ -271,15 +409,37 @@ mettre ici une liste des attentes pour un jeu moderne
 \section{Comparaison de langages}
 
 \subsection{Lua}
+\subsubsection{Differences entre lua et Scheme}
+\begin{itemize}
+\item Lua est de petite taille en mem
+\item ..
+\end{itemize}
 
 \subsection{C++}
+\subsubsection{Differences entre C++}
+\begin{itemize}
+\item Gestion memoire manuelle
+\item méthode surdéfinies vs fonctions génériques
+\end{itemize}
 
 
 \section{Jeux en Lisp}
 
 \subsection{QuantZ}
+\subsubsection{A voir avec Robert}
+\subsubsection{FRP}
+\subsubsection{Techniques anti-gc}
+\subsubsection{Delegation de fermetures}
 
 \subsection{Naughty Dogz}
+\subsubsection{GOAL}
+%% http://en.wikipedia.org/wiki/Game_Oriented_Assembly_Lisp
+%% http://grammerjack.spaces.live.com/blog/cns!F2629C772A178A7C!135.entry
+\begin{itemize}
+\item http://en.wikipedia.org/wiki/Game\_Oriented\_Assembly\_Lisp
+\item http://grammerjack.spaces.live.com/blog/cns!F2629C772A178A7C!135.entry
+\end{itemize}
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Conclusion}

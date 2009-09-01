@@ -1,7 +1,7 @@
 
 memoire: memoire.pdf
 
-memoire.dvi : memoire.tex r5rscommands.tex              
+memoire.dvi : memoire.tex r5rscommands.tex doublespace.sty udem_these_fr.sty
 	latex memoire
 	bibtex memoire
 	latex memoire

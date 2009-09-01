@@ -20,4 +20,4 @@ test : memoire.pdf
 	xpdf memoire.pdf
 
 clean :
-	rm -f *~ *.aux .Z* memoire.dvi memoire.log _TZ_* memoire.lof memoire.lot memoire.pdf memoire.toc memoire.bbl
+	rm -f *~ *.aux .Z* memoire.dvi memoire.log _TZ_* memoire.lof memoire.lot memoire.pdf memoire.toc memoire.bbl memoire.ps memoire.blg

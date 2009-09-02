@@ -26,7 +26,7 @@
 
 %% \hyphenation{ex-écu-tion} %% marche pas a cause de l'accent
 
-\title{Development de jeux vidéo en Scheme}
+\title{Développement de jeux vidéo en Scheme}
 
 % remplir les champs...
 \Auteur{David}{St-Hilaire}
@@ -104,14 +104,16 @@ blablabla
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Introduction}
 
-\section{Contexte}
-\subsection{jeu video -> \$\$}
-\subsection{prog de jeu complexe: bcp années/hommes de travail}
+jeu vidéo représentent une importante industrie (\$\$)
 
-\section{Motivation}
-\subsection{Comment faciliter le dév?}
-\subsection{Prog haut niveau vs bas niveau}
-\subsection{Scheme}
+prog de jeu complexe: bcp années/hommes de travail
+
+%%\section{Motivation}
+Comment faciliter le dév?
+
+Prog haut niveau vs bas niveau
+
+Introduire Scheme
 
 \section{Problématique}
 Ce mémoire de maîtrise vise à répondre à la problématique suivante:
@@ -124,12 +126,14 @@ Ce mémoire de maîtrise vise à répondre à la problématique suivante:
 
 \section{Méthodologie}
 
-\subsection{Dev 1er jeu simple pour determiner les besoins pour Scheme}
-\subsection{Augmenter Scheme pour repondre a ces besoins}
-\subsection{Ecrire un nouveau jeu utilisant les techniques developpees pour le 1er jeu}
+\begin{itemize}
+\item Dev 1er jeu simple pour determiner les besoins pour Scheme
+\item Augmenter Scheme pour repondre a ces besoins
+\item Ecrire un nouveau jeu utilisant les techniques developpees pour le 1er jeu
+\end{itemize}
 
 Afin de pouvoir répondre à ces questions, 2 jeux vidéo ont été
-developpés en utilisant le langage de programmation Scheme. Le premier
+développés en utilisant le langage de programmation Scheme. Le premier
 jeux a servi de platforme d'exploration permettant d'élaborer une
 méthodologie qui semble efficace pour le développement de jeux. Afin
 d'obtenir une telle méthodologie, plusieurs itérations de
@@ -144,17 +148,49 @@ le premier a été écrit afin de consolider les méthodologies
 précédemment utilisées.
 
 
+\section{Aperçu}
+Ce mémoire peut être divisé en quatre parties distinctes. La première
+partie est une introduction sur les sujets traités subséquemment. On
+discutera ainsi de programmation fonctionnelle et du langage de
+programmation Scheme. Ce chapitre fera mention donnera un aperçu
+général de ces langages et permettra de saisir les concepts
+fondamentaux du langage Scheme. Aussi, une discussion sur l'industrie
+des jeux vidéo et des défis découlant du développement sera présentée.
+
+La deuxième partie du mémoire portera sur des extensions faites au
+langage Scheme qui ont été utilisées dans le but d'améliorer le
+développement de jeux vidéo. On discutera de programmation orientée
+objet et d'un système d'objets conçu pour répondre aux besoins de la
+programmation de jeux vidéo. Aussi, un système de coroutines conçu
+dans les mêmes optiques sera présenté.
+
+La troisième partie du mémoire portera sur l'expérience acquise par
+l'auteur en effectuant l'écriture de 2 jeux vidéo simples, mais
+possédant suffisamment de complexité pour exposer les problèmes
+associés à la création de jeux vidéo et comment tirer profit du
+langage de programmation Scheme pour résoudre ces problèmes. Aussi,
+une discussion sur l'utilisation des travaux reliés sera faite. On y
+discutera de l'utilisation de d'autres langages pour le développement
+de jeux vidéo et citera des exemple d'utilisation du langage Scheme
+dans des jeu vidéo commerciaux et de l'expérience tirée de cette
+utilisation par les développeurs.
+
+Finalement, une conclusion apportera la lumière sur la problématique
+exposée dans ce mémoire. Le point sur l'expérience acquise pour le
+développement de jeux vidéo en Scheme sera fait et les avantages et
+inconvénients ou problèmes seront exposés.
+
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Développement de jeux vidéo}
 
-\section{Contexte (intro?)}
+Importance du marche des JV
 
-\subsection{Grosseur du marche des JV}
-\subsection{Diversite des jeux (genres, plates-formes)}
-\subsection{Charactéristiques de jeux modernes}
+Diversite des jeux (genres, plates-formes)
+
+Charactéristiques de jeux modernes
 
 Les jeux vidéo font parti d'un domaine de l'informatique en pleine
 effervescence grâce à une demande constante de nouveaux produits. Ces
@@ -170,31 +206,29 @@ mettre ici une liste des attentes pour un jeu moderne
 %% http://en.wikipedia.org/wiki/History_of_video_games
 
 \subsection{préhistoire 1948-1970}
-\subsubsection{CRT games}
-\subsubsection{Mainframe games}
+CRT games, Mainframe games
 
 \subsection{Système arcade 1970-1985}
-\subsubsection{Pong}
-\subsubsection{Space Invaders}
-\subsubsection{Pac-Man}
+Pong, Space Invaders, Pac-Man
 
 \subsection{Premières consoles 1972-1984}
-\subsubsection{Magnavox Odyssey}
-\subsubsection{Atari XX00 et ColecoVision}
+Magnavox Odyssey, Atari XX00 et ColecoVision
 
 \subsection{Ordinateurs personnels 1977-...}
-\subsubsection{Évolution parallèle constante}
-\subsubsection{Toujours été jusqu'à la venu des console modernes la plateforme offrant les meilleurs performances.}
+Évolution parallèle constante
+
+Toujours été jusqu'à la venu des console modernes la plateforme offrant les meilleurs performances.
 
 \subsection{Consoles portables 1980-...}
-\subsubsection{GameBoy etc...}
+GameBoy etc...
 
 \subsection{Consoles intermédiaires 1984-2006}
-\subsubsection{NES, SNES, N64, GameCube}
+NES, SNES, N64, GameCube
 
 \subsection{Consoles modernes 2005-...}
-\subsubsection{Interfaces plus 'casual' = Wii}
-\subsubsection{Consoles très performantes}
+Interfaces plus 'casual' = Wii
+
+Consoles très performantes
 
 
 
@@ -217,180 +251,469 @@ mettre ici une liste des attentes pour un jeu moderne
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Le langage Scheme}
 
+Choix du langage influence beaucoup la structure du code, le manière
+de développer le logiciel, etc...
+
+Scheme est un langage qui semble être peu utilisé dans des produits
+commerciaux.
+
+d'autres idées?
+
 Référence temporaire pour pas faire planter le makefile\cite{SICP}
 
+\section{Héritage de LISP}
+\subsection{Histoire de LISP}
+McCarthy, GC, List Processing, AI...
+
+Common LISP = Grosse Bébitte
+
+\subsection{Avènement de Scheme}
+Épuration de LISP à l'essence du langage
+
+évolution du langage via RNRS, SRFIs
+
+simplicité du langage, beaucoup d'extension disponibles 
+
+\subsection{Langages inspirés de Scheme}
+Javascript, Ruby: lang de scripting. Concept de fermetures
+
+Java??
 
 \section{Programmation fonctionnelle}
-\subsection{Fonctions sont des données de premier ordre}
-\subsection{Fonctions d'ordres supérieures (avec exemples)}
-\subsection{Programmation fonctionnelle pure (exemples)}
+\subsection{Distinction}
+ Fonctions sont des données de premier ordre
+
+ Fonctions d'ordres supérieures (avec exemples)
+
+\subsection{Programmation fonctionnelle pure}
+Pas de mutation. Comme des blocs lego
+
+Haskell, ML
+
+Exemple en Scheme
+
+
 \subsection{Effets de bords dans Scheme}
+Entrees sorties (variables à portée dynamique)
+Mutations de variables
 
 
 \section{Macros}
 \subsection{Introduction}
-\subsubsection{Explications sur la simplicite provenant que le code scheme est utilise aussi comme donnee a un programme scheme (macro) comme un ASA.}
-\subsubsection{Puissance de calcul lors de l'expansion.}
+Discussion sur les macros de C et leurs limitations: permet de faire
+des abstractions dans le code résultant une modification du code
+source avant la compilation, mais uniquement limité à du remplacement
+de code.
+
+Explication des macros scheme: Code source == données scheme, dispose
+d'une pré-évaluation permettant de prendre du code source en entré et
+de généré du code source (toujours sous forme de listes (données
+Scheme)). Revient a faire une manipulation d'ASA.
+
+Dispose de toute la puissance de calcul durant l'expansion :)
 
 \subsection{Exemples simples}
+
+macro inc
+
+macro while
+
 \subsection{Problème de l'hygiène des macros}
-\subsection{Différentes formes spéciales (define-macro, define-syntax)}
+
+Capture de nom intentionnelle, ou non intentionnelle. 
+
+Différentes formes spéciales (define-macro, define-syntax)
+
+
 
 \section{Continuations}
 \subsection{Introductions du sujet et explications}
+En C, continuation equiv au code situé à l'adresse de retour de la
+fonction exécutée.
+
+Explication de l'ordre dévaluation en Scheme.
+
+Continuation d'un programme simple en Scheme. (+ 1 (- [f x y] 2)) :
+continuation de l'appel à f est la soustraction du résultat par deux,
+puis l'on ajoute à 1 se résultat. Eq à (lambda (res-f) (+ 1 (- res-f 2))).
+
 \subsection{Réification de continuations}
+Explication de call-with-current-continuation permettant de faire
+surfacer une continuation.
+
 \subsection{Exemples d'utilisations}
-\subsection{Exemple d'implantations}
+\subsubsection{Échappement au flux de contrôle}
+Utilisation comme un return
+
+\subsubsection{Système de coroutine}
+Exemple du cours de Marc
+
 \subsection{Forme d'écriture de code en CPS}
+Expliquer la différence entre un appel terminal et un appel
+non-terminal. Expliquer comment les appels terminaux peuvent être
+optimisés (requis en Scheme).
+
+Écrire le code de manière à rendre explicite le passage et les appels
+de continuations. Toujours des appels terminaux. Transformation
+souvent utilisée par les compilateurs pour implanter l'optimisation
+d'appels terminaux.
+
+\subsection{Exemple d'implantation}
+Exemple du cours de Marc
+
+blabla
+
+
+\section{Dynamisme du langage}
+Typage dynamique vs typage statique
+
+Exemple de code utilisant le typage dynamique.
+
+Evaluation dynamique de code avec load ou eval. idées?
+
+Langages comme C++ favorisent bcp de focuser sur la conceptions des
+classes. Implique une structure rigide qui se doit d'être bien conçu
+depuis le départ.
+
+Langages plus dynamiques permettent des cycles de prototypage rapide
+en apportant beaucoup de flexibilité aux développeurs.
 
 
 \section{Gestion mémoire automatique}
 \subsection{Motivation}
-\subsection{Historique et survol des techniques}
+Gestion mémoire manuelle ou semi-automatique causent énormément de
+problèmes de fuites de mémoire (ou de pointeurs fous).
+
+En connaissant les racines, on peut automatiser la récupérations de
+mémoire, au coût d'un certain temps de calcul.
+
+Date des premières version de LISP.
+
+
+
+\subsection{Survol des techniques}
+Mark and sweep
+
+Stop and copy
+
+GC générationnels
+
+GC temps réels ou incrémentaux
+
+
+
+\section{Débuggage}
+Possibilité de pouvoir exécuter du code arbitraire lors d'un crash
+
+Possibilité de pouvoir inspecter chacune des frames de la pile de
+continuactions afin de pouvoir obtenir de l'info sur l'environnement
+de celui-ci, l'endroit dans le code source où la continuation se
+trouve et même de pouvoir exécuter du code dans l'environnement d'une
+continuation de la pile choisie.
+
+Possibilité de faire le déboggage à distance (ex: iPhone)
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Programmation orientée objet}
 
-\section{Motivation (ou Objectifs?)}
-\subsection{Parler des define-type de Gambit-C et du SRFI-9}
-\subsection{Parler de CLOS}
+Parler des define-type de Gambit-C et du SRFI-9
+
+Approche traditionnelle de la prog OO: Surdéfinition de méthodes de
+classe, héritage simple, polymorphisme, etc...
+
+Parler de CLOS: intégré à Common LISP, fonctions génériques, héritage
+multiple
+
+Besoins pour jeux vidéo
 
 \section{Description du langage}
+Langage orienté objet qui a pour but d'être efficace tout en apportant
+l'expressivité offerte par la programmation orientée object à la CLOS.
+
+Résumé des fonctionnalités
+\begin{itemize}
+\item Accès aux membres rapide
+\item Héritage multiple
+\item Polymorphisme
+\item Fonctions génériques à \og dispatch \fg multiple
+\end{itemize}
+
 \subsection{Définition de classes}
-\subsubsection{Compatibilité avec les define-type}
-\subsubsection{Définitions simples (instance slots et class slots)}
-\subsection{Héritages des membres}
-\subsubsection{Utilisation de hook sur les slots}
-\subsubsection{Constructeurs}
+Compatibilité avec les define-type
+
+Définitions simples (instance slots et class slots)
+
+Héritages des membres
+
+Utilisation de hook sur les slots
+
+Constructeurs
 
 
 \subsection{Définition de fonctions génériques}
-\subsubsection{Dispatch simple}
-\subsubsection{Dispatch multiple (avec les problèmes reliés à la résolution de la méthode à choisir)}
-\subsubsection{call-next-method}
-\subsubsection{Type '*'}
+Dispatch simple
+
+Dispatch multiple (avec les problèmes reliés à la résolution de la méthode à choisir)
+
+call-next-method
+
+Type '*'
+
+\subsection{Fonctions et formes spéciales utilitaires}
+
+Vérifications manuelles de typages et introspections
+(instance-object?, instance-of?, find-class?, get-class-id,
+is-subclass?, get-supers)
+
+
 
 
 \section{Implantation}
-\subsection{Apercu global}
-\subsection{Séparation entre le travail fait durant l'expantion macro et l'exécution}
+Apercu global: Utilisation de macros scheme pour effectuer la
+génération de code nécessaire au fonctionnement du système.
+
+Séparation entre le travail fait durant l'expantion macro et l'exécution
+
+Passage d'informations entre le moment de l'expansion et l'exécution
+(informations sur les classes, les fonctions génériques, etc...)
+
 \subsection{Implantation de define-class}
-\subsection{Structures de données (descripteurs de classes, format des instances, etc..)}
-\subsubsection{Polymorphisme}
-\subsubsection{Constructeur et describe comme fonction génériques}
+Structures de données (descripteurs de classes, format des instances, etc..)
+
+Polymorphisme: chaque index dans les descripteurs de classes sont
+orthogonaux (implique que les descripteurs grossissent linéairement en
+fonction du nombre de classes) et passage aux classes enfants des
+indexes utilisés par les parents.
+
+Constructeurs et describe comme fonctions génériques
 
 \subsection{Implantation de define-generic}
-\subsubsection{Vérifications de types}
-\subsubsection{Délégation à l'exécution}
+Registre des méthode: Conservations d'informations sur les fonctions
+génériques et leurs instances 
+
+Implantation du polymorphisme des fonctions génériques
+
+Implantation du call-next-method faite avec l'utilisation de variables
+à portée dynamique
+
+Coût de l'utilisation des fonctions génériques
 
 \subsection{Implantation de define-method}
-\subsubsection{Stockages des fermetures}
+Stockages des fermetures durant l'expansion macro et l'exécution
+
+
 
 
 \section{Conclusion}
-\subsection{Ouverture sur le fait qu'un meta-protocole serait très intéressant à ajouter, mais à quel prix?}
+Ouverture sur le fait qu'un meta-protocole serait très intéressant à
+ajouter, mais à quel prix?
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Système de coroutines}
-\section{Motivation}
-\subsection{Contrôle fin du comportement de threads}
-\subsection{Parler de l'intérêt de Termite}
-\subsection{Motivation de l'utilisation de coroutines (contrôle exact sur le flot de contrôle == système toujours dans un état consistant).}
+Système de threads offerts ne sont pas toujours
+satisfaisant. Mentalité Scheme: au lieu de contraindre ce qu'on veut
+faire en fonction de ce qui nous est offert, étendre le langage pour
+nous permettre de faire ce que l'on veut et surtout de la manière
+désirée.
+
+Implantation de son propre système: contrôle fin du comportement de
+threads
+
+Parler de Termite: Calcul distribué sur plusieurs
+noeuds. Synchronisation par passage de message. Communication via
+TCP/IP.
+
+Motivation de l'utilisation de coroutines (contrôle exact sur le flot
+de contrôle == système toujours dans un état consistant).
 
 \section{Description du langage}
+Idée sur nos coroutines
+
+Systèmes récursifs
+
+Timers: abstraction du temps écoulé permettant l'accélération ou le
+ralentissement de l'exécution d'une simulation.
+
 \subsection{Création de coroutines}
+Création d'une coroutine détachée du système:
+(new corout <id> <thunk>)
+
+intégrée au système via le démarrage (boot) ou via une autre coroutine
+(spawn-brother)
+
 \subsection{Manipulation du flot de contrôle}
-\subsubsection{yield}
-\subsubsection{super-yield}
+\subsubsection{yield} 
+Transfert à la prochaine coroutine
+
+\subsubsection{super-yield} 
+Transfert au prochain système de coroutine (frère du système courant).
+
 \subsubsection{terminate-corout, kill-all!, super-kill-all!}
+Terminaison de coroutines. 
+
 \subsubsection{sleep-for}
+Sommeil pour un temps prédéterminé.
+
 \subsubsection{continue-with}
+Continuation de la coroutine.
+
 \subsubsection{spawn-brother, spawn-brother-thunk}
+Démarrage de nouvelles coroutines.
+
 \subsubsection{Composition of coroutines}
+Compositions ou séquençage de coroutine
 
 \subsection{Système de communication inter coroutines}
-\subsubsection{!}
+\subsubsection{!} 
+Envoi de message à une coroutine
+
 \subsubsection{?}
+Réception d'un message bloquante (avec possibilité de timeout)
+
 \subsubsection{??}
+Réception sélective de message bloquante (avec possibilité de timeout)
+
 \subsubsection{recv, dynamic msg handlers}
-\subsubsection{timeouts}
+Forme spéciale permettant la réception sélective de messages via un
+\og pattern matching \fg qui permet une notation concise et
+l'utilisation aisée du contenu des messages reçus.
+
 \subsubsection{Messaging lists}
+Système permettant de regrouper des coroutines et de leurs diffuser
+des messages. 
 
 \subsection{Démarrage du système}
 \subsubsection{simple-boot}
+Démarrage rapide du système.
+
 \subsubsection{boot}
-\subsubsection{Systèmes cascadés}
+Démarrage permettant de spécifier un timer spécifique à l'utilisation
+et une fonction personnalisée effectuant la gestion des valeurs de
+retour des coroutines.
+
+Systèmes cascadés?
 
 
 \section{Implantation}
 
 \subsection{Implantation des coroutines}
 
-\subsubsection{Structure de données}
-\subsubsection{États d'une coroutines}
+Structure de données
+
+États d'une coroutines
 
 \subsection{Scheduler}
-\subsubsection{Abstraction du temps via timer}
-\subsubsection{États du scheduler}
-\subsubsection{Algorithme de scheduling}
+Abstraction du temps via timer
+
+États du scheduler
+
+Algorithme de scheduling
 
 \subsection{Système de messagerie}
-\subsubsection{Structures de données}
-\subsubsection{Envoi de messages}
-\subsubsection{Réception de messages}
-\subsubsection{Macro recv}
+Structures de données
+
+Envoi de messages
+
+Réception de messages
+
+Macro recv
 
 
 \section{Conclusion}
-\subsection{Ouverture sur le profilage des coroutine}
+Ouverture sur le profilage des coroutine
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Évaluation et expériences}
 
+Développement de jeu fait ayant comme but de trouver les problèmes
+rencontrés durant la création de jeux vidéo et de proposer des
+méthodes pour résoudre ces problèmes.
+
+Aussi, on cherche à identifier les avantages que nous a fourni Scheme
+et à identifier les incovénients que pose l'utilisant du langage
+Scheme pour le développement de ces jeux.
+
+Débute par un jeu simple afin de trouver les problèmes de base et
+trouve des solutions à ces problèmes.
+
+Ensuite, un deuxième jeu a été écrit afin de consolider les solutions
+trouvées précédemment et de potentiellement trouver d'autres problèmes
+reliés aux nouvelles complexité présentent dans ce deuxième jeu.
+
 \section{Développement de \og Space Invaders \fg}
 
 \subsection{Objectifs}
-\subsubsection{Expérimentation avec un jeu très simple}
-\subsubsection{Trouver les problèmes fondamentaux pour le développement de jeux}
-\subsubsection{Tenter de les résoudre}
+Expérimentation avec un jeu très simple
+
+Trouver les problèmes fondamentaux pour le développement de jeux
+
+Tenter de les résoudre
 
 \subsection{Version initiale}
-\subsubsection{Premier jet dans le but de trouver des problèmes potitiels}
-\subsubsection{Comment faire des animations? => CPS}
-\subsubsection{Comment concevoir une partie a 2 joueurs? => coroutines}
-\subsubsection{Difficulté à décrire la résolution de collision de manière efficace}
-\subsubsection{Est-il possible d'écrire le comportement d'une entité de manière indépendante, i.e. que le code soit centralisé dans une même fonction?}
+Premier jet dans le but de trouver des problèmes potitiels
+
+\begin{itemize}
+\item Comment faire des animations? => CPS
+\item Comment concevoir une partie a 2 joueurs? => coroutines
+\item Difficulté à décrire la résolution de collision de manière
+  efficace 
+\item Est-il possible d'écrire le comportement d'une entité de manière
+  indépendante, i.e. que le code soit centralisé dans une même
+  fonction?
+\end{itemize}
 
 \subsection{Version orientée objet}
-\subsubsection{Motivation: Utilisation de fonctions génériques}
-\subsubsection{Code Highlight: Résolution de collisions}
+Motivation: Utilisation de fonctions génériques
+
+Hierarchie de classe
+
+Code Highlight: Résolution de collisions
+
 
 \subsection{Version avec système de co-routine}
-\subsubsection{Motivation: Intégrer les coroutines a chaque objet de manière à ce que chaque instance soit une entité à part entière qui doit régir son propre comportement.}
-\subsubsection{Difficultés: synchronisation des entités}
-\subsubsection{Code Highlight: synchronisation des invaders}
+Motivation: Intégrer les coroutines a chaque objet de manière à ce que chaque instance soit une entité à part entière qui doit régir son propre comportement.
+
+Difficultés: synchronisation des entités
+
+Code Highlight: synchronisation des invaders
+
 
 \subsection{Conclusion}
-\subsubsection{Trouvé plusieurs problèmes et pu résoudres ces derniers}
-\subsubsection{ouverture: Essayer ces techniques dans un jeu plus complexe pour voir si elles sont toujours valides}
+Trouvé plusieurs problèmes et pu résoudres ces derniers
+
+Utilisation d'un système object a grandement contribué à améliorer le
+code du jeu.
+
+L'intégration du système de coroutines aux objets du jeu a causé plus
+de problème qu'elle en a résolu. L'utilisation des coroutines serait
+mieux d'être limité à l'implantation du jeu multijoueur.
+
+ouverture: Essayer ces techniques dans un jeu plus complexe pour voir
+si elles sont toujours valides
 
 
 \section{Développement de \og Lode Runner \fg}
 \subsection{Objectifs}
-\subsubsection{Jeux plus complexe: plus d'interaction du joueur, intelligence artivicielle, niveaux, schema d'animations plus complexe, etc...}
-\subsubsection{Utiliser ce qui semblait de meilleur dans space-invaders de manière a non seulement confirmer la pertinance de ces methodes, mais aussi a potentiellement en developper de nouvelles dû aux nouvelles contraintes de ce jeu.}
+Jeux plus complexe: plus d'interaction du joueur, intelligence
+artivicielle, niveaux, schema d'animations plus complexe, etc...
+
+Utiliser ce qui semblait de meilleur dans space-invaders de manière a non seulement confirmer la pertinance de ces methodes, mais aussi a potentiellement en developper de nouvelles dû aux nouvelles contraintes de ce jeu.
 
 \subsection{Synchronisation}
-\subsubsection{Utilisation du concept de frame pour faire la synchro. Réduit de beaucoup la complexité.}
-\subsubsection{Danger si le framerate varie, la vitesse du jeu varie}
+Utilisation du concept de frame pour faire la synchro. (manière
+traditionnelle) Réduit de beaucoup la complexité.
+
+Danger si le framerate varie, la vitesse du jeu varie.
 
 \subsection{Machines à états}
-\subsubsection{Utiliation des fonctions génériques}
-\subsubsection{Utilisez un LSD pour ca??? Des idées?}
+Utiliation des fonctions génériques
+
+Utilisez un LSD pour ca??? Des idées?
 
 \subsection{Intelligence Artificielle}
 \subsubsection{À venir...}
@@ -406,33 +729,60 @@ Référence temporaire pour pas faire planter le makefile\cite{SICP}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Travaux reliés}
 
+Dans un premier temps, il serait intéressant de comparer les
+différents langages utilisés dans l'industrie du jeu vidéo avec Scheme
+afin d'en faire ressortir les différences. Ces différences mènent
+directement à une méthode de développement qui seront complètement
+différentes.
+
+Scheme a déjà été utilisé pour produire des jeux vidéo commerciaux de
+très bonne qualité. Certains seront cités et une revue de l'expérience
+acquise par les développeurs sera exposée.
+
 \section{Comparaison de langages}
 
 \subsection{Lua}
-\subsubsection{Differences entre lua et Scheme}
+Langage utilisé très fréquemment pour effectuer le \og scripting \fg
+dans les jeu vidéo.
+
+Differences entre lua et Scheme
 \begin{itemize}
 \item Lua est de petite taille en mem
 \item ..
 \end{itemize}
 
 \subsection{C++}
-\subsubsection{Differences entre C++}
+Langage principal de développement de jeu vidéo en industrie.
+
+Differences entre Scheme et C++
 \begin{itemize}
-\item Gestion memoire manuelle
+\item Gestion memoire manuelle vs GC
 \item méthode surdéfinies vs fonctions génériques
+\item ...
 \end{itemize}
 
 
 \section{Jeux en Lisp}
 
 \subsection{QuantZ}
-\subsubsection{A voir avec Robert}
-\subsubsection{FRP}
-\subsubsection{Techniques anti-gc}
-\subsubsection{Delegation de fermetures}
+Jeu de type \og casual \fg de très bonne qualité écrit presque
+entièrement en Scheme.
+
+À voir avec Robert
+
+FRP?
+
+Techniques anti-gc
+
+Delegation de fermetures
 
 \subsection{Naughty Dogz}
+Compagnie très connue associée à Sony qui utilisent Scheme pour
+produire leurs jeux vidéo.
+
 \subsubsection{GOAL}
+Compilateur Scheme utilisé pour produire les jeux sur PlayStation 2
+
 %% http://en.wikipedia.org/wiki/Game_Oriented_Assembly_Lisp
 %% http://grammerjack.spaces.live.com/blog/cns!F2629C772A178A7C!135.entry
 \begin{itemize}
@@ -440,6 +790,9 @@ Référence temporaire pour pas faire planter le makefile\cite{SICP}
 \item http://grammerjack.spaces.live.com/blog/cns!F2629C772A178A7C!135.entry
 \end{itemize}
 
+\subsubsection{Drake's uncharted Fortune}
+
+%%http://bc.tech.coop/blog/060118.html
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Conclusion}

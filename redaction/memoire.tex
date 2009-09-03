@@ -165,14 +165,19 @@ haut niveau suivantes:
 \item Un système de déboggage très efficace
 \end{itemize}
 
-Les particularités du langages Scheme sont discutées plus en détail
+Ces particularités du langages Scheme sont discutées plus en détail
 dans le chapitre \ref{Chap:Scheme}. 
 
-\todo{introduire Gambit-C}
+Le système Gambit-C, l'une des implantations de Scheme les plus
+performantes~\cite{GAMBIT_BENCHMARKS} sera utilisée pour effectuer les
+expérience pratiques. Ce système comporte de nombreuses extensions
+pouvant être très utiles au développement de jeux vidéo. On y retrouve
+entre autres des tables de hachages ou des \textit{threads} (processus
+légers).
 
-Il semble donc qu'une utilisation judicieuse de ce langage de
-programmation pourrait faire bénéficier des projets aussi complexes
-que le sont les productions de jeux vidéo.
+Il semble donc qu'une utilisation judicieuse de ce système pourrait
+faire bénéficier des projets aussi complexes que le sont les
+productions de jeux vidéo.
 
 \section{Problématique}
 Ce mémoire de maîtrise vise à répondre à la problématique suivante:
@@ -199,7 +204,7 @@ les besoins au niveau du développement de jeux vidéo. Concurremment, 2
 jeux ont été développés pour raffiner nos approches et les évaluer
 dans un contexte réel.
 
-Le premier jeux a servi de platforme d'exploration permettant
+Le premier jeux a servi de plate-forme d'exploration permettant
 d'élaborer une méthodologie qui semble efficace pour le développement
 de jeux. Afin d'obtenir une telle méthodologie, plusieurs itérations
 de développement ont été effectuées, chacune permettant d'explorer de
@@ -253,11 +258,11 @@ inconvénients ou problèmes obtenus seront exposés.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Développement de jeux vidéo}
 
-Importance du marche des JV
+\todo{Importance du marche des JV}
 
-Diversite des jeux (genres, plates-formes)
+\todo{Diversite des jeux (genres, plates-formes)}
 
-Charactéristiques de jeux modernes
+\todo{Charactéristiques de jeux modernes}
 
 Les jeux vidéo font parti d'un domaine de l'informatique en pleine
 effervescence grâce à une demande constante de nouveaux produits. Ces
@@ -266,36 +271,37 @@ les consommateurs s'attendent à obtenir en effectuant l'acquisition
 d'un nouveau titre. Ces attentes du consommateur peuvent se traduire
 par les besoins suivant:
 
-mettre ici une liste des attentes pour un jeu moderne
+\todo{mettre ici une liste des attentes pour un jeu moderne}
 
 \section{Historique}
 
 %% http://en.wikipedia.org/wiki/History_of_video_games
 
 \subsection{préhistoire 1948-1970}
-CRT games, Mainframe games
+\todo{CRT games, Mainframe games}
 
 \subsection{Système arcade 1970-1985}
-Pong, Space Invaders, Pac-Man
+\todo{Pong, Space Invaders, Pac-Man}
 
 \subsection{Premières consoles 1972-1984}
-Magnavox Odyssey, Atari XX00 et ColecoVision
+\todo{Magnavox Odyssey, Atari XX00 et ColecoVision}
 
 \subsection{Ordinateurs personnels 1977-...}
-Évolution parallèle constante
+\todo{Évolution parallèle constante}
 
-Toujours été jusqu'à la venu des console modernes la plateforme offrant les meilleurs performances.
+\todo{Toujours été jusqu'à la venu des console modernes la plate-forme
+  offrant les meilleurs performances.}
 
 \subsection{Consoles portables 1980-...}
-GameBoy etc...
+\todo{GameBoy etc...}
 
 \subsection{Consoles intermédiaires 1984-2006}
-NES, SNES, N64, GameCube
+\todo{NES, SNES, N64, GameCube}
 
 \subsection{Consoles modernes 2005-...}
-Interfaces plus 'casual' = Wii
+\todo{Interfaces plus 'casual' = Wii}
 
-Consoles très performantes
+\todo{Consoles très performantes}
 
 
 
@@ -319,188 +325,188 @@ Consoles très performantes
 \chapter{Le langage Scheme}
 \label{Chap:Scheme}
 
-Choix du langage influence beaucoup la structure du code, le manière
-de développer le logiciel, etc...
+\todo{Choix du langage influence beaucoup la structure du code, le manière
+  de développer le logiciel, etc...}
 
-Scheme est un langage qui semble être peu utilisé dans des produits
-commerciaux.
+\todo{Scheme est un langage qui semble être peu utilisé dans des
+  produits commerciaux.}
 
-d'autres idées?
+\todo{d'autres idées?}
 
-Référence temporaire pour pas faire planter le makefile\cite{SICP}
+\todo{Référence temporaire pour pas faire planter le makefile\cite{SICP}}
 
 \section{Héritage de LISP}
 \subsection{Histoire de LISP}
-McCarthy, GC, List Processing, AI...
+\todo{McCarthy, GC, List Processing, AI...}
 
-Common LISP = Grosse Bébitte
+\todo{Common LISP = Grosse Bébitte}
 
 \subsection{Avènement de Scheme}
-Épuration de LISP à l'essence du langage
+\todo{Épuration de LISP à l'essence du langage}
 
-évolution du langage via RNRS, SRFIs
+\todo{évolution du langage via RNRS, SRFIs}
 
-simplicité du langage, beaucoup d'extension disponibles 
+\todo{simplicité du langage, beaucoup d'extension disponibles }
 
 \subsection{Langages inspirés de Scheme}
-Javascript, Ruby: lang de scripting. Concept de fermetures
+\todo{Javascript, Ruby: lang de scripting. Concept de fermetures}
 
-Java??
+\todo{Java??}
 
 \section{Programmation fonctionnelle}
 \subsection{Distinction}
- Fonctions sont des données de premier ordre
-
- Fonctions d'ordres supérieures (avec exemples)
+\todo{Fonctions sont des données de premier ordre}
+\todo{Fonctions d'ordres supérieures (avec exemples)}
 
 \subsection{Programmation fonctionnelle pure}
-Pas de mutation. Comme des blocs lego
+\todo{Pas de mutation. Comme des blocs lego}
 
-Haskell, ML
+\todo{Haskell, ML}
 
-Exemple en Scheme
+\todo{Exemple en Scheme}
 
 
 \subsection{Effets de bords dans Scheme}
-Entrees sorties (variables à portée dynamique)
-Mutations de variables
+\todo{Entrees sorties (variables à portée dynamique)}
+\todo{Mutations de variables}
 
 
 \section{Macros}
 \subsection{Introduction}
-Discussion sur les macros de C et leurs limitations: permet de faire
-des abstractions dans le code résultant une modification du code
-source avant la compilation, mais uniquement limité à du remplacement
-de code.
+\todo{Discussion sur les macros de C et leurs limitations: permet de
+  faire des abstractions dans le code résultant une modification du
+  code source avant la compilation, mais uniquement limité à du
+  remplacement de code.}
 
-Explication des macros scheme: Code source == données scheme, dispose
-d'une pré-évaluation permettant de prendre du code source en entré et
-de généré du code source (toujours sous forme de listes (données
-Scheme)). Revient a faire une manipulation d'ASA.
+\todo{Explication des macros scheme: Code source == données scheme,
+  dispose d'une pré-évaluation permettant de prendre du code source en
+  entré et de généré du code source (toujours sous forme de listes
+  (données Scheme)). Revient a faire une manipulation d'ASA.}
 
-Dispose de toute la puissance de calcul durant l'expansion :)
+\todo{Dispose de toute la puissance de calcul durant l'expansion :)}
 
 \subsection{Exemples simples}
 
-macro inc
+\todo{macro inc}
 
-macro while
+\todo{macro while}
 
 \subsection{Problème de l'hygiène des macros}
 
-Capture de nom intentionnelle, ou non intentionnelle. 
+\todo{Capture de nom intentionnelle, ou non intentionnelle. }
 
-Différentes formes spéciales (define-macro, define-syntax)
+\todo{Différentes formes spéciales (define-macro, define-syntax)}
 
 
 
 \section{Continuations}
 \subsection{Introductions du sujet et explications}
-En C, continuation equiv au code situé à l'adresse de retour de la
-fonction exécutée.
+\todo{En C, continuation equiv au code situé à l'adresse de retour de
+  la fonction exécutée.}
 
-Explication de l'ordre dévaluation en Scheme.
+\todo{Explication de l'ordre dévaluation en Scheme.}
 
-Continuation d'un programme simple en Scheme. (+ 1 (- [f x y] 2)) :
-continuation de l'appel à f est la soustraction du résultat par deux,
-puis l'on ajoute à 1 se résultat. Eq à (lambda (res-f) (+ 1 (- res-f 2))).
+\todo{Continuation d'un programme simple en Scheme. (+ 1 (- [f x y]
+  2)) : continuation de l'appel à f est la soustraction du résultat
+  par deux, puis l'on ajoute à 1 se résultat. Eq à (lambda (res-f) (+
+  1 (- res-f 2))).}
 
 \subsection{Réification de continuations}
-Explication de call-with-current-continuation permettant de faire
-surfacer une continuation.
+\todo{Explication de call-with-current-continuation permettant de faire}
+\todo{surfacer une continuation.}
 
 \subsection{Exemples d'utilisations}
 \subsubsection{Échappement au flux de contrôle}
-Utilisation comme un return
+\todo{Utilisation comme un return}
 
 \subsubsection{Système de coroutine}
-Exemple du cours de Marc
+\todo{Exemple du cours de Marc}
 
 \subsection{Forme d'écriture de code en CPS}
-Expliquer la différence entre un appel terminal et un appel
-non-terminal. Expliquer comment les appels terminaux peuvent être
-optimisés (requis en Scheme).
+\todo{Expliquer la différence entre un appel terminal et un appel
+  non-terminal. Expliquer comment les appels terminaux peuvent être
+  optimisés (requis en Scheme).}
 
-Écrire le code de manière à rendre explicite le passage et les appels
-de continuations. Toujours des appels terminaux. Transformation
-souvent utilisée par les compilateurs pour implanter l'optimisation
-d'appels terminaux.
+\todo{Écrire le code de manière à rendre explicite le passage et les
+  appels de continuations. Toujours des appels
+  terminaux. Transformation souvent utilisée par les compilateurs pour
+  implanter l'optimisation d'appels terminaux.}
 
 \subsection{Exemple d'implantation}
-Exemple du cours de Marc
-
-blabla
+\todo{Exemple du cours de Marc}
 
 
 \section{Dynamisme du langage}
-Typage dynamique vs typage statique
+\todo{Typage dynamique vs typage statique}
 
-Exemple de code utilisant le typage dynamique.
+\todo{Exemple de code utilisant le typage dynamique.}
 
-Evaluation dynamique de code avec load ou eval. idées?
+\todo{Evaluation dynamique de code avec load ou eval. idées?}
 
-Langages comme C++ favorisent bcp de focuser sur la conceptions des
-classes. Implique une structure rigide qui se doit d'être bien conçu
-depuis le départ.
+\todo{Langages comme C++ favorisent bcp de focuser sur la conceptions des
+  classes. Implique une structure rigide qui se doit d'être bien conçu
+  depuis le départ.}
 
-Langages plus dynamiques permettent des cycles de prototypage rapide
-en apportant beaucoup de flexibilité aux développeurs.
+\todo{Langages plus dynamiques permettent des cycles de prototypage
+  rapide en apportant beaucoup de flexibilité aux développeurs.}
 
 
 \section{Gestion mémoire automatique}
 \subsection{Motivation}
-Gestion mémoire manuelle ou semi-automatique causent énormément de
-problèmes de fuites de mémoire (ou de pointeurs fous).
+\todo{Gestion mémoire manuelle ou semi-automatique causent énormément
+  de problèmes de fuites de mémoire (ou de pointeurs fous).}
 
-En connaissant les racines, on peut automatiser la récupérations de
-mémoire, au coût d'un certain temps de calcul.
+\todo{En connaissant les racines, on peut automatiser la récupérations
+  de mémoire, au coût d'un certain temps de calcul.}
 
-Date des premières version de LISP.
+\todo{Date des premières version de LISP.}
 
 
 
 \subsection{Survol des techniques}
-Mark and sweep
+\todo{Mark and sweep}
 
-Stop and copy
+\todo{Stop and copy}
 
-GC générationnels
+\todo{GC générationnels}
 
-GC temps réels ou incrémentaux
+\todo{GC temps réels ou incrémentaux}
 
 
 
 \section{Débuggage}
-Possibilité de pouvoir exécuter du code arbitraire lors d'un crash
+\todo{Possibilité de pouvoir exécuter du code arbitraire lors d'un
+  crash}
 
-Possibilité de pouvoir inspecter chacune des frames de la pile de
-continuactions afin de pouvoir obtenir de l'info sur l'environnement
-de celui-ci, l'endroit dans le code source où la continuation se
-trouve et même de pouvoir exécuter du code dans l'environnement d'une
-continuation de la pile choisie.
+\todo{Possibilité de pouvoir inspecter chacune des frames de la pile
+  de continuactions afin de pouvoir obtenir de l'info sur
+  l'environnement de celui-ci, l'endroit dans le code source où la
+  continuation se trouve et même de pouvoir exécuter du code dans
+  l'environnement d'une continuation de la pile choisie.}
 
-Possibilité de faire le déboggage à distance (ex: iPhone)
+\todo{Possibilité de faire le déboggage à distance (ex: iPhone)}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Programmation orientée objet}
 
-Parler des define-type de Gambit-C et du SRFI-9
+\todo{Parler des define-type de Gambit-C et du SRFI-9}
 
-Approche traditionnelle de la prog OO: Surdéfinition de méthodes de
-classe, héritage simple, polymorphisme, etc...
+\todo{Approche traditionnelle de la prog OO: Surdéfinition de méthodes de
+  classe, héritage simple, polymorphisme, etc...}
 
-Parler de CLOS: intégré à Common LISP, fonctions génériques, héritage
-multiple
+\todo{Parler de CLOS: intégré à Common LISP, fonctions génériques, héritage
+  multiple}
 
-Besoins pour jeux vidéo
+\todo{Besoins pour jeux vidéo}
 
 \section{Description du langage}
-Langage orienté objet qui a pour but d'être efficace tout en apportant
-l'expressivité offerte par la programmation orientée object à la CLOS.
+\todo{Langage orienté objet qui a pour but d'être efficace tout en
+  apportant l'expressivité offerte par la programmation orientée
+  object à la CLOS.}
 
-Résumé des fonctionnalités
+Résumé des fonctionnalités:
 \begin{itemize}
 \item Accès aux membres rapide
 \item Héritage multiple
@@ -509,190 +515,193 @@ Résumé des fonctionnalités
 \end{itemize}
 
 \subsection{Définition de classes}
-Compatibilité avec les define-type
+\todo{Compatibilité avec les define-type}
 
-Définitions simples (instance slots et class slots)
+\todo{Définitions simples (instance slots et class slots)}
 
-Héritages des membres
+\todo{Héritages des membres}
 
-Utilisation de hook sur les slots
+\todo{Utilisation de hook sur les slots}
 
-Constructeurs
+\todo{Constructeurs}
 
 
 \subsection{Définition de fonctions génériques}
-Dispatch simple
+\todo{Dispatch simple}
 
-Dispatch multiple (avec les problèmes reliés à la résolution de la méthode à choisir)
+\todo{Dispatch multiple (avec les problèmes reliés à la résolution de la méthode à choisir)}
 
-call-next-method
+\todo{call-next-method}
 
-Type '*'
+\todo{Type '*'}
 
 \subsection{Fonctions et formes spéciales utilitaires}
 
-Vérifications manuelles de typages et introspections
-(instance-object?, instance-of?, find-class?, get-class-id,
-is-subclass?, get-supers)
+\todo{Vérifications manuelles de typages et introspections
+  (instance-object?, instance-of?, find-class?, get-class-id,
+  is-subclass?, get-supers)}
 
 
 
 
 \section{Implantation}
-Apercu global: Utilisation de macros scheme pour effectuer la
-génération de code nécessaire au fonctionnement du système.
+\todo{Apercu global: Utilisation de macros scheme pour effectuer la
+  génération de code nécessaire au fonctionnement du système.}
 
-Séparation entre le travail fait durant l'expantion macro et l'exécution
+\todo{Séparation entre le travail fait durant l'expantion macro et
+  l'exécution}
 
-Passage d'informations entre le moment de l'expansion et l'exécution
-(informations sur les classes, les fonctions génériques, etc...)
+\todo{Passage d'informations entre le moment de l'expansion et
+  l'exécution (informations sur les classes, les fonctions génériques,
+  etc...)}
 
 \subsection{Implantation de define-class}
-Structures de données (descripteurs de classes, format des instances, etc..)
+\todo{Structures de données (descripteurs de classes, format des
+  instances, etc..)}
 
-Polymorphisme: chaque index dans les descripteurs de classes sont
-orthogonaux (implique que les descripteurs grossissent linéairement en
-fonction du nombre de classes) et passage aux classes enfants des
-indexes utilisés par les parents.
+\todo{Polymorphisme: chaque index dans les descripteurs de classes
+  sont orthogonaux (implique que les descripteurs grossissent
+  linéairement en fonction du nombre de classes) et passage aux
+  classes enfants des indexes utilisés par les parents.}
 
-Constructeurs et describe comme fonctions génériques
+\todo{Constructeurs et describe comme fonctions génériques}
 
 \subsection{Implantation de define-generic}
-Registre des méthode: Conservations d'informations sur les fonctions
-génériques et leurs instances 
+\todo{Registre des méthode: Conservations d'informations sur les
+  fonctions génériques et leurs instances }
 
-Implantation du polymorphisme des fonctions génériques
+\todo{Implantation du polymorphisme des fonctions génériques}
 
-Implantation du call-next-method faite avec l'utilisation de variables
-à portée dynamique
+\todo{Implantation du call-next-method faite avec l'utilisation de
+  variables à portée dynamique}
 
-Coût de l'utilisation des fonctions génériques
+\todo{Coût de l'utilisation des fonctions génériques}
 
 \subsection{Implantation de define-method}
-Stockages des fermetures durant l'expansion macro et l'exécution
+\todo{Stockages des fermetures durant l'expansion macro et l'exécution}
 
 
 
 
 \section{Conclusion}
-Ouverture sur le fait qu'un meta-protocole serait très intéressant à
-ajouter, mais à quel prix?
+\todo{Ouverture sur le fait qu'un meta-protocole serait très intéressant à
+  ajouter, mais à quel prix?}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Système de coroutines}
-Système de threads offerts ne sont pas toujours
-satisfaisant. Mentalité Scheme: au lieu de contraindre ce qu'on veut
-faire en fonction de ce qui nous est offert, étendre le langage pour
-nous permettre de faire ce que l'on veut et surtout de la manière
-désirée.
+\todo{Système de threads offerts ne sont pas toujours
+  satisfaisant. Mentalité Scheme: au lieu de contraindre ce qu'on veut
+  faire en fonction de ce qui nous est offert, étendre le langage pour
+  nous permettre de faire ce que l'on veut et surtout de la manière
+  désirée.}
 
-Implantation de son propre système: contrôle fin du comportement de
-threads
+\todo{Implantation de son propre système: contrôle fin du comportement
+  de threads}
 
-Parler de Termite: Calcul distribué sur plusieurs
-noeuds. Synchronisation par passage de message. Communication via
-TCP/IP.
+\todo{Parler de Termite: Calcul distribué sur plusieurs
+  noeuds. Synchronisation par passage de message. Communication via
+  TCP/IP.}
 
-Motivation de l'utilisation de coroutines (contrôle exact sur le flot
-de contrôle == système toujours dans un état consistant).
+\todo{Motivation de l'utilisation de coroutines (contrôle exact sur le
+  flot de contrôle == système toujours dans un état consistant).}
 
 \section{Description du langage}
-Idée sur nos coroutines
+\todo{Idée sur nos coroutines}
 
-Systèmes récursifs
+\todo{Systèmes récursifs}
 
-Timers: abstraction du temps écoulé permettant l'accélération ou le
-ralentissement de l'exécution d'une simulation.
+\todo{Timers: abstraction du temps écoulé permettant l'accélération ou
+  le ralentissement de l'exécution d'une simulation.}
 
 \subsection{Création de coroutines}
-Création d'une coroutine détachée du système:
-(new corout <id> <thunk>)
+\todo{Création d'une coroutine détachée du système: (new corout <id>
+  <thunk>)}
 
-intégrée au système via le démarrage (boot) ou via une autre coroutine
-(spawn-brother)
+\todo{intégrée au système via le démarrage (boot) ou via une autre
+  coroutine (spawn-brother)}
 
 \subsection{Manipulation du flot de contrôle}
 \subsubsection{yield} 
-Transfert à la prochaine coroutine
+\todo{Transfert à la prochaine coroutine}
 
 \subsubsection{super-yield} 
-Transfert au prochain système de coroutine (frère du système courant).
+\todo{Transfert au prochain système de coroutine (frère du système courant).}
 
 \subsubsection{terminate-corout, kill-all!, super-kill-all!}
-Terminaison de coroutines. 
+\todo{Terminaison de coroutines. }
 
 \subsubsection{sleep-for}
-Sommeil pour un temps prédéterminé.
+\todo{Sommeil pour un temps prédéterminé.}
 
 \subsubsection{continue-with}
-Continuation de la coroutine.
+\todo{Continuation de la coroutine.}
 
 \subsubsection{spawn-brother, spawn-brother-thunk}
-Démarrage de nouvelles coroutines.
+\todo{Démarrage de nouvelles coroutines.}
 
 \subsubsection{Composition of coroutines}
-Compositions ou séquençage de coroutine
+\todo{Compositions ou séquençage de coroutine}
 
 \subsection{Système de communication inter coroutines}
 \subsubsection{!} 
-Envoi de message à une coroutine
+\todo{Envoi de message à une coroutine}
 
 \subsubsection{?}
-Réception d'un message bloquante (avec possibilité de timeout)
+\todo{Réception d'un message bloquante (avec possibilité de timeout)}
 
 \subsubsection{??}
-Réception sélective de message bloquante (avec possibilité de timeout)
+\todo{Réception sélective de message bloquante (avec possibilité de timeout)}
 
 \subsubsection{recv, dynamic msg handlers}
-Forme spéciale permettant la réception sélective de messages via un
-\og pattern matching \fg qui permet une notation concise et
-l'utilisation aisée du contenu des messages reçus.
+\todo{Forme spéciale permettant la réception sélective de messages via
+  un \og pattern matching \fg qui permet une notation concise et
+  l'utilisation aisée du contenu des messages reçus.}
 
 \subsubsection{Messaging lists}
-Système permettant de regrouper des coroutines et de leurs diffuser
-des messages. 
+\todo{Système permettant de regrouper des coroutines et de leurs
+  diffuser des messages. }
 
 \subsection{Démarrage du système}
 \subsubsection{simple-boot}
-Démarrage rapide du système.
+\todo{Démarrage rapide du système.}
 
 \subsubsection{boot}
-Démarrage permettant de spécifier un timer spécifique à l'utilisation
-et une fonction personnalisée effectuant la gestion des valeurs de
-retour des coroutines.
+\todo{Démarrage permettant de spécifier un timer spécifique à
+  l'utilisation et une fonction personnalisée effectuant la gestion
+  des valeurs de retour des coroutines.}
 
-Systèmes cascadés?
+\todo{Systèmes cascadés?}
 
 
 \section{Implantation}
 
 \subsection{Implantation des coroutines}
 
-Structure de données
+\todo{Structure de données}
 
-États d'une coroutines
+\todo{États d'une coroutines}
 
 \subsection{Scheduler}
-Abstraction du temps via timer
+\todo{Abstraction du temps via timer}
 
-États du scheduler
+\todo{États du scheduler}
 
-Algorithme de scheduling
+\todo{Algorithme de scheduling}
 
 \subsection{Système de messagerie}
-Structures de données
+\todo{Structures de données}
 
-Envoi de messages
+\todo{Envoi de messages}
 
-Réception de messages
+\todo{Réception de messages}
 
-Macro recv
+\todo{Macro recv}
 
 
 \section{Conclusion}
-Ouverture sur le profilage des coroutine
+\todo{Ouverture sur le profilage des coroutine}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -716,14 +725,14 @@ reliés aux nouvelles complexité présentent dans ce deuxième jeu.
 \section{Développement de \og Space Invaders \fg}
 
 \subsection{Objectifs}
-Expérimentation avec un jeu très simple
+\todo{Expérimentation avec un jeu très simple}
 
-Trouver les problèmes fondamentaux pour le développement de jeux
+\todo{Trouver les problèmes fondamentaux pour le développement de jeux}
 
-Tenter de les résoudre
+\todo{Tenter de les résoudre}
 
 \subsection{Version initiale}
-Premier jet dans le but de trouver des problèmes potitiels
+\todo{Premier jet dans le but de trouver des problèmes potitiels}
 
 \begin{itemize}
 \item Comment faire des animations? => CPS
@@ -736,52 +745,57 @@ Premier jet dans le but de trouver des problèmes potitiels
 \end{itemize}
 
 \subsection{Version orientée objet}
-Motivation: Utilisation de fonctions génériques
+\todo{Motivation: Utilisation de fonctions génériques}
 
-Hierarchie de classe
+\todo{Hierarchie de classe}
 
-Code Highlight: Résolution de collisions
+\todo{Code Highlight: Résolution de collisions}
 
 
 \subsection{Version avec système de co-routine}
-Motivation: Intégrer les coroutines a chaque objet de manière à ce que chaque instance soit une entité à part entière qui doit régir son propre comportement.
+\todo{Motivation: Intégrer les coroutines a chaque objet de manière à
+  ce que chaque instance soit une entité à part entière qui doit régir
+  son propre comportement.}
 
-Difficultés: synchronisation des entités
+\todo{Difficultés: synchronisation des entités}
 
-Code Highlight: synchronisation des invaders
+\todo{Code Highlight: synchronisation des invaders}
 
 
 \subsection{Conclusion}
-Trouvé plusieurs problèmes et pu résoudres ces derniers
+\todo{Trouvé plusieurs problèmes et pu résoudres ces derniers}
 
-Utilisation d'un système object a grandement contribué à améliorer le
-code du jeu.
+\todo{Utilisation d'un système object a grandement contribué à
+  améliorer le code du jeu.}
 
 L'intégration du système de coroutines aux objets du jeu a causé plus
 de problème qu'elle en a résolu. L'utilisation des coroutines serait
 mieux d'être limité à l'implantation du jeu multijoueur.
 
-ouverture: Essayer ces techniques dans un jeu plus complexe pour voir
-si elles sont toujours valides
+\todo{ouverture: Essayer ces techniques dans un jeu plus complexe pour
+  voir si elles sont toujours valides}
 
 
 \section{Développement de \og Lode Runner \fg}
 \subsection{Objectifs}
-Jeux plus complexe: plus d'interaction du joueur, intelligence
-artivicielle, niveaux, schema d'animations plus complexe, etc...
+\todo{Jeux plus complexe: plus d'interaction du joueur, intelligence
+  artivicielle, niveaux, schema d'animations plus complexe, etc...}
 
-Utiliser ce qui semblait de meilleur dans space-invaders de manière a non seulement confirmer la pertinance de ces methodes, mais aussi a potentiellement en developper de nouvelles dû aux nouvelles contraintes de ce jeu.
+\todo{Utiliser ce qui semblait de meilleur dans space-invaders de
+  manière a non seulement confirmer la pertinance de ces methodes,
+  mais aussi a potentiellement en developper de nouvelles dû aux
+  nouvelles contraintes de ce jeu.}
 
 \subsection{Synchronisation}
-Utilisation du concept de frame pour faire la synchro. (manière
-traditionnelle) Réduit de beaucoup la complexité.
+\todo{Utilisation du concept de frame pour faire la synchro. (manière
+  traditionnelle) Réduit de beaucoup la complexité.}
 
-Danger si le framerate varie, la vitesse du jeu varie.
+\todo{Danger si le framerate varie, la vitesse du jeu varie.}
 
 \subsection{Machines à états}
-Utiliation des fonctions génériques
+\todo{Utiliation des fonctions génériques}
 
-Utilisez un LSD pour ca??? Des idées?
+\todo{Utilisez un LSD pour ca??? Des idées?}
 
 \subsection{Intelligence Artificielle}
 \subsubsection{À venir...}

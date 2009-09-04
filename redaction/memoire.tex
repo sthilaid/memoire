@@ -475,17 +475,16 @@ prix des ordinateurs de jeu équivalents.
 \section{Industrie du jeu vidéo}
 Comme mentionné dans le chapitre \ref{Chap:Intro}, l'industrie du jeu
 vidéo est très importante et génère des milliards de dollars de
-revenus aux États-Unis. Ce profit provient d'une grande diversité de
-joueurs, allant de jeunes enfants aux à leurs grands-parents avec une
-population féminine presque égale à la population masculine. Il en
-résulte donc qu'une grande diversité de jeux et de plate-forme de
-jeux se retrouvent sur le marché.
+revenus par années. Ce profit provient d'une grande diversité de
+joueurs, allant de jeunes enfants jusqu'à leurs grands-parents avec
+une population féminine presque aussi importante que celle
+masculine. Il en résulte donc qu'une grande diversité de jeux et de
+plates-formes de jeux se retrouvent sur le marché.
 
-Ces
-produits possèdent plusieurs caractéristiques de qualité auxquelles
-les consommateurs s'attendent à obtenir en effectuant l'acquisition
-d'un nouveau titre. Ces attentes du consommateur peuvent se traduire
-essentiellement par les besoins suivant:
+Ces produits possèdent plusieurs caractéristiques de qualité communes
+auxquelles les consommateurs s'attendent à obtenir en effectuant
+l'acquisition d'un nouveau titre. Ces attentes du consommateur peuvent
+se traduire essentiellement par les besoins suivant:
 
 \begin{itemize}
 \item Exposer un \textit{gameplay} amusant
@@ -496,8 +495,8 @@ essentiellement par les besoins suivant:
 \end{itemize}
 
 Ces besoins semblent simple, \textit{a priori}, mais impliquent
-beaucoup de travail et imposent beaucoup de contraintes au
-développeurs de jeux vidéo. 
+beaucoup de travail et imposent des contraintes sévères au
+développeurs de jeux vidéo.
 
 Afin qu'un jeu puisse offrir un \textit{gameplay} intéressant au
 joueurs, une étroite collaboration entre les développeurs et les
@@ -520,22 +519,87 @@ rigeur de programmation afin d'assurer une stabilité de connections et
 empêcher les joueurs de tricher. Ces sujets ne sont pas discuter dans
 ce mémoire.
 
-Par contre, les joueurs n'ont pas toujours eu des attentes aussi
-élevées envers les jeux auxquels ils jouaient. Il fut une époque ou le
-graphisme était très coûteux et donc, c'était principalement la
-composante de \textit{gameplay} qui importait.
+La diversité des jeux développés a mené à une caractérisation des jeux
+et une classification de ceux-ci. Les principaux genres de jeux sont:
 
-\todo{Diversité des jeux (genres, plates-formes)}
+\begin{itemize}
+\item Action: Jeux rapides demandant souvent de l'habileté de la part
+  des joueurs.
+\item Stratégie: Jeux à rythme plus lent, exigeant une réflection plus
+  profonde de la part des joueurs.
+\item Jeux de Rôles: Jeu où la narration de l'histoire occupe une
+  place importante et où les personnages de l'histoire subissent une
+  évolution graduelle en fonction du temps.
+\item Simulation: Jeux qui tentent de représenter fidèlement des
+  phénomène réels comme la conduite automobile, des sports, etc...
+\item \textit{Casual}: Jeux simples visant à être utilisés par des
+  joueurs occasionnels. Le jeu \textit{Tetris} est considéré comme
+  appartenant à ce genre.
+\end{itemize}
 
+Il existe d'innombrables autres genres et genres hybrides de ces
+catégories, mais celles-ci donnent une idée de la diversité du contenu
+des jeux vidéo produits.
 
-
-
+\todo{Ajouter du texte liant a la prochaine section?}
 
 \section{Contraintes de programmation}
 
+Le développement de jeu vidéo implique une programmation sous des
+contraints sévères afin que le jeu respecte les normes de l'industrie
+et respecte les attentes des joueurs.
+
+Une contrainte importante portant sur les jeux vidéo est relié à
+l'efficacité algorithmique résultant du programme développé. En effet,
+la fluidité d'un jeu est critique face à l'immersion du joueur dans
+l'univers créé par le jeu. Les jeux doivent donc être des programmes
+très efficaces de manière à inviter le joueur à entrer le plus
+possible dans la narration du jeu.
+
+Une autre contrainte importante relié au développement de jeu est la
+modularité du code produit. En effet, afin que les efforts placés dans
+la production d'un jeu vidéo puissent être réutilisés dans les
+productions subséquentes, des abstractions doivent être bien faites
+afin de faciliter la réutilisation de ces dernières.
+
+\todo{Autres choses?}
+
 \subsection{Fluidité}
 
+
 \subsubsection{Taux de rafraîchissement}
+Une contrainte très importante pour le développement de jeu vidéo est
+la fluidité du jeu. Lorsqu'un film est projeté sur un écran de cinema
+le taux de rafraîchissement de l'image est d'environ 30 trames par
+secondes. Par contre, les images captées par les caméra contiennent du
+\og flou de mouvement \fg, effet créé par le mouvement s'étant produit
+durant la capture de cette image. Ce flou permet à notre cerveau
+d'estimer ou de faire l'extrapolation du mouvement dans une trame et
+donc de croire l'illusion créée par la projection des images.
+
+Par contre, dans un jeu vidéo, les images rendues sur l'écran sont
+parfaitement nettes et ne contiennent donc pas ce flou de mouvement,
+ce qui vient réduire la crédibilité de l'illusion faite par la
+succession des images à l'écran. Il faut donc augmenter le taux de
+rafraîchissement à environ 60 trames par secondes pour obtenir le
+niveau de crédibilité du projection cinématographique.
+
+\todo{references necessaire?}
+
+Ceci étant dit, un taux de rafraîchissement de 60 trames par secondes
+n'est pas nécessaire pour tout les jeux. Cela varie grandement avec la
+nature des jeux. Par exemple, un jeu de stratégie où les joueurs
+jouent à tours de rôles possède peu d'animations et donc pourrait très
+probablement être satisfaisant avec un taux de rafraîchissement de 30
+trames par secondes.
+
+Aussi, il est possible que les designers du jeu acceptent de réduire
+volontairement le taux de rafraîchissement afin d'avoir plus de temps
+pour rendre une image. Un jeu possédant un taux de rafraîchissement de
+60 trames par secondes implique que les images sont rafraîchies tous
+les 16 millisecondes.
+
+
 \subsubsection{Réponse quasi temps réelle}
 
 \subsection{Modularité}

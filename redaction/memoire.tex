@@ -103,6 +103,7 @@ blablabla
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Introduction}
+\label{Chap:Intro}
 
 L'industrie du jeu vidéo devient de plus en plus importante dans le
 domaine de l'informatique. Cette croissance est bien reflétée par
@@ -111,51 +112,55 @@ aux États-Unis durant l'année 2007~\cite{NPD_Games_2007}. La place
 occupée par l'industrie du jeu vidéo durant cette même année s'estime
 à 76\% du marché de tous les logiciels vendus~\cite{NPD_Soft_2008}. 
 
-L'engouement du marché du jeu vidéo ouvre les portes aux compagnies
-oeuvrant dans le domaine à repousser les limites de l'état de l'art du
+L'engouement du marché du jeu vidéo incite les compagnies oeuvrant
+dans le domaine à repousser les limites de l'état de l'art du
 développement de jeux. La compétition est féroce et donc beaucoup
-d'efforts doivent être appliqués à la création d'un jeu afin qu'il se
-démarque de la masse et devienne un nouveau \og Blockbuster Hit
+d'efforts doivent être investis dans la création d'un jeu afin qu'il
+se démarque de la masse et devienne un nouveau \og Blockbuster Hit
 \fg. Le président de la compagnie Française UbiSoft estime que le coût
 moyen de développement d'un jeu sur une console moderne se situe entre
 20 et 30 millions de dollars~\cite{cbc_ubisoft}. Si l'on estime le
 salaire moyen d'un artiste ou d'un développeur de jeu vidéo à 60
-000\$/année, cela reviendrait à un travail d'environ 300 à 500
-hommes/année.
+000\$ par année, cela reviendrait à un travail d'environ 300 à 500
+hommes par année.
 
 Puisque la création d'un jeu vidéo peu nécessiter autant d'efforts, il
 semble très intéressant de vouloir tenter de faciliter le
-développement de ces derniers. Avec autants d'efforts mis en place,
+développement de ces derniers. Avec autant d'efforts mis en place,
 même une petite amélioration sur le cycle de développement peu
 engendrer une diminution énorme des coûts de production et aussi
 améliorer la qualité des environnements utilisés par les développeurs.
 
-Jusqu'à ce jour, la grande majorité des jeux vidéo sont écrit dans des
-langages de relativement bas niveau, comme par exemple en C, C++ ou
-encore C\#~\cite{CSHARP_SPEC}. Ces langages sont généralement utilisés
-parce que la main d'oeuvre est facilement accessible et sont déjà des
-langages bien établis. 
+Jusqu'à ce jour, la grande majorité des jeux vidéo sont écrits à
+l'aide de langages de relativement bas niveau, par exemple en C, C++
+ou encore C\#~\cite{CSHARP_SPEC}. Ces langages sont généralement
+utilisés parce qu'ils sont déjà bien établis et que la main d'oeuvre
+est facilement accessible.
 
-Les langages de haut niveaux sont généralement caractérisés par le
-fait qu'ils font une bonne abstraction du système utilisé et
-permettent d'utiliser ces abstraction de manière naturelle et donc
-facilitent le travail de programmation. Le coût de ces abstractions se
-répercute généralement en un coût de performance du programme. Dans le
-passé, la performance était critique dans les jeux vidéo, mais les
-consoles modernes sont devenues plus performantes que la plus part des
-ordinateurs personnels et donc, actuellement la performance n'est plus
-aussi important de nos jours. Aussi, les améliorations de le domaine
-de la compilation de langages de haut niveaux font en sorte que les
-performances de ces systèmes sont comparables à l'utilisation de
-langages de plus bas niveaux.
+\todo{expliquer haut niveau / bas niveau}
 
-Ainsi, l'utilisation de langages de plus haut niveaux pourrait
+Les langages de haut niveau sont généralement caractérisés par le fait
+qu'ils font une bonne abstraction du système utilisé et permettent
+d'utiliser celles-ci de manière naturelle. Elles facilitent donc le
+travail de programmation. Le coût de ces abstractions se répercute
+généralement en un coût de performance du programme. Dans le passé, la
+performance était critique dans les jeux vidéo, mais les consoles
+modernes sont devenues plus performantes que la plupart des
+ordinateurs personnels. Actuellement la performance n'est donc plus
+aussi important. Aussi, les améliorations du domaine de la compilation
+de langages de haut niveau font en sorte que les performances de ces
+systèmes sont comparables à l'utilisation de langages de plus bas
+niveau.
+
+Ainsi, l'utilisation de langages de plus haut niveau pourrait
 potentiellement améliorer les délais occasionnés par les cycles de
 développement des jeux en permettant aux programmeurs et designers de
 s'exprimer plus facilement. Le langage de programmation
 Scheme~\cite{R5RS} semble être un bon candidat en tant que langage de
 haut niveau. En effet, le langage Scheme offre les fonctionnalités de
 haut niveau suivantes:
+
+\todo{Gardes les bullets ou changer en texte??}
 
 \begin{itemize}
 \item Typage dynamique
@@ -165,12 +170,12 @@ haut niveau suivantes:
 \item Un système de déboggage très efficace
 \end{itemize}
 
-Ces particularités du langages Scheme sont discutées plus en détail
-dans le chapitre \ref{Chap:Scheme}. 
+Ces particularités du langage Scheme sont discutées plus en détail
+dans le chapitre \ref{Chap:Scheme}.
 
 Le système Gambit-C, l'une des implantations de Scheme les plus
 performantes~\cite{GAMBIT_BENCHMARKS} sera utilisée pour effectuer les
-expérience pratiques. Ce système comporte de nombreuses extensions
+expériences pratiques. Ce système comporte de nombreuses extensions
 pouvant être très utiles au développement de jeux vidéo. On y retrouve
 entre autres des tables de hachages ou des \textit{threads} (processus
 légers).
@@ -181,6 +186,8 @@ productions de jeux vidéo.
 
 \section{Problématique}
 Ce mémoire de maîtrise vise à répondre à la problématique suivante:
+
+\todo{Inserer dans un texte ou garder en quotation?}
 
 \begin{quote}
   Quelles sont les forces et les faiblesses du langages de
@@ -209,13 +216,13 @@ d'élaborer une méthodologie qui semble efficace pour le développement
 de jeux. Afin d'obtenir une telle méthodologie, plusieurs itérations
 de développement ont été effectuées, chacune permettant d'explorer de
 nouveaux aspects sur la manière de résoudre les problématiques
-associées à la création de jeux, comme par exemple comment arriver à
+associées à la création de jeux, par exemple comment arriver à
 synchroniser des entités dans le jeux ou comment arriver à décrire
 efficacement un système de détection et de résolution de collisions.
 
 Suite à l'écriture de ce jeu, un deuxième jeu, plus complexe, a été
 développé afin de consolider les techniques précédemment utilisées et
-étendre ces techniques dans le cadre de se nouveau jeu comportant de
+étendre ces techniques dans le cadre de ce nouveau jeu comportant de
 nouveaux défi, comme l'implantation d'une intelligence artificielle.
 
 
@@ -242,7 +249,7 @@ possédant suffisamment de complexité pour exposer les problèmes
 associés à la création de jeux vidéo et comment tirer profit du
 langage de programmation Scheme pour résoudre ces problèmes. Une
 présentation des travaux reliés aux résultats présentés suit ce
-dernier chapitre. On y parle de l'utilisation de d'autres langages
+dernier chapitre. On y parle de l'utilisation d'autres langages
 pour le développement de jeux vidéo et cite des exemple d'utilisation
 du langage Scheme dans des jeux vidéo commerciaux et de l'expérience
 tirée de cette utilisation par les développeurs.
@@ -258,57 +265,275 @@ inconvénients ou problèmes obtenus seront exposés.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Développement de jeux vidéo}
 
-\todo{Importance du marche des JV}
-
-\todo{Diversite des jeux (genres, plates-formes)}
-
-\todo{Charactéristiques de jeux modernes}
-
 Les jeux vidéo font parti d'un domaine de l'informatique en pleine
-effervescence grâce à une demande constante de nouveaux produits. Ces
-produits possèdent plusieurs caractéristiques de qualité auxquelles
-les consommateurs s'attendent à obtenir en effectuant l'acquisition
-d'un nouveau titre. Ces attentes du consommateur peuvent se traduire
-par les besoins suivant:
+effervescence grâce à une demande constante de nouveaux
+produits. 
 
-\todo{mettre ici une liste des attentes pour un jeu moderne}
+L'histoire des jeux vidéo possède déjà un demi-siècle de créations de
+tout genres qui ont contribué à générer l'engouement actuel pour ces
+derniers. Une brève historique des jeux vidéo sera présentée dans ce
+chapitre afin de pouvoir illustrer l'évolution des jeux vidéo et de
+permettre de situer dans le temps où se situent les jeux développés
+pour ce mémoire.
+
+L'industrie du jeu vidéo actuelle est le moteur qui permet aux jeux
+vidéo de continuer à évoluer et se raffiner. Un aperçu global de
+l'industrie du jeu vidéo est ainsi donné dans ce chapitre.
+
+Finalement, les besoins aux niveau de la programmation exprimés par
+les jeux vidéo sont énoncées afin de permettre de pouvoir cerner les
+composantes importantes pour un langage de programmation utilisé pour
+le développement de jeux.
+
 
 \section{Historique}
 
+L'histoire des jeux vidéo s'étale sur environ un demi-siècle et
+renferme une mine d'informations importante qui permet d'exposer la
+manière avec laquelle les jeux vidéo évoluent. Seulement un bref
+résumé de cette histoire est présenté afin de donner présenter les
+grandes ligne de l'évolution des jeux au cours des cinquante dernières
+années~\cite{VIDEOGAMES_history}~\cite{HISCORE}.
+
+\todo{Mettre des references partout, ou bien ne pas en mettre du tout?}
+
 %% http://en.wikipedia.org/wiki/History_of_video_games
 
-\subsection{préhistoire 1948-1970}
-\todo{CRT games, Mainframe games}
+\subsection{Préhistoire 1948-1970}
+Les jeux vidéo ont fait leurs apparitions avant même les premiers
+ordinateurs. En effet, le \textit{Cathode Ray Amusement
+  Device}~\cite{CRTAD} fit sont apparition en 1948. Il s'agissait d'un
+jeu rendu sur un tube cathodique simulant le lancement de missiles sur
+des cibles. 
+
+Vers le début des années 1960, quelques jeux ont fait leurs apparition
+sur les premiers ordinateurs universitaires, notamment au \textit{MIT}
+et à l'université de Cambridge. On y retrouve notamment le jeu
+\textit{Spacewar!} qui est l'un des premier jeu multi-joueurs mettant
+les joueurs en adversité dans leurs vaisseaux spatiaux pouvant lancer
+des missiles. 
+
+Avec un intérêt stimulé envers le potentiel de divertissement
+qu'offrait les jeux vidéo de l'époque, le développement de machines
+dédiées aux jeux vidéo a ainsi débuté.
 
 \subsection{Système arcade 1970-1985}
-\todo{Pong, Space Invaders, Pac-Man}
+En 1971, des étudiants de l'université de Standford ont porté le jeu
+\textit{Spacewar!} sur une machine fonctionnant avec de l'argent (de
+la monnaie). Ce fut la première machine arcade.
+
+Par la suite, le développement de telles machines est devenu très
+répandu. En 1972, la compagnie \textit{Atari} fut fondé et démarra
+l'industrie du jeu vidéo sur arcade avec le jeu \textit{Pong}, un jeu
+de tennis de table permettant à un joueur de jouer contre une
+intelligence artificielle ou bien de se mesurer à un autre joueur.
+
+Ce fut alors l'âge d'or des machines d'arcade où l'on a créé beaucoup
+de jeu au contenu diversifié. Parmi ceux-ci, \textit{Space
+  Invaders}(1978) et \textit{PacMan}(1980) furent extrêmement
+populaires. 
+
+Malgré que les jeux d'arcades étaient très simple, ils étaient
+beaucoup appréciés pour l'amusement qu'ils procuraient aux joueurs qui
+tentaient toujours de se surpasser.
+
+\todo{Marc, quelles genre de machines est-ce que c'etait? Processeur
+  8bit?}
+
+On retrouve toujours des salles d'arcades de nos jours, mais celles-ci
+sont devenues beaucoup moins populaire que les consoles de jeu qui se
+retrouvent dans nos salons.
 
 \subsection{Premières consoles 1972-1984}
-\todo{Magnavox Odyssey, Atari XX00 et ColecoVision}
+
+La première console de jeu vidéo, le \textit{Magnavox Odyssey} fut son
+apparition en Amérique du Nord en 1972. Cette console permettant aux
+joueurs de jouer sur le télévision assis confortablement dans leurs
+salon. Elle permettait aussi d'insérer des jeux sous forme de
+cartouches. Un total de 28 jeux ont été disponible pour cette console,
+qui malgré l'absence de périphérique audio, a été vendu pour environ
+300 000 exemplaires.
+
+Plusieurs autres consoles ont par la suite été créées. Allant d'une
+version console de \textit{Pong} jusqu'à des consoles plus puissante
+comme le \textit{ColecoVision} qui démarrèrent l'ère des consoles
+8-bit. La vocation principale de ces consoles n'étaient pas d'innover
+dans le développement de jeu, mais plutôt de porter les jeux
+d'arcades populaires sur leurs consoles.
 
 \subsection{Ordinateurs personnels 1977-...}
-\todo{Évolution parallèle constante}
+Les premiers ordinateurs personnels furent leurs apparition vers la
+fin des années 1970, dont notamment l'ordinateur \textit{Apple II}
+produit par \textit{Apple Inc.}. Ces ordinateurs personnels offraient
+plus de puissance que les consoles de l'époque et offraient la
+possibilité aux amateurs de créer leurs propres jeux.
 
-\todo{Toujours été jusqu'à la venu des console modernes la plate-forme
-  offrant les meilleurs performances.}
+Les jeux d'ordinateurs étaient distribués sur beaucoup de média
+différents. La distribution allait de cassettes, aux disquette, en
+passant bien sur par des échanges postaux de code sources.
+
+En 1982, le jeux \textit{Lode Runner} fut développé pour les
+ordinateurs \textit{Apple II}. Ce jeux d'action fut l'un des premiers
+jeu comprenant un éditeur de niveaux.
+
+Aussi, le jeu \textit{Rogue} fut créé durant les années 1980, pour les
+premiers système Unix. Il fut le pionnier d'un nouveau genre de jeu
+(surnommé \textit{Roguelike}) qui différait beaucoup des jeux
+d'actions retrouvés en sales d'arcades ou sur consoles. Il présentait
+une interface visuelle très minimaliste. La narration, qui était un
+point central du jeu, était effectuée de manière textuelle et le
+joueur interagissait aussi de manière textuelle avec le jeu.
+
+Les jeux d'ordinateurs ont longtemps été supérieurs aux jeux de
+consoles puisque les ordinateurs étaient toujours à la fine pointe de
+la technologie, et les consoles traînaient un peu derrière en terme de
+technologies. Ainsi, on retrouvait des jeux ayant de meilleurs
+graphique ou utilisant des périphériques plus variés sur les
+ordinateurs personnels. Ainsi, les jeux d'ordinateurs existait dans un
+monde parallèle à celui des consoles, ne se livrant pas de compétition
+réelle.
+
+Par contre, avec l'avènement des consoles modernes qui sont plus
+performantes que la plupart des ordinateurs personnels, cet énoncé
+n'est plus valide. Ainsi, les jeux sur des consoles actuelles
+rivalisent avec les jeux d'ordinateurs.
+
 
 \subsection{Consoles portables 1980-...}
-\todo{GameBoy etc...}
+Les toutes premières consoles portables furent développées par la
+compagnie \textit{Mattel Toys} qui créèrent les jeux \textit{Auto
+  Race} et \textit{Football} qui étaient distribués sur des consoles
+de la taille d'une calculatrice, ne nécessitant pas de téléviseurs
+externes à la console et étaient dédiées à un seul jeu. Ces consoles
+furent un succès rapportant plusieurs centaines de millions de dollars
+à leurs créateurs.
+
+Par la suite, les grandes compagnie du jeu vidéo comme
+\textit{Nintendo} et \textit{Bandai} se sont intéressée à de telles
+consoles et en produisirent plusieurs exemplaires des consoles
+\textit{Game \& Watch} qui contenaient des succès d'arcades tel
+\textit{Mario's Cement Factory} et \textit{Donkey Kong Jr.}.
+
+Le même concepteur de ces consoles à par la suite fusionner ces
+dernière avec le contrôleur du \textit{Nintendo Entertainement
+  System}(NES) pour obtenir la première console à grand succès: le
+\textit{GameBoy}. Cette console qui offrait un écran monochrome fut
+vendue à 118 million d'exemplaire dans le monde. Le jeu le plus vendu
+sur cette console fut nulle autre que le jeu \textit{Tetris} qui a
+vendu environ 33 millions d'unités.
+
+Les consoles ont continuées d'évoluer grandement et elles sont
+actuellement équivalente aux consoles de une ou deux génération
+précédente. Par exemple, le Sony \textit{PlayStation Portable}
+rivalise en matière de puissance de matériel à la précédente console
+de Sony, le \textit{PlayStation 2}. On peut donc développer des jeux
+très complexe sur ces consoles portables, mais ils ne peuvent toujours
+pas rivaliser avec les jeux sur consoles ou d'ordinateurs.
 
 \subsection{Consoles intermédiaires 1984-2006}
-\todo{NES, SNES, N64, GameCube}
+Au début des années 1980, plusieurs consoles étaient disponibles sur
+le marché, mais une saturation de mauvais jeux et des problèmes de
+mauvaises gestions ont fait en sorte que l'industrie du jeux vidéo à
+connu une grande dépression vers en 1983. Par exemple, il y a eu une
+plus grande production d'unités du jeu \textit{PacMan} qu'il n'y avait
+eu de console d'Atari vendues.
+
+Cette dépression a pris subitement fin avec la sortie de la console
+produite par \textit{Nintendo}, le \textit{Nintendo Entertainement
+  System} (NES) qui connu un succès fulgurant en vendant 62 millions
+de consoles dans le monde. La grande qualité des jeux produits ont
+certainement favorisé l'adoption de cette nouvelle console. On
+retrouve entre autre des jeux de tout genre comme le jeu de
+plate-forme \textit{Super Mario Bros}, le jeux d'aventure \textit{The
+  Legend of Zelda} et le jeu d'action aventure \textit{Metroid}.
+
+Par la suite, la compagnie SEGA sortit un compétiteur sérieux au NES,
+le \textit{Master System}, qui rivalisait en terme de puissance
+matérielle et de prix. Depuis ce temps, c'est la guerre des consoles
+qui se livre où lorsqu'une compagnie développe un nouveau jeu ou une
+nouvelle console, les compétiteurs ne tardent pas à produire un jeu ou
+console équivalent pour les utilisateurs de leurs produits.
 
 \subsection{Consoles modernes 2005-...}
-\todo{Interfaces plus 'casual' = Wii}
+Les consoles modernes sont généralement conçues avec du matériel à la
+fine pointe de la technologie et tentent de séduire un certain public
+cible.
 
-\todo{Consoles très performantes}
+Au moment de l'écriture de ce mémoire, on retrouve la console
+\textit{Wii} de Nintendo conçu pour un publique constitué de joueurs
+occasionnels grâce au contrôleur révolutionnaire de cette console
+permettant de jouer en effectuant des mouvement plus naturels.
+
+D'un autre côté compétionnent le \textit{PlayStation 3} de Sony et le
+\textit{XBox 360} de Microsoft qui cherchent à convaincre les joueurs
+plus sérieux d'utiliser leur système en offrant des consoles à la fine
+pointe de la technologie et à prix très raisonnable en comparaison aux
+prix des ordinateurs de jeu équivalents. 
+
+
+
+\section{Industrie du jeu vidéo}
+Comme mentionné dans le chapitre \ref{Chap:Intro}, l'industrie du jeu
+vidéo est très importante et génère des milliards de dollars de
+revenus aux États-Unis. Ce profit provient d'une grande diversité de
+joueurs, allant de jeunes enfants aux à leurs grands-parents avec une
+population féminine presque égale à la population masculine. Il en
+résulte donc qu'une grande diversité de jeux et de plate-forme de
+jeux se retrouvent sur le marché.
+
+Ces
+produits possèdent plusieurs caractéristiques de qualité auxquelles
+les consommateurs s'attendent à obtenir en effectuant l'acquisition
+d'un nouveau titre. Ces attentes du consommateur peuvent se traduire
+essentiellement par les besoins suivant:
+
+\begin{itemize}
+\item Exposer un \textit{gameplay} amusant
+\item Offrir de beaux rendus graphiques et un affichage visuel
+  agréable
+\item Avoir une composante multi-joueurs
+\item Optionnellement contenir une narration 
+\end{itemize}
+
+Ces besoins semblent simple, \textit{a priori}, mais impliquent
+beaucoup de travail et imposent beaucoup de contraintes au
+développeurs de jeux vidéo. 
+
+Afin qu'un jeu puisse offrir un \textit{gameplay} intéressant au
+joueurs, une étroite collaboration entre les développeurs et les
+designers doit être établie. Cela implique aussi de faire beaucoup
+d'essaies de possibilités en testant sur des prototypes et en
+effectuant de nombreux cycles de développement du jeu.
+
+En ce qui concerne le rendu graphique du jeu, en plus des designers du
+jeu, c'est aussi avec les artistes que les développeurs doivent
+s'accorder dans le but de concevoir un moteur de rendu répondant bien
+aux besoins de leurs créations et, leurs créations doivent être bien
+sûr faites en respectant les contraintes imposées par le matériel ou
+sera déployé le produit. Ainsi, le moteur de rendu doit pouvoir être
+facilement extensible afin de pouvoir accommoder facilement les
+nouvelles idées et les nouveaux concepts à intégrer.
+
+Une composante multi-joueur, tout dépendant si elle implique des
+parties faites sur le réseau ou non, pourrait nécessiter une grande
+rigeur de programmation afin d'assurer une stabilité de connections et
+empêcher les joueurs de tricher. Ces sujets ne sont pas discuter dans
+ce mémoire.
+
+Par contre, les joueurs n'ont pas toujours eu des attentes aussi
+élevées envers les jeux auxquels ils jouaient. Il fut une époque ou le
+graphisme était très coûteux et donc, c'était principalement la
+composante de \textit{gameplay} qui importait.
+
+\todo{Diversité des jeux (genres, plates-formes)}
+
 
 
 
 
 \section{Contraintes de programmation}
 
-\subsection{fluidité}
+\subsection{Fluidité}
 
 \subsubsection{Taux de rafraîchissement}
 \subsubsection{Réponse quasi temps réelle}

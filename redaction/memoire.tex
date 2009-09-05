@@ -568,14 +568,15 @@ afin de faciliter la réutilisation de ces dernières.
 
 
 \subsubsection{Taux de rafraîchissement}
-Une contrainte très importante pour le développement de jeu vidéo est
-la fluidité du jeu. Lorsqu'un film est projeté sur un écran de cinema
-le taux de rafraîchissement de l'image est d'environ 30 trames par
-secondes. Par contre, les images captées par les caméra contiennent du
-\og flou de mouvement \fg, effet créé par le mouvement s'étant produit
-durant la capture de cette image. Ce flou permet à notre cerveau
-d'estimer ou de faire l'extrapolation du mouvement dans une trame et
-donc de croire l'illusion créée par la projection des images.
+Une contrainte très importante dans le développement d'un jeu vidéo
+est la fluidité de celui-ci. Lorsqu'un film est projeté sur un écran
+de cinéma le taux de rafraîchissement de l'image est d'environ 30
+trames par secondes. Par contre, les images captées par les caméra
+contiennent du \og flou de mouvement \fg, effet créé par le mouvement
+s'étant produit durant la capture de cette image. Ce flou permet à
+notre cerveau d'estimer ou de faire l'extrapolation du mouvement dans
+une trame et donc de croire l'illusion créée par la projection des
+images.
 
 Par contre, dans un jeu vidéo, les images rendues sur l'écran sont
 parfaitement nettes et ne contiennent donc pas ce flou de mouvement,
@@ -597,16 +598,65 @@ Aussi, il est possible que les designers du jeu acceptent de réduire
 volontairement le taux de rafraîchissement afin d'avoir plus de temps
 pour rendre une image. Un jeu possédant un taux de rafraîchissement de
 60 trames par secondes implique que les images sont rafraîchies tous
-les 16 millisecondes.
+les 16 millisecondes, ce qui ne laisse pas beaucoup de temps pour
+effectuer le calcul du moteur du jeu en plus du rendu de
+l'image. Heureusement, les cartes vidéo modernes sont capables de
+faire une bonne partie du rendu laissant ainsi le ou les processeurs
+principaux libres pour exécuter le moteur du jeu.
 
+Il n'en demeure pas moins que toute la logique du jeu doit être aussi
+optimisée que possible afin que le processus de rendu des trames soit
+transparent au joueur.
 
 \subsubsection{Réponse quasi temps réelle}
 
+Une autre implication de la fluidité requise par un jeu vidéo est le
+délais de réponse face aux entrées du joueur. Ce délais aussi doit
+être aussi faible que possible pour donner l'impression que le
+personnage dans le jeu ne soit qu'une extension de la volonté du
+joueur. Ainsi le traitement des entrées du joueurs se doit aussi
+d'être très efficace afin de ne pas encombré le moteur du jeu qui n'a
+déjà pas beaucoup de temps pour effectuer son travail.
+
 \subsection{Modularité}
 
-\subsubsection{Complexité des jeux ... gros logiciels}
-\subsubsection{Développement itératif ... plusieurs modifications du système}
+En plus de devoir être efficacement implanté, un jeu vidéo moderne se
+doit d'être aussi modulaire que possible. Pour y arriver, le couplage
+entre les différentes composantes de ce dernières doit être faible. 
 
+Le développement de logiciel favorisant la modularité est une qualité
+standard en génie logiciel, mais elle vient très bien se marier avec
+le développement de jeu, surtout de jeux modernes, car ce sont de
+projets de très grande envergure impliquant beaucoup de
+programmeurs. Il en résulte qu'un bon design modulaire permet de bien
+séparer les tâches à effectuer de manière parallèles par des équipes
+spécialisées. Si le projet est bien géré, cela pourrait certainement
+réduire le coût de développement de tels projets.
+
+Aussi, une bonne modularité permet de créer des composantes qui sont
+cohésives et donc qui permettent d'être réutilisée par la suite. Une
+réutilisation de composantes complexes tel un moteur de physique évite
+de faire un travail supplémentaire non trivial pour chaque nouveau
+projet. Ainsi, il est clair que l'effort supplémentaire placé pour
+bien modulariser les composantes d'un jeu seront retables pour le
+développement des prochains jeu.
+
+\todo{Cout minime de performances} 
+
+Bien sûr, toute abstraction possède sont coût, notamment en coût de
+performances. Ainsi, il faut bien pouvoir estimer les endroits où
+l'utilisation de modules externes n'apportera pas de trop grands
+impacts de performances.
+
+Il est clair qu'un langage de programmation ayant un bon potentiel
+d'abstraction, comme c'est généralement le cas pour les langages de
+haut niveau, facilite cette tâche. Un système orienté objet ou un bon
+système de module permettraient certainement aussi à bien modulariser
+les composantes d'un jeu.
+
+
+\subsection{Malléabilité}
+\todo{Développement itératif ... plusieurs modifications du système}
 
 
 

@@ -724,14 +724,29 @@ par le projet est de rigeur pour pouvoir faire le choix d'un langage
 répondant le mieux possible à ceux-ci.
 
 En se basant sur les besoins et les contraintes énoncées dans le
-chapitre \ref{Chap:JV}, nous proposons 
+chapitre \ref{Chap:JV}, nous proposons l'utilisation du langage de
+programmation Scheme comme outil principal de développement de jeux
+vidéo. Il s'agit d'un langage de très haut niveau qui semble être un
+candidat idéal afin de permettre un développement efficace de jeux
+vidéo. 
 
-\todo{Scheme est un langage qui semble être peu utilisé dans des
-  produits commerciaux.}
+Ce chapitre donne une historique du langage Scheme afin de mettre en
+situation le langage et donné un aperçu de son origine. Par la suite,
+une brève explications de concepts de bases du langage est
+donnée. Finalement, les particularités du langages sont mise en
+lumière dans le but de faire comprendre au lecteur quelle est
+l'ampleur de celles-ci.
 
 \todo{d'autres idées?}
 
-\section{Héritage de LISP}
+\section{Héritage LISP}
+Le langage Scheme est une forme épurée du tout premier langage de
+programmation de haut niveau, le langage LISP. Ainsi, pour illustrer
+les origines de Scheme, une courte histoire du langage LISP est
+présentée. Par la suite, les langages de programmation qui furent
+inspirés du langage Scheme sont mentionnés en expliquant brièvement
+les racines commune à Scheme est les principales disparités.
+
 \subsection{Histoire de LISP}
 \todo{McCarthy, GC, List Processing, AI...}
 
@@ -748,6 +763,134 @@ chapitre \ref{Chap:JV}, nous proposons
 \todo{Javascript, Ruby: lang de scripting. Concept de fermetures}
 
 \todo{Java??}
+
+
+\section{Introduction au langage}
+Tout en bénéficiant du riche héritage des langages LISP, Scheme
+demeure un langage épuré et très simple à la base. Cette section vise
+à présenter les bases du langages Scheme et de son implantation dans
+le système Gambit-C afin de familiariser le lecteur avec non seulement
+la syntaxe du langage, mais aussi les fonctionnalités de base et les
+extensions au langages fournies par Gambit-C.
+
+\subsection{Syntaxe}
+La syntaxe de Scheme est une des caractéristique qui distingue le
+distingue le plus des autres langages de programmation. En effet, la
+syntaxe utilisée est extrêmement simple. À la base, toute expression
+Scheme est une expression symbolique, nommée aussi \textit{S
+  expression}. Une S expression est une forme de donnée structurée
+récursive qui doit débuter par une parenthèse ouvrante, contient un
+nombre arbitraire de données qui sont soit des atomes ou des S
+expressions et qui doit se terminer par une parenthèse fermante. Les
+atomes sont des symboles, des nombres, des valeurs booléennes,
+etc.. La figure \ref{FIG:sexp} donne un exemple très simple de S
+expression contenant des informations sur les prix de la nourriture
+dans une épicerie.
+
+\begin{figure}[htb!]
+  \center
+  \begin{schemecode}
+    ((bananes 1.52)(bonbons 1/100))
+  \end{schemecode}
+  \caption{Exemple simple de S expression}
+  \label{FIG:sexp}
+\end{figure}
+
+En Scheme, ces S expressions sont considérées comme étant des listes
+chaînées. Chacune des case de la liste chaînée contient dans son
+premier élément la valeur contenu dans cet élément et sont deuxième
+élément est un pointeur vers le prochain élément. En Scheme, le point
+(\scheme{.}) est utiliser pour dénoter le dernier élément d'une
+liste. La figure \ref{FIG:sexp->list} explicite la structure de liste
+de l'exemple de S expression provenant de la figure \ref{FIG:sexp}.
+
+
+\begin{figure}[htb!]
+  \center
+  \begin{schemecode}
+    ((bananes . (1.52 . ())) . 
+     ((bonbons . (1/100 . ())) . 
+      ()))
+  \end{schemecode}
+  \caption{Équivalence de la S expression de la figure \ref{FIG:sexp}
+    sous forme explicite de liste}
+  \label{FIG:sexp->list}
+\end{figure}
+
+Cette forme est strictement équivalente à celle donnée précédemment et
+correspond à la structure de donnée de base employé en Scheme, les
+listes.
+
+Un programme Scheme est aussi une S expression qui correspond à un
+appel de fonction (ou à une forme spéciale du langage). Le premier
+élément de la liste doit être un symbole qui correspond à cette
+fonction ou cette forme spéciale et le restes des éléments sont les
+argument qui sont eux aussi des programmes Scheme sous forme de S
+expressions. Il en résulte donc qu'une notation préfixe est utilisée
+en Scheme.
+
+La distinction entre une fonction et une forme spéciale est l'ordre
+d'évaluation des paramètres. Pour un appel de fonction, chacun des
+paramètres passés sont d'abord évalués et ensuite, la valeurs
+correspondante à leurs évaluation est donnée à la fonction appelée. Il
+s'agit donc d'un passage par valeur. En opposition, les formes
+spéciales possèdent des règles d'évaluation propres à elles. Les
+formes spéciales de bases de Scheme peuvent être étendu par des macros
+qui utilisent un passage de valeur par nom, où les paramètres sont
+passés directement à la macro comme étant des données Scheme. Le
+fonctionnement des macros Scheme est détaillé dans la section
+\ref{SEC:Macros}.
+
+Il existe également quelques exception syntaxiques aux S expressions
+qui sont utilisées pour construire des données constantes. On utilise
+le caractère \scheme{'} (\textit{quote}) pour signifier que la S
+expression subséquente est constante, \textit{i.e.} qu'elle ne doit
+pas être considérée comme un programme Scheme, mais bien comme une
+valeur. L'utilisation du caractère \textit{quote} est strictement
+équivalente à l'utilisation de la forme spéciale correspondante. Une
+exemple d'utilisation est illustré dans la figure \ref{FIG:quote}.
+
+\begin{figure}[htb!]
+  \center
+  \begin{schemecode}
+'((bananes 1.52)(bonbons 1/100)) 
+(quote ((bananes 1.52)(bonbons 1/100)))
+  \end{schemecode}
+  \caption{Exemples d'utilisation de la syntaxe \textit{quote} et de
+    la forme spéciale correspondante.}
+  \label{FIG:quote}
+\end{figure}
+
+Après évaluation, ces deux morceaux de code retournent tous deux la
+valeur \scheme{((bananes 1.52)(bonbons 1/100))}.
+
+On retrouve une forme altéré du \textit{quote} nommée
+\textit{quasiquote} qui permet des évaluations partielles à
+l'intérieur d'une forme \textit{quote} en utilisant le caractère
+\scheme{,} équivalent à la forme spéciale \scheme{unquote}. La figure
+\ref{FIG:quasiquote} illustre un exemple d'utilisation.
+
+\begin{figure}[htb!]
+  \center
+  \begin{schemecode}
+`((bananes ,(+ 1.0 52/100)) (bonbons 1/100))
+(quasiquote ((bananes (unquote (+ 1.0 52/100))) (bonbons 1/100)))
+  \end{schemecode}
+  \caption{Exemple d'utilisation des formes spéciales
+    \scheme{quasiquote} et \scheme{unquote}}
+  \label{FIG:quasiquote}
+\end{figure}
+
+
+
+\todo{Notation prefixe clean et sans ambiguite}
+
+\subsection{Aperçu des fonctionnalités requise par le standard}
+
+\todo{Exemple de construction de '((bananes 1.52)(bonbons 1/100)) avec
+  list et cons}
+
+\subsection{Extensions présentées par Gambit-C}
 
 \section{Programmation fonctionnelle}
 \subsection{Distinction}
@@ -768,6 +911,8 @@ chapitre \ref{Chap:JV}, nous proposons
 
 
 \section{Macros}
+\label{SEC:Macros}
+
 \subsection{Introduction}
 \todo{Discussion sur les macros de C et leurs limitations: permet de
   faire des abstractions dans le code résultant une modification du

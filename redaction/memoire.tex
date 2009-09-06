@@ -264,6 +264,7 @@ inconvénients ou problèmes obtenus seront exposés.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Développement de jeux vidéo}
+\label{Chap:JV}
 
 Les jeux vidéo font parti d'un domaine de l'informatique en pleine
 effervescence grâce à une demande constante de nouveaux
@@ -671,25 +672,64 @@ nouvelles abstractions où les besoins de changement apparaissent.
 
 
 \section{Conclusion}
-\todo{Langages de haut niveau permettrait d'aider au développement de jeu en
-  apportant une grande expressivité et puissance d'abstraction.}
-\todo{petites réduction du temps de développement == grandes économies budgétaires}
-\todo{Bonnes abstraction == réutilisation}
+Dans ce chapitre, l'industrie du jeu vidéo, avec son histoire, ont été
+mis en lumière afin d'exposer l'évolution des jeux vidéo et de motiver
+l'intérêt de travailler à améliorer le développement de ceux-ci.
+
+Les jeux vidéo sont passés rapidement d'idées farfelues comme ce fut
+le cas pour le \textit{Cathode Ray Amusement Device} à une industrie
+complète générant des milliards de dollars annuellement. Il y a un
+grand intérêt à vouloir diminuer le coût de développement de
+ceux-ci. 
+
+Les coûts de développement de jeux modernes sont de l'ordre des
+millions de dollars et impliquent des dizaines voir des centaines
+d'artistes, de programmeurs et de designers. Ainsi, mêmes de toutes
+petites accélérations d'un cycle de développement, pourrait avoir de
+l'impacte sur le travail de beaucoup de gens et ainsi se traduire en
+de grandes économies sur les coûts de développement.
+
+Les contraintes impliqués au niveau de la programmation par le
+développement de jeux vidéo ont été étudiés. Ces derniers se résument
+par les concepts de fluidité, modularité et de malléabilité du jeu
+vidéo. Le respect de la contrainte de fluidité résulte en une bonne
+immersion pour le joueur, qui est nécessaire afin que le jeu soit
+considéré comme \og jouable \fg. La modularité facilite le
+développement collaboratif et parallèle tout en permettant d'améliorer
+la réutilisation des composantes communes à plusieurs jeux. L'aspect
+de la malléabilité du code permet d'accélérer le prototypage du jeu.
+
+Il semble donc que le choix d'un langage permettant de pouvoir
+facilement répondre à ces contraintes pourrait certainement faciliter
+le développement de jeux vidéo et ainsi, engendrer des économies
+substantielles aux compagnies de l'industrie et rendant plus
+accessible le développement de jeu aux plus petites compagnies
+possédant des budgets moins importants.
+
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Le langage Scheme}
 \label{Chap:Scheme}
 
-\todo{Choix du langage influence beaucoup la structure du code, le manière
-  de développer le logiciel, etc...}
+Dans le cadre d'un projet donné, le choix d'un langage de
+programmation a beaucoup d'influence sur la structure du code écrit
+pour la réalisation de celui-ci. Plusieurs facteurs influencent ces
+différences. Par exemple, un langage à typage statique résultera en du
+code qui se doit d'être bien structuré, mais qui sera beaucoup moins
+malléable par la suite. Ainsi, afin d'optimiser les efforts
+développement pour un projet, une bonne analyse des besoins exprimés
+par le projet est de rigeur pour pouvoir faire le choix d'un langage
+répondant le mieux possible à ceux-ci.
+
+En se basant sur les besoins et les contraintes énoncées dans le
+chapitre \ref{Chap:JV}, nous proposons 
 
 \todo{Scheme est un langage qui semble être peu utilisé dans des
   produits commerciaux.}
 
 \todo{d'autres idées?}
-
-\todo{Référence temporaire pour pas faire planter le makefile\cite{SICP}}
 
 \section{Héritage de LISP}
 \subsection{Histoire de LISP}

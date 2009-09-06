@@ -543,6 +543,8 @@ des jeux vidéo produits.
 
 \todo{Ajouter du texte liant a la prochaine section?}
 
+
+
 \section{Contraintes de programmation}
 
 Le développement de jeu vidéo implique une programmation sous des
@@ -641,8 +643,6 @@ projet. Ainsi, il est clair que l'effort supplémentaire placé pour
 bien modulariser les composantes d'un jeu seront retables pour le
 développement des prochains jeu.
 
-\todo{Cout minime de performances} 
-
 Bien sûr, toute abstraction possède sont coût, notamment en coût de
 performances. Ainsi, il faut bien pouvoir estimer les endroits où
 l'utilisation de modules externes n'apportera pas de trop grands
@@ -654,10 +654,27 @@ haut niveau, facilite cette tâche. Un système orienté objet ou un bon
 système de module permettraient certainement aussi à bien modulariser
 les composantes d'un jeu.
 
-
 \subsection{Malléabilité}
-\todo{Développement itératif ... plusieurs modifications du système}
 
+Puisque le développement d'un jeu implique généralement de faire
+beaucoup de prototypage, le code d'un jeu se doit d'être très
+malléable afin d'aider à faire des changements rapidement au moteur du
+jeu pour tester de nouvelles idées, sans ajouter un trop grand coût
+pour le faire.
+
+La modularité du jeu aura un effet positif sur la malléabilité en
+permettant de modifier les mécanismes internes des composantes sans
+trop affecter le reste du programme. Par contre, un langage de
+programmation offrant une bonne puissance d'abstraction serait tout
+aussi efficace, car il permet de pouvoir ajouter facilement de
+nouvelles abstractions où les besoins de changement apparaissent.
+
+
+\section{Conclusion}
+\todo{Langages de haut niveau permettrait d'aider au développement de jeu en
+  apportant une grande expressivité et puissance d'abstraction.}
+\todo{petites réduction du temps de développement == grandes économies budgétaires}
+\todo{Bonnes abstraction == réutilisation}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

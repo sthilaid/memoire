@@ -1183,10 +1183,24 @@ nom dont disposent les macros Scheme, \ie que la macro de la figure
 paramètre est une donnée Scheme, puisqu'un nombre s'évalue en lui même
 en Scheme. Il est intéressant de noter qu'un appel à cette macro comme
 \scheme{define-fib (+ 1 2))}, est une erreur. En effet, puisque la
-macro s'attend à avoir un nombre en paramètre, mais elle reçoit
-plutôt de ce cas ci la liste \scheme{(+ 1 2)}.
+macro s'attend à avoir un nombre en paramètre, mais elle reçoit plutôt
+de ce cas ci la liste \scheme{(+ 1 2)}, puisque l'évaluation de
+l'addition ne sera fait que durant l'exécution du programme.
 
-\todo{macro inc}
+Un exemple simple de macro tirant profit du fait que l'argument est
+passé par nom est illustré dans la figure \ref{Scheme:macro-ex2}
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-macro (inc! var) `(set! ,var (+ ,var 1)))
+(let ((x 1))
+    (inc! x)
+    x)
+  \end{schemecode}
+  \schemeresult{2}
+  \caption{Exemple simple de macro utilisant le passage par nom à profit.}
+  \label{Scheme:macro-ex2}
+\end{figure}
 
 \todo{macro while}
 

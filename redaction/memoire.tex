@@ -16,13 +16,15 @@
 %\newcommand{\object}[1]{$\#<#1 \ldots>$}
 \newcommand{\object}[1]{{\it #1}}
 
+\newcommand{\ie}{{\textit{i.e.}}}
+
 \input{r5rscommands.tex}
 
 \newcommand{\codeinput}[1]{\begin{singlespace}\verbatiminput{#1}\end{singlespace}}
 \newcommand{\schemeinput}[1]{\begin{schemecode}\input{#1}\end{schemecode}}
 
 \newcommand{\scheme}[1]{\selectlanguage{english}{\tt #1}\selectlanguage{french}}
-\newcommand{\schemeresult}[1]{{\tt #1}}
+\newcommand{\schemeresult}[1]{{\it #1}}
 
 %% \hyphenation{ex-écu-tion} %% marche pas a cause de l'accent
 
@@ -785,28 +787,25 @@ expressions et qui doit se terminer par une parenthèse fermante. Les
 atomes sont des symboles, des nombres, des valeurs booléennes,
 etc.. La figure \ref{FIG:sexp} donne un exemple très simple de S
 expression contenant des informations sur les prix de la nourriture
-dans une épicerie.
+dans une épicerie.\\
 
 \begin{figure}[htb!]
-  \center
-  \begin{schemecode}
-    ((bananes 1.52)(bonbons 1/100))
-  \end{schemecode}
+  \schemeresult{((bananes 1.52)(bonbons 1/100))}
   \caption{Exemple simple de S expression}
   \label{FIG:sexp}
 \end{figure}
 
 En Scheme, ces S expressions sont considérées comme étant des listes
-chaînées. Chacune des case de la liste chaînée contient dans son
-premier élément la valeur contenu dans cet élément et sont deuxième
-élément est un pointeur vers le prochain élément. En Scheme, le point
-(\scheme{.}) est utiliser pour dénoter le dernier élément d'une
-liste. La figure \ref{FIG:sexp->list} explicite la structure de liste
-de l'exemple de S expression provenant de la figure \ref{FIG:sexp}.
+chaînées où chacun des éléments de la liste chaînée contient la valeur
+associée à cet élément et un pointeur vers le prochain élément. Les
+listes sont ainsi implantées en utilisant des paires. Le point
+(\scheme{.}) est utilisé pour démarquer le premier élément d'une paire
+du deuxième. La figure \ref{FIG:sexp->list} explicite la structure de
+liste de l'exemple de S expression provenant de la figure
+\ref{FIG:sexp} en utilisant la notation de paires..\\
 
 
 \begin{figure}[htb!]
-  \center
   \begin{schemecode}
     ((bananes . (1.52 . ())) . 
      ((bonbons . (1/100 . ())) . 
@@ -819,41 +818,42 @@ de l'exemple de S expression provenant de la figure \ref{FIG:sexp}.
 
 Cette forme est strictement équivalente à celle donnée précédemment et
 correspond à la structure de donnée de base employé en Scheme, les
-listes.
-
-Un programme Scheme est aussi une S expression qui correspond à un
-appel de fonction (ou à une forme spéciale du langage). Le premier
+listes. Toutes deux correspondent à des valeurs du langage, mais ne
+peuvent pas être données telles quel dans un programme car un
+programme Scheme est aussi une S expression qui correspond à \emph{un
+  appel de fonction} (ou à une forme spéciale du langage). Le premier
 élément de la liste doit être un symbole qui correspond à cette
 fonction ou cette forme spéciale et le restes des éléments sont les
 argument qui sont eux aussi des programmes Scheme sous forme de S
-expressions. Il en résulte donc qu'une notation préfixe est utilisée
-en Scheme.
+expressions. Conséquemment, une notation préfixe est utilisée en
+Scheme.
 
-La distinction entre une fonction et une forme spéciale est l'ordre
-d'évaluation des paramètres. Pour un appel de fonction, chacun des
-paramètres passés sont d'abord évalués et ensuite, la valeurs
-correspondante à leurs évaluation est donnée à la fonction appelée. Il
-s'agit donc d'un passage par valeur. En opposition, les formes
-spéciales possèdent des règles d'évaluation propres à elles. Les
-formes spéciales de bases de Scheme peuvent être étendu par des macros
-qui utilisent un passage de valeur par nom, où les paramètres sont
-passés directement à la macro comme étant des données Scheme. Le
-fonctionnement des macros Scheme est détaillé dans la section
-\ref{SEC:Macros}.
+La distinction entre un appel de fonction et une forme spéciale est
+l'ordre d'évaluation des paramètres. Pour un appel de fonction, chacun
+des paramètres passés sont d'abord évalués et ensuite, la valeurs
+correspondante à leurs évaluation sont passées à la fonction
+appelée. Il s'agit donc d'un \emph{passage par valeur}. En opposition,
+les formes spéciales possèdent des règles d'évaluation propres à
+elles. Les formes spéciales de bases de Scheme peuvent être étendu par
+des macros qui utilisent un passage de valeur par nom, où les
+paramètres sont passés directement à la macro comme étant des données
+Scheme. Le fonctionnement des macros Scheme est détaillé dans la
+section \ref{Scheme:macros}.
 
 Il existe également quelques exception syntaxiques aux S expressions
-qui sont utilisées pour construire des données constantes. On utilise
-le caractère \scheme{'} (\textit{quote}) pour signifier que la S
-expression subséquente est constante, \textit{i.e.} qu'elle ne doit
-pas être considérée comme un programme Scheme, mais bien comme une
-valeur. L'utilisation du caractère \textit{quote} est strictement
-équivalente à l'utilisation de la forme spéciale correspondante. Une
-exemple d'utilisation est illustré dans la figure \ref{FIG:quote}.
+qui sont utilisées, entres autres, pour construire des données
+constantes. On utilise le caractère \scheme{'} ou la forme spéciale
+\textit{quote} pour signifier que la S expression subséquente est
+constante, \ie  qu'elle ne doit pas être considérée comme un
+programme Scheme, mais bien comme une valeur. L'utilisation du
+caractère \scheme{è} est strictement équivalente à l'utilisation de la
+forme spéciale correspondante. Une exemple d'utilisation est illustré
+dans la figure \ref{FIG:quote}.\\
+
 
 \begin{figure}[htb!]
-  \center
   \begin{schemecode}
-'((bananes 1.52)(bonbons 1/100)) 
+'((bananes 1.52)(bonbons 1/100))
 (quote ((bananes 1.52)(bonbons 1/100)))
   \end{schemecode}
   \caption{Exemples d'utilisation de la syntaxe \textit{quote} et de
@@ -862,16 +862,15 @@ exemple d'utilisation est illustré dans la figure \ref{FIG:quote}.
 \end{figure}
 
 Après évaluation, ces deux morceaux de code retournent tous deux la
-valeur \scheme{((bananes 1.52)(bonbons 1/100))}.
+valeur \schemeresult{((bananes 1.52)(bonbons 1/100))}.
 
 On retrouve une forme altéré du \textit{quote} nommée
 \textit{quasiquote} qui permet des évaluations partielles à
 l'intérieur d'une forme \textit{quote} en utilisant le caractère
 \scheme{,} équivalent à la forme spéciale \scheme{unquote}. La figure
-\ref{FIG:quasiquote} illustre un exemple d'utilisation.
+\ref{FIG:quasiquote} illustre un exemple d'utilisation.\\
 
 \begin{figure}[htb!]
-  \center
   \begin{schemecode}
 `((bananes ,(+ 1.0 52/100)) (bonbons 1/100))
 (quasiquote ((bananes (unquote (+ 1.0 52/100))) (bonbons 1/100)))
@@ -881,23 +880,163 @@ l'intérieur d'une forme \textit{quote} en utilisant le caractère
   \label{FIG:quasiquote}
 \end{figure}
 
+L'utilisation de la forme \scheme{unquote} permet donc ici
+l'évaluation de la S expression effectuant l'addition pour donner
+comme résultat la liste donnée dans la figure \ref{FIG:sexp}.
 
-
-\todo{Notation prefixe clean et sans ambiguite}
+Malgré le fait que, pour certains, le parenthèsage des programmes
+Scheme peut sembler imposant, il en résulte un code \emph{structuré}
+et \emph{sans aucune ambiguïté}. Cette structure permet aussi de
+pouvoir utiliser très efficacement des outils de d'édition de S
+expressions, accélérant ainsi l'écriture de programmes.
 
 \subsection{Aperçu des fonctionnalités requise par le standard}
 
-\todo{Exemple de construction de '((bananes 1.52)(bonbons 1/100)) avec
-  list et cons}
+Le standard du langage Scheme~\cite{R5RS} est très minimaliste, mais
+requiert toutes les fonctionnalités de bases requise par un langage de
+haut niveau comme Scheme. On y spécifie que Scheme est un langage typé
+dynamiquement, \ie que les vérifications de types sont
+faites durant l'exécution d'un programme, et non durant la
+compilation. Cette particularité fait en sorte que Scheme est un
+langage qui peut être facilement interprété ou compilé. Les types de
+bases du langages sont tous disjoints entre eux (aucun n'objet ne peut
+appartenir a plus d'un de ces types, mais doit appartenir à un
+seul). Ces types sont vérifiés par les prédicats \scheme{boolean?},
+\scheme{pair?}, \scheme{symbol?}, \scheme{number?}, \scheme{char?},
+\scheme{string?}, \scheme{vector?}, \scheme{port?},
+\scheme{procedure?}. Chacun de ces types sont documentés et possèdent
+des fonctions standards de création et d'utilisation.
+
+Les valeurs booléennes sont dénotées par \scheme{\#t} et
+\scheme{\#f}. Par contre, le langage tire profit du dynamisme du typage
+et considère que toute valeurs différentes à \scheme{\#f} est vraie.
+
+Les paires, comme mentionné précédemment, sont les structures de
+données de bases en Scheme. La fonction de création d'une paire se
+nomme \scheme{cons} et les accesseurs aux premier et deuxième valeurs
+sont nommés respectivement \scheme{car} et \scheme{cdr}. La figure
+\ref{FIG:cons} illustre la création programmatique de la S expression
+de la figure \ref{FIG:sexp}.\\
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(cons (cons 'bananes (cons 1.52 '()))
+      (cons (cons 'bonbons (cons 1/100 '()))
+            '()))
+  \end{schemecode}
+  \schemeresult{((bananes 1.52)(bonbons 1/100))}
+  \caption{Exemple de création programmatique de listes}
+  \label{FIG:cons}
+\end{figure}
+
+Les symboles se sont spécifié uniquement par du texte dans le
+programme et sont utilisé comme données, mais surtout pour faire des
+liaisons dans le programmes. En effet, les variables sont représentées
+par des symboles. Ainsi, pour utiliser un symbole comme une donnée
+(donc un symbol constant), la forme spéciale \scheme{quote} doit être
+utilisée. Aussi, plusieurs formes spéciales de liaisons sont spécifiée
+dans le standard. Les plus fondamentales étant \scheme{define} et
+\scheme{let}. La forme spéciale \scheme{define} permet la déclaration
+de variables globales ou locales permettant la récursion. La forme
+spéciale \scheme{let} permet la création de liaisons locales
+non-récursives. La figure \ref{FIG:deflet} illustres de création de
+liaisons globales, locales et d'utilisation de symboles comme
+données. Le morceau de code présenté définit une fonction globale qui
+vérifie si tout les éléments d'une liste sont strictement inférieurs à
+10. Ainsi l'appel \scheme{(drole-de-fonction (list 1 11 4))} s'évalue
+à la valeur \schemeresult{non}.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (drole-de-fonction x)
+  (let ((premier (car x))
+        (deuxieme (cdr x)))
+    (if (< premier 10)
+        (if (null? x)
+            'oui
+            (drole-de-fonction deuxieme))
+        'non)))
+  \end{schemecode}
+  \caption{Exemple de créations de liaisons et d'utilisation de
+    symboles comme données}
+  \label{FIG:deflet}
+\end{figure}
+
+On y retrouve ainsi une spécification pour le calcul numérique qui
+offre la possibilité de faire du calcul sur nombres flottants,
+entiers, réels et même complexes. 
+
+L'utilisation caractères et les chaînes de caractères est très
+simple. Les caractères en tant que donné sont précédés par
+\scheme{\#\textbackslash} et les chaînes de caractères sont facilement
+convertibles en listes de caractères pour une manipulation plus \og
+Schemiène \fg ou l'on peut accéder directement et modifier des
+caractères dans l'objet de type \scheme{string}.
+
+\todo{vectors}
+
+\todo{ports}
+
+\todo{procedures, apply}
 
 \subsection{Extensions présentées par Gambit-C}
 
 \section{Programmation fonctionnelle}
-\subsection{Distinction}
+Le langage Scheme est à la base un langage fonctionnel. Ces derniers
+sont caractérisés par une programmation centrée sur l'appel de
+fonctions dites avec une transparence référentielle, où la valeur de
+retour d'une fonction dépend uniquement des paramètres et non de
+l'état du système. Ce type de programmation fait contraste à la
+programmation impérative qui est centrée sur la notion d'état et de
+mutation de l'état de l'exécution d'un programme. Les programmes
+écrits en utilisant des langages sont généralement beaucoup plus
+facile à comprendre, ce qui attire un grand nombre de chercheurs à
+contribuer au développement et l'utilisation de tels langages dans le
+milieu commercial.
+
+Une caractéristique importante des langages de programmation
+fonctionnelle est la présence de fonctions de premier ordre, \ie que
+les fonctions sont des objets appartenant aux valeurs du
+langages. Elles peuvent donc être créées et manipulées comme tout
+autre valeurs. Ce concept ouvre la porte à la création d'abstractions
+très intéressantes: les fonctions d'ordre supérieures. Celles ci
+reçoivent des fonctions en paramètre les manipulent en souvent en
+retournent de nouvelles. La figure \ref{FIG:hof} illustre un exemple
+d'écriture et d'utilisation de fonctions d'ordre supérieurs. La
+premières fonctions définie prend une fonction en paramètre et
+applique cette fonction sur chacun des éléments de la liste passée
+comme deuxième paramètre. La deuxième fonction prend une fonction à
+deux paramètres comme premier argument et prend le deuxième paramètre
+à appliquer à cette fonction en deuxième argument, dans le but de
+faire une application partielle de cet argument à cette
+fonction. L'exemple utilise ensuite ces deux fonctions afin de créer
+une nouvelle à partir de celle donnée où l'on aura retiré 1 à chaque
+élément.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (map f lst)
+    (if (pair? lst)
+        (cons (f (car lst)) (map f (cdr lst)))
+        '()))
+(define (flip f y)
+    (lambda (x) (f x y)))
+(map (flip - 1) '(1 2 3 4 5))
+  \end{schemecode}
+  \schemeresult{(0 1 2 3 4)}
+  \caption{Exemple de création et d'utilisation de fonctions d'ordres
+    supérieures.}
+  \label{FIG:hof}
+\end{figure}
+
+
+
 \todo{Fonctions sont des données de premier ordre}
 \todo{Fonctions d'ordres supérieures (avec exemples)}
 
 \subsection{Programmation fonctionnelle pure}
+
+
 \todo{Pas de mutation. Comme des blocs lego}
 
 \todo{Haskell, ML}
@@ -911,13 +1050,20 @@ l'intérieur d'une forme \textit{quote} en utilisant le caractère
 
 
 \section{Macros}
-\label{SEC:Macros}
+\label{Scheme:macros}
 
 \subsection{Introduction}
+
+
 \todo{Discussion sur les macros de C et leurs limitations: permet de
   faire des abstractions dans le code résultant une modification du
   code source avant la compilation, mais uniquement limité à du
   remplacement de code.}
+
+La syntaxe préfixe extrêmement simple est extrêmement simple. Le
+langage de programmation possède la même syntaxe que les structures de
+données de bases, les listes, ce qui ouvre la porte à un système de
+macro très puissant.
 
 \todo{Explication des macros scheme: Code source == données scheme,
   dispose d'une pré-évaluation permettant de prendre du code source en
@@ -1281,7 +1427,7 @@ reliés aux nouvelles complexité présentent dans ce deuxième jeu.
 \item Difficulté à décrire la résolution de collision de manière
   efficace 
 \item Est-il possible d'écrire le comportement d'une entité de manière
-  indépendante, i.e. que le code soit centralisé dans une même
+  indépendante, \ie que le code soit centralisé dans une même
   fonction?
 \end{itemize}
 

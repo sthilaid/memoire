@@ -1085,27 +1085,106 @@ de mutation est considéré comme étant de très mauvais style en Scheme.
 \section{Macros}
 \label{Scheme:macros}
 
-\subsection{Introduction}
+Les macros d'un langage de programmation sont des systèmes utilisés
+pour faire des abstractions qui sont résolues durant la compilation
+d'un fichier sources. Dans sa forme la plus élémentaire, un système de
+macro peut être implanté sous la forme d'un pré-processeur de code qui
+ne fait que du remplacement de patrons par une expansion textuelle
+directe. C'est ce genre de système de macro que l'on retrouve entre
+autre dans le langage C. Ce type de macro, quoi que très simple,
+permet de faire déjà beaucoup d'abstractions allant à des abstractions
+d'optimisations à des expansions conditionnelles de code permettant de
+développer des librairies sur plusieurs plates-formes. La figure
+\ref{Scheme:c-macros} illustre des exemples de macros C. Dans cet
+exemple, on défini la macro \scheme{swap} qui interchange la valeur de
+deux variables entre elles. La fonction main retournera 1 si et
+seulement si le symbole \scheme{\_\_WEIRD\_OS\_\_} est défini, et
+retournera 0 sinon. On peut imaginer un système d'exploitation fictif
+qui s'attend à une valeur de statut de terminaison de processus qui
+doit être égale à 1 pour signaler la terminaison normale d'un
+processus. Puisque normalement, le statut de terminaison normal d'un
+processus est 0, on utilise une expansion conditionnelle à la présence
+d'un symbole qui ne devrait qu'être présent que lorsque l'on se trouve
+dans ce système fictif.
 
+\begin{figure}[htb!]
+  \begin{verbatim}
+#define swap(x,y) do { int tmp; tmp = x; x = y; y = tmp; } while(0)
+int main(){
+  int x = 0;
+  int y = 1;
+#ifdef __WEIRD_OS__
+  swap(x,y);
+#endif
+  return x;
+}
+  \end{verbatim}
+  \caption{Exemple de macro C avec expansion conditionnelle.}
+  \label{Scheme:c-macros}
+\end{figure}
 
-\todo{Discussion sur les macros de C et leurs limitations: permet de
-  faire des abstractions dans le code résultant une modification du
-  code source avant la compilation, mais uniquement limité à du
-  remplacement de code.}
+De telles macros comportes beaucoup de problèmes potentiels. Non
+seulement, elle ne sont limitées qu'a faire des remplacements
+syntaxiques très primitifs, mais aussi sont souvent la sources de
+problèmes reliés au changement du contexte syntaxique des arguments de
+la macro ou à une expansion dans un contexte qui n'était pas
+prévu. Ces problèmes sont souvent très difficile à trouver car ils ne
+surviennent que le programme est compilé, bien après l'expansion des
+macros. Il en résulte que le code compilé ne contient aucune trace des
+macros et donc le compilateur donne souvent des erreurs qui ne sont
+pas reliées avec la vraie source du problème, soit la définition de la
+macro en question. 
 
-La syntaxe préfixe extrêmement simple est extrêmement simple. Le
-langage de programmation possède la même syntaxe que les structures de
-données de bases, les listes, ce qui ouvre la porte à un système de
-macro très puissant.
+La syntaxe préfixe extrêmement simple de Scheme donne la chance au
+langage de posséder la même syntaxe que les structures de données de
+base de ce dernier. Ceci ouvre la porte à implanter un système de
+macro très puissant, un système de macro procédural. Ainsi, une macro
+Scheme est une fonction Scheme dont les paramètres \emph{ne sont pas
+  évalués} avant d'être passés au corps de la fonction. Il en résulte
+ainsi que le code étant en position d'argument est considéré par la
+macro comme étant des données Scheme (listes, symboles, nombres,
+etc...). Puisque la macro Scheme est une fonction, elle possède toute
+la puissance du langage à sa disposition.
 
-\todo{Explication des macros scheme: Code source == données scheme,
-  dispose d'une pré-évaluation permettant de prendre du code source en
-  entré et de généré du code source (toujours sous forme de listes
-  (données Scheme)). Revient a faire une manipulation d'ASA.}
+Un exemple simple mais convaincant de macro Scheme est illustré dans
+la figure \ref{Scheme:macro-ex1}. Cette macro sert à définir des
+variables constantes correspondant à des nombres de la série de
+Fibonacci. Le nombre \scheme{n} passé à la macro est utilisé pour
+calculer le n\ieme nombre de Fibonacci \emph{durant l'expansion de la
+  macro} pour générer le code présenté dans la figure
+\ref{Scheme:macro-ex1-exp}. Ainsi, le code résultant de l'expansion
+est par la suite évalué durant l'exécution du programme, et il est
+possible de faire référence à la variable \scheme{fib10}.
 
-\todo{Dispose de toute la puissance de calcul durant l'expansion :)}
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-macro (define-fib n)
+    (letrec ((fib (lambda (n) (if (< n 3) 1 (+ (fib (- n 1)) (fib (- n 2)))))))
+      `(define ,(string->symbol (string-append "fib" (number->string n)))
+         ,(fib n))))
+(define-fib 10)
+  \end{schemecode}
+  \caption{Exemple simple de macro Scheme.}
+  \label{Scheme:macro-ex1}
+\end{figure}
 
-\subsection{Exemples simples}
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define fib10 55)
+  \end{schemecode}
+  \caption{Résultat de l'expansion de la macro présentée dans la
+    figure \ref{Scheme:macro-ex1} avec 10 comme paramètre.}
+  \label{Scheme:macro-ex1-exp}
+\end{figure}
+
+Cet exemple très simple n'a pas utilisé le passage de paramètre par
+nom dont disposent les macros Scheme, \ie que la macro de la figure
+\ref{Scheme:macro-ex1} n'a pas utiliser le fait que le code passé en
+paramètre est une donnée Scheme, puisqu'un nombre s'évalue en lui même
+en Scheme. Il est intéressant de noter qu'un appel à cette macro comme
+\scheme{define-fib (+ 1 2))}, est une erreur. En effet, puisque la
+macro s'attend à avoir un nombre en paramètre, mais elle reçoit
+plutôt de ce cas ci la liste \scheme{(+ 1 2)}.
 
 \todo{macro inc}
 

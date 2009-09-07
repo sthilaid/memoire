@@ -742,6 +742,8 @@ l'ampleur de celles-ci.
 \todo{d'autres idées?}
 
 \section{Héritage LISP}
+\label{Scheme:hist}
+
 Le langage Scheme est une forme épurée du tout premier langage de
 programmation de haut niveau, le langage LISP. Ainsi, pour illustrer
 les origines de Scheme, une courte histoire du langage LISP est
@@ -977,7 +979,7 @@ caractères dans l'objet de type \scheme{string}.
 
 \todo{ports}
 
-\todo{procedures, apply}
+\todo{procedures, apply, appels terminaux}
 
 \subsection{Extensions présentées par Gambit-C}
 
@@ -998,20 +1000,23 @@ Une caractéristique importante des langages de programmation
 fonctionnelle est la présence de fonctions de premier ordre, \ie que
 les fonctions sont des objets appartenant aux valeurs du
 langages. Elles peuvent donc être créées et manipulées comme tout
-autre valeurs. Ce concept ouvre la porte à la création d'abstractions
-très intéressantes: les fonctions d'ordre supérieures. Celles ci
-reçoivent des fonctions en paramètre les manipulent en souvent en
-retournent de nouvelles. La figure \ref{FIG:hof} illustre un exemple
-d'écriture et d'utilisation de fonctions d'ordre supérieurs. La
-premières fonctions définie prend une fonction en paramètre et
-applique cette fonction sur chacun des éléments de la liste passée
-comme deuxième paramètre. La deuxième fonction prend une fonction à
-deux paramètres comme premier argument et prend le deuxième paramètre
-à appliquer à cette fonction en deuxième argument, dans le but de
-faire une application partielle de cet argument à cette
-fonction. L'exemple utilise ensuite ces deux fonctions afin de créer
-une nouvelle à partir de celle donnée où l'on aura retiré 1 à chaque
-élément.
+autre valeurs. Ces fonctions sont aussi appelées fermetures, car
+lorsqu'elles sont créés, elle conserve l'environnement d'exécution
+dans lequel elle se trouvait lors de sa création. 
+
+Ce concept ouvre la porte à la création d'abstractions très
+intéressantes: les fonctions d'ordre supérieures. Celles ci reçoivent
+des fonctions en paramètre les manipulent en souvent en retournent de
+nouvelles. La figure \ref{FIG:hof} illustre un exemple d'écriture et
+d'utilisation de fonctions d'ordre supérieurs. La premières fonctions
+définie prend une fonction en paramètre et applique cette fonction sur
+chacun des éléments de la liste passée comme deuxième paramètre. La
+deuxième fonction prend une fonction à deux paramètres comme premier
+argument et prend le deuxième paramètre à appliquer à cette fonction
+en deuxième argument, dans le but de faire une application partielle
+de cet argument à cette fonction. L'exemple utilise ensuite ces deux
+fonctions afin de créer une nouvelle à partir de celle donnée où l'on
+aura retiré 1 à chaque élément.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1029,24 +1034,52 @@ une nouvelle à partir de celle donnée où l'on aura retiré 1 à chaque
   \label{FIG:hof}
 \end{figure}
 
-
-
-\todo{Fonctions sont des données de premier ordre}
-\todo{Fonctions d'ordres supérieures (avec exemples)}
+L'utilisation de fonctions d'ordre supérieure permet l'abstraction
+d'algorithmes de manière très générique
 
 \subsection{Programmation fonctionnelle pure}
 
+Une programmation dite purement fonctionnelle respecte de manière
+stricte le paradigme de la programmation fonctionnelle, \ie que les
+fonctions sont des entités mathématique qui ne sont pas affectées par
+l'état du système. Ce type de programmation est originaire d'avant
+même la création des premiers ordinateurs. C'est dans les années 1936
+que nul autre qu'Alonzo Church a introduit le formalisme mathématique
+de définition de fonctions mathématique dénommé lambda calcul non
+typé~\cite{LAMBDA_CALCULUS}. Ce formalisme introduit des notations
+afin de définir des fonctions anonymes qui sert de base aux langages
+de programmation fonctionnels. La figure \ref{FIG:lambda-calcul}
+illustre la définition de la fonction \scheme{flip} définie en Scheme
+dans la figure \ref{FIG:hof}.
 
-\todo{Pas de mutation. Comme des blocs lego}
+\begin{figure}[htb!]
+  \center
+  $\lambda f \rightarrow \lambda y \rightarrow \lambda x \rightarrow f x y$
+  \caption{Définition de la fonction \scheme{flip} en lambda calcul
+    non typé}
+  \label{FIG:lambda-calcul}
+\end{figure}
 
-\todo{Haskell, ML}
+Ces fonctions sont considérées comme pures car elles sont exemptes de
+mutations de l'état du calcul. Ainsi, le résultat de l'application
+d'une fonction (appellée $\beta$-reduction en lambda calcul) ne dépend
+que des paramètres de ces dernières.
 
-\todo{Exemple en Scheme}
+Comme déjà mentionné dans la section \ref{Scheme:hist}, le lambda
+calcul a donné naissance une famille de langages dont la racine est le
+langage LISP. Parmi cette famille, les langages ML~\cite{SML} et
+Haskell~\cite{HASKELL} sont parmi les plus connu de ceux qui adhèrent
+fidèlement au modèle de calcul de Alonzo Church.
 
-
-\subsection{Effets de bords dans Scheme}
-\todo{Entrees sorties (variables à portée dynamique)}
-\todo{Mutations de variables}
+Le langage Scheme est lui aussi un langage fonctionnel, mais il n'est
+pas considéré comme étant pur puisque les mutations de l'état du
+programme sont permises. En effet, des opérateurs tels que
+\scheme{set!}, \scheme{set-car!} ou encore \scheme{vector-set!}
+permettent la modification de liaison ou du contenu de cellules
+mémoires. Ainsi, Scheme partage le meilleur des deux mondes en
+laissant la liberté au programmeur de choisir le paradigme de
+programmation qui lui apparaît le plus approprié. Par contre, un abus
+de mutation est considéré comme étant de très mauvais style en Scheme.
 
 
 \section{Macros}

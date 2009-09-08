@@ -735,9 +735,10 @@ vidéo.
 Ce chapitre donne une historique du langage Scheme afin de mettre en
 situation le langage et donné un aperçu de son origine. Par la suite,
 une brève explications de concepts de bases du langage est
-donnée. Finalement, les particularités du langages sont mise en
-lumière dans le but de faire comprendre au lecteur quelle est
-l'ampleur de celles-ci.
+donnée. Plus d'informations sur les bases de Scheme peuvent êtres
+obtenues dans la littérature~\cite{R5RS}~\cite{SICP}. Finalement, les
+particularités du langages sont mise en lumière dans le but de faire
+comprendre au lecteur quelle est l'ampleur de celles-ci.
 
 \todo{d'autres idées?}
 
@@ -946,7 +947,7 @@ liaisons globales, locales et d'utilisation de symboles comme
 données. Le morceau de code présenté définit une fonction globale qui
 vérifie si tout les éléments d'une liste sont strictement inférieurs à
 10. Ainsi l'appel \scheme{(drole-de-fonction (list 1 11 4))} s'évalue
-à la valeur \schemeresult{non}.
+à la valeur \schemeresult{non}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1016,7 +1017,7 @@ argument et prend le deuxième paramètre à appliquer à cette fonction
 en deuxième argument, dans le but de faire une application partielle
 de cet argument à cette fonction. L'exemple utilise ensuite ces deux
 fonctions afin de créer une nouvelle à partir de celle donnée où l'on
-aura retiré 1 à chaque élément.
+aura retiré 1 à chaque élément.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1035,7 +1036,28 @@ aura retiré 1 à chaque élément.
 \end{figure}
 
 L'utilisation de fonctions d'ordre supérieure permet l'abstraction
-d'algorithmes de manière très générique
+d'algorithmes de manière très générique. Une autre fonction d'ordre
+supérieur très utilisée est la fonction \scheme{foldl} qui permet
+d'utiliser chacun des éléments d'une liste pour calculer un résultat
+unique. La figure \ref{Scheme:fold} illustre l'utilisation de cette
+fonction pour faire la somme et le produit des nombres dans une liste.\\
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (foldl f acc lst)
+    (if (not (pair? lst))
+        acc
+        (foldl f (f acc (car lst)) (cdr lst))))
+(foldl + 0 '(1 2 3 4 5))
+  \end{schemecode}
+  \schemeresult{15}
+  \begin{schemecode}
+(foldl * 1 '(1 2 3 4 5))
+  \end{schemecode}
+  \schemeresult{120}
+  \caption{Fonction d'ordre supérieure \scheme{foldl}.}
+  \label{Scheme:fold}
+\end{figure}
 
 \subsection{Programmation fonctionnelle pure}
 
@@ -1050,7 +1072,7 @@ typé~\cite{LAMBDA_CALCULUS}. Ce formalisme introduit des notations
 afin de définir des fonctions anonymes qui sert de base aux langages
 de programmation fonctionnels. La figure \ref{FIG:lambda-calcul}
 illustre la définition de la fonction \scheme{flip} définie en Scheme
-dans la figure \ref{FIG:hof}.
+dans la figure \ref{FIG:hof}.\\
 
 \begin{figure}[htb!]
   \center
@@ -1105,7 +1127,7 @@ doit être égale à 1 pour signaler la terminaison normale d'un
 processus. Puisque normalement, le statut de terminaison normal d'un
 processus est 0, on utilise une expansion conditionnelle à la présence
 d'un symbole qui ne devrait qu'être présent que lorsque l'on se trouve
-dans ce système fictif.
+dans ce système fictif.\\
 
 \begin{figure}[htb!]
   \begin{verbatim}
@@ -1123,7 +1145,7 @@ int main(){
   \label{Scheme:c-macros}
 \end{figure}
 
-De telles macros comportes beaucoup de problèmes potentiels. Non
+De telles macros comportent beaucoup de problèmes potentiels. Non
 seulement, elle ne sont limitées qu'a faire des remplacements
 syntaxiques très primitifs, mais aussi sont souvent la sources de
 problèmes reliés au changement du contexte syntaxique des arguments de
@@ -1133,18 +1155,25 @@ surviennent que le programme est compilé, bien après l'expansion des
 macros. Il en résulte que le code compilé ne contient aucune trace des
 macros et donc le compilateur donne souvent des erreurs qui ne sont
 pas reliées avec la vraie source du problème, soit la définition de la
-macro en question. 
+macro en question.
 
 La syntaxe préfixe extrêmement simple de Scheme donne la chance au
 langage de posséder la même syntaxe que les structures de données de
 base de ce dernier. Ceci ouvre la porte à implanter un système de
-macro très puissant, un système de macro procédural. Ainsi, une macro
-Scheme est une fonction Scheme dont les paramètres \emph{ne sont pas
-  évalués} avant d'être passés au corps de la fonction. Il en résulte
-ainsi que le code étant en position d'argument est considéré par la
-macro comme étant des données Scheme (listes, symboles, nombres,
-etc...). Puisque la macro Scheme est une fonction, elle possède toute
-la puissance du langage à sa disposition.
+macro très puissant, un système de macro procédural. 
+
+Plusieurs systèmes d'expansions de macro sont disponible en Scheme. Le
+plus simple d'entre eux est celui qui provient directement de LISP, la
+forme spéciale \scheme{define-macro}. Avec cet expanseur, une macro
+Scheme est une fonction dont les paramètres \emph{ne sont pas évalués}
+avant d'être passés au corps de la fonction. Il en résulte ainsi que
+le code étant en position d'argument est considéré par la macro comme
+étant des données Scheme (listes, symboles, nombres, etc...). Puisque
+la macro Scheme est une fonction, elle possède toute la puissance du
+langage à sa disposition. La S expression retournée par la macro sera
+le résultat de l'expansion de celle-ci et sera donc évalué durant
+l'exécution du programme à l'endroit où l'appel de la macro se
+retrouvait.
 
 Un exemple simple mais convaincant de macro Scheme est illustré dans
 la figure \ref{Scheme:macro-ex1}. Cette macro sert à définir des
@@ -1154,7 +1183,7 @@ calculer le n\ieme nombre de Fibonacci \emph{durant l'expansion de la
   macro} pour générer le code présenté dans la figure
 \ref{Scheme:macro-ex1-exp}. Ainsi, le code résultant de l'expansion
 est par la suite évalué durant l'exécution du programme, et il est
-possible de faire référence à la variable \scheme{fib10}.
+possible de faire référence à la variable \scheme{fib10}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1188,7 +1217,7 @@ de ce cas ci la liste \scheme{(+ 1 2)}, puisque l'évaluation de
 l'addition ne sera fait que durant l'exécution du programme.
 
 Un exemple simple de macro tirant profit du fait que l'argument est
-passé par nom est illustré dans la figure \ref{Scheme:macro-ex2}
+passé par nom est illustré dans la figure \ref{Scheme:macro-ex2}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1202,35 +1231,188 @@ passé par nom est illustré dans la figure \ref{Scheme:macro-ex2}
   \label{Scheme:macro-ex2}
 \end{figure}
 
-\todo{macro while}
+Cette macro très simple utilise le passage par nom pour permettre
+d'incrémenter la valeur d'une variable. Un exemple plus complexe de
+macro utilisant le passage par nom est donné dans la figure
+\ref{Sceme:macro-ex3}. Cette macro permet d'augmenter le langage
+Scheme d'une nouvelle forme spéciale qui correspond à une forme simple
+d'itération. \\
 
-\subsection{Problème de l'hygiène des macros}
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-macro (for var init limit . body)
+  `(let loop ((,var ,init))
+     (if (< ,var ,limit)
+         (begin ,@body
+                (loop (+ ,var 1))))))
+(let ((v (make-vector 5)))
+  (for x 0 5 (vector-set! v x x))
+  v)
+  \end{schemecode}
+  \schemeresult{\#(0 1 2 3 4)}
+  \caption{Exemple de macro ajoutant une nouvelle forme spéciale au langage.}
+  \label{Scheme:macro-ex3}
+\end{figure}
 
-\todo{Capture de nom intentionnelle, ou non intentionnelle. }
+Cette macro comporte, par contre plusieurs problèmes. L'un d'entre eux
+est relié à l'introduction de la variable \scheme{loop}. L'ajout de
+cette variable peut causer le problème connu sous le nom de
+\emph{Capture de Variables}. En effet, la macro n'aura pas le
+comportement escompté si l'un de ses paramètres possède une référence
+à une variable déjà existante nommée \scheme{loop}. Le problème de
+capture de variables était tout aussi présent dans les macro à la C et
+constituait pour ce type de macro un problème insolvable. Par contre,
+il est possible d'éviter ce problème en Scheme en générant un nom de
+variable pour \scheme{loop} qui est assurément unique. L'implantation
+Gambit-C offre la fonction \scheme{gensym} pour ces besoins.
 
-\todo{Différentes formes spéciales (define-macro, define-syntax)}
+Le problème de capture de nom est associé au phénomène appelé hygiène
+des macros. Ce problème peut être résolu manuellement comme suggéré,
+mais il existe aussi d'autres expansées de macro assurant l'hygiène
+des macros, dont entre autres la forme spéciale
+\scheme{syntax-rules}~\cite{SCHEME_HYG_MACRO}. La réécriture de la
+macro \scheme{for} en utilisant un système de macro hygiénique est
+donnée dans la figure \ref{Scheme:macro-ex4}. Cette figure donne aussi
+un exemple d'utilisation de la macro mettant à l'épreuve l'hygiène de
+celle-ci. On constate que malgré le fait qu'aucun effort n'a dû être
+mis en place pour éviter les collisions de noms pour la variable
+\scheme{loop} introduite, la macro réalise le comportement attendu
+d'elle dans des conditions potentiellement problématiques.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-syntax for
+    (syntax-rules ()
+      ((for var init limit body ...)
+       (let loop ((var init))
+         (if (< var limit)
+             (begin body ...
+                    (loop (+ var 1))))))))
+(let ((v (make-vector 5)))
+    (for loop 0 5 (vector-set! v loop loop))
+    v)
+  \end{schemecode}
+  \schemeresult{\#(0 1 2 3 4)}
+  \caption{Macro \scheme{for} hygiénique}
+  \label{Scheme:macro-ex4}
+\end{figure}
+
+Malgré le fait que l'expansion de macro faite avec
+\scheme{define-macro} puisse impliquer des collisions de variables,
+elle permet une plus grande liberté d'écriture. En effet, parfois la
+collision de nom peut, par exemple, être intentionnelle. Aussi, le
+problème est facilement résolu avec l'utilisation de symboles uniques.
 
 
 
 \section{Continuations}
-\subsection{Introductions du sujet et explications}
-\todo{En C, continuation equiv au code situé à l'adresse de retour de
-  la fonction exécutée.}
 
-\todo{Explication de l'ordre dévaluation en Scheme.}
+L'état d'un calcul en cours d'exécution est souvent implanté ou
+illustré par une pile d'exécution. C'est le modèle d'implantation
+utilisé en C et dans la plupart des langages de programmation. Ainsi,
+l'exécution d'un appel de fonction empile l'adresses de retour et
+utilise le dessus de la pile pour les variables locales à la
+fonction. Lorsque la fonction termine, l'adresse de retour est dépilée
+et le contrôle revient à l'endroit de l'appel de
+fonction. L'environnement d'exécution de cet appel est contenu
+partiellement dans l'état de la pile et devient donc perdu lorsque
+l'appel se termine.
 
-\todo{Continuation d'un programme simple en Scheme. (+ 1 (- [f x y]
-  2)) : continuation de l'appel à f est la soustraction du résultat
-  par deux, puis l'on ajoute à 1 se résultat. Eq à (lambda (res-f) (+
-  1 (- res-f 2))).}
+En Scheme, le modèle d'exécution, quoi que similaire, est sensiblement
+différent. L'évolution de l'exécution d'un programme est implanté par
+des continuations. Ces dernières sont des fermetures qui représentent
+le reste du calcul à faire à un moment du calcul donné. La
+continuation initiale d'un programme est la terminaison de ce dernier,
+puisque après avoir exécuter le programme, il ne restera plus rien à
+faire.
 
-\subsection{Réification de continuations}
-\todo{Explication de call-with-current-continuation permettant de faire}
-\todo{surfacer une continuation.}
+Les figures \ref{Scheme:cont-ex1} et \ref{Scheme:cont-ex2} illustrent
+la continuation d'un appel de fonction dans un calcul très
+simple. Ainsi, après avoir exécuté l'appel de la fonction \scheme{f},
+le reste du calcul à effectuer peut être représenté par une fermeture
+attendant le résultat de l'appel de fonction en entrée. \\
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(+ a (- [f x y] 2))
+  \end{schemecode}
+  \caption{Exemple simple de calcul en Scheme}
+  \label{Scheme:cont-ex1}
+\end{figure}
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(lambda (res-f) (+ a (- res-f 2)))
+  \end{schemecode}
+  \caption{Continuation de l'appel de la fonction \scheme{f} présenté
+    dans la figure \ref{Scheme:cont-ex1}}
+  \label{Scheme:cont-ex2}
+\end{figure}
+
+Le langage Scheme offre la possibilité de réifier la continuation d'un
+calcul donné par l'entremise de la forme spéciale
+\scheme{call-with-current-continuation} souvent disponible aussi via
+\scheme{call/cc}. La figure \ref{Scheme:cont-ex3} donne un exemple de
+la réification d'un calcul similaire à celui présenté dans la figure
+\ref{Scheme:cont-ex1}. La mutation de la variable \scheme{k} est
+utilisée afin de permettre une sauvegarde de la continuation et dans
+le but de la réutiliser plus tard.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define k \#f)
+(define f (lambda (x y) (* x y)))
+(+ 3 (- (call/cc (lambda (cont) (set! k cont) [f 5 6])) 2))
+  \end{schemecode}
+  \schemeresult{31}
+  \begin{schemecode}
+(k 10)
+  \end{schemecode}
+  \schemeresult{11}
+  \caption{Réification d'une continuation à l'aide \scheme{call/cc}}
+  \label{Scheme:cont-ex3}
+\end{figure}
+
+Ainsi, la sauvegarde d'une continuation permet de conserver l'état du
+calcul et la réutilisation de celui-ci.
 
 \subsection{Exemples d'utilisations}
+L'utilisation de continuations ajoute beaucoup de puissance au niveau
+de la programmation en Scheme, si elle est habilement exécutée. Cette
+section présente quelques utilisations intéressantes permettant
+d'entrevoir les possibilités qu'offre cet aspect de Scheme.
+
 \subsubsection{Échappement au flux de contrôle}
-\todo{Utilisation comme un return}
+Un exemple simple d'utilisation de continuation est pour l'échappement
+au contrôle d'une fonction. Bien sûr, un programmeur a toujours le
+contrôle du programme qu'il écrit, mais il peut y avoir des situation
+qui exigent l'utilisation de fonctions externes dont on ne peut pas
+modifier le contenu. De telles situations peuvent mener à des
+inefficacités algorithmiques. L'exemple présenté dans la figure 
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(trace foldl)
+(define (exists-greater-than val lst)
+    (foldl (lambda (false x) (if (> x val) x false))
+           \#f
+           lst))
+(exists-greater-than 100 (list 1 102 3 2 7 12))
+  \end{schemecode}
+  {{\it
+| > (foldl proc \#f '(1 102 3 2 7 12))\\
+| > (foldl proc \#f '(102 3 2 7 12))\\
+| > (foldl proc 102 '(3 2 7 12))\\
+| > (foldl proc 102 '(2 7 12))\\
+| > (foldl proc 102 '(7 12))\\
+| > (foldl proc 102 '(12))\\
+| > (foldl proc 102 '())\\
+| 102\\
+102
+}}
+  \caption{}
+  \label{}
+\end{figure}
 
 \subsubsection{Système de coroutine}
 \todo{Exemple du cours de Marc}

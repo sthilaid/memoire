@@ -1400,16 +1400,32 @@ inefficacités algorithmiques. L'exemple présenté dans la figure
 (exists-greater-than 100 (list 1 102 3 2 7 12))
   \end{schemecode}
   {{\it
-| > (foldl proc \#f '(1 102 3 2 7 12))\\
-| > (foldl proc \#f '(102 3 2 7 12))\\
-| > (foldl proc 102 '(3 2 7 12))\\
-| > (foldl proc 102 '(2 7 12))\\
-| > (foldl proc 102 '(7 12))\\
-| > (foldl proc 102 '(12))\\
-| > (foldl proc 102 '())\\
-| 102\\
+\textbar \textgreater (foldl proc \#f '(1 102 3 2 7 12))\\
+\textbar \textgreater (foldl proc \#f '(102 3 2 7 12))\\
+\textbar \textgreater (foldl proc 102 '(3 2 7 12))\\
+\textbar \textgreater (foldl proc 102 '(2 7 12))\\
+\textbar \textgreater (foldl proc 102 '(7 12))\\
+\textbar \textgreater (foldl proc 102 '(12))\\
+\textbar \textgreater (foldl proc 102 '())\\
+\textbar 102\\
 102
 }}
+\begin{schemecode}
+(define (exists-greater-than val lst)
+    (call/cc
+     (lambda (return)
+       (foldl (lambda (retval x) (if (> x val)
+                                     (return x)
+                                     retval))
+              \#f
+              lst))))
+(exists-greater-than 100 (list 1 102 3 2 7 12))
+\end{schemecode}
+    {{\it
+\textbar \textgreater (foldl proc \#f '(1 102 3 2 7 12))\\
+\textbar \textgreater (foldl proc \#f '(102 3 2 7 12))\\
+102
+    }}
   \caption{}
   \label{}
 \end{figure}

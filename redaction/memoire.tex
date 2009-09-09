@@ -1557,8 +1557,8 @@ terminaux.
   (if (< n 2)
       (k 1)
       (minusk n 1 (lambda (r)
-                    (fact r (lambda (r2)
-                              (timesk n r2 k)))))))
+                    (factk r (lambda (r2)
+                               (timesk n r2 k)))))))
 (factk 10 (lambda (x) x))
   \end{schemecode}
   \schemeresult{3628800}
@@ -1647,20 +1647,62 @@ suite pour éviter une évolution qui pourrait aller dans une mauvaise
 direction.
 
 
-\subsection{Interprétation et débuggage}
+\subsection{Interprétation et débuggage efficace}
+
+Un langage typé dynamiquement à la possibilité d'être interprété
+puisque les types ne doivent pas nécessairement être correct avant
+l'exécution. On peut ainsi évaluer les instruction les unes à la suite
+des autres dans un environnement global d'interprétation
+(\textit{toplevel}). Cette particularité infuse beaucoup de puissance
+au langage. Cela permet de pouvoir tester facilement les modules
+écrits, de manière externe au système dans lequel il se trouve. Les
+cas extrêmes peuvent ainsi facilement être vérifiés et donc donner une
+bonne assurance sur le fonctionnement des algorithmes utilisés.
+
+En cas d'erreur, le système est conçu afin de permettre de détecter
+les erreurs et de pouvoir les diagnostiquer. Puisque l'environnement
+est dynamique, une grande puissance d'introspection et d'analyse est
+disponible. Le système Gambit-C permet de pouvoir non seulement
+inspecter la pile de continuations courantes lors d'une exception,
+mais permet l'introspection d'environnements de fermetures et la
+possibilité de rétablir ces environnement et de pouvoir exécuter du
+code arbitraire dans celui-ci afin de pouvoir trouver la source de
+l'erreur. 
+
+\todo{Exemple de debuggage??}
+
+De plus, le dynamisme du langage peut pousser la puissance de
+récupération d'erreurs encore plus loin en combinant le système de
+débuggage de Gambit-C avec un protocole établi sur \textit{TCP-IP}
+permettant de pouvoir faire du dégoggage à distance. On peut ainsi
+analyser une erreur s'étant produite sur un processus distant, qui
+pourrait potentiellement être exécuté sur un système embarqué ou un
+appareil ne disposant pas d'interface permettant le déboggage. Par
+exemple, James Long a utilisé ce système afin de pouvoir débugger des
+processus Scheme exécuté sur un téléphone mobile.
+
+Il en résulte donc que malgré un faible coût en performance lors de
+l'exécution d'un programme, un système utilisant le typage dynamique
+apporte beaucoup de puissance aux programmeurs et leurs fourni des
+outils efficaces pour le développement de logiciels.
+
+\todo{ajouter ref pour james long et tcpip?}
 
 
-\todo{Possibilité de pouvoir exécuter du code arbitraire lors d'un
-  crash}
+\section{Conclusion}
 
-\todo{Possibilité de pouvoir inspecter chacune des frames de la pile
-  de continuactions afin de pouvoir obtenir de l'info sur
-  l'environnement de celui-ci, l'endroit dans le code source où la
-  continuation se trouve et même de pouvoir exécuter du code dans
-  l'environnement d'une continuation de la pile choisie.}
-
-\todo{Possibilité de faire le déboggage à distance (ex: iPhone)}
-
+Cet aperçu des particularités du langage fonctionnel Scheme démontrent
+clairement que le langage répond grandement aux besoins établis par
+les jeux vidéo. Notamment, la puissance d'abstraction provenant de
+l'aspect de programmation fonctionnel du langage et de sont puissant
+système de macro permettrait de faciliter les abstractions nécessaires
+à une bonne modularisation du code source. Le dynamisme du langage
+apporte des outils de développement puissant, comme un interprète et
+un déboggeur à distance, mais aussi permet de faciliter le
+développement itératifs utilisant des prototypes. La présence d'un
+ramasse miettes évite la présence de beaucoup d'erreurs potentielles
+de gestion de mémoire, mais pourrait causer des problèmes de
+performances lors de l'exécution de ceux-ci.
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

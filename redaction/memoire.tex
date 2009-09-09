@@ -1576,44 +1576,6 @@ modulaires.
 
 
 
-\section{Dynamisme du langage}
-
-Le langage Scheme est un langage à typage dynamique, faisant ainsi
-contraste aux langages fonctionnels de la famille \textit{ML}. Un
-typage dynamique se distingue par des vérifications de types
-effectuées durant l'exécution d'un programme. Un typage statique,
-quant à lui, effectuera les vérifications de types durant la
-compilation. Ainsi, la principale différence entre les deux approches
-est le moment où les erreurs de programmation apparaissent. 
-
-Un typage statique fournira des erreurs de types beaucoup plus tôt
-dans le processus de développement et permettent de pouvoir exécuter
-un code libre de toutes vérification de types.
-
-Pour un typage dynamique, les erreurs ne surviendront que durant
-l'exécution du programme et, pourraient ne jamais se produire, ou
-difficilement se produire. De plus, un typage dynamique implique de
-légères pertes de performances puisque les vérifications de effectuées
-pendant l'exécution du programme. Par contre, des erreurs apparaissant
-durant l'exécution peuvent être beaucoup plus faciles à corriger, si
-le système est muni de bon système de déboggage. Aussi, un typage
-dynamique permet au langage de pouvoir être interprété en plus de
-pouvoir être compilé. L'interprétation permet un développement rapide
-et facilite le prototypage grâce à la possibilité de faire de la
-programmation en direct ou \textit{live coding}.
-
-\todo{Typage dynamique vs typage statique}
-
-\todo{Exemple de code utilisant le typage dynamique.}
-
-\todo{Evaluation dynamique de code avec load ou eval. idées?}
-
-\todo{Langages comme C++ favorisent bcp de focuser sur la conceptions des
-  classes. Implique une structure rigide qui se doit d'être bien conçu
-  depuis le départ.}
-
-\todo{Langages plus dynamiques permettent des cycles de prototypage
-  rapide en apportant beaucoup de flexibilité aux développeurs.}
 
 
 \section{Gestion mémoire automatique}
@@ -1639,7 +1601,55 @@ programmation en direct ou \textit{live coding}.
 
 
 
-\section{Débuggage}
+\section{Dynamisme du langage}
+
+Le langage Scheme est un langage à typage dynamique, faisant ainsi
+contraste aux langages fonctionnels de la famille \textit{ML}. Un
+typage dynamique se distingue par des vérifications de types
+effectuées durant l'exécution d'un programme. Un typage statique,
+quant à lui, effectuera les vérifications de types durant la
+compilation. Ainsi, la principale différence entre les deux approches
+est le moment où les erreurs de programmation apparaissent. 
+
+Un typage statique fournira des erreurs de types beaucoup plus tôt
+dans le processus de développement et permettent de pouvoir exécuter
+un code libre de toutes vérification de types. Une particularité des
+systèmes typés statiquement consiste à avoir des structures de code
+plus rigides, demandant possiblement beaucoup d'efforts pour être
+modifié. 
+
+Pour un typage dynamique, les erreurs ne surviendront que durant
+l'exécution du programme et, pourraient ne jamais se produire, ou
+difficilement se produire. De plus, un typage dynamique implique de
+légères pertes de performances puisque les vérifications de effectuées
+pendant l'exécution du programme. Par contre, des erreurs apparaissant
+durant l'exécution peuvent être beaucoup plus faciles à corriger, si
+le système est muni de bon système de déboggage. Aussi, un typage
+dynamique permet au langage de pouvoir être interprété en plus de
+pouvoir être compilé. L'interprétation permet un développement rapide
+et facilite le prototypage grâce à la possibilité de faire de la
+programmation en direct (\textit{live coding}). 
+
+Les deux systèmes de typages peuvent être comparés à l'aide de
+métaphores simples. Des programmes écrits dans des langages typés
+statiquement peuvent être considérés comme des murs de briques. Les
+types agissent comme du ciment entre les fonctions et donc la
+modification de la structure nécessite des efforts pour la
+refaire. Par contre, lorsque ces bases sont stables et solides, le
+typage statique assure un adhération parfaite entre les blocs.  En
+opposition, le typage dynamique peut être vu comme un système de
+plantes vivantes, où les feuilles sont des fonctions ou des
+modules. Le système permet une grande flexibilité d'évolution en
+s'adaptant plus facilement aux changements et permet de pouvoir être
+facilement modifié en cours de route pour donner le résultat
+escompté. Un entretient régulier doit être par contre fait par la
+suite pour éviter une évolution qui pourrait aller dans une mauvaise
+direction.
+
+
+\subsection{Interprétation et débuggage}
+
+
 \todo{Possibilité de pouvoir exécuter du code arbitraire lors d'un
   crash}
 

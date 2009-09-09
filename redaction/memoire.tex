@@ -4,7 +4,7 @@
 
 \usepackage[french, english]{babel}
 %\usepackage{isolatin1}
-\usepackage[latin1]{inputenc}
+\usepackage[utf8]{inputenc}
 \usepackage{url}
 \usepackage{setspace}
 \usepackage{verbatim}
@@ -26,9 +26,9 @@
 \newcommand{\scheme}[1]{\selectlanguage{english}{\tt #1}\selectlanguage{french}}
 \newcommand{\schemeresult}[1]{{\it #1}}
 
-%% \hyphenation{ex-écu-tion} %% marche pas a cause de l'accent
+%% \hyphenation{ex-Ã©cu-tion} %% marche pas a cause de l'accent
 
-\title{Développement de jeux vidéo en Scheme}
+\title{DÃ©veloppement de jeux vidÃ©o en Scheme}
 
 % remplir les champs...
 \Auteur{David}{St-Hilaire}
@@ -37,7 +37,7 @@
 
 \Directeur{M.}{Marc}{Feeley}{Ph.D.}
 
-\Membres{1}{M.}{Yann-Gaël}{Guéhéneuc}{Ph.D.}
+\Membres{1}{M.}{Yann-GaÃ«l}{GuÃ©hÃ©neuc}{Ph.D.}
 
 %pour le doctorat seulement
 
@@ -48,12 +48,12 @@
 %\Membres{3}{M.}{Membre}{trois}{Ph.D.}
 
 %Pour un doctorat, changer simplement \MSc par \PhD
-%titre: 15 mots, max. 175 caractère
-\MSc{Dévelopment de jeux vidéo en Scheme}
+%titre: 15 mots, max. 175 caractÃ¨re
+\MSc{DÃ©velopment de jeux vidÃ©o en Scheme}
     {}
     {d'informatique et de recherche op\'{e}rationnelle}
     {informatique}
-    {Décembre}
+    {DÃ©cembre}
     {2009}
 
 \setstretch{2}
@@ -67,8 +67,8 @@
 
 \vspace{2em}
 
-\noindent {\bf Mots clés}: Language de programmation fonctionnels,
-Scheme, jeux vidéo, programmation orientée objet.
+\noindent {\bf Mots clÃ©s}: Language de programmation fonctionnels,
+Scheme, jeux vidÃ©o, programmation orientÃ©e objet.
 
 \abstract
 
@@ -99,7 +99,7 @@ blablabla
 
 % \preface
 % 
-% Préface...
+% PrÃ©face...
 
 \debutchapitres
 
@@ -107,59 +107,59 @@ blablabla
 \chapter{Introduction}
 \label{Chap:Intro}
 
-L'industrie du jeu vidéo devient de plus en plus importante dans le
-domaine de l'informatique. Cette croissance est bien reflétée par
-l'augmentation de 28\% des revenus provenant de la vente de jeux vidéo
-aux États-Unis durant l'année 2007~\cite{NPD_Games_2007}. La place
-occupée par l'industrie du jeu vidéo durant cette même année s'estime
-à 76\% du marché de tous les logiciels vendus~\cite{NPD_Soft_2008}. 
+L'industrie du jeu vidÃ©o devient de plus en plus importante dans le
+domaine de l'informatique. Cette croissance est bien reflÃ©tÃ©e par
+l'augmentation de 28\% des revenus provenant de la vente de jeux vidÃ©o
+aux Ã‰tats-Unis durant l'annÃ©e 2007~\cite{NPD_Games_2007}. La place
+occupÃ©e par l'industrie du jeu vidÃ©o durant cette mÃªme annÃ©e s'estime
+Ã  76\% du marchÃ© de tous les logiciels vendus~\cite{NPD_Soft_2008}. 
 
-L'engouement du marché du jeu vidéo incite les compagnies oeuvrant
-dans le domaine à repousser les limites de l'état de l'art du
-développement de jeux. La compétition est féroce et donc beaucoup
-d'efforts doivent être investis dans la création d'un jeu afin qu'il
-se démarque de la masse et devienne un nouveau \og Blockbuster Hit
-\fg. Le président de la compagnie Française UbiSoft estime que le coût
-moyen de développement d'un jeu sur une console moderne se situe entre
+L'engouement du marchÃ© du jeu vidÃ©o incite les compagnies oeuvrant
+dans le domaine Ã  repousser les limites de l'Ã©tat de l'art du
+dÃ©veloppement de jeux. La compÃ©tition est fÃ©roce et donc beaucoup
+d'efforts doivent Ãªtre investis dans la crÃ©ation d'un jeu afin qu'il
+se dÃ©marque de la masse et devienne un nouveau \og Blockbuster Hit
+\fg. Le prÃ©sident de la compagnie FranÃ§aise UbiSoft estime que le coÃ»t
+moyen de dÃ©veloppement d'un jeu sur une console moderne se situe entre
 20 et 30 millions de dollars~\cite{cbc_ubisoft}. Si l'on estime le
-salaire moyen d'un artiste ou d'un développeur de jeu vidéo à 60
-000\$ par année, cela reviendrait à un travail d'environ 300 à 500
-hommes par année.
+salaire moyen d'un artiste ou d'un dÃ©veloppeur de jeu vidÃ©o Ã  60
+000\$ par annÃ©e, cela reviendrait Ã  un travail d'environ 300 Ã  500
+hommes par annÃ©e.
 
-Puisque la création d'un jeu vidéo peu nécessiter autant d'efforts, il
-semble très intéressant de vouloir tenter de faciliter le
-développement de ces derniers. Avec autant d'efforts mis en place,
-même une petite amélioration sur le cycle de développement peu
-engendrer une diminution énorme des coûts de production et aussi
-améliorer la qualité des environnements utilisés par les développeurs.
+Puisque la crÃ©ation d'un jeu vidÃ©o peu nÃ©cessiter autant d'efforts, il
+semble trÃ¨s intÃ©ressant de vouloir tenter de faciliter le
+dÃ©veloppement de ces derniers. Avec autant d'efforts mis en place,
+mÃªme une petite amÃ©lioration sur le cycle de dÃ©veloppement peu
+engendrer une diminution Ã©norme des coÃ»ts de production et aussi
+amÃ©liorer la qualitÃ© des environnements utilisÃ©s par les dÃ©veloppeurs.
 
-Jusqu'à ce jour, la grande majorité des jeux vidéo sont écrits à
+Jusqu'Ã  ce jour, la grande majoritÃ© des jeux vidÃ©o sont Ã©crits Ã 
 l'aide de langages de relativement bas niveau, par exemple en C, C++
-ou encore C\#~\cite{CSHARP_SPEC}. Ces langages sont généralement
-utilisés parce qu'ils sont déjà bien établis et que la main d'oeuvre
+ou encore C\#~\cite{CSHARP_SPEC}. Ces langages sont gÃ©nÃ©ralement
+utilisÃ©s parce qu'ils sont dÃ©jÃ  bien Ã©tablis et que la main d'oeuvre
 est facilement accessible.
 
 \todo{expliquer haut niveau / bas niveau}
 
-Les langages de haut niveau sont généralement caractérisés par le fait
-qu'ils font une bonne abstraction du système utilisé et permettent
-d'utiliser celles-ci de manière naturelle. Elles facilitent donc le
-travail de programmation. Le coût de ces abstractions se répercute
-généralement en un coût de performance du programme. Dans le passé, la
-performance était critique dans les jeux vidéo, mais les consoles
+Les langages de haut niveau sont gÃ©nÃ©ralement caractÃ©risÃ©s par le fait
+qu'ils font une bonne abstraction du systÃ¨me utilisÃ© et permettent
+d'utiliser celles-ci de maniÃ¨re naturelle. Elles facilitent donc le
+travail de programmation. Le coÃ»t de ces abstractions se rÃ©percute
+gÃ©nÃ©ralement en un coÃ»t de performance du programme. Dans le passÃ©, la
+performance Ã©tait critique dans les jeux vidÃ©o, mais les consoles
 modernes sont devenues plus performantes que la plupart des
 ordinateurs personnels. Actuellement la performance n'est donc plus
-aussi important. Aussi, les améliorations du domaine de la compilation
+aussi important. Aussi, les amÃ©liorations du domaine de la compilation
 de langages de haut niveau font en sorte que les performances de ces
-systèmes sont comparables à l'utilisation de langages de plus bas
+systÃ¨mes sont comparables Ã  l'utilisation de langages de plus bas
 niveau.
 
 Ainsi, l'utilisation de langages de plus haut niveau pourrait
-potentiellement améliorer les délais occasionnés par les cycles de
-développement des jeux en permettant aux programmeurs et designers de
+potentiellement amÃ©liorer les dÃ©lais occasionnÃ©s par les cycles de
+dÃ©veloppement des jeux en permettant aux programmeurs et designers de
 s'exprimer plus facilement. Le langage de programmation
-Scheme~\cite{R5RS} semble être un bon candidat en tant que langage de
-haut niveau. En effet, le langage Scheme offre les fonctionnalités de
+Scheme~\cite{R5RS} semble Ãªtre un bon candidat en tant que langage de
+haut niveau. En effet, le langage Scheme offre les fonctionnalitÃ©s de
 haut niveau suivantes:
 
 \todo{Gardes les bullets ou changer en texte??}
@@ -167,38 +167,38 @@ haut niveau suivantes:
 \begin{itemize}
 \item Typage dynamique
 \item Fonctions de premier ordre
-\item Système de macros évolué
-\item Accès direct aux continuations du calcul
-\item Un système de déboggage très efficace
+\item SystÃ¨me de macros Ã©voluÃ©
+\item AccÃ¨s direct aux continuations du calcul
+\item Un systÃ¨me de dÃ©boggage trÃ¨s efficace
 \end{itemize}
 
-Ces particularités du langage Scheme sont discutées plus en détail
+Ces particularitÃ©s du langage Scheme sont discutÃ©es plus en dÃ©tail
 dans le chapitre \ref{Chap:Scheme}.
 
-Le système Gambit-C, l'une des implantations de Scheme les plus
-performantes~\cite{GAMBIT_BENCHMARKS} sera utilisée pour effectuer les
-expériences pratiques. Ce système comporte de nombreuses extensions
-pouvant être très utiles au développement de jeux vidéo. On y retrouve
+Le systÃ¨me Gambit-C, l'une des implantations de Scheme les plus
+performantes~\cite{GAMBIT_BENCHMARKS} sera utilisÃ©e pour effectuer les
+expÃ©riences pratiques. Ce systÃ¨me comporte de nombreuses extensions
+pouvant Ãªtre trÃ¨s utiles au dÃ©veloppement de jeux vidÃ©o. On y retrouve
 entre autres des tables de hachages ou des \textit{threads} (processus
-légers).
+lÃ©gers).
 
-Il semble donc qu'une utilisation judicieuse de ce système pourrait
-faire bénéficier des projets aussi complexes que le sont les
-productions de jeux vidéo.
+Il semble donc qu'une utilisation judicieuse de ce systÃ¨me pourrait
+faire bÃ©nÃ©ficier des projets aussi complexes que le sont les
+productions de jeux vidÃ©o.
 
-\section{Problématique}
-Ce mémoire de maîtrise vise à répondre à la problématique suivante:
+\section{ProblÃ©matique}
+Ce mÃ©moire de maÃ®trise vise Ã  rÃ©pondre Ã  la problÃ©matique suivante:
 
 \todo{Inserer dans un texte ou garder en quotation?}
 
 \begin{quote}
   Quelles sont les forces et les faiblesses du langages de
-  programmation Scheme pour le développement de jeux vidéo.
+  programmation Scheme pour le dÃ©veloppement de jeux vidÃ©o.
 \end{quote}
 
-\section{Méthodologie}
+\section{MÃ©thodologie}
 
-%% Afin de pouvoir répondre à la problématique posée, nous avons utilisé
+%% Afin de pouvoir rÃ©pondre Ã  la problÃ©matique posÃ©e, nous avons utilisÃ©
 %% l'approche
 
 %% \begin{itemize}
@@ -207,137 +207,137 @@ Ce mémoire de maîtrise vise à répondre à la problématique suivante:
 %% \item Ecrire un nouveau jeu utilisant les techniques developpees pour le 1er jeu
 %% \end{itemize}
 
-Afin de pouvoir répondre à la problématique posée, nous avons étudié
-les caractéristiques de Scheme et du compilateur Gambit-C, ainsi que
-les besoins au niveau du développement de jeux vidéo. Concurremment, 2
-jeux ont été développés pour raffiner nos approches et les évaluer
-dans un contexte réel.
+Afin de pouvoir rÃ©pondre Ã  la problÃ©matique posÃ©e, nous avons Ã©tudiÃ©
+les caractÃ©ristiques de Scheme et du compilateur Gambit-C, ainsi que
+les besoins au niveau du dÃ©veloppement de jeux vidÃ©o. Concurremment, 2
+jeux ont Ã©tÃ© dÃ©veloppÃ©s pour raffiner nos approches et les Ã©valuer
+dans un contexte rÃ©el.
 
 Le premier jeux a servi de plate-forme d'exploration permettant
-d'élaborer une méthodologie qui semble efficace pour le développement
-de jeux. Afin d'obtenir une telle méthodologie, plusieurs itérations
-de développement ont été effectuées, chacune permettant d'explorer de
-nouveaux aspects sur la manière de résoudre les problématiques
-associées à la création de jeux, par exemple comment arriver à
-synchroniser des entités dans le jeux ou comment arriver à décrire
-efficacement un système de détection et de résolution de collisions.
+d'Ã©laborer une mÃ©thodologie qui semble efficace pour le dÃ©veloppement
+de jeux. Afin d'obtenir une telle mÃ©thodologie, plusieurs itÃ©rations
+de dÃ©veloppement ont Ã©tÃ© effectuÃ©es, chacune permettant d'explorer de
+nouveaux aspects sur la maniÃ¨re de rÃ©soudre les problÃ©matiques
+associÃ©es Ã  la crÃ©ation de jeux, par exemple comment arriver Ã 
+synchroniser des entitÃ©s dans le jeux ou comment arriver Ã  dÃ©crire
+efficacement un systÃ¨me de dÃ©tection et de rÃ©solution de collisions.
 
-Suite à l'écriture de ce jeu, un deuxième jeu, plus complexe, a été
-développé afin de consolider les techniques précédemment utilisées et
-étendre ces techniques dans le cadre de ce nouveau jeu comportant de
-nouveaux défi, comme l'implantation d'une intelligence artificielle.
+Suite Ã  l'Ã©criture de ce jeu, un deuxiÃ¨me jeu, plus complexe, a Ã©tÃ©
+dÃ©veloppÃ© afin de consolider les techniques prÃ©cÃ©demment utilisÃ©es et
+Ã©tendre ces techniques dans le cadre de ce nouveau jeu comportant de
+nouveaux dÃ©fi, comme l'implantation d'une intelligence artificielle.
 
 
 
-\section{Aperçu du mémoire}
-Ce mémoire est composé de quatre parties. La première partie est une
+\section{AperÃ§u du mÃ©moire}
+Ce mÃ©moire est composÃ© de quatre parties. La premiÃ¨re partie est une
 introduction qui traite de programmation fonctionnelle, du langage de
-programmation Scheme et des outils de développement disponibles, en
-particulier le compilateur Gambit-C. Ce chapitre donne un aperçu
-général de ces langages et permet de saisir les concepts fondamentaux
-du langage Scheme. Une présentation de l'industrie des jeux vidéo et
-des défis découlant du développement suit ce chapitre.
+programmation Scheme et des outils de dÃ©veloppement disponibles, en
+particulier le compilateur Gambit-C. Ce chapitre donne un aperÃ§u
+gÃ©nÃ©ral de ces langages et permet de saisir les concepts fondamentaux
+du langage Scheme. Une prÃ©sentation de l'industrie des jeux vidÃ©o et
+des dÃ©fis dÃ©coulant du dÃ©veloppement suit ce chapitre.
 
-La deuxième partie du mémoire porte sur des extensions faites au
-langage Scheme qui ont été utilisées dans le but d'améliorer le
-développement de jeux vidéo. On y présente la programmation orientée
-objet et un système d'objets conçu pour répondre aux besoins de la
-programmation de jeux vidéo. Un système de coroutines conçu dans les
-mêmes optiques est également présenté.
+La deuxiÃ¨me partie du mÃ©moire porte sur des extensions faites au
+langage Scheme qui ont Ã©tÃ© utilisÃ©es dans le but d'amÃ©liorer le
+dÃ©veloppement de jeux vidÃ©o. On y prÃ©sente la programmation orientÃ©e
+objet et un systÃ¨me d'objets conÃ§u pour rÃ©pondre aux besoins de la
+programmation de jeux vidÃ©o. Un systÃ¨me de coroutines conÃ§u dans les
+mÃªmes optiques est Ã©galement prÃ©sentÃ©.
 
-La troisième partie du mémoire porte sur l'expérience acquise par
-l'auteur en effectuant l'écriture de 2 jeux vidéo simples, mais
-possédant suffisamment de complexité pour exposer les problèmes
-associés à la création de jeux vidéo et comment tirer profit du
-langage de programmation Scheme pour résoudre ces problèmes. Une
-présentation des travaux reliés aux résultats présentés suit ce
+La troisiÃ¨me partie du mÃ©moire porte sur l'expÃ©rience acquise par
+l'auteur en effectuant l'Ã©criture de 2 jeux vidÃ©o simples, mais
+possÃ©dant suffisamment de complexitÃ© pour exposer les problÃ¨mes
+associÃ©s Ã  la crÃ©ation de jeux vidÃ©o et comment tirer profit du
+langage de programmation Scheme pour rÃ©soudre ces problÃ¨mes. Une
+prÃ©sentation des travaux reliÃ©s aux rÃ©sultats prÃ©sentÃ©s suit ce
 dernier chapitre. On y parle de l'utilisation d'autres langages
-pour le développement de jeux vidéo et cite des exemple d'utilisation
-du langage Scheme dans des jeux vidéo commerciaux et de l'expérience
-tirée de cette utilisation par les développeurs.
+pour le dÃ©veloppement de jeux vidÃ©o et cite des exemple d'utilisation
+du langage Scheme dans des jeux vidÃ©o commerciaux et de l'expÃ©rience
+tirÃ©e de cette utilisation par les dÃ©veloppeurs.
 
-Finalement, une conclusion apporte la lumière sur la problématique
-exposée dans ce mémoire. Le point sur l'expérience acquise pour le
-développement de jeux vidéo en Scheme y est fait et les avantages et
-inconvénients ou problèmes obtenus seront exposés.
+Finalement, une conclusion apporte la lumiÃ¨re sur la problÃ©matique
+exposÃ©e dans ce mÃ©moire. Le point sur l'expÃ©rience acquise pour le
+dÃ©veloppement de jeux vidÃ©o en Scheme y est fait et les avantages et
+inconvÃ©nients ou problÃ¨mes obtenus seront exposÃ©s.
 
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Développement de jeux vidéo}
+\chapter{DÃ©veloppement de jeux vidÃ©o}
 \label{Chap:JV}
 
-Les jeux vidéo font parti d'un domaine de l'informatique en pleine
-effervescence grâce à une demande constante de nouveaux
+Les jeux vidÃ©o font parti d'un domaine de l'informatique en pleine
+effervescence grÃ¢ce Ã  une demande constante de nouveaux
 produits. 
 
-L'histoire des jeux vidéo possède déjà un demi-siècle de créations de
-tout genres qui ont contribué à générer l'engouement actuel pour ces
-derniers. Une brève historique des jeux vidéo sera présentée dans ce
-chapitre afin de pouvoir illustrer l'évolution des jeux vidéo et de
-permettre de situer dans le temps où se situent les jeux développés
-pour ce mémoire.
+L'histoire des jeux vidÃ©o possÃ¨de dÃ©jÃ  un demi-siÃ¨cle de crÃ©ations de
+tout genres qui ont contribuÃ© Ã  gÃ©nÃ©rer l'engouement actuel pour ces
+derniers. Une brÃ¨ve historique des jeux vidÃ©o sera prÃ©sentÃ©e dans ce
+chapitre afin de pouvoir illustrer l'Ã©volution des jeux vidÃ©o et de
+permettre de situer dans le temps oÃ¹ se situent les jeux dÃ©veloppÃ©s
+pour ce mÃ©moire.
 
-L'industrie du jeu vidéo actuelle est le moteur qui permet aux jeux
-vidéo de continuer à évoluer et se raffiner. Un aperçu global de
-l'industrie du jeu vidéo est ainsi donné dans ce chapitre.
+L'industrie du jeu vidÃ©o actuelle est le moteur qui permet aux jeux
+vidÃ©o de continuer Ã  Ã©voluer et se raffiner. Un aperÃ§u global de
+l'industrie du jeu vidÃ©o est ainsi donnÃ© dans ce chapitre.
 
-Finalement, les besoins aux niveau de la programmation exprimés par
-les jeux vidéo sont énoncées afin de permettre de pouvoir cerner les
-composantes importantes pour un langage de programmation utilisé pour
-le développement de jeux.
+Finalement, les besoins aux niveau de la programmation exprimÃ©s par
+les jeux vidÃ©o sont Ã©noncÃ©es afin de permettre de pouvoir cerner les
+composantes importantes pour un langage de programmation utilisÃ© pour
+le dÃ©veloppement de jeux.
 
 
 \section{Historique}
 
-L'histoire des jeux vidéo s'étale sur environ un demi-siècle et
+L'histoire des jeux vidÃ©o s'Ã©tale sur environ un demi-siÃ¨cle et
 renferme une mine d'informations importante qui permet d'exposer la
-manière avec laquelle les jeux vidéo évoluent. Seulement un bref
-résumé de cette histoire est présenté afin de donner présenter les
-grandes ligne de l'évolution des jeux au cours des cinquante dernières
-années~\cite{VIDEOGAMES_history}~\cite{HISCORE}.
+maniÃ¨re avec laquelle les jeux vidÃ©o Ã©voluent. Seulement un bref
+rÃ©sumÃ© de cette histoire est prÃ©sentÃ© afin de donner prÃ©senter les
+grandes ligne de l'Ã©volution des jeux au cours des cinquante derniÃ¨res
+annÃ©es~\cite{VIDEOGAMES_history}~\cite{HISCORE}.
 
 \todo{Mettre des references partout, ou bien ne pas en mettre du tout?}
 
 %% http://en.wikipedia.org/wiki/History_of_video_games
 
-\subsection{Préhistoire 1948-1970}
-Les jeux vidéo ont fait leurs apparitions avant même les premiers
+\subsection{PrÃ©histoire 1948-1970}
+Les jeux vidÃ©o ont fait leurs apparitions avant mÃªme les premiers
 ordinateurs. En effet, le \textit{Cathode Ray Amusement
   Device}~\cite{CRTAD} fit sont apparition en 1948. Il s'agissait d'un
 jeu rendu sur un tube cathodique simulant le lancement de missiles sur
 des cibles. 
 
-Vers le début des années 1960, quelques jeux ont fait leurs apparition
+Vers le dÃ©but des annÃ©es 1960, quelques jeux ont fait leurs apparition
 sur les premiers ordinateurs universitaires, notamment au \textit{MIT}
-et à l'université de Cambridge. On y retrouve notamment le jeu
+et Ã  l'universitÃ© de Cambridge. On y retrouve notamment le jeu
 \textit{Spacewar!} qui est l'un des premier jeu multi-joueurs mettant
-les joueurs en adversité dans leurs vaisseaux spatiaux pouvant lancer
+les joueurs en adversitÃ© dans leurs vaisseaux spatiaux pouvant lancer
 des missiles. 
 
-Avec un intérêt stimulé envers le potentiel de divertissement
-qu'offrait les jeux vidéo de l'époque, le développement de machines
-dédiées aux jeux vidéo a ainsi débuté.
+Avec un intÃ©rÃªt stimulÃ© envers le potentiel de divertissement
+qu'offrait les jeux vidÃ©o de l'Ã©poque, le dÃ©veloppement de machines
+dÃ©diÃ©es aux jeux vidÃ©o a ainsi dÃ©butÃ©.
 
-\subsection{Système arcade 1970-1985}
-En 1971, des étudiants de l'université de Standford ont porté le jeu
+\subsection{SystÃ¨me arcade 1970-1985}
+En 1971, des Ã©tudiants de l'universitÃ© de Standford ont portÃ© le jeu
 \textit{Spacewar!} sur une machine fonctionnant avec de l'argent (de
-la monnaie). Ce fut la première machine arcade.
+la monnaie). Ce fut la premiÃ¨re machine arcade.
 
-Par la suite, le développement de telles machines est devenu très
-répandu. En 1972, la compagnie \textit{Atari} fut fondé et démarra
-l'industrie du jeu vidéo sur arcade avec le jeu \textit{Pong}, un jeu
-de tennis de table permettant à un joueur de jouer contre une
-intelligence artificielle ou bien de se mesurer à un autre joueur.
+Par la suite, le dÃ©veloppement de telles machines est devenu trÃ¨s
+rÃ©pandu. En 1972, la compagnie \textit{Atari} fut fondÃ© et dÃ©marra
+l'industrie du jeu vidÃ©o sur arcade avec le jeu \textit{Pong}, un jeu
+de tennis de table permettant Ã  un joueur de jouer contre une
+intelligence artificielle ou bien de se mesurer Ã  un autre joueur.
 
-Ce fut alors l'âge d'or des machines d'arcade où l'on a créé beaucoup
-de jeu au contenu diversifié. Parmi ceux-ci, \textit{Space
-  Invaders}(1978) et \textit{PacMan}(1980) furent extrêmement
+Ce fut alors l'Ã¢ge d'or des machines d'arcade oÃ¹ l'on a crÃ©Ã© beaucoup
+de jeu au contenu diversifiÃ©. Parmi ceux-ci, \textit{Space
+  Invaders}(1978) et \textit{PacMan}(1980) furent extrÃªmement
 populaires. 
 
-Malgré que les jeux d'arcades étaient très simple, ils étaient
-beaucoup appréciés pour l'amusement qu'ils procuraient aux joueurs qui
+MalgrÃ© que les jeux d'arcades Ã©taient trÃ¨s simple, ils Ã©taient
+beaucoup apprÃ©ciÃ©s pour l'amusement qu'ils procuraient aux joueurs qui
 tentaient toujours de se surpasser.
 
 \todo{Marc, quelles genre de machines est-ce que c'etait? Processeur
@@ -347,202 +347,202 @@ On retrouve toujours des salles d'arcades de nos jours, mais celles-ci
 sont devenues beaucoup moins populaire que les consoles de jeu qui se
 retrouvent dans nos salons.
 
-\subsection{Premières consoles 1972-1984}
+\subsection{PremiÃ¨res consoles 1972-1984}
 
-La première console de jeu vidéo, le \textit{Magnavox Odyssey} fut son
-apparition en Amérique du Nord en 1972. Cette console permettant aux
-joueurs de jouer sur le télévision assis confortablement dans leurs
-salon. Elle permettait aussi d'insérer des jeux sous forme de
-cartouches. Un total de 28 jeux ont été disponible pour cette console,
-qui malgré l'absence de périphérique audio, a été vendu pour environ
+La premiÃ¨re console de jeu vidÃ©o, le \textit{Magnavox Odyssey} fut son
+apparition en AmÃ©rique du Nord en 1972. Cette console permettant aux
+joueurs de jouer sur le tÃ©lÃ©vision assis confortablement dans leurs
+salon. Elle permettait aussi d'insÃ©rer des jeux sous forme de
+cartouches. Un total de 28 jeux ont Ã©tÃ© disponible pour cette console,
+qui malgrÃ© l'absence de pÃ©riphÃ©rique audio, a Ã©tÃ© vendu pour environ
 300 000 exemplaires.
 
-Plusieurs autres consoles ont par la suite été créées. Allant d'une
-version console de \textit{Pong} jusqu'à des consoles plus puissante
-comme le \textit{ColecoVision} qui démarrèrent l'ère des consoles
-8-bit. La vocation principale de ces consoles n'étaient pas d'innover
-dans le développement de jeu, mais plutôt de porter les jeux
+Plusieurs autres consoles ont par la suite Ã©tÃ© crÃ©Ã©es. Allant d'une
+version console de \textit{Pong} jusqu'Ã  des consoles plus puissante
+comme le \textit{ColecoVision} qui dÃ©marrÃ¨rent l'Ã¨re des consoles
+8-bit. La vocation principale de ces consoles n'Ã©taient pas d'innover
+dans le dÃ©veloppement de jeu, mais plutÃ´t de porter les jeux
 d'arcades populaires sur leurs consoles.
 
 \subsection{Ordinateurs personnels 1977-...}
 Les premiers ordinateurs personnels furent leurs apparition vers la
-fin des années 1970, dont notamment l'ordinateur \textit{Apple II}
+fin des annÃ©es 1970, dont notamment l'ordinateur \textit{Apple II}
 produit par \textit{Apple Inc.}. Ces ordinateurs personnels offraient
-plus de puissance que les consoles de l'époque et offraient la
-possibilité aux amateurs de créer leurs propres jeux.
+plus de puissance que les consoles de l'Ã©poque et offraient la
+possibilitÃ© aux amateurs de crÃ©er leurs propres jeux.
 
-Les jeux d'ordinateurs étaient distribués sur beaucoup de média
-différents. La distribution allait de cassettes, aux disquette, en
-passant bien sur par des échanges postaux de code sources.
+Les jeux d'ordinateurs Ã©taient distribuÃ©s sur beaucoup de mÃ©dia
+diffÃ©rents. La distribution allait de cassettes, aux disquette, en
+passant bien sur par des Ã©changes postaux de code sources.
 
-En 1982, le jeux \textit{Lode Runner} fut développé pour les
+En 1982, le jeux \textit{Lode Runner} fut dÃ©veloppÃ© pour les
 ordinateurs \textit{Apple II}. Ce jeux d'action fut l'un des premiers
-jeu comprenant un éditeur de niveaux.
+jeu comprenant un Ã©diteur de niveaux.
 
-Aussi, le jeu \textit{Rogue} fut créé durant les années 1980, pour les
-premiers système Unix. Il fut le pionnier d'un nouveau genre de jeu
-(surnommé \textit{Roguelike}) qui différait beaucoup des jeux
-d'actions retrouvés en sales d'arcades ou sur consoles. Il présentait
-une interface visuelle très minimaliste. La narration, qui était un
-point central du jeu, était effectuée de manière textuelle et le
-joueur interagissait aussi de manière textuelle avec le jeu.
+Aussi, le jeu \textit{Rogue} fut crÃ©Ã© durant les annÃ©es 1980, pour les
+premiers systÃ¨me Unix. Il fut le pionnier d'un nouveau genre de jeu
+(surnommÃ© \textit{Roguelike}) qui diffÃ©rait beaucoup des jeux
+d'actions retrouvÃ©s en sales d'arcades ou sur consoles. Il prÃ©sentait
+une interface visuelle trÃ¨s minimaliste. La narration, qui Ã©tait un
+point central du jeu, Ã©tait effectuÃ©e de maniÃ¨re textuelle et le
+joueur interagissait aussi de maniÃ¨re textuelle avec le jeu.
 
-Les jeux d'ordinateurs ont longtemps été supérieurs aux jeux de
-consoles puisque les ordinateurs étaient toujours à la fine pointe de
-la technologie, et les consoles traînaient un peu derrière en terme de
+Les jeux d'ordinateurs ont longtemps Ã©tÃ© supÃ©rieurs aux jeux de
+consoles puisque les ordinateurs Ã©taient toujours Ã  la fine pointe de
+la technologie, et les consoles traÃ®naient un peu derriÃ¨re en terme de
 technologies. Ainsi, on retrouvait des jeux ayant de meilleurs
-graphique ou utilisant des périphériques plus variés sur les
+graphique ou utilisant des pÃ©riphÃ©riques plus variÃ©s sur les
 ordinateurs personnels. Ainsi, les jeux d'ordinateurs existait dans un
-monde parallèle à celui des consoles, ne se livrant pas de compétition
-réelle.
+monde parallÃ¨le Ã  celui des consoles, ne se livrant pas de compÃ©tition
+rÃ©elle.
 
-Par contre, avec l'avènement des consoles modernes qui sont plus
-performantes que la plupart des ordinateurs personnels, cet énoncé
+Par contre, avec l'avÃ¨nement des consoles modernes qui sont plus
+performantes que la plupart des ordinateurs personnels, cet Ã©noncÃ©
 n'est plus valide. Ainsi, les jeux sur des consoles actuelles
 rivalisent avec les jeux d'ordinateurs.
 
 
 \subsection{Consoles portables 1980-...}
-Les toutes premières consoles portables furent développées par la
-compagnie \textit{Mattel Toys} qui créèrent les jeux \textit{Auto
-  Race} et \textit{Football} qui étaient distribués sur des consoles
-de la taille d'une calculatrice, ne nécessitant pas de téléviseurs
-externes à la console et étaient dédiées à un seul jeu. Ces consoles
-furent un succès rapportant plusieurs centaines de millions de dollars
-à leurs créateurs.
+Les toutes premiÃ¨res consoles portables furent dÃ©veloppÃ©es par la
+compagnie \textit{Mattel Toys} qui crÃ©Ã¨rent les jeux \textit{Auto
+  Race} et \textit{Football} qui Ã©taient distribuÃ©s sur des consoles
+de la taille d'une calculatrice, ne nÃ©cessitant pas de tÃ©lÃ©viseurs
+externes Ã  la console et Ã©taient dÃ©diÃ©es Ã  un seul jeu. Ces consoles
+furent un succÃ¨s rapportant plusieurs centaines de millions de dollars
+Ã  leurs crÃ©ateurs.
 
-Par la suite, les grandes compagnie du jeu vidéo comme
-\textit{Nintendo} et \textit{Bandai} se sont intéressée à de telles
+Par la suite, les grandes compagnie du jeu vidÃ©o comme
+\textit{Nintendo} et \textit{Bandai} se sont intÃ©ressÃ©e Ã  de telles
 consoles et en produisirent plusieurs exemplaires des consoles
-\textit{Game \& Watch} qui contenaient des succès d'arcades tel
+\textit{Game \& Watch} qui contenaient des succÃ¨s d'arcades tel
 \textit{Mario's Cement Factory} et \textit{Donkey Kong Jr.}.
 
-Le même concepteur de ces consoles à par la suite fusionner ces
-dernière avec le contrôleur du \textit{Nintendo Entertainement
-  System}(NES) pour obtenir la première console à grand succès: le
-\textit{GameBoy}. Cette console qui offrait un écran monochrome fut
-vendue à 118 million d'exemplaire dans le monde. Le jeu le plus vendu
+Le mÃªme concepteur de ces consoles Ã  par la suite fusionner ces
+derniÃ¨re avec le contrÃ´leur du \textit{Nintendo Entertainement
+  System}(NES) pour obtenir la premiÃ¨re console Ã  grand succÃ¨s: le
+\textit{GameBoy}. Cette console qui offrait un Ã©cran monochrome fut
+vendue Ã  118 million d'exemplaire dans le monde. Le jeu le plus vendu
 sur cette console fut nulle autre que le jeu \textit{Tetris} qui a
-vendu environ 33 millions d'unités.
+vendu environ 33 millions d'unitÃ©s.
 
-Les consoles ont continuées d'évoluer grandement et elles sont
-actuellement équivalente aux consoles de une ou deux génération
-précédente. Par exemple, le Sony \textit{PlayStation Portable}
-rivalise en matière de puissance de matériel à la précédente console
-de Sony, le \textit{PlayStation 2}. On peut donc développer des jeux
-très complexe sur ces consoles portables, mais ils ne peuvent toujours
+Les consoles ont continuÃ©es d'Ã©voluer grandement et elles sont
+actuellement Ã©quivalente aux consoles de une ou deux gÃ©nÃ©ration
+prÃ©cÃ©dente. Par exemple, le Sony \textit{PlayStation Portable}
+rivalise en matiÃ¨re de puissance de matÃ©riel Ã  la prÃ©cÃ©dente console
+de Sony, le \textit{PlayStation 2}. On peut donc dÃ©velopper des jeux
+trÃ¨s complexe sur ces consoles portables, mais ils ne peuvent toujours
 pas rivaliser avec les jeux sur consoles ou d'ordinateurs.
 
-\subsection{Consoles intermédiaires 1984-2006}
-Au début des années 1980, plusieurs consoles étaient disponibles sur
-le marché, mais une saturation de mauvais jeux et des problèmes de
-mauvaises gestions ont fait en sorte que l'industrie du jeux vidéo à
-connu une grande dépression vers en 1983. Par exemple, il y a eu une
-plus grande production d'unités du jeu \textit{PacMan} qu'il n'y avait
+\subsection{Consoles intermÃ©diaires 1984-2006}
+Au dÃ©but des annÃ©es 1980, plusieurs consoles Ã©taient disponibles sur
+le marchÃ©, mais une saturation de mauvais jeux et des problÃ¨mes de
+mauvaises gestions ont fait en sorte que l'industrie du jeux vidÃ©o Ã 
+connu une grande dÃ©pression vers en 1983. Par exemple, il y a eu une
+plus grande production d'unitÃ©s du jeu \textit{PacMan} qu'il n'y avait
 eu de console d'Atari vendues.
 
-Cette dépression a pris subitement fin avec la sortie de la console
+Cette dÃ©pression a pris subitement fin avec la sortie de la console
 produite par \textit{Nintendo}, le \textit{Nintendo Entertainement
-  System} (NES) qui connu un succès fulgurant en vendant 62 millions
-de consoles dans le monde. La grande qualité des jeux produits ont
-certainement favorisé l'adoption de cette nouvelle console. On
+  System} (NES) qui connu un succÃ¨s fulgurant en vendant 62 millions
+de consoles dans le monde. La grande qualitÃ© des jeux produits ont
+certainement favorisÃ© l'adoption de cette nouvelle console. On
 retrouve entre autre des jeux de tout genre comme le jeu de
 plate-forme \textit{Super Mario Bros}, le jeux d'aventure \textit{The
   Legend of Zelda} et le jeu d'action aventure \textit{Metroid}.
 
-Par la suite, la compagnie SEGA sortit un compétiteur sérieux au NES,
+Par la suite, la compagnie SEGA sortit un compÃ©titeur sÃ©rieux au NES,
 le \textit{Master System}, qui rivalisait en terme de puissance
-matérielle et de prix. Depuis ce temps, c'est la guerre des consoles
-qui se livre où lorsqu'une compagnie développe un nouveau jeu ou une
-nouvelle console, les compétiteurs ne tardent pas à produire un jeu ou
-console équivalent pour les utilisateurs de leurs produits.
+matÃ©rielle et de prix. Depuis ce temps, c'est la guerre des consoles
+qui se livre oÃ¹ lorsqu'une compagnie dÃ©veloppe un nouveau jeu ou une
+nouvelle console, les compÃ©titeurs ne tardent pas Ã  produire un jeu ou
+console Ã©quivalent pour les utilisateurs de leurs produits.
 
 \subsection{Consoles modernes 2005-...}
-Les consoles modernes sont généralement conçues avec du matériel à la
-fine pointe de la technologie et tentent de séduire un certain public
+Les consoles modernes sont gÃ©nÃ©ralement conÃ§ues avec du matÃ©riel Ã  la
+fine pointe de la technologie et tentent de sÃ©duire un certain public
 cible.
 
-Au moment de l'écriture de ce mémoire, on retrouve la console
-\textit{Wii} de Nintendo conçu pour un publique constitué de joueurs
-occasionnels grâce au contrôleur révolutionnaire de cette console
+Au moment de l'Ã©criture de ce mÃ©moire, on retrouve la console
+\textit{Wii} de Nintendo conÃ§u pour un publique constituÃ© de joueurs
+occasionnels grÃ¢ce au contrÃ´leur rÃ©volutionnaire de cette console
 permettant de jouer en effectuant des mouvement plus naturels.
 
-D'un autre côté compétionnent le \textit{PlayStation 3} de Sony et le
-\textit{XBox 360} de Microsoft qui cherchent à convaincre les joueurs
-plus sérieux d'utiliser leur système en offrant des consoles à la fine
-pointe de la technologie et à prix très raisonnable en comparaison aux
-prix des ordinateurs de jeu équivalents. 
+D'un autre cÃ´tÃ© compÃ©tionnent le \textit{PlayStation 3} de Sony et le
+\textit{XBox 360} de Microsoft qui cherchent Ã  convaincre les joueurs
+plus sÃ©rieux d'utiliser leur systÃ¨me en offrant des consoles Ã  la fine
+pointe de la technologie et Ã  prix trÃ¨s raisonnable en comparaison aux
+prix des ordinateurs de jeu Ã©quivalents. 
 
 
 
-\section{Industrie du jeu vidéo}
-Comme mentionné dans le chapitre \ref{Chap:Intro}, l'industrie du jeu
-vidéo est très importante et génère des milliards de dollars de
-revenus par années. Ce profit provient d'une grande diversité de
-joueurs, allant de jeunes enfants jusqu'à leurs grands-parents avec
-une population féminine presque aussi importante que celle
-masculine. Il en résulte donc qu'une grande diversité de jeux et de
-plates-formes de jeux se retrouvent sur le marché.
+\section{Industrie du jeu vidÃ©o}
+Comme mentionnÃ© dans le chapitre \ref{Chap:Intro}, l'industrie du jeu
+vidÃ©o est trÃ¨s importante et gÃ©nÃ¨re des milliards de dollars de
+revenus par annÃ©es. Ce profit provient d'une grande diversitÃ© de
+joueurs, allant de jeunes enfants jusqu'Ã  leurs grands-parents avec
+une population fÃ©minine presque aussi importante que celle
+masculine. Il en rÃ©sulte donc qu'une grande diversitÃ© de jeux et de
+plates-formes de jeux se retrouvent sur le marchÃ©.
 
-Ces produits possèdent plusieurs caractéristiques de qualité communes
-auxquelles les consommateurs s'attendent à obtenir en effectuant
+Ces produits possÃ¨dent plusieurs caractÃ©ristiques de qualitÃ© communes
+auxquelles les consommateurs s'attendent Ã  obtenir en effectuant
 l'acquisition d'un nouveau titre. Ces attentes du consommateur peuvent
 se traduire essentiellement par les besoins suivant:
 
 \begin{itemize}
 \item Exposer un \textit{gameplay} amusant
 \item Offrir de beaux rendus graphiques et un affichage visuel
-  agréable
+  agrÃ©able
 \item Avoir une composante multi-joueurs
 \item Optionnellement contenir une narration 
 \end{itemize}
 
 Ces besoins semblent simple, \textit{a priori}, mais impliquent
-beaucoup de travail et imposent des contraintes sévères au
-développeurs de jeux vidéo.
+beaucoup de travail et imposent des contraintes sÃ©vÃ¨res au
+dÃ©veloppeurs de jeux vidÃ©o.
 
-Afin qu'un jeu puisse offrir un \textit{gameplay} intéressant au
-joueurs, une étroite collaboration entre les développeurs et les
-designers doit être établie. Cela implique aussi de faire beaucoup
-d'essaies de possibilités en testant sur des prototypes et en
-effectuant de nombreux cycles de développement du jeu.
+Afin qu'un jeu puisse offrir un \textit{gameplay} intÃ©ressant au
+joueurs, une Ã©troite collaboration entre les dÃ©veloppeurs et les
+designers doit Ãªtre Ã©tablie. Cela implique aussi de faire beaucoup
+d'essaies de possibilitÃ©s en testant sur des prototypes et en
+effectuant de nombreux cycles de dÃ©veloppement du jeu.
 
 En ce qui concerne le rendu graphique du jeu, en plus des designers du
-jeu, c'est aussi avec les artistes que les développeurs doivent
-s'accorder dans le but de concevoir un moteur de rendu répondant bien
-aux besoins de leurs créations et, leurs créations doivent être bien
-sûr faites en respectant les contraintes imposées par le matériel ou
-sera déployé le produit. Ainsi, le moteur de rendu doit pouvoir être
+jeu, c'est aussi avec les artistes que les dÃ©veloppeurs doivent
+s'accorder dans le but de concevoir un moteur de rendu rÃ©pondant bien
+aux besoins de leurs crÃ©ations et, leurs crÃ©ations doivent Ãªtre bien
+sÃ»r faites en respectant les contraintes imposÃ©es par le matÃ©riel ou
+sera dÃ©ployÃ© le produit. Ainsi, le moteur de rendu doit pouvoir Ãªtre
 facilement extensible afin de pouvoir accommoder facilement les
-nouvelles idées et les nouveaux concepts à intégrer.
+nouvelles idÃ©es et les nouveaux concepts Ã  intÃ©grer.
 
-Une composante multi-joueur, tout dépendant si elle implique des
-parties faites sur le réseau ou non, pourrait nécessiter une grande
-rigeur de programmation afin d'assurer une stabilité de connections et
-empêcher les joueurs de tricher. Ces sujets ne sont pas discuter dans
-ce mémoire.
+Une composante multi-joueur, tout dÃ©pendant si elle implique des
+parties faites sur le rÃ©seau ou non, pourrait nÃ©cessiter une grande
+rigeur de programmation afin d'assurer une stabilitÃ© de connections et
+empÃªcher les joueurs de tricher. Ces sujets ne sont pas discuter dans
+ce mÃ©moire.
 
-La diversité des jeux développés a mené à une caractérisation des jeux
+La diversitÃ© des jeux dÃ©veloppÃ©s a menÃ© Ã  une caractÃ©risation des jeux
 et une classification de ceux-ci. Les principaux genres de jeux sont:
 
 \begin{itemize}
-\item Action: Jeux rapides demandant souvent de l'habileté de la part
+\item Action: Jeux rapides demandant souvent de l'habiletÃ© de la part
   des joueurs.
-\item Stratégie: Jeux à rythme plus lent, exigeant une réflection plus
+\item StratÃ©gie: Jeux Ã  rythme plus lent, exigeant une rÃ©flection plus
   profonde de la part des joueurs.
-\item Jeux de Rôles: Jeu où la narration de l'histoire occupe une
-  place importante et où les personnages de l'histoire subissent une
-  évolution graduelle en fonction du temps.
-\item Simulation: Jeux qui tentent de représenter fidèlement des
-  phénomène réels comme la conduite automobile, des sports, etc...
-\item \textit{Casual}: Jeux simples visant à être utilisés par des
-  joueurs occasionnels. Le jeu \textit{Tetris} est considéré comme
-  appartenant à ce genre.
+\item Jeux de RÃ´les: Jeu oÃ¹ la narration de l'histoire occupe une
+  place importante et oÃ¹ les personnages de l'histoire subissent une
+  Ã©volution graduelle en fonction du temps.
+\item Simulation: Jeux qui tentent de reprÃ©senter fidÃ¨lement des
+  phÃ©nomÃ¨ne rÃ©els comme la conduite automobile, des sports, etc...
+\item \textit{Casual}: Jeux simples visant Ã  Ãªtre utilisÃ©s par des
+  joueurs occasionnels. Le jeu \textit{Tetris} est considÃ©rÃ© comme
+  appartenant Ã  ce genre.
 \end{itemize}
 
 Il existe d'innombrables autres genres et genres hybrides de ces
-catégories, mais celles-ci donnent une idée de la diversité du contenu
-des jeux vidéo produits.
+catÃ©gories, mais celles-ci donnent une idÃ©e de la diversitÃ© du contenu
+des jeux vidÃ©o produits.
 
 \todo{Ajouter du texte liant a la prochaine section?}
 
@@ -550,163 +550,163 @@ des jeux vidéo produits.
 
 \section{Contraintes de programmation}
 
-Le développement de jeu vidéo implique une programmation sous des
-contraints sévères afin que le jeu respecte les normes de l'industrie
+Le dÃ©veloppement de jeu vidÃ©o implique une programmation sous des
+contraints sÃ©vÃ¨res afin que le jeu respecte les normes de l'industrie
 et respecte les attentes des joueurs.
 
-Une contrainte importante portant sur les jeux vidéo est relié à
-l'efficacité algorithmique résultant du programme développé. En effet,
-la fluidité d'un jeu est critique face à l'immersion du joueur dans
-l'univers créé par le jeu. Les jeux doivent donc être des programmes
-très efficaces de manière à inviter le joueur à entrer le plus
+Une contrainte importante portant sur les jeux vidÃ©o est reliÃ© Ã 
+l'efficacitÃ© algorithmique rÃ©sultant du programme dÃ©veloppÃ©. En effet,
+la fluiditÃ© d'un jeu est critique face Ã  l'immersion du joueur dans
+l'univers crÃ©Ã© par le jeu. Les jeux doivent donc Ãªtre des programmes
+trÃ¨s efficaces de maniÃ¨re Ã  inviter le joueur Ã  entrer le plus
 possible dans la narration du jeu.
 
-Une autre contrainte importante relié au développement de jeu est la
-modularité du code produit. En effet, afin que les efforts placés dans
-la production d'un jeu vidéo puissent être réutilisés dans les
-productions subséquentes, des abstractions doivent être bien faites
-afin de faciliter la réutilisation de ces dernières.
+Une autre contrainte importante reliÃ© au dÃ©veloppement de jeu est la
+modularitÃ© du code produit. En effet, afin que les efforts placÃ©s dans
+la production d'un jeu vidÃ©o puissent Ãªtre rÃ©utilisÃ©s dans les
+productions subsÃ©quentes, des abstractions doivent Ãªtre bien faites
+afin de faciliter la rÃ©utilisation de ces derniÃ¨res.
 
 \todo{Autres choses?}
 
-\subsection{Fluidité}
+\subsection{FluiditÃ©}
 
 
-\subsubsection{Taux de rafraîchissement}
-Une contrainte très importante dans le développement d'un jeu vidéo
-est la fluidité de celui-ci. Lorsqu'un film est projeté sur un écran
-de cinéma le taux de rafraîchissement de l'image est d'environ 30
-trames par secondes. Par contre, les images captées par les caméra
-contiennent du \og flou de mouvement \fg, effet créé par le mouvement
-s'étant produit durant la capture de cette image. Ce flou permet à
+\subsubsection{Taux de rafraÃ®chissement}
+Une contrainte trÃ¨s importante dans le dÃ©veloppement d'un jeu vidÃ©o
+est la fluiditÃ© de celui-ci. Lorsqu'un film est projetÃ© sur un Ã©cran
+de cinÃ©ma le taux de rafraÃ®chissement de l'image est d'environ 30
+trames par secondes. Par contre, les images captÃ©es par les camÃ©ra
+contiennent du \og flou de mouvement \fg, effet crÃ©Ã© par le mouvement
+s'Ã©tant produit durant la capture de cette image. Ce flou permet Ã 
 notre cerveau d'estimer ou de faire l'extrapolation du mouvement dans
-une trame et donc de croire l'illusion créée par la projection des
+une trame et donc de croire l'illusion crÃ©Ã©e par la projection des
 images.
 
-Par contre, dans un jeu vidéo, les images rendues sur l'écran sont
+Par contre, dans un jeu vidÃ©o, les images rendues sur l'Ã©cran sont
 parfaitement nettes et ne contiennent donc pas ce flou de mouvement,
-ce qui vient réduire la crédibilité de l'illusion faite par la
-succession des images à l'écran. Il faut donc augmenter le taux de
-rafraîchissement à environ 60 trames par secondes pour obtenir le
-niveau de crédibilité du projection cinématographique.
+ce qui vient rÃ©duire la crÃ©dibilitÃ© de l'illusion faite par la
+succession des images Ã  l'Ã©cran. Il faut donc augmenter le taux de
+rafraÃ®chissement Ã  environ 60 trames par secondes pour obtenir le
+niveau de crÃ©dibilitÃ© du projection cinÃ©matographique.
 
 \todo{references necessaire?}
 
-Ceci étant dit, un taux de rafraîchissement de 60 trames par secondes
-n'est pas nécessaire pour tout les jeux. Cela varie grandement avec la
-nature des jeux. Par exemple, un jeu de stratégie où les joueurs
-jouent à tours de rôles possède peu d'animations et donc pourrait très
-probablement être satisfaisant avec un taux de rafraîchissement de 30
+Ceci Ã©tant dit, un taux de rafraÃ®chissement de 60 trames par secondes
+n'est pas nÃ©cessaire pour tout les jeux. Cela varie grandement avec la
+nature des jeux. Par exemple, un jeu de stratÃ©gie oÃ¹ les joueurs
+jouent Ã  tours de rÃ´les possÃ¨de peu d'animations et donc pourrait trÃ¨s
+probablement Ãªtre satisfaisant avec un taux de rafraÃ®chissement de 30
 trames par secondes.
 
-Aussi, il est possible que les designers du jeu acceptent de réduire
-volontairement le taux de rafraîchissement afin d'avoir plus de temps
-pour rendre une image. Un jeu possédant un taux de rafraîchissement de
-60 trames par secondes implique que les images sont rafraîchies tous
+Aussi, il est possible que les designers du jeu acceptent de rÃ©duire
+volontairement le taux de rafraÃ®chissement afin d'avoir plus de temps
+pour rendre une image. Un jeu possÃ©dant un taux de rafraÃ®chissement de
+60 trames par secondes implique que les images sont rafraÃ®chies tous
 les 16 millisecondes, ce qui ne laisse pas beaucoup de temps pour
 effectuer le calcul du moteur du jeu en plus du rendu de
-l'image. Heureusement, les cartes vidéo modernes sont capables de
+l'image. Heureusement, les cartes vidÃ©o modernes sont capables de
 faire une bonne partie du rendu laissant ainsi le ou les processeurs
-principaux libres pour exécuter le moteur du jeu.
+principaux libres pour exÃ©cuter le moteur du jeu.
 
-Il n'en demeure pas moins que toute la logique du jeu doit être aussi
-optimisée que possible afin que le processus de rendu des trames soit
+Il n'en demeure pas moins que toute la logique du jeu doit Ãªtre aussi
+optimisÃ©e que possible afin que le processus de rendu des trames soit
 transparent au joueur.
 
-\subsubsection{Réponse quasi temps réelle}
+\subsubsection{RÃ©ponse quasi temps rÃ©elle}
 
-Une autre implication de la fluidité requise par un jeu vidéo est le
-délais de réponse face aux entrées du joueur. Ce délais aussi doit
-être aussi faible que possible pour donner l'impression que le
-personnage dans le jeu ne soit qu'une extension de la volonté du
-joueur. Ainsi le traitement des entrées du joueurs se doit aussi
-d'être très efficace afin de ne pas encombré le moteur du jeu qui n'a
-déjà pas beaucoup de temps pour effectuer son travail.
+Une autre implication de la fluiditÃ© requise par un jeu vidÃ©o est le
+dÃ©lais de rÃ©ponse face aux entrÃ©es du joueur. Ce dÃ©lais aussi doit
+Ãªtre aussi faible que possible pour donner l'impression que le
+personnage dans le jeu ne soit qu'une extension de la volontÃ© du
+joueur. Ainsi le traitement des entrÃ©es du joueurs se doit aussi
+d'Ãªtre trÃ¨s efficace afin de ne pas encombrÃ© le moteur du jeu qui n'a
+dÃ©jÃ  pas beaucoup de temps pour effectuer son travail.
 
-\subsection{Modularité}
+\subsection{ModularitÃ©}
 
-En plus de devoir être efficacement implanté, un jeu vidéo moderne se
-doit d'être aussi modulaire que possible. Pour y arriver, le couplage
-entre les différentes composantes de ce dernières doit être faible. 
+En plus de devoir Ãªtre efficacement implantÃ©, un jeu vidÃ©o moderne se
+doit d'Ãªtre aussi modulaire que possible. Pour y arriver, le couplage
+entre les diffÃ©rentes composantes de ce derniÃ¨res doit Ãªtre faible. 
 
-Le développement de logiciel favorisant la modularité est une qualité
-standard en génie logiciel, mais elle vient très bien se marier avec
-le développement de jeu, surtout de jeux modernes, car ce sont de
-projets de très grande envergure impliquant beaucoup de
-programmeurs. Il en résulte qu'un bon design modulaire permet de bien
-séparer les tâches à effectuer de manière parallèles par des équipes
-spécialisées. Si le projet est bien géré, cela pourrait certainement
-réduire le coût de développement de tels projets.
+Le dÃ©veloppement de logiciel favorisant la modularitÃ© est une qualitÃ©
+standard en gÃ©nie logiciel, mais elle vient trÃ¨s bien se marier avec
+le dÃ©veloppement de jeu, surtout de jeux modernes, car ce sont de
+projets de trÃ¨s grande envergure impliquant beaucoup de
+programmeurs. Il en rÃ©sulte qu'un bon design modulaire permet de bien
+sÃ©parer les tÃ¢ches Ã  effectuer de maniÃ¨re parallÃ¨les par des Ã©quipes
+spÃ©cialisÃ©es. Si le projet est bien gÃ©rÃ©, cela pourrait certainement
+rÃ©duire le coÃ»t de dÃ©veloppement de tels projets.
 
-Aussi, une bonne modularité permet de créer des composantes qui sont
-cohésives et donc qui permettent d'être réutilisée par la suite. Une
-réutilisation de composantes complexes tel un moteur de physique évite
-de faire un travail supplémentaire non trivial pour chaque nouveau
-projet. Ainsi, il est clair que l'effort supplémentaire placé pour
+Aussi, une bonne modularitÃ© permet de crÃ©er des composantes qui sont
+cohÃ©sives et donc qui permettent d'Ãªtre rÃ©utilisÃ©e par la suite. Une
+rÃ©utilisation de composantes complexes tel un moteur de physique Ã©vite
+de faire un travail supplÃ©mentaire non trivial pour chaque nouveau
+projet. Ainsi, il est clair que l'effort supplÃ©mentaire placÃ© pour
 bien modulariser les composantes d'un jeu seront retables pour le
-développement des prochains jeu.
+dÃ©veloppement des prochains jeu.
 
-Bien sûr, toute abstraction possède sont coût, notamment en coût de
-performances. Ainsi, il faut bien pouvoir estimer les endroits où
+Bien sÃ»r, toute abstraction possÃ¨de sont coÃ»t, notamment en coÃ»t de
+performances. Ainsi, il faut bien pouvoir estimer les endroits oÃ¹
 l'utilisation de modules externes n'apportera pas de trop grands
 impacts de performances.
 
 Il est clair qu'un langage de programmation ayant un bon potentiel
-d'abstraction, comme c'est généralement le cas pour les langages de
-haut niveau, facilite cette tâche. Un système orienté objet ou un bon
-système de module permettraient certainement aussi à bien modulariser
+d'abstraction, comme c'est gÃ©nÃ©ralement le cas pour les langages de
+haut niveau, facilite cette tÃ¢che. Un systÃ¨me orientÃ© objet ou un bon
+systÃ¨me de module permettraient certainement aussi Ã  bien modulariser
 les composantes d'un jeu.
 
-\subsection{Malléabilité}
+\subsection{MallÃ©abilitÃ©}
 
-Puisque le développement d'un jeu implique généralement de faire
-beaucoup de prototypage, le code d'un jeu se doit d'être très
-malléable afin d'aider à faire des changements rapidement au moteur du
-jeu pour tester de nouvelles idées, sans ajouter un trop grand coût
+Puisque le dÃ©veloppement d'un jeu implique gÃ©nÃ©ralement de faire
+beaucoup de prototypage, le code d'un jeu se doit d'Ãªtre trÃ¨s
+mallÃ©able afin d'aider Ã  faire des changements rapidement au moteur du
+jeu pour tester de nouvelles idÃ©es, sans ajouter un trop grand coÃ»t
 pour le faire.
 
-La modularité du jeu aura un effet positif sur la malléabilité en
-permettant de modifier les mécanismes internes des composantes sans
+La modularitÃ© du jeu aura un effet positif sur la mallÃ©abilitÃ© en
+permettant de modifier les mÃ©canismes internes des composantes sans
 trop affecter le reste du programme. Par contre, un langage de
 programmation offrant une bonne puissance d'abstraction serait tout
 aussi efficace, car il permet de pouvoir ajouter facilement de
-nouvelles abstractions où les besoins de changement apparaissent.
+nouvelles abstractions oÃ¹ les besoins de changement apparaissent.
 
 
 \section{Conclusion}
-Dans ce chapitre, l'industrie du jeu vidéo, avec son histoire, ont été
-mis en lumière afin d'exposer l'évolution des jeux vidéo et de motiver
-l'intérêt de travailler à améliorer le développement de ceux-ci.
+Dans ce chapitre, l'industrie du jeu vidÃ©o, avec son histoire, ont Ã©tÃ©
+mis en lumiÃ¨re afin d'exposer l'Ã©volution des jeux vidÃ©o et de motiver
+l'intÃ©rÃªt de travailler Ã  amÃ©liorer le dÃ©veloppement de ceux-ci.
 
-Les jeux vidéo sont passés rapidement d'idées farfelues comme ce fut
-le cas pour le \textit{Cathode Ray Amusement Device} à une industrie
-complète générant des milliards de dollars annuellement. Il y a un
-grand intérêt à vouloir diminuer le coût de développement de
+Les jeux vidÃ©o sont passÃ©s rapidement d'idÃ©es farfelues comme ce fut
+le cas pour le \textit{Cathode Ray Amusement Device} Ã  une industrie
+complÃ¨te gÃ©nÃ©rant des milliards de dollars annuellement. Il y a un
+grand intÃ©rÃªt Ã  vouloir diminuer le coÃ»t de dÃ©veloppement de
 ceux-ci. 
 
-Les coûts de développement de jeux modernes sont de l'ordre des
+Les coÃ»ts de dÃ©veloppement de jeux modernes sont de l'ordre des
 millions de dollars et impliquent des dizaines voir des centaines
-d'artistes, de programmeurs et de designers. Ainsi, mêmes de toutes
-petites accélérations d'un cycle de développement, pourrait avoir de
+d'artistes, de programmeurs et de designers. Ainsi, mÃªmes de toutes
+petites accÃ©lÃ©rations d'un cycle de dÃ©veloppement, pourrait avoir de
 l'impacte sur le travail de beaucoup de gens et ainsi se traduire en
-de grandes économies sur les coûts de développement.
+de grandes Ã©conomies sur les coÃ»ts de dÃ©veloppement.
 
-Les contraintes impliqués au niveau de la programmation par le
-développement de jeux vidéo ont été étudiés. Ces derniers se résument
-par les concepts de fluidité, modularité et de malléabilité du jeu
-vidéo. Le respect de la contrainte de fluidité résulte en une bonne
-immersion pour le joueur, qui est nécessaire afin que le jeu soit
-considéré comme \og jouable \fg. La modularité facilite le
-développement collaboratif et parallèle tout en permettant d'améliorer
-la réutilisation des composantes communes à plusieurs jeux. L'aspect
-de la malléabilité du code permet d'accélérer le prototypage du jeu.
+Les contraintes impliquÃ©s au niveau de la programmation par le
+dÃ©veloppement de jeux vidÃ©o ont Ã©tÃ© Ã©tudiÃ©s. Ces derniers se rÃ©sument
+par les concepts de fluiditÃ©, modularitÃ© et de mallÃ©abilitÃ© du jeu
+vidÃ©o. Le respect de la contrainte de fluiditÃ© rÃ©sulte en une bonne
+immersion pour le joueur, qui est nÃ©cessaire afin que le jeu soit
+considÃ©rÃ© comme \og jouable \fg. La modularitÃ© facilite le
+dÃ©veloppement collaboratif et parallÃ¨le tout en permettant d'amÃ©liorer
+la rÃ©utilisation des composantes communes Ã  plusieurs jeux. L'aspect
+de la mallÃ©abilitÃ© du code permet d'accÃ©lÃ©rer le prototypage du jeu.
 
 Il semble donc que le choix d'un langage permettant de pouvoir
-facilement répondre à ces contraintes pourrait certainement faciliter
-le développement de jeux vidéo et ainsi, engendrer des économies
+facilement rÃ©pondre Ã  ces contraintes pourrait certainement faciliter
+le dÃ©veloppement de jeux vidÃ©o et ainsi, engendrer des Ã©conomies
 substantielles aux compagnies de l'industrie et rendant plus
-accessible le développement de jeu aux plus petites compagnies
-possédant des budgets moins importants.
+accessible le dÃ©veloppement de jeu aux plus petites compagnies
+possÃ©dant des budgets moins importants.
 
 
 
@@ -715,82 +715,82 @@ possédant des budgets moins importants.
 \chapter{Le langage Scheme}
 \label{Chap:Scheme}
 
-Dans le cadre d'un projet donné, le choix d'un langage de
-programmation a beaucoup d'influence sur la structure du code écrit
-pour la réalisation de celui-ci. Plusieurs facteurs influencent ces
-différences. Par exemple, un langage à typage statique résultera en du
-code qui se doit d'être bien structuré, mais qui sera beaucoup moins
-malléable par la suite. Ainsi, afin d'optimiser les efforts
-développement pour un projet, une bonne analyse des besoins exprimés
+Dans le cadre d'un projet donnÃ©, le choix d'un langage de
+programmation a beaucoup d'influence sur la structure du code Ã©crit
+pour la rÃ©alisation de celui-ci. Plusieurs facteurs influencent ces
+diffÃ©rences. Par exemple, un langage Ã  typage statique rÃ©sultera en du
+code qui se doit d'Ãªtre bien structurÃ©, mais qui sera beaucoup moins
+mallÃ©able par la suite. Ainsi, afin d'optimiser les efforts
+dÃ©veloppement pour un projet, une bonne analyse des besoins exprimÃ©s
 par le projet est de rigeur pour pouvoir faire le choix d'un langage
-répondant le mieux possible à ceux-ci.
+rÃ©pondant le mieux possible Ã  ceux-ci.
 
-En se basant sur les besoins et les contraintes énoncées dans le
+En se basant sur les besoins et les contraintes Ã©noncÃ©es dans le
 chapitre \ref{Chap:JV}, nous proposons l'utilisation du langage de
-programmation Scheme comme outil principal de développement de jeux
-vidéo. Il s'agit d'un langage de très haut niveau qui semble être un
-candidat idéal afin de permettre un développement efficace de jeux
-vidéo. 
+programmation Scheme comme outil principal de dÃ©veloppement de jeux
+vidÃ©o. Il s'agit d'un langage de trÃ¨s haut niveau qui semble Ãªtre un
+candidat idÃ©al afin de permettre un dÃ©veloppement efficace de jeux
+vidÃ©o. 
 
 Ce chapitre donne une historique du langage Scheme afin de mettre en
-situation le langage et donné un aperçu de son origine. Par la suite,
-une brève explications de concepts de bases du langage est
-donnée. Plus d'informations sur les bases de Scheme peuvent êtres
-obtenues dans la littérature~\cite{R5RS}~\cite{SICP}. Finalement, les
-particularités du langages sont mise en lumière dans le but de faire
+situation le langage et donnÃ© un aperÃ§u de son origine. Par la suite,
+une brÃ¨ve explications de concepts de bases du langage est
+donnÃ©e. Plus d'informations sur les bases de Scheme peuvent Ãªtres
+obtenues dans la littÃ©rature~\cite{R5RS}~\cite{SICP}. Finalement, les
+particularitÃ©s du langages sont mise en lumiÃ¨re dans le but de faire
 comprendre au lecteur quelle est l'ampleur de celles-ci.
 
-\todo{d'autres idées?}
+\todo{d'autres idÃ©es?}
 
-\section{Héritage LISP}
+\section{HÃ©ritage LISP}
 \label{Scheme:hist}
 
-Le langage Scheme est une forme épurée du tout premier langage de
+Le langage Scheme est une forme Ã©purÃ©e du tout premier langage de
 programmation de haut niveau, le langage LISP. Ainsi, pour illustrer
 les origines de Scheme, une courte histoire du langage LISP est
-présentée. Par la suite, les langages de programmation qui furent
-inspirés du langage Scheme sont mentionnés en expliquant brièvement
-les racines commune à Scheme est les principales disparités.
+prÃ©sentÃ©e. Par la suite, les langages de programmation qui furent
+inspirÃ©s du langage Scheme sont mentionnÃ©s en expliquant briÃ¨vement
+les racines commune Ã  Scheme est les principales disparitÃ©s.
 
 \subsection{Histoire de LISP}
 \todo{McCarthy, GC, List Processing, AI...}
 
-\todo{Common LISP = Grosse Bébitte}
+\todo{Common LISP = Grosse BÃ©bitte}
 
-\subsection{Avènement de Scheme}
-\todo{Épuration de LISP à l'essence du langage}
+\subsection{AvÃ¨nement de Scheme}
+\todo{Ã‰puration de LISP Ã  l'essence du langage}
 
-\todo{évolution du langage via RNRS, SRFIs}
+\todo{Ã©volution du langage via RNRS, SRFIs}
 
-\todo{simplicité du langage, beaucoup d'extension disponibles }
+\todo{simplicitÃ© du langage, beaucoup d'extension disponibles }
 
-\subsection{Langages inspirés de Scheme}
+\subsection{Langages inspirÃ©s de Scheme}
 \todo{Javascript, Ruby: lang de scripting. Concept de fermetures}
 
 \todo{Java??}
 
 
 \section{Introduction au langage}
-Tout en bénéficiant du riche héritage des langages LISP, Scheme
-demeure un langage épuré et très simple à la base. Cette section vise
-à présenter les bases du langages Scheme et de son implantation dans
-le système Gambit-C afin de familiariser le lecteur avec non seulement
-la syntaxe du langage, mais aussi les fonctionnalités de base et les
+Tout en bÃ©nÃ©ficiant du riche hÃ©ritage des langages LISP, Scheme
+demeure un langage Ã©purÃ© et trÃ¨s simple Ã  la base. Cette section vise
+Ã  prÃ©senter les bases du langages Scheme et de son implantation dans
+le systÃ¨me Gambit-C afin de familiariser le lecteur avec non seulement
+la syntaxe du langage, mais aussi les fonctionnalitÃ©s de base et les
 extensions au langages fournies par Gambit-C.
 
 \subsection{Syntaxe}
-La syntaxe de Scheme est une des caractéristique qui distingue le
+La syntaxe de Scheme est une des caractÃ©ristique qui distingue le
 distingue le plus des autres langages de programmation. En effet, la
-syntaxe utilisée est extrêmement simple. À la base, toute expression
-Scheme est une expression symbolique, nommée aussi \textit{S
-  expression}. Une S expression est une forme de donnée structurée
-récursive qui doit débuter par une parenthèse ouvrante, contient un
-nombre arbitraire de données qui sont soit des atomes ou des S
-expressions et qui doit se terminer par une parenthèse fermante. Les
-atomes sont des symboles, des nombres, des valeurs booléennes,
-etc.. La figure \ref{FIG:sexp} donne un exemple très simple de S
+syntaxe utilisÃ©e est extrÃªmement simple. Ã€ la base, toute expression
+Scheme est une expression symbolique, nommÃ©e aussi \textit{S
+  expression}. Une S expression est une forme de donnÃ©e structurÃ©e
+rÃ©cursive qui doit dÃ©buter par une parenthÃ¨se ouvrante, contient un
+nombre arbitraire de donnÃ©es qui sont soit des atomes ou des S
+expressions et qui doit se terminer par une parenthÃ¨se fermante. Les
+atomes sont des symboles, des nombres, des valeurs boolÃ©ennes,
+etc.. La figure \ref{FIG:sexp} donne un exemple trÃ¨s simple de S
 expression contenant des informations sur les prix de la nourriture
-dans une épicerie.\\
+dans une Ã©picerie.\\
 
 \begin{figure}[htb!]
   \schemeresult{((bananes 1.52)(bonbons 1/100))}
@@ -798,59 +798,57 @@ dans une épicerie.\\
   \label{FIG:sexp}
 \end{figure}
 
-En Scheme, ces S expressions sont considérées comme étant des listes
-chaînées où chacun des éléments de la liste chaînée contient la valeur
-associée à cet élément et un pointeur vers le prochain élément. Les
-listes sont ainsi implantées en utilisant des paires. Le point
-(\scheme{.}) est utilisé pour démarquer le premier élément d'une paire
-du deuxième. La figure \ref{FIG:sexp->list} explicite la structure de
+En Scheme, ces S expressions sont considÃ©rÃ©es comme Ã©tant des listes
+chaÃ®nÃ©es oÃ¹ chacun des Ã©lÃ©ments de la liste chaÃ®nÃ©e contient la valeur
+associÃ©e Ã  cet Ã©lÃ©ment et un pointeur vers le prochain Ã©lÃ©ment. Les
+listes sont ainsi implantÃ©es en utilisant des paires. Le point
+(\scheme{.}) est utilisÃ© pour dÃ©marquer le premier Ã©lÃ©ment d'une paire
+du deuxiÃ¨me. La figure \ref{FIG:sexp->list} explicite la structure de
 liste de l'exemple de S expression provenant de la figure
 \ref{FIG:sexp} en utilisant la notation de paires..\\
 
 
 \begin{figure}[htb!]
-  \begin{schemecode}
-    ((bananes . (1.52 . ())) . 
-     ((bonbons . (1/100 . ())) . 
-      ()))
-  \end{schemecode}
-  \caption{Équivalence de la S expression de la figure \ref{FIG:sexp}
+{{\it
+    ((bananes . (1.52 . ())) . ((bonbons . (1/100 . ())) . ()))
+    }}
+  \caption{Ã‰quivalence de la S expression de la figure \ref{FIG:sexp}
     sous forme explicite de liste}
   \label{FIG:sexp->list}
 \end{figure}
 
-Cette forme est strictement équivalente à celle donnée précédemment et
-correspond à la structure de donnée de base employé en Scheme, les
-listes. Toutes deux correspondent à des valeurs du langage, mais ne
-peuvent pas être données telles quel dans un programme car un
-programme Scheme est aussi une S expression qui correspond à \emph{un
-  appel de fonction} (ou à une forme spéciale du langage). Le premier
-élément de la liste doit être un symbole qui correspond à cette
-fonction ou cette forme spéciale et le restes des éléments sont les
+Cette forme est strictement Ã©quivalente Ã  celle donnÃ©e prÃ©cÃ©demment et
+correspond Ã  la structure de donnÃ©e de base employÃ© en Scheme, les
+listes. Toutes deux correspondent Ã  des valeurs du langage, mais ne
+peuvent pas Ãªtre donnÃ©es telles quel dans un programme car un
+programme Scheme est aussi une S expression qui correspond Ã  \emph{un
+  appel de fonction} (ou Ã  une forme spÃ©ciale du langage). Le premier
+Ã©lÃ©ment de la liste doit Ãªtre un symbole qui correspond Ã  cette
+fonction ou cette forme spÃ©ciale et le restes des Ã©lÃ©ments sont les
 argument qui sont eux aussi des programmes Scheme sous forme de S
-expressions. Conséquemment, une notation préfixe est utilisée en
+expressions. ConsÃ©quemment, une notation prÃ©fixe est utilisÃ©e en
 Scheme.
 
-La distinction entre un appel de fonction et une forme spéciale est
-l'ordre d'évaluation des paramètres. Pour un appel de fonction, chacun
-des paramètres passés sont d'abord évalués et ensuite, la valeurs
-correspondante à leurs évaluation sont passées à la fonction
-appelée. Il s'agit donc d'un \emph{passage par valeur}. En opposition,
-les formes spéciales possèdent des règles d'évaluation propres à
-elles. Les formes spéciales de bases de Scheme peuvent être étendu par
-des macros qui utilisent un passage de valeur par nom, où les
-paramètres sont passés directement à la macro comme étant des données
-Scheme. Le fonctionnement des macros Scheme est détaillé dans la
+La distinction entre un appel de fonction et une forme spÃ©ciale est
+l'ordre d'Ã©valuation des paramÃ¨tres. Pour un appel de fonction, chacun
+des paramÃ¨tres passÃ©s sont d'abord Ã©valuÃ©s et ensuite, la valeurs
+correspondante Ã  leurs Ã©valuation sont passÃ©es Ã  la fonction
+appelÃ©e. Il s'agit donc d'un \emph{passage par valeur}. En opposition,
+les formes spÃ©ciales possÃ¨dent des rÃ¨gles d'Ã©valuation propres Ã 
+elles. Les formes spÃ©ciales de bases de Scheme peuvent Ãªtre Ã©tendu par
+des macros qui utilisent un passage de valeur par nom, oÃ¹ les
+paramÃ¨tres sont passÃ©s directement Ã  la macro comme Ã©tant des donnÃ©es
+Scheme. Le fonctionnement des macros Scheme est dÃ©taillÃ© dans la
 section \ref{Scheme:macros}.
 
-Il existe également quelques exception syntaxiques aux S expressions
-qui sont utilisées, entres autres, pour construire des données
-constantes. On utilise le caractère \scheme{'} ou la forme spéciale
-\textit{quote} pour signifier que la S expression subséquente est
-constante, \ie  qu'elle ne doit pas être considérée comme un
+Il existe Ã©galement quelques exception syntaxiques aux S expressions
+qui sont utilisÃ©es, entres autres, pour construire des donnÃ©es
+constantes. On utilise le caractÃ¨re \scheme{'} ou la forme spÃ©ciale
+\textit{quote} pour signifier que la S expression subsÃ©quente est
+constante, \ie  qu'elle ne doit pas Ãªtre considÃ©rÃ©e comme un
 programme Scheme, mais bien comme une valeur. L'utilisation du
-caractère \scheme{è} est strictement équivalente à l'utilisation de la
-forme spéciale correspondante. Une exemple d'utilisation est illustré
+caractÃ¨re \scheme{Ã¨} est strictement Ã©quivalente Ã  l'utilisation de la
+forme spÃ©ciale correspondante. Une exemple d'utilisation est illustrÃ©
 dans la figure \ref{FIG:quote}.\\
 
 
@@ -860,17 +858,17 @@ dans la figure \ref{FIG:quote}.\\
 (quote ((bananes 1.52)(bonbons 1/100)))
   \end{schemecode}
   \caption{Exemples d'utilisation de la syntaxe \textit{quote} et de
-    la forme spéciale correspondante.}
+    la forme spÃ©ciale correspondante.}
   \label{FIG:quote}
 \end{figure}
 
-Après évaluation, ces deux morceaux de code retournent tous deux la
+AprÃ¨s Ã©valuation, ces deux morceaux de code retournent tous deux la
 valeur \schemeresult{((bananes 1.52)(bonbons 1/100))}.
 
-On retrouve une forme altéré du \textit{quote} nommée
-\textit{quasiquote} qui permet des évaluations partielles à
-l'intérieur d'une forme \textit{quote} en utilisant le caractère
-\scheme{,} équivalent à la forme spéciale \scheme{unquote}. La figure
+On retrouve une forme altÃ©rÃ© du \textit{quote} nommÃ©e
+\textit{quasiquote} qui permet des Ã©valuations partielles Ã 
+l'intÃ©rieur d'une forme \textit{quote} en utilisant le caractÃ¨re
+\scheme{,} Ã©quivalent Ã  la forme spÃ©ciale \scheme{unquote}. La figure
 \ref{FIG:quasiquote} illustre un exemple d'utilisation.\\
 
 \begin{figure}[htb!]
@@ -878,47 +876,47 @@ l'intérieur d'une forme \textit{quote} en utilisant le caractère
 `((bananes ,(+ 1.0 52/100)) (bonbons 1/100))
 (quasiquote ((bananes (unquote (+ 1.0 52/100))) (bonbons 1/100)))
   \end{schemecode}
-  \caption{Exemple d'utilisation des formes spéciales
+  \caption{Exemple d'utilisation des formes spÃ©ciales
     \scheme{quasiquote} et \scheme{unquote}}
   \label{FIG:quasiquote}
 \end{figure}
 
 L'utilisation de la forme \scheme{unquote} permet donc ici
-l'évaluation de la S expression effectuant l'addition pour donner
-comme résultat la liste donnée dans la figure \ref{FIG:sexp}.
+l'Ã©valuation de la S expression effectuant l'addition pour donner
+comme rÃ©sultat la liste donnÃ©e dans la figure \ref{FIG:sexp}.
 
-Malgré le fait que, pour certains, le parenthèsage des programmes
-Scheme peut sembler imposant, il en résulte un code \emph{structuré}
-et \emph{sans aucune ambiguïté}. Cette structure permet aussi de
-pouvoir utiliser très efficacement des outils de d'édition de S
-expressions, accélérant ainsi l'écriture de programmes.
+MalgrÃ© le fait que, pour certains, le parenthÃ¨sage des programmes
+Scheme peut sembler imposant, il en rÃ©sulte un code \emph{structurÃ©}
+et \emph{sans aucune ambiguÃ¯tÃ©}. Cette structure permet aussi de
+pouvoir utiliser trÃ¨s efficacement des outils de d'Ã©dition de S
+expressions, accÃ©lÃ©rant ainsi l'Ã©criture de programmes.
 
-\subsection{Aperçu des fonctionnalités requise par le standard}
+\subsection{AperÃ§u des fonctionnalitÃ©s requise par le standard}
 
-Le standard du langage Scheme~\cite{R5RS} est très minimaliste, mais
-requiert toutes les fonctionnalités de bases requise par un langage de
-haut niveau comme Scheme. On y spécifie que Scheme est un langage typé
-dynamiquement, \ie que les vérifications de types sont
-faites durant l'exécution d'un programme, et non durant la
-compilation. Cette particularité fait en sorte que Scheme est un
-langage qui peut être facilement interprété ou compilé. Les types de
+Le standard du langage Scheme~\cite{R5RS} est trÃ¨s minimaliste, mais
+requiert toutes les fonctionnalitÃ©s de bases requise par un langage de
+haut niveau comme Scheme. On y spÃ©cifie que Scheme est un langage typÃ©
+dynamiquement, \ie que les vÃ©rifications de types sont
+faites durant l'exÃ©cution d'un programme, et non durant la
+compilation. Cette particularitÃ© fait en sorte que Scheme est un
+langage qui peut Ãªtre facilement interprÃ©tÃ© ou compilÃ©. Les types de
 bases du langages sont tous disjoints entre eux (aucun n'objet ne peut
-appartenir a plus d'un de ces types, mais doit appartenir à un
-seul). Ces types sont vérifiés par les prédicats \scheme{boolean?},
+appartenir a plus d'un de ces types, mais doit appartenir Ã  un
+seul). Ces types sont vÃ©rifiÃ©s par les prÃ©dicats \scheme{boolean?},
 \scheme{pair?}, \scheme{symbol?}, \scheme{number?}, \scheme{char?},
 \scheme{string?}, \scheme{vector?}, \scheme{port?},
-\scheme{procedure?}. Chacun de ces types sont documentés et possèdent
-des fonctions standards de création et d'utilisation.
+\scheme{procedure?}. Chacun de ces types sont documentÃ©s et possÃ¨dent
+des fonctions standards de crÃ©ation et d'utilisation.
 
-Les valeurs booléennes sont dénotées par \scheme{\#t} et
+Les valeurs boolÃ©ennes sont dÃ©notÃ©es par \scheme{\#t} et
 \scheme{\#f}. Par contre, le langage tire profit du dynamisme du typage
-et considère que toute valeurs différentes à \scheme{\#f} est vraie.
+et considÃ¨re que toute valeurs diffÃ©rentes Ã  \scheme{\#f} est vraie.
 
-Les paires, comme mentionné précédemment, sont les structures de
-données de bases en Scheme. La fonction de création d'une paire se
-nomme \scheme{cons} et les accesseurs aux premier et deuxième valeurs
-sont nommés respectivement \scheme{car} et \scheme{cdr}. La figure
-\ref{FIG:cons} illustre la création programmatique de la S expression
+Les paires, comme mentionnÃ© prÃ©cÃ©demment, sont les structures de
+donnÃ©es de bases en Scheme. La fonction de crÃ©ation d'une paire se
+nomme \scheme{cons} et les accesseurs aux premier et deuxiÃ¨me valeurs
+sont nommÃ©s respectivement \scheme{car} et \scheme{cdr}. La figure
+\ref{FIG:cons} illustre la crÃ©ation programmatique de la S expression
 de la figure \ref{FIG:sexp}.\\
 
 \begin{figure}[htb!]
@@ -928,26 +926,26 @@ de la figure \ref{FIG:sexp}.\\
             '()))
   \end{schemecode}
   \schemeresult{((bananes 1.52)(bonbons 1/100))}
-  \caption{Exemple de création programmatique de listes}
+  \caption{Exemple de crÃ©ation programmatique de listes}
   \label{FIG:cons}
 \end{figure}
 
-Les symboles se sont spécifié uniquement par du texte dans le
-programme et sont utilisé comme données, mais surtout pour faire des
-liaisons dans le programmes. En effet, les variables sont représentées
-par des symboles. Ainsi, pour utiliser un symbole comme une donnée
-(donc un symbol constant), la forme spéciale \scheme{quote} doit être
-utilisée. Aussi, plusieurs formes spéciales de liaisons sont spécifiée
-dans le standard. Les plus fondamentales étant \scheme{define} et
-\scheme{let}. La forme spéciale \scheme{define} permet la déclaration
-de variables globales ou locales permettant la récursion. La forme
-spéciale \scheme{let} permet la création de liaisons locales
-non-récursives. La figure \ref{FIG:deflet} illustres de création de
+Les symboles se sont spÃ©cifiÃ© uniquement par du texte dans le
+programme et sont utilisÃ© comme donnÃ©es, mais surtout pour faire des
+liaisons dans le programmes. En effet, les variables sont reprÃ©sentÃ©es
+par des symboles. Ainsi, pour utiliser un symbole comme une donnÃ©e
+(donc un symbol constant), la forme spÃ©ciale \scheme{quote} doit Ãªtre
+utilisÃ©e. Aussi, plusieurs formes spÃ©ciales de liaisons sont spÃ©cifiÃ©e
+dans le standard. Les plus fondamentales Ã©tant \scheme{define} et
+\scheme{let}. La forme spÃ©ciale \scheme{define} permet la dÃ©claration
+de variables globales ou locales permettant la rÃ©cursion. La forme
+spÃ©ciale \scheme{let} permet la crÃ©ation de liaisons locales
+non-rÃ©cursives. La figure \ref{FIG:deflet} illustres de crÃ©ation de
 liaisons globales, locales et d'utilisation de symboles comme
-données. Le morceau de code présenté définit une fonction globale qui
-vérifie si tout les éléments d'une liste sont strictement inférieurs à
-10. Ainsi l'appel \scheme{(drole-de-fonction (list 1 11 4))} s'évalue
-à la valeur \schemeresult{non}.\\
+donnÃ©es. Le morceau de code prÃ©sentÃ© dÃ©finit une fonction globale qui
+vÃ©rifie si tout les Ã©lÃ©ments d'une liste sont strictement infÃ©rieurs Ã 
+10. Ainsi l'appel \scheme{(drole-de-fonction (list 1 11 4))} s'Ã©value
+Ã  la valeur \schemeresult{non}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -960,21 +958,21 @@ vérifie si tout les éléments d'une liste sont strictement inférieurs à
             (drole-de-fonction deuxieme))
         'non)))
   \end{schemecode}
-  \caption{Exemple de créations de liaisons et d'utilisation de
-    symboles comme données}
+  \caption{Exemple de crÃ©ations de liaisons et d'utilisation de
+    symboles comme donnÃ©es}
   \label{FIG:deflet}
 \end{figure}
 
-On y retrouve ainsi une spécification pour le calcul numérique qui
-offre la possibilité de faire du calcul sur nombres flottants,
-entiers, réels et même complexes. 
+On y retrouve ainsi une spÃ©cification pour le calcul numÃ©rique qui
+offre la possibilitÃ© de faire du calcul sur nombres flottants,
+entiers, rÃ©els et mÃªme complexes. 
 
-L'utilisation caractères et les chaînes de caractères est très
-simple. Les caractères en tant que donné sont précédés par
-\scheme{\#\textbackslash} et les chaînes de caractères sont facilement
-convertibles en listes de caractères pour une manipulation plus \og
-Schemiène \fg ou l'on peut accéder directement et modifier des
-caractères dans l'objet de type \scheme{string}.
+L'utilisation caractÃ¨res et les chaÃ®nes de caractÃ¨res est trÃ¨s
+simple. Les caractÃ¨res en tant que donnÃ© sont prÃ©cÃ©dÃ©s par
+\scheme{\#\textbackslash} et les chaÃ®nes de caractÃ¨res sont facilement
+convertibles en listes de caractÃ¨res pour une manipulation plus \og
+SchemiÃ¨ne \fg ou l'on peut accÃ©der directement et modifier des
+caractÃ¨res dans l'objet de type \scheme{string}.
 
 \todo{vectors}
 
@@ -982,42 +980,42 @@ caractères dans l'objet de type \scheme{string}.
 
 \todo{procedures, apply, appels terminaux}
 
-\subsection{Extensions présentées par Gambit-C}
+\subsection{Extensions prÃ©sentÃ©es par Gambit-C}
 
 \section{Programmation fonctionnelle}
-Le langage Scheme est à la base un langage fonctionnel. Ces derniers
-sont caractérisés par une programmation centrée sur l'appel de
-fonctions dites avec une transparence référentielle, où la valeur de
-retour d'une fonction dépend uniquement des paramètres et non de
-l'état du système. Ce type de programmation fait contraste à la
-programmation impérative qui est centrée sur la notion d'état et de
-mutation de l'état de l'exécution d'un programme. Les programmes
-écrits en utilisant des langages sont généralement beaucoup plus
-facile à comprendre, ce qui attire un grand nombre de chercheurs à
-contribuer au développement et l'utilisation de tels langages dans le
+Le langage Scheme est Ã  la base un langage fonctionnel. Ces derniers
+sont caractÃ©risÃ©s par une programmation centrÃ©e sur l'appel de
+fonctions dites avec une transparence rÃ©fÃ©rentielle, oÃ¹ la valeur de
+retour d'une fonction dÃ©pend uniquement des paramÃ¨tres et non de
+l'Ã©tat du systÃ¨me. Ce type de programmation fait contraste Ã  la
+programmation impÃ©rative qui est centrÃ©e sur la notion d'Ã©tat et de
+mutation de l'Ã©tat de l'exÃ©cution d'un programme. Les programmes
+Ã©crits en utilisant des langages sont gÃ©nÃ©ralement beaucoup plus
+facile Ã  comprendre, ce qui attire un grand nombre de chercheurs Ã 
+contribuer au dÃ©veloppement et l'utilisation de tels langages dans le
 milieu commercial.
 
-Une caractéristique importante des langages de programmation
-fonctionnelle est la présence de fonctions de premier ordre, \ie que
+Une caractÃ©ristique importante des langages de programmation
+fonctionnelle est la prÃ©sence de fonctions de premier ordre, \ie que
 les fonctions sont des objets appartenant aux valeurs du
-langages. Elles peuvent donc être créées et manipulées comme tout
-autre valeurs. Ces fonctions sont aussi appelées fermetures, car
-lorsqu'elles sont créés, elle conserve l'environnement d'exécution
-dans lequel elle se trouvait lors de sa création. 
+langages. Elles peuvent donc Ãªtre crÃ©Ã©es et manipulÃ©es comme tout
+autre valeurs. Ces fonctions sont aussi appelÃ©es fermetures, car
+lorsqu'elles sont crÃ©Ã©s, elle conserve l'environnement d'exÃ©cution
+dans lequel elle se trouvait lors de sa crÃ©ation. 
 
-Ce concept ouvre la porte à la création d'abstractions très
-intéressantes: les fonctions d'ordre supérieures. Celles ci reçoivent
-des fonctions en paramètre les manipulent en souvent en retournent de
-nouvelles. La figure \ref{FIG:hof} illustre un exemple d'écriture et
-d'utilisation de fonctions d'ordre supérieurs. La premières fonctions
-définie prend une fonction en paramètre et applique cette fonction sur
-chacun des éléments de la liste passée comme deuxième paramètre. La
-deuxième fonction prend une fonction à deux paramètres comme premier
-argument et prend le deuxième paramètre à appliquer à cette fonction
-en deuxième argument, dans le but de faire une application partielle
-de cet argument à cette fonction. L'exemple utilise ensuite ces deux
-fonctions afin de créer une nouvelle à partir de celle donnée où l'on
-aura retiré 1 à chaque élément.\\
+Ce concept ouvre la porte Ã  la crÃ©ation d'abstractions trÃ¨s
+intÃ©ressantes: les fonctions d'ordre supÃ©rieures. Celles ci reÃ§oivent
+des fonctions en paramÃ¨tre les manipulent en souvent en retournent de
+nouvelles. La figure \ref{FIG:hof} illustre un exemple d'Ã©criture et
+d'utilisation de fonctions d'ordre supÃ©rieurs. La premiÃ¨res fonctions
+dÃ©finie prend une fonction en paramÃ¨tre et applique cette fonction sur
+chacun des Ã©lÃ©ments de la liste passÃ©e comme deuxiÃ¨me paramÃ¨tre. La
+deuxiÃ¨me fonction prend une fonction Ã  deux paramÃ¨tres comme premier
+argument et prend le deuxiÃ¨me paramÃ¨tre Ã  appliquer Ã  cette fonction
+en deuxiÃ¨me argument, dans le but de faire une application partielle
+de cet argument Ã  cette fonction. L'exemple utilise ensuite ces deux
+fonctions afin de crÃ©er une nouvelle Ã  partir de celle donnÃ©e oÃ¹ l'on
+aura retirÃ© 1 Ã  chaque Ã©lÃ©ment.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1030,15 +1028,15 @@ aura retiré 1 à chaque élément.\\
 (map (flip - 1) '(1 2 3 4 5))
   \end{schemecode}
   \schemeresult{(0 1 2 3 4)}
-  \caption{Exemple de création et d'utilisation de fonctions d'ordres
-    supérieures.}
+  \caption{Exemple de crÃ©ation et d'utilisation de fonctions d'ordres
+    supÃ©rieures.}
   \label{FIG:hof}
 \end{figure}
 
-L'utilisation de fonctions d'ordre supérieure permet l'abstraction
-d'algorithmes de manière très générique. Une autre fonction d'ordre
-supérieur très utilisée est la fonction \scheme{foldl} qui permet
-d'utiliser chacun des éléments d'une liste pour calculer un résultat
+L'utilisation de fonctions d'ordre supÃ©rieure permet l'abstraction
+d'algorithmes de maniÃ¨re trÃ¨s gÃ©nÃ©rique. Une autre fonction d'ordre
+supÃ©rieur trÃ¨s utilisÃ©e est la fonction \scheme{foldl} qui permet
+d'utiliser chacun des Ã©lÃ©ments d'une liste pour calculer un rÃ©sultat
 unique. La figure \ref{Scheme:fold} illustre l'utilisation de cette
 fonction pour faire la somme et le produit des nombres dans une liste.\\
 
@@ -1055,79 +1053,79 @@ fonction pour faire la somme et le produit des nombres dans une liste.\\
 (foldl * 1 '(1 2 3 4 5))
   \end{schemecode}
   \schemeresult{120}
-  \caption{Fonction d'ordre supérieure \scheme{foldl}.}
+  \caption{Fonction d'ordre supÃ©rieure \scheme{foldl}.}
   \label{Scheme:fold}
 \end{figure}
 
 \subsection{Programmation fonctionnelle pure}
 
-Une programmation dite purement fonctionnelle respecte de manière
+Une programmation dite purement fonctionnelle respecte de maniÃ¨re
 stricte le paradigme de la programmation fonctionnelle, \ie que les
-fonctions sont des entités mathématique qui ne sont pas affectées par
-l'état du système. Ce type de programmation est originaire d'avant
-même la création des premiers ordinateurs. C'est dans les années 1936
-que nul autre qu'Alonzo Church a introduit le formalisme mathématique
-de définition de fonctions mathématique dénommé lambda calcul non
-typé~\cite{LAMBDA_CALCULUS}. Ce formalisme introduit des notations
-afin de définir des fonctions anonymes qui sert de base aux langages
+fonctions sont des entitÃ©s mathÃ©matique qui ne sont pas affectÃ©es par
+l'Ã©tat du systÃ¨me. Ce type de programmation est originaire d'avant
+mÃªme la crÃ©ation des premiers ordinateurs. C'est dans les annÃ©es 1936
+que nul autre qu'Alonzo Church a introduit le formalisme mathÃ©matique
+de dÃ©finition de fonctions mathÃ©matique dÃ©nommÃ© lambda calcul non
+typÃ©~\cite{LAMBDA_CALCULUS}. Ce formalisme introduit des notations
+afin de dÃ©finir des fonctions anonymes qui sert de base aux langages
 de programmation fonctionnels. La figure \ref{FIG:lambda-calcul}
-illustre la définition de la fonction \scheme{flip} définie en Scheme
+illustre la dÃ©finition de la fonction \scheme{flip} dÃ©finie en Scheme
 dans la figure \ref{FIG:hof}.\\
 
 \begin{figure}[htb!]
   \center
   $\lambda f \rightarrow \lambda y \rightarrow \lambda x \rightarrow f x y$
-  \caption{Définition de la fonction \scheme{flip} en lambda calcul
-    non typé}
+  \caption{DÃ©finition de la fonction \scheme{flip} en lambda calcul
+    non typÃ©}
   \label{FIG:lambda-calcul}
 \end{figure}
 
-Ces fonctions sont considérées comme pures car elles sont exemptes de
-mutations de l'état du calcul. Ainsi, le résultat de l'application
-d'une fonction (appellée $\beta$-reduction en lambda calcul) ne dépend
-que des paramètres de ces dernières.
+Ces fonctions sont considÃ©rÃ©es comme pures car elles sont exemptes de
+mutations de l'Ã©tat du calcul. Ainsi, le rÃ©sultat de l'application
+d'une fonction (appellÃ©e $\beta$-reduction en lambda calcul) ne dÃ©pend
+que des paramÃ¨tres de ces derniÃ¨res.
 
-Comme déjà mentionné dans la section \ref{Scheme:hist}, le lambda
-calcul a donné naissance une famille de langages dont la racine est le
+Comme dÃ©jÃ  mentionnÃ© dans la section \ref{Scheme:hist}, le lambda
+calcul a donnÃ© naissance une famille de langages dont la racine est le
 langage LISP. Parmi cette famille, les langages ML~\cite{SML} et
-Haskell~\cite{HASKELL} sont parmi les plus connu de ceux qui adhèrent
-fidèlement au modèle de calcul de Alonzo Church.
+Haskell~\cite{HASKELL} sont parmi les plus connu de ceux qui adhÃ¨rent
+fidÃ¨lement au modÃ¨le de calcul de Alonzo Church.
 
 Le langage Scheme est lui aussi un langage fonctionnel, mais il n'est
-pas considéré comme étant pur puisque les mutations de l'état du
-programme sont permises. En effet, des opérateurs tels que
+pas considÃ©rÃ© comme Ã©tant pur puisque les mutations de l'Ã©tat du
+programme sont permises. En effet, des opÃ©rateurs tels que
 \scheme{set!}, \scheme{set-car!} ou encore \scheme{vector-set!}
 permettent la modification de liaison ou du contenu de cellules
-mémoires. Ainsi, Scheme partage le meilleur des deux mondes en
-laissant la liberté au programmeur de choisir le paradigme de
-programmation qui lui apparaît le plus approprié. Par contre, un abus
-de mutation est considéré comme étant de très mauvais style en Scheme.
+mÃ©moires. Ainsi, Scheme partage le meilleur des deux mondes en
+laissant la libertÃ© au programmeur de choisir le paradigme de
+programmation qui lui apparaÃ®t le plus appropriÃ©. Par contre, un abus
+de mutation est considÃ©rÃ© comme Ã©tant de trÃ¨s mauvais style en Scheme.
 
 
 \section{Macros}
 \label{Scheme:macros}
 
-Les macros d'un langage de programmation sont des systèmes utilisés
-pour faire des abstractions qui sont résolues durant la compilation
-d'un fichier sources. Dans sa forme la plus élémentaire, un système de
-macro peut être implanté sous la forme d'un pré-processeur de code qui
+Les macros d'un langage de programmation sont des systÃ¨mes utilisÃ©s
+pour faire des abstractions qui sont rÃ©solues durant la compilation
+d'un fichier sources. Dans sa forme la plus Ã©lÃ©mentaire, un systÃ¨me de
+macro peut Ãªtre implantÃ© sous la forme d'un prÃ©-processeur de code qui
 ne fait que du remplacement de patrons par une expansion textuelle
-directe. C'est ce genre de système de macro que l'on retrouve entre
-autre dans le langage C. Ce type de macro, quoi que très simple,
-permet de faire déjà beaucoup d'abstractions allant à des abstractions
-d'optimisations à des expansions conditionnelles de code permettant de
-développer des librairies sur plusieurs plates-formes. La figure
+directe. C'est ce genre de systÃ¨me de macro que l'on retrouve entre
+autre dans le langage C. Ce type de macro, quoi que trÃ¨s simple,
+permet de faire dÃ©jÃ  beaucoup d'abstractions allant Ã  des abstractions
+d'optimisations Ã  des expansions conditionnelles de code permettant de
+dÃ©velopper des librairies sur plusieurs plates-formes. La figure
 \ref{Scheme:c-macros} illustre des exemples de macros C. Dans cet
-exemple, on défini la macro \scheme{swap} qui interchange la valeur de
+exemple, on dÃ©fini la macro \scheme{swap} qui interchange la valeur de
 deux variables entre elles. La fonction main retournera 1 si et
-seulement si le symbole \scheme{\_\_WEIRD\_OS\_\_} est défini, et
-retournera 0 sinon. On peut imaginer un système d'exploitation fictif
-qui s'attend à une valeur de statut de terminaison de processus qui
-doit être égale à 1 pour signaler la terminaison normale d'un
+seulement si le symbole \scheme{\_\_WEIRD\_OS\_\_} est dÃ©fini, et
+retournera 0 sinon. On peut imaginer un systÃ¨me d'exploitation fictif
+qui s'attend Ã  une valeur de statut de terminaison de processus qui
+doit Ãªtre Ã©gale Ã  1 pour signaler la terminaison normale d'un
 processus. Puisque normalement, le statut de terminaison normal d'un
-processus est 0, on utilise une expansion conditionnelle à la présence
-d'un symbole qui ne devrait qu'être présent que lorsque l'on se trouve
-dans ce système fictif.\\
+processus est 0, on utilise une expansion conditionnelle Ã  la prÃ©sence
+d'un symbole qui ne devrait qu'Ãªtre prÃ©sent que lorsque l'on se trouve
+dans ce systÃ¨me fictif.\\
 
 \begin{figure}[htb!]
   \begin{verbatim}
@@ -1145,45 +1143,45 @@ int main(){
   \label{Scheme:c-macros}
 \end{figure}
 
-De telles macros comportent beaucoup de problèmes potentiels. Non
-seulement, elle ne sont limitées qu'a faire des remplacements
-syntaxiques très primitifs, mais aussi sont souvent la sources de
-problèmes reliés au changement du contexte syntaxique des arguments de
-la macro ou à une expansion dans un contexte qui n'était pas
-prévu. Ces problèmes sont souvent très difficile à trouver car ils ne
-surviennent que le programme est compilé, bien après l'expansion des
-macros. Il en résulte que le code compilé ne contient aucune trace des
+De telles macros comportent beaucoup de problÃ¨mes potentiels. Non
+seulement, elle ne sont limitÃ©es qu'a faire des remplacements
+syntaxiques trÃ¨s primitifs, mais aussi sont souvent la sources de
+problÃ¨mes reliÃ©s au changement du contexte syntaxique des arguments de
+la macro ou Ã  une expansion dans un contexte qui n'Ã©tait pas
+prÃ©vu. Ces problÃ¨mes sont souvent trÃ¨s difficile Ã  trouver car ils ne
+surviennent que le programme est compilÃ©, bien aprÃ¨s l'expansion des
+macros. Il en rÃ©sulte que le code compilÃ© ne contient aucune trace des
 macros et donc le compilateur donne souvent des erreurs qui ne sont
-pas reliées avec la vraie source du problème, soit la définition de la
+pas reliÃ©es avec la vraie source du problÃ¨me, soit la dÃ©finition de la
 macro en question.
 
-La syntaxe préfixe extrêmement simple de Scheme donne la chance au
-langage de posséder la même syntaxe que les structures de données de
-base de ce dernier. Ceci ouvre la porte à implanter un système de
-macro très puissant, un système de macro procédural. 
+La syntaxe prÃ©fixe extrÃªmement simple de Scheme donne la chance au
+langage de possÃ©der la mÃªme syntaxe que les structures de donnÃ©es de
+base de ce dernier. Ceci ouvre la porte Ã  implanter un systÃ¨me de
+macro trÃ¨s puissant, un systÃ¨me de macro procÃ©dural. 
 
-Plusieurs systèmes d'expansions de macro sont disponible en Scheme. Le
+Plusieurs systÃ¨mes d'expansions de macro sont disponible en Scheme. Le
 plus simple d'entre eux est celui qui provient directement de LISP, la
-forme spéciale \scheme{define-macro}. Avec cet expanseur, une macro
-Scheme est une fonction dont les paramètres \emph{ne sont pas évalués}
-avant d'être passés au corps de la fonction. Il en résulte ainsi que
-le code étant en position d'argument est considéré par la macro comme
-étant des données Scheme (listes, symboles, nombres, etc...). Puisque
-la macro Scheme est une fonction, elle possède toute la puissance du
-langage à sa disposition. La S expression retournée par la macro sera
-le résultat de l'expansion de celle-ci et sera donc évalué durant
-l'exécution du programme à l'endroit où l'appel de la macro se
+forme spÃ©ciale \scheme{define-macro}. Avec cet expanseur, une macro
+Scheme est une fonction dont les paramÃ¨tres \emph{ne sont pas Ã©valuÃ©s}
+avant d'Ãªtre passÃ©s au corps de la fonction. Il en rÃ©sulte ainsi que
+le code Ã©tant en position d'argument est considÃ©rÃ© par la macro comme
+Ã©tant des donnÃ©es Scheme (listes, symboles, nombres, etc...). Puisque
+la macro Scheme est une fonction, elle possÃ¨de toute la puissance du
+langage Ã  sa disposition. La S expression retournÃ©e par la macro sera
+le rÃ©sultat de l'expansion de celle-ci et sera donc Ã©valuÃ© durant
+l'exÃ©cution du programme Ã  l'endroit oÃ¹ l'appel de la macro se
 retrouvait.
 
-Un exemple simple mais convaincant de macro Scheme est illustré dans
-la figure \ref{Scheme:macro-ex1}. Cette macro sert à définir des
-variables constantes correspondant à des nombres de la série de
-Fibonacci. Le nombre \scheme{n} passé à la macro est utilisé pour
+Un exemple simple mais convaincant de macro Scheme est illustrÃ© dans
+la figure \ref{Scheme:macro-ex1}. Cette macro sert Ã  dÃ©finir des
+variables constantes correspondant Ã  des nombres de la sÃ©rie de
+Fibonacci. Le nombre \scheme{n} passÃ© Ã  la macro est utilisÃ© pour
 calculer le n\ieme nombre de Fibonacci \emph{durant l'expansion de la
-  macro} pour générer le code présenté dans la figure
-\ref{Scheme:macro-ex1-exp}. Ainsi, le code résultant de l'expansion
-est par la suite évalué durant l'exécution du programme, et il est
-possible de faire référence à la variable \scheme{fib10}.\\
+  macro} pour gÃ©nÃ©rer le code prÃ©sentÃ© dans la figure
+\ref{Scheme:macro-ex1-exp}. Ainsi, le code rÃ©sultant de l'expansion
+est par la suite Ã©valuÃ© durant l'exÃ©cution du programme, et il est
+possible de faire rÃ©fÃ©rence Ã  la variable \scheme{fib10}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1201,23 +1199,23 @@ possible de faire référence à la variable \scheme{fib10}.\\
   \begin{schemecode}
 (define fib10 55)
   \end{schemecode}
-  \caption{Résultat de l'expansion de la macro présentée dans la
-    figure \ref{Scheme:macro-ex1} avec 10 comme paramètre.}
+  \caption{RÃ©sultat de l'expansion de la macro prÃ©sentÃ©e dans la
+    figure \ref{Scheme:macro-ex1} avec 10 comme paramÃ¨tre.}
   \label{Scheme:macro-ex1-exp}
 \end{figure}
 
-Cet exemple très simple n'a pas utilisé le passage de paramètre par
+Cet exemple trÃ¨s simple n'a pas utilisÃ© le passage de paramÃ¨tre par
 nom dont disposent les macros Scheme, \ie que la macro de la figure
-\ref{Scheme:macro-ex1} n'a pas utiliser le fait que le code passé en
-paramètre est une donnée Scheme, puisqu'un nombre s'évalue en lui même
-en Scheme. Il est intéressant de noter qu'un appel à cette macro comme
+\ref{Scheme:macro-ex1} n'a pas utiliser le fait que le code passÃ© en
+paramÃ¨tre est une donnÃ©e Scheme, puisqu'un nombre s'Ã©value en lui mÃªme
+en Scheme. Il est intÃ©ressant de noter qu'un appel Ã  cette macro comme
 \scheme{define-fib (+ 1 2))}, est une erreur. En effet, puisque la
-macro s'attend à avoir un nombre en paramètre, mais elle reçoit plutôt
-de ce cas ci la liste \scheme{(+ 1 2)}, puisque l'évaluation de
-l'addition ne sera fait que durant l'exécution du programme.
+macro s'attend Ã  avoir un nombre en paramÃ¨tre, mais elle reÃ§oit plutÃ´t
+de ce cas ci la liste \scheme{(+ 1 2)}, puisque l'Ã©valuation de
+l'addition ne sera fait que durant l'exÃ©cution du programme.
 
 Un exemple simple de macro tirant profit du fait que l'argument est
-passé par nom est illustré dans la figure \ref{Scheme:macro-ex2}.\\
+passÃ© par nom est illustrÃ© dans la figure \ref{Scheme:macro-ex2}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1227,16 +1225,16 @@ passé par nom est illustré dans la figure \ref{Scheme:macro-ex2}.\\
     x)
   \end{schemecode}
   \schemeresult{2}
-  \caption{Exemple simple de macro utilisant le passage par nom à profit.}
+  \caption{Exemple simple de macro utilisant le passage par nom Ã  profit.}
   \label{Scheme:macro-ex2}
 \end{figure}
 
-Cette macro très simple utilise le passage par nom pour permettre
-d'incrémenter la valeur d'une variable. Un exemple plus complexe de
-macro utilisant le passage par nom est donné dans la figure
+Cette macro trÃ¨s simple utilise le passage par nom pour permettre
+d'incrÃ©menter la valeur d'une variable. Un exemple plus complexe de
+macro utilisant le passage par nom est donnÃ© dans la figure
 \ref{Sceme:macro-ex3}. Cette macro permet d'augmenter le langage
-Scheme d'une nouvelle forme spéciale qui correspond à une forme simple
-d'itération. \\
+Scheme d'une nouvelle forme spÃ©ciale qui correspond Ã  une forme simple
+d'itÃ©ration. \\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1250,34 +1248,34 @@ d'itération. \\
   v)
   \end{schemecode}
   \schemeresult{\#(0 1 2 3 4)}
-  \caption{Exemple de macro ajoutant une nouvelle forme spéciale au langage.}
+  \caption{Exemple de macro ajoutant une nouvelle forme spÃ©ciale au langage.}
   \label{Scheme:macro-ex3}
 \end{figure}
 
-Cette macro comporte, par contre plusieurs problèmes. L'un d'entre eux
-est relié à l'introduction de la variable \scheme{loop}. L'ajout de
-cette variable peut causer le problème connu sous le nom de
+Cette macro comporte, par contre plusieurs problÃ¨mes. L'un d'entre eux
+est reliÃ© Ã  l'introduction de la variable \scheme{loop}. L'ajout de
+cette variable peut causer le problÃ¨me connu sous le nom de
 \emph{Capture de Variables}. En effet, la macro n'aura pas le
-comportement escompté si l'un de ses paramètres possède une référence
-à une variable déjà existante nommée \scheme{loop}. Le problème de
-capture de variables était tout aussi présent dans les macro à la C et
-constituait pour ce type de macro un problème insolvable. Par contre,
-il est possible d'éviter ce problème en Scheme en générant un nom de
-variable pour \scheme{loop} qui est assurément unique. L'implantation
+comportement escomptÃ© si l'un de ses paramÃ¨tres possÃ¨de une rÃ©fÃ©rence
+Ã  une variable dÃ©jÃ  existante nommÃ©e \scheme{loop}. Le problÃ¨me de
+capture de variables Ã©tait tout aussi prÃ©sent dans les macro Ã  la C et
+constituait pour ce type de macro un problÃ¨me insolvable. Par contre,
+il est possible d'Ã©viter ce problÃ¨me en Scheme en gÃ©nÃ©rant un nom de
+variable pour \scheme{loop} qui est assurÃ©ment unique. L'implantation
 Gambit-C offre la fonction \scheme{gensym} pour ces besoins.
 
-Le problème de capture de nom est associé au phénomène appelé hygiène
-des macros. Ce problème peut être résolu manuellement comme suggéré,
-mais il existe aussi d'autres expansées de macro assurant l'hygiène
-des macros, dont entre autres la forme spéciale
-\scheme{syntax-rules}~\cite{SCHEME_HYG_MACRO}. La réécriture de la
-macro \scheme{for} en utilisant un système de macro hygiénique est
-donnée dans la figure \ref{Scheme:macro-ex4}. Cette figure donne aussi
-un exemple d'utilisation de la macro mettant à l'épreuve l'hygiène de
-celle-ci. On constate que malgré le fait qu'aucun effort n'a dû être
-mis en place pour éviter les collisions de noms pour la variable
-\scheme{loop} introduite, la macro réalise le comportement attendu
-d'elle dans des conditions potentiellement problématiques.
+Le problÃ¨me de capture de nom est associÃ© au phÃ©nomÃ¨ne appelÃ© hygiÃ¨ne
+des macros. Ce problÃ¨me peut Ãªtre rÃ©solu manuellement comme suggÃ©rÃ©,
+mais il existe aussi d'autres expansÃ©es de macro assurant l'hygiÃ¨ne
+des macros, dont entre autres la forme spÃ©ciale
+\scheme{syntax-rules}~\cite{SCHEME_HYG_MACRO}. La rÃ©Ã©criture de la
+macro \scheme{for} en utilisant un systÃ¨me de macro hygiÃ©nique est
+donnÃ©e dans la figure \ref{Scheme:macro-ex4}. Cette figure donne aussi
+un exemple d'utilisation de la macro mettant Ã  l'Ã©preuve l'hygiÃ¨ne de
+celle-ci. On constate que malgrÃ© le fait qu'aucun effort n'a dÃ» Ãªtre
+mis en place pour Ã©viter les collisions de noms pour la variable
+\scheme{loop} introduite, la macro rÃ©alise le comportement attendu
+d'elle dans des conditions potentiellement problÃ©matiques.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1293,44 +1291,44 @@ d'elle dans des conditions potentiellement problématiques.
     v)
   \end{schemecode}
   \schemeresult{\#(0 1 2 3 4)}
-  \caption{Macro \scheme{for} hygiénique}
+  \caption{Macro \scheme{for} hygiÃ©nique}
   \label{Scheme:macro-ex4}
 \end{figure}
 
-Malgré le fait que l'expansion de macro faite avec
+MalgrÃ© le fait que l'expansion de macro faite avec
 \scheme{define-macro} puisse impliquer des collisions de variables,
-elle permet une plus grande liberté d'écriture. En effet, parfois la
-collision de nom peut, par exemple, être intentionnelle. Aussi, le
-problème est facilement résolu avec l'utilisation de symboles uniques.
+elle permet une plus grande libertÃ© d'Ã©criture. En effet, parfois la
+collision de nom peut, par exemple, Ãªtre intentionnelle. Aussi, le
+problÃ¨me est facilement rÃ©solu avec l'utilisation de symboles uniques.
 
 
 
 \section{Continuations}
 
-L'état d'un calcul en cours d'exécution est souvent implanté ou
-illustré par une pile d'exécution. C'est le modèle d'implantation
-utilisé en C et dans la plupart des langages de programmation. Ainsi,
-l'exécution d'un appel de fonction empile l'adresses de retour et
-utilise le dessus de la pile pour les variables locales à la
-fonction. Lorsque la fonction termine, l'adresse de retour est dépilée
-et le contrôle revient à l'endroit de l'appel de
-fonction. L'environnement d'exécution de cet appel est contenu
-partiellement dans l'état de la pile et devient donc perdu lorsque
+L'Ã©tat d'un calcul en cours d'exÃ©cution est souvent implantÃ© ou
+illustrÃ© par une pile d'exÃ©cution. C'est le modÃ¨le d'implantation
+utilisÃ© en C et dans la plupart des langages de programmation. Ainsi,
+l'exÃ©cution d'un appel de fonction empile l'adresses de retour et
+utilise le dessus de la pile pour les variables locales Ã  la
+fonction. Lorsque la fonction termine, l'adresse de retour est dÃ©pilÃ©e
+et le contrÃ´le revient Ã  l'endroit de l'appel de
+fonction. L'environnement d'exÃ©cution de cet appel est contenu
+partiellement dans l'Ã©tat de la pile et devient donc perdu lorsque
 l'appel se termine.
 
-En Scheme, le modèle d'exécution, quoi que similaire, est sensiblement
-différent. L'évolution de l'exécution d'un programme est implanté par
-des continuations. Ces dernières sont des fermetures qui représentent
-le reste du calcul à faire à un moment du calcul donné. La
+En Scheme, le modÃ¨le d'exÃ©cution, quoi que similaire, est sensiblement
+diffÃ©rent. L'Ã©volution de l'exÃ©cution d'un programme est implantÃ© par
+des continuations. Ces derniÃ¨res sont des fermetures qui reprÃ©sentent
+le reste du calcul Ã  faire Ã  un moment du calcul donnÃ©. La
 continuation initiale d'un programme est la terminaison de ce dernier,
-puisque après avoir exécuter le programme, il ne restera plus rien à
+puisque aprÃ¨s avoir exÃ©cuter le programme, il ne restera plus rien Ã 
 faire.
 
 Les figures \ref{Scheme:cont-ex1} et \ref{Scheme:cont-ex2} illustrent
-la continuation d'un appel de fonction dans un calcul très
-simple. Ainsi, après avoir exécuté l'appel de la fonction \scheme{f},
-le reste du calcul à effectuer peut être représenté par une fermeture
-attendant le résultat de l'appel de fonction en entrée. \\
+la continuation d'un appel de fonction dans un calcul trÃ¨s
+simple. Ainsi, aprÃ¨s avoir exÃ©cutÃ© l'appel de la fonction \scheme{f},
+le reste du calcul Ã  effectuer peut Ãªtre reprÃ©sentÃ© par une fermeture
+attendant le rÃ©sultat de l'appel de fonction en entrÃ©e. \\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1344,19 +1342,19 @@ attendant le résultat de l'appel de fonction en entrée. \\
   \begin{schemecode}
 (lambda (res-f) (+ a (- res-f 2)))
   \end{schemecode}
-  \caption{Continuation de l'appel de la fonction \scheme{f} présenté
+  \caption{Continuation de l'appel de la fonction \scheme{f} prÃ©sentÃ©
     dans la figure \ref{Scheme:cont-ex1}}
   \label{Scheme:cont-ex2}
 \end{figure}
 
-Le langage Scheme offre la possibilité de réifier la continuation d'un
-calcul donné par l'entremise de la forme spéciale
+Le langage Scheme offre la possibilitÃ© de rÃ©ifier la continuation d'un
+calcul donnÃ© par l'entremise de la forme spÃ©ciale
 \scheme{call-with-current-continuation} souvent disponible aussi via
 \scheme{call/cc}. La figure \ref{Scheme:cont-ex3} donne un exemple de
-la réification d'un calcul similaire à celui présenté dans la figure
+la rÃ©ification d'un calcul similaire Ã  celui prÃ©sentÃ© dans la figure
 \ref{Scheme:cont-ex1}. La mutation de la variable \scheme{k} est
-utilisée afin de permettre une sauvegarde de la continuation et dans
-le but de la réutiliser plus tard.
+utilisÃ©e afin de permettre une sauvegarde de la continuation et dans
+le but de la rÃ©utiliser plus tard.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1369,26 +1367,35 @@ le but de la réutiliser plus tard.
 (k 10)
   \end{schemecode}
   \schemeresult{11}
-  \caption{Réification d'une continuation à l'aide \scheme{call/cc}}
+  \caption{RÃ©ification d'une continuation Ã  l'aide \scheme{call/cc}}
   \label{Scheme:cont-ex3}
 \end{figure}
 
-Ainsi, la sauvegarde d'une continuation permet de conserver l'état du
-calcul et la réutilisation de celui-ci.
+Ainsi, la sauvegarde d'une continuation permet de conserver l'Ã©tat du
+calcul et la rÃ©utilisation de celui-ci.
 
 \subsection{Exemples d'utilisations}
 L'utilisation de continuations ajoute beaucoup de puissance au niveau
-de la programmation en Scheme, si elle est habilement exécutée. Cette
-section présente quelques utilisations intéressantes permettant
-d'entrevoir les possibilités qu'offre cet aspect de Scheme.
+de la programmation en Scheme, si elle est habilement exÃ©cutÃ©e. Cette
+section prÃ©sente quelques utilisations intÃ©ressantes permettant
+d'entrevoir les possibilitÃ©s qu'offre cet aspect de Scheme.
 
-\subsubsection{Échappement au flux de contrôle}
-Un exemple simple d'utilisation de continuation est pour l'échappement
-au contrôle d'une fonction. Bien sûr, un programmeur a toujours le
-contrôle du programme qu'il écrit, mais il peut y avoir des situation
+\subsubsection{Ã‰chappement au flux de contrÃ´le}
+Un exemple simple d'utilisation de continuation est pour l'Ã©chappement
+au contrÃ´le d'une fonction. Bien sÃ»r, un programmeur a toujours le
+contrÃ´le du programme qu'il Ã©crit, mais il peut y avoir des situation
 qui exigent l'utilisation de fonctions externes dont on ne peut pas
-modifier le contenu. De telles situations peuvent mener à des
-inefficacités algorithmiques. L'exemple présenté dans la figure 
+modifier le contenu. De telles situations peuvent mener Ã  des
+inefficacitÃ©s algorithmiques. La figure \ref{Scheme:bad-fold} illustre
+une utilisation de la fonction d'ordre supÃ©rieur \scheme{foldl}
+prÃ©sentÃ©e dans la figure \ref{Scheme:foldl} afin d'implanter un
+algorithme permettant de dÃ©terminer s'il existe au moins une valeur
+supÃ©rieure Ã  10 dans une liste. En utilisant la fonctionnalitÃ© de
+traces qu'offre Gambit-C, on constate que malgrÃ© le fait que
+l'utilisation d'une fonction d'ordre supÃ©rieur permet d'implanter
+facilement cet algorithme, il en rÃ©sulte en du code inefficace,
+puisque l'appel Ã  \scheme{foldl} va analyser tous les Ã©lÃ©ments de la
+lite, mÃªme aprÃ¨s avoir trouvÃ© une valeur supÃ©rieure Ã  10.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1410,7 +1417,28 @@ inefficacités algorithmiques. L'exemple présenté dans la figure
 \textbar 102\\
 102
 }}
+  \caption{Utilisation non efficace de \scheme{foldl}.}
+  \label{Scheme:bad-fold}
+\end{figure}
+
+On doit donc rÃ©-Ã©crire le mÃ©ta comportement offert par \scheme{foldl}
+afin de pouvoir arrÃªter la recherche aussitÃ´t qu'une valeur supÃ©rieure
+Ã  10 est trouvÃ©e. Cela vient Ã  l'encontre du principe d'abstraction
+mÃ¨ne Ã  une mauvaise maintenabilitÃ© du code. 
+
+Les continuations nous offres par contre la possibilitÃ© d'utiliser la
+mÃ©ta fonction \scheme{foldl}, sans perte de performances. La figure
+\ref{Scheme:better-foldl} indique comment s'y prendre. En rÃ©ifiant la
+continuation au dÃ©but du calcul de la fonction
+\scheme{exists-greater-than}, cette continuation capture le reste du
+calcul Ã  faire aprÃ¨s cet appel de fonction et donc, lorsque cette
+continuation, liÃ©e Ã  la variable \scheme{return}, est appelÃ©e, il en
+rÃ©sulte que le flot de contrÃ´le branche vers la suite du calcul en
+prenant comme valeur de retour la valeur trouvÃ©e.
+
+\begin{figure}[htb!]
 \begin{schemecode}
+(trace foldl)
 (define (exists-greater-than val lst)
     (call/cc
      (lambda (return)
@@ -1426,51 +1454,177 @@ inefficacités algorithmiques. L'exemple présenté dans la figure
 \textbar \textgreater (foldl proc \#f '(102 3 2 7 12))\\
 102
     }}
-  \caption{}
-  \label{}
+  \caption{Utilisation d'une continuation pour Ã©chapper au flot de
+    contrÃ´le.}
+  \label{Scheme:better-foldl}
 \end{figure}
 
-\subsubsection{Système de coroutine}
-\todo{Exemple du cours de Marc}
+\subsubsection{Recherche par retour sur trace}
+Un autre exemple d'utilisation intÃ©ressant de continuations est dans
+la crÃ©ation d'un systÃ¨me de recherche par retour sur trace
+(\textit{backtracking}). La figure \ref{Scheme:backtrack} illustre un
+exemple simple de recherche d'un triplet de nombres entiers tel que
+$x^2 = y^2+z^2$.
 
-\subsection{Forme d'écriture de code en CPS}
-\todo{Expliquer la différence entre un appel terminal et un appel
-  non-terminal. Expliquer comment les appels terminaux peuvent être
-  optimisés (requis en Scheme).}
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define fail (lambda () (error "can't backtrack")))
+(define (in-range a b)
+  (call/cc (lambda (cont) (enumerate a b cont))))
+(define (enumerate a b cont)
+  (if (> a b)
+      (fail)
+      (let ((save fail))
+         (set! fail (lambda () (set! fail save)
+                               (enumerate (+ a 1) b cont)))
+         (cont a))))
+(let ((x  (in-range 1 9))
+      (y  (in-range 1 9))
+      (z  (in-range 1 9)))
+  (if (= (* x x) (+ (* y y) (* z z)))
+      (list x y z)
+      (fail)))
+  \end{schemecode}
+  \schemeresult{(5 3 4)}
+  \caption{Exemple de recherche par retour sur trace}
+  \label{Scheme:backtrack}
+\end{figure}
 
-\todo{Écrire le code de manière à rendre explicite le passage et les
-  appels de continuations. Toujours des appels
-  terminaux. Transformation souvent utilisée par les compilateurs pour
-  implanter l'optimisation d'appels terminaux.}
+Dans cet exemple simple, la fonction \scheme{fail} reprÃ©sente une
+liste chaÃ®nÃ©e de retour arriÃ¨res permettant de revenir Ã  une Ã©tape de
+dÃ©cision prÃ©cÃ©dente et de poursuivre le calcul en prenant une nouvelle
+dÃ©cision Ã  cet endroit. Cet exemple illustre bien l'Ã©lÃ©gance qui peut
+rÃ©sulter de l'utilisation judicieuse de la forme spÃ©ciale
+\scheme{call/cc}.
 
-\subsection{Exemple d'implantation}
-\todo{Exemple du cours de Marc}
+\subsection{Forme d'Ã©criture de code en CPS}
+
+En Scheme, on distingue deux types d'appels de fonction, les appels
+terminaux et les appels non-terminaux. Un appel terminal est un appel
+dont la continuation est la mÃªme que la continuation de la fonction
+dans laquelle il se trouve, sinon, il s'agit d'un appel
+non-terminal. La figure \ref{Scheme:fact} illustre l'implantation
+traditionnelle de la fonction factoriel en Scheme. On constate que
+cette fonction contient un seul appel terminal: l'appel Ã  la fonction
+\scheme{*}. Cet appel possÃ¨de la mÃªme continuation que celle de la
+fonction \scheme{fact} puisque le calcul qui reste aprÃ¨s cet appel est
+en fait la suite du calcul Ã  l'appel original de \scheme{fact}.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (fact n)
+  (if (< n 2)
+      1
+      (* n (fact (- n 1)))))
+(fact 10)
+  \end{schemecode}
+  \schemeresult{3628800}
+  \caption{Exemple de fonction contenant des appels terminaux et
+    non-terminaux.}
+  \label{Scheme:fact}
+\end{figure}
+
+Les appels terminaux sont sujet Ã  une optimisation
+intÃ©ressante. L'optimisation d'appels terminaux consiste Ã  changer la
+continuation d'un appel terminal directement par la continuation de la
+fonction dans laquelle se trouve cet appel. Dans le cadre de l'exemple
+de la fonction \scheme{fact} la continuation de l'appel Ã  \scheme{*}
+dans la figure \ref{Scheme:fact} est la mÃªme que celle de la fonction
+factoriel. Supposons que nous appelons cette continuation
+\scheme{k}. Ainsi, la continuation de \scheme{*} pourrait Ãªtre
+reprÃ©sentÃ©e par la fonction \scheme{(lambda (r) (k r))}.
+L'optimisation d'appels terminaux revient Ã  utiliser directement
+\scheme{k} comme continuation Ã  la multiplication. Ainsi, le flot de
+contrÃ´le du calcul n'a plus besoin de revenir dans \scheme{fact}
+lorsque la multiplication est terminÃ©e, mais peut continuer
+directement le calcul. Cette optimisation est requise pour toute
+implantation de Scheme par la spÃ©cification du langage.
+
+Il existe un style d'Ã©criture de code appelÃ© \textit{Continuation
+  Passing Style} ou style en forme CPS qui consiste Ã  expliciter
+toutes les continuations dans un programme. Une propriÃ©tÃ© intÃ©ressante
+de ce style d'Ã©criture est que tous les appels sont des appels
+terminaux. La figure \ref{Scheme:cps-fact} contient la rÃ©Ã©criture de
+la fonction factoriel prÃ©sentÃ©e dans la figure \ref{Scheme:fact}. On
+peut constater que cette rÃ©Ã©criture a appliquÃ© l'optimisation d'appels
+terminaux.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (minusk n1 n2 k) (k (- n1 n2)))
+(define (timesk n1 n2 k) (k (* n1 n2)))
+(define (factk n k)
+  (if (< n 2)
+      (k 1)
+      (minusk n 1 (lambda (r)
+                    (fact r (lambda (r2)
+                              (timesk n r2 k)))))))
+(factk 10 (lambda (x) x))
+  \end{schemecode}
+  \schemeresult{3628800}
+  \caption{Forme CPS de la fonction factoriel}
+  \label{Scheme:cps-fact}
+\end{figure}
+
+Cette transformation est souvent utilisÃ©e par les implantations de
+Scheme car elle facilite l'implantation de l'optimisation d'appels
+terminaux en rendant tous les appels comme terminaux. Ce style de
+programmation permet aussi d'utiliser de maniÃ¨re Ã©lÃ©gantes la
+puissance d'abstraction des langages fonctionnels en permettant de
+diviser le calcul en petites parties facilement interchangeable et
+modulaires.
+
 
 
 \section{Dynamisme du langage}
+
+Le langage Scheme est un langage Ã  typage dynamique, faisant ainsi
+contraste aux langages fonctionnels de la famille \textit{ML}. Un
+typage dynamique se distingue par des vÃ©rifications de types
+effectuÃ©es durant l'exÃ©cution d'un programme. Un typage statique,
+quant Ã  lui, effectuera les vÃ©rifications de types durant la
+compilation. Ainsi, la principale diffÃ©rence entre les deux approches
+est le moment oÃ¹ les erreurs de programmation apparaissent. 
+
+Un typage statique fournira des erreurs de types beaucoup plus tÃ´t
+dans le processus de dÃ©veloppement et permettent de pouvoir exÃ©cuter
+un code libre de toutes vÃ©rification de types.
+
+Pour un typage dynamique, les erreurs ne surviendront que durant
+l'exÃ©cution du programme et, pourraient ne jamais se produire, ou
+difficilement se produire. De plus, un typage dynamique implique de
+lÃ©gÃ¨res pertes de performances puisque les vÃ©rifications de effectuÃ©es
+pendant l'exÃ©cution du programme. Par contre, des erreurs apparaissant
+durant l'exÃ©cution peuvent Ãªtre beaucoup plus faciles Ã  corriger, si
+le systÃ¨me est muni de bon systÃ¨me de dÃ©boggage. Aussi, un typage
+dynamique permet au langage de pouvoir Ãªtre interprÃ©tÃ© en plus de
+pouvoir Ãªtre compilÃ©. L'interprÃ©tation permet un dÃ©veloppement rapide
+et facilite le prototypage grÃ¢ce Ã  la possibilitÃ© de faire de la
+programmation en direct ou \textit{live coding}.
+
 \todo{Typage dynamique vs typage statique}
 
 \todo{Exemple de code utilisant le typage dynamique.}
 
-\todo{Evaluation dynamique de code avec load ou eval. idées?}
+\todo{Evaluation dynamique de code avec load ou eval. idÃ©es?}
 
 \todo{Langages comme C++ favorisent bcp de focuser sur la conceptions des
-  classes. Implique une structure rigide qui se doit d'être bien conçu
-  depuis le départ.}
+  classes. Implique une structure rigide qui se doit d'Ãªtre bien conÃ§u
+  depuis le dÃ©part.}
 
 \todo{Langages plus dynamiques permettent des cycles de prototypage
-  rapide en apportant beaucoup de flexibilité aux développeurs.}
+  rapide en apportant beaucoup de flexibilitÃ© aux dÃ©veloppeurs.}
 
 
-\section{Gestion mémoire automatique}
+\section{Gestion mÃ©moire automatique}
 \subsection{Motivation}
-\todo{Gestion mémoire manuelle ou semi-automatique causent énormément
-  de problèmes de fuites de mémoire (ou de pointeurs fous).}
+\todo{Gestion mÃ©moire manuelle ou semi-automatique causent Ã©normÃ©ment
+  de problÃ¨mes de fuites de mÃ©moire (ou de pointeurs fous).}
 
-\todo{En connaissant les racines, on peut automatiser la récupérations
-  de mémoire, au coût d'un certain temps de calcul.}
+\todo{En connaissant les racines, on peut automatiser la rÃ©cupÃ©rations
+  de mÃ©moire, au coÃ»t d'un certain temps de calcul.}
 
-\todo{Date des premières version de LISP.}
+\todo{Date des premiÃ¨res version de LISP.}
 
 
 
@@ -1479,76 +1633,76 @@ inefficacités algorithmiques. L'exemple présenté dans la figure
 
 \todo{Stop and copy}
 
-\todo{GC générationnels}
+\todo{GC gÃ©nÃ©rationnels}
 
-\todo{GC temps réels ou incrémentaux}
+\todo{GC temps rÃ©els ou incrÃ©mentaux}
 
 
 
-\section{Débuggage}
-\todo{Possibilité de pouvoir exécuter du code arbitraire lors d'un
+\section{DÃ©buggage}
+\todo{PossibilitÃ© de pouvoir exÃ©cuter du code arbitraire lors d'un
   crash}
 
-\todo{Possibilité de pouvoir inspecter chacune des frames de la pile
+\todo{PossibilitÃ© de pouvoir inspecter chacune des frames de la pile
   de continuactions afin de pouvoir obtenir de l'info sur
-  l'environnement de celui-ci, l'endroit dans le code source où la
-  continuation se trouve et même de pouvoir exécuter du code dans
+  l'environnement de celui-ci, l'endroit dans le code source oÃ¹ la
+  continuation se trouve et mÃªme de pouvoir exÃ©cuter du code dans
   l'environnement d'une continuation de la pile choisie.}
 
-\todo{Possibilité de faire le déboggage à distance (ex: iPhone)}
+\todo{PossibilitÃ© de faire le dÃ©boggage Ã  distance (ex: iPhone)}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Programmation orientée objet}
+\chapter{Programmation orientÃ©e objet}
 
 \todo{Parler des define-type de Gambit-C et du SRFI-9}
 
-\todo{Approche traditionnelle de la prog OO: Surdéfinition de méthodes de
-  classe, héritage simple, polymorphisme, etc...}
+\todo{Approche traditionnelle de la prog OO: SurdÃ©finition de mÃ©thodes de
+  classe, hÃ©ritage simple, polymorphisme, etc...}
 
-\todo{Parler de CLOS: intégré à Common LISP, fonctions génériques, héritage
+\todo{Parler de CLOS: intÃ©grÃ© Ã  Common LISP, fonctions gÃ©nÃ©riques, hÃ©ritage
   multiple}
 
-\todo{Besoins pour jeux vidéo}
+\todo{Besoins pour jeux vidÃ©o}
 
 \section{Description du langage}
-\todo{Langage orienté objet qui a pour but d'être efficace tout en
-  apportant l'expressivité offerte par la programmation orientée
-  object à la CLOS.}
+\todo{Langage orientÃ© objet qui a pour but d'Ãªtre efficace tout en
+  apportant l'expressivitÃ© offerte par la programmation orientÃ©e
+  object Ã  la CLOS.}
 
-Résumé des fonctionnalités:
+RÃ©sumÃ© des fonctionnalitÃ©s:
 \begin{itemize}
-\item Accès aux membres rapide
-\item Héritage multiple
+\item AccÃ¨s aux membres rapide
+\item HÃ©ritage multiple
 \item Polymorphisme
-\item Fonctions génériques à \og dispatch \fg multiple
+\item Fonctions gÃ©nÃ©riques Ã  \og dispatch \fg multiple
 \end{itemize}
 
-\subsection{Définition de classes}
-\todo{Compatibilité avec les define-type}
+\subsection{DÃ©finition de classes}
+\todo{CompatibilitÃ© avec les define-type}
 
-\todo{Définitions simples (instance slots et class slots)}
+\todo{DÃ©finitions simples (instance slots et class slots)}
 
-\todo{Héritages des membres}
+\todo{HÃ©ritages des membres}
 
 \todo{Utilisation de hook sur les slots}
 
 \todo{Constructeurs}
 
 
-\subsection{Définition de fonctions génériques}
+\subsection{DÃ©finition de fonctions gÃ©nÃ©riques}
 \todo{Dispatch simple}
 
-\todo{Dispatch multiple (avec les problèmes reliés à la résolution de la méthode à choisir)}
+\todo{Dispatch multiple (avec les problÃ¨mes reliÃ©s Ã  la rÃ©solution de la mÃ©thode Ã  choisir)}
 
 \todo{call-next-method}
 
 \todo{Type '*'}
 
-\subsection{Fonctions et formes spéciales utilitaires}
+\subsection{Fonctions et formes spÃ©ciales utilitaires}
 
-\todo{Vérifications manuelles de typages et introspections
+\todo{VÃ©rifications manuelles de typages et introspections
   (instance-object?, instance-of?, find-class?, get-class-id,
   is-subclass?, get-supers)}
 
@@ -1557,156 +1711,156 @@ Résumé des fonctionnalités:
 
 \section{Implantation}
 \todo{Apercu global: Utilisation de macros scheme pour effectuer la
-  génération de code nécessaire au fonctionnement du système.}
+  gÃ©nÃ©ration de code nÃ©cessaire au fonctionnement du systÃ¨me.}
 
-\todo{Séparation entre le travail fait durant l'expantion macro et
-  l'exécution}
+\todo{SÃ©paration entre le travail fait durant l'expantion macro et
+  l'exÃ©cution}
 
 \todo{Passage d'informations entre le moment de l'expansion et
-  l'exécution (informations sur les classes, les fonctions génériques,
+  l'exÃ©cution (informations sur les classes, les fonctions gÃ©nÃ©riques,
   etc...)}
 
 \subsection{Implantation de define-class}
-\todo{Structures de données (descripteurs de classes, format des
+\todo{Structures de donnÃ©es (descripteurs de classes, format des
   instances, etc..)}
 
 \todo{Polymorphisme: chaque index dans les descripteurs de classes
   sont orthogonaux (implique que les descripteurs grossissent
-  linéairement en fonction du nombre de classes) et passage aux
-  classes enfants des indexes utilisés par les parents.}
+  linÃ©airement en fonction du nombre de classes) et passage aux
+  classes enfants des indexes utilisÃ©s par les parents.}
 
-\todo{Constructeurs et describe comme fonctions génériques}
+\todo{Constructeurs et describe comme fonctions gÃ©nÃ©riques}
 
 \subsection{Implantation de define-generic}
-\todo{Registre des méthode: Conservations d'informations sur les
-  fonctions génériques et leurs instances }
+\todo{Registre des mÃ©thode: Conservations d'informations sur les
+  fonctions gÃ©nÃ©riques et leurs instances }
 
-\todo{Implantation du polymorphisme des fonctions génériques}
+\todo{Implantation du polymorphisme des fonctions gÃ©nÃ©riques}
 
 \todo{Implantation du call-next-method faite avec l'utilisation de
-  variables à portée dynamique}
+  variables Ã  portÃ©e dynamique}
 
-\todo{Coût de l'utilisation des fonctions génériques}
+\todo{CoÃ»t de l'utilisation des fonctions gÃ©nÃ©riques}
 
 \subsection{Implantation de define-method}
-\todo{Stockages des fermetures durant l'expansion macro et l'exécution}
+\todo{Stockages des fermetures durant l'expansion macro et l'exÃ©cution}
 
 
 
 
 \section{Conclusion}
-\todo{Ouverture sur le fait qu'un meta-protocole serait très intéressant à
-  ajouter, mais à quel prix?}
+\todo{Ouverture sur le fait qu'un meta-protocole serait trÃ¨s intÃ©ressant Ã 
+  ajouter, mais Ã  quel prix?}
 
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Système de coroutines}
-\todo{Système de threads offerts ne sont pas toujours
-  satisfaisant. Mentalité Scheme: au lieu de contraindre ce qu'on veut
-  faire en fonction de ce qui nous est offert, étendre le langage pour
-  nous permettre de faire ce que l'on veut et surtout de la manière
-  désirée.}
+\chapter{SystÃ¨me de coroutines}
+\todo{SystÃ¨me de threads offerts ne sont pas toujours
+  satisfaisant. MentalitÃ© Scheme: au lieu de contraindre ce qu'on veut
+  faire en fonction de ce qui nous est offert, Ã©tendre le langage pour
+  nous permettre de faire ce que l'on veut et surtout de la maniÃ¨re
+  dÃ©sirÃ©e.}
 
-\todo{Implantation de son propre système: contrôle fin du comportement
+\todo{Implantation de son propre systÃ¨me: contrÃ´le fin du comportement
   de threads}
 
-\todo{Parler de Termite: Calcul distribué sur plusieurs
+\todo{Parler de Termite: Calcul distribuÃ© sur plusieurs
   noeuds. Synchronisation par passage de message. Communication via
   TCP/IP.}
 
-\todo{Motivation de l'utilisation de coroutines (contrôle exact sur le
-  flot de contrôle == système toujours dans un état consistant).}
+\todo{Motivation de l'utilisation de coroutines (contrÃ´le exact sur le
+  flot de contrÃ´le == systÃ¨me toujours dans un Ã©tat consistant).}
 
 \section{Description du langage}
-\todo{Idée sur nos coroutines}
+\todo{IdÃ©e sur nos coroutines}
 
-\todo{Systèmes récursifs}
+\todo{SystÃ¨mes rÃ©cursifs}
 
-\todo{Timers: abstraction du temps écoulé permettant l'accélération ou
-  le ralentissement de l'exécution d'une simulation.}
+\todo{Timers: abstraction du temps Ã©coulÃ© permettant l'accÃ©lÃ©ration ou
+  le ralentissement de l'exÃ©cution d'une simulation.}
 
-\subsection{Création de coroutines}
-\todo{Création d'une coroutine détachée du système: (new corout <id>
+\subsection{CrÃ©ation de coroutines}
+\todo{CrÃ©ation d'une coroutine dÃ©tachÃ©e du systÃ¨me: (new corout <id>
   <thunk>)}
 
-\todo{intégrée au système via le démarrage (boot) ou via une autre
+\todo{intÃ©grÃ©e au systÃ¨me via le dÃ©marrage (boot) ou via une autre
   coroutine (spawn-brother)}
 
-\subsection{Manipulation du flot de contrôle}
+\subsection{Manipulation du flot de contrÃ´le}
 \subsubsection{yield} 
-\todo{Transfert à la prochaine coroutine}
+\todo{Transfert Ã  la prochaine coroutine}
 
 \subsubsection{super-yield} 
-\todo{Transfert au prochain système de coroutine (frère du système courant).}
+\todo{Transfert au prochain systÃ¨me de coroutine (frÃ¨re du systÃ¨me courant).}
 
 \subsubsection{terminate-corout, kill-all!, super-kill-all!}
 \todo{Terminaison de coroutines. }
 
 \subsubsection{sleep-for}
-\todo{Sommeil pour un temps prédéterminé.}
+\todo{Sommeil pour un temps prÃ©dÃ©terminÃ©.}
 
 \subsubsection{continue-with}
 \todo{Continuation de la coroutine.}
 
 \subsubsection{spawn-brother, spawn-brother-thunk}
-\todo{Démarrage de nouvelles coroutines.}
+\todo{DÃ©marrage de nouvelles coroutines.}
 
 \subsubsection{Composition of coroutines}
-\todo{Compositions ou séquençage de coroutine}
+\todo{Compositions ou sÃ©quenÃ§age de coroutine}
 
-\subsection{Système de communication inter coroutines}
+\subsection{SystÃ¨me de communication inter coroutines}
 \subsubsection{!} 
-\todo{Envoi de message à une coroutine}
+\todo{Envoi de message Ã  une coroutine}
 
 \subsubsection{?}
-\todo{Réception d'un message bloquante (avec possibilité de timeout)}
+\todo{RÃ©ception d'un message bloquante (avec possibilitÃ© de timeout)}
 
 \subsubsection{??}
-\todo{Réception sélective de message bloquante (avec possibilité de timeout)}
+\todo{RÃ©ception sÃ©lective de message bloquante (avec possibilitÃ© de timeout)}
 
 \subsubsection{recv, dynamic msg handlers}
-\todo{Forme spéciale permettant la réception sélective de messages via
+\todo{Forme spÃ©ciale permettant la rÃ©ception sÃ©lective de messages via
   un \og pattern matching \fg qui permet une notation concise et
-  l'utilisation aisée du contenu des messages reçus.}
+  l'utilisation aisÃ©e du contenu des messages reÃ§us.}
 
 \subsubsection{Messaging lists}
-\todo{Système permettant de regrouper des coroutines et de leurs
+\todo{SystÃ¨me permettant de regrouper des coroutines et de leurs
   diffuser des messages. }
 
-\subsection{Démarrage du système}
+\subsection{DÃ©marrage du systÃ¨me}
 \subsubsection{simple-boot}
-\todo{Démarrage rapide du système.}
+\todo{DÃ©marrage rapide du systÃ¨me.}
 
 \subsubsection{boot}
-\todo{Démarrage permettant de spécifier un timer spécifique à
-  l'utilisation et une fonction personnalisée effectuant la gestion
+\todo{DÃ©marrage permettant de spÃ©cifier un timer spÃ©cifique Ã 
+  l'utilisation et une fonction personnalisÃ©e effectuant la gestion
   des valeurs de retour des coroutines.}
 
-\todo{Systèmes cascadés?}
+\todo{SystÃ¨mes cascadÃ©s?}
 
 
 \section{Implantation}
 
 \subsection{Implantation des coroutines}
 
-\todo{Structure de données}
+\todo{Structure de donnÃ©es}
 
-\todo{États d'une coroutines}
+\todo{Ã‰tats d'une coroutines}
 
 \subsection{Scheduler}
 \todo{Abstraction du temps via timer}
 
-\todo{États du scheduler}
+\todo{Ã‰tats du scheduler}
 
 \todo{Algorithme de scheduling}
 
-\subsection{Système de messagerie}
-\todo{Structures de données}
+\subsection{SystÃ¨me de messagerie}
+\todo{Structures de donnÃ©es}
 
 \todo{Envoi de messages}
 
-\todo{Réception de messages}
+\todo{RÃ©ception de messages}
 
 \todo{Macro recv}
 
@@ -1716,103 +1870,103 @@ Résumé des fonctionnalités:
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Évaluation et expériences}
+\chapter{Ã‰valuation et expÃ©riences}
 
-Développement de jeu fait ayant comme but de trouver les problèmes
-rencontrés durant la création de jeux vidéo et de proposer des
-méthodes pour résoudre ces problèmes.
+DÃ©veloppement de jeu fait ayant comme but de trouver les problÃ¨mes
+rencontrÃ©s durant la crÃ©ation de jeux vidÃ©o et de proposer des
+mÃ©thodes pour rÃ©soudre ces problÃ¨mes.
 
-Aussi, on cherche à identifier les avantages que nous a fourni Scheme
-et à identifier les incovénients que pose l'utilisant du langage
-Scheme pour le développement de ces jeux.
+Aussi, on cherche Ã  identifier les avantages que nous a fourni Scheme
+et Ã  identifier les incovÃ©nients que pose l'utilisant du langage
+Scheme pour le dÃ©veloppement de ces jeux.
 
-Débute par un jeu simple afin de trouver les problèmes de base et
-trouve des solutions à ces problèmes.
+DÃ©bute par un jeu simple afin de trouver les problÃ¨mes de base et
+trouve des solutions Ã  ces problÃ¨mes.
 
-Ensuite, un deuxième jeu a été écrit afin de consolider les solutions
-trouvées précédemment et de potentiellement trouver d'autres problèmes
-reliés aux nouvelles complexité présentent dans ce deuxième jeu.
+Ensuite, un deuxiÃ¨me jeu a Ã©tÃ© Ã©crit afin de consolider les solutions
+trouvÃ©es prÃ©cÃ©demment et de potentiellement trouver d'autres problÃ¨mes
+reliÃ©s aux nouvelles complexitÃ© prÃ©sentent dans ce deuxiÃ¨me jeu.
 
-\section{Développement de \og Space Invaders \fg}
+\section{DÃ©veloppement de \og Space Invaders \fg}
 
 \subsection{Objectifs}
-\todo{Expérimentation avec un jeu très simple}
+\todo{ExpÃ©rimentation avec un jeu trÃ¨s simple}
 
-\todo{Trouver les problèmes fondamentaux pour le développement de jeux}
+\todo{Trouver les problÃ¨mes fondamentaux pour le dÃ©veloppement de jeux}
 
-\todo{Tenter de les résoudre}
+\todo{Tenter de les rÃ©soudre}
 
 \subsection{Version initiale}
-\todo{Premier jet dans le but de trouver des problèmes potitiels}
+\todo{Premier jet dans le but de trouver des problÃ¨mes potitiels}
 
 \begin{itemize}
 \item Comment faire des animations? => CPS
 \item Comment concevoir une partie a 2 joueurs? => coroutines
-\item Difficulté à décrire la résolution de collision de manière
+\item DifficultÃ© Ã  dÃ©crire la rÃ©solution de collision de maniÃ¨re
   efficace 
-\item Est-il possible d'écrire le comportement d'une entité de manière
-  indépendante, \ie que le code soit centralisé dans une même
+\item Est-il possible d'Ã©crire le comportement d'une entitÃ© de maniÃ¨re
+  indÃ©pendante, \ie que le code soit centralisÃ© dans une mÃªme
   fonction?
 \end{itemize}
 
-\subsection{Version orientée objet}
-\todo{Motivation: Utilisation de fonctions génériques}
+\subsection{Version orientÃ©e objet}
+\todo{Motivation: Utilisation de fonctions gÃ©nÃ©riques}
 
 \todo{Hierarchie de classe}
 
-\todo{Code Highlight: Résolution de collisions}
+\todo{Code Highlight: RÃ©solution de collisions}
 
 
-\subsection{Version avec système de co-routine}
-\todo{Motivation: Intégrer les coroutines a chaque objet de manière à
-  ce que chaque instance soit une entité à part entière qui doit régir
+\subsection{Version avec systÃ¨me de co-routine}
+\todo{Motivation: IntÃ©grer les coroutines a chaque objet de maniÃ¨re Ã 
+  ce que chaque instance soit une entitÃ© Ã  part entiÃ¨re qui doit rÃ©gir
   son propre comportement.}
 
-\todo{Difficultés: synchronisation des entités}
+\todo{DifficultÃ©s: synchronisation des entitÃ©s}
 
 \todo{Code Highlight: synchronisation des invaders}
 
 
 \subsection{Conclusion}
-\todo{Trouvé plusieurs problèmes et pu résoudres ces derniers}
+\todo{TrouvÃ© plusieurs problÃ¨mes et pu rÃ©soudres ces derniers}
 
-\todo{Utilisation d'un système object a grandement contribué à
-  améliorer le code du jeu.}
+\todo{Utilisation d'un systÃ¨me object a grandement contribuÃ© Ã 
+  amÃ©liorer le code du jeu.}
 
-L'intégration du système de coroutines aux objets du jeu a causé plus
-de problème qu'elle en a résolu. L'utilisation des coroutines serait
-mieux d'être limité à l'implantation du jeu multijoueur.
+L'intÃ©gration du systÃ¨me de coroutines aux objets du jeu a causÃ© plus
+de problÃ¨me qu'elle en a rÃ©solu. L'utilisation des coroutines serait
+mieux d'Ãªtre limitÃ© Ã  l'implantation du jeu multijoueur.
 
 \todo{ouverture: Essayer ces techniques dans un jeu plus complexe pour
   voir si elles sont toujours valides}
 
 
-\section{Développement de \og Lode Runner \fg}
+\section{DÃ©veloppement de \og Lode Runner \fg}
 \subsection{Objectifs}
 \todo{Jeux plus complexe: plus d'interaction du joueur, intelligence
   artivicielle, niveaux, schema d'animations plus complexe, etc...}
 
 \todo{Utiliser ce qui semblait de meilleur dans space-invaders de
-  manière a non seulement confirmer la pertinance de ces methodes,
-  mais aussi a potentiellement en developper de nouvelles dû aux
+  maniÃ¨re a non seulement confirmer la pertinance de ces methodes,
+  mais aussi a potentiellement en developper de nouvelles dÃ» aux
   nouvelles contraintes de ce jeu.}
 
 \subsection{Synchronisation}
-\todo{Utilisation du concept de frame pour faire la synchro. (manière
-  traditionnelle) Réduit de beaucoup la complexité.}
+\todo{Utilisation du concept de frame pour faire la synchro. (maniÃ¨re
+  traditionnelle) RÃ©duit de beaucoup la complexitÃ©.}
 
 \todo{Danger si le framerate varie, la vitesse du jeu varie.}
 
-\subsection{Machines à états}
-\todo{Utiliation des fonctions génériques}
+\subsection{Machines Ã  Ã©tats}
+\todo{Utiliation des fonctions gÃ©nÃ©riques}
 
-\todo{Utilisez un LSD pour ca??? Des idées?}
+\todo{Utilisez un LSD pour ca??? Des idÃ©es?}
 
 \subsection{Intelligence Artificielle}
-\subsubsection{À venir...}
+\subsubsection{Ã€ venir...}
 
 \subsection{Conclusion}
-\subsubsection{À venir...}
+\subsubsection{Ã€ venir...}
 
 
 
@@ -1820,23 +1974,23 @@ mieux d'être limité à l'implantation du jeu multijoueur.
 %%\chapter{Mesures de performance}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Travaux reliés}
+\chapter{Travaux reliÃ©s}
 
-Dans un premier temps, il serait intéressant de comparer les
-différents langages utilisés dans l'industrie du jeu vidéo avec Scheme
-afin d'en faire ressortir les différences. Ces différences mènent
-directement à une méthode de développement qui seront complètement
-différentes.
+Dans un premier temps, il serait intÃ©ressant de comparer les
+diffÃ©rents langages utilisÃ©s dans l'industrie du jeu vidÃ©o avec Scheme
+afin d'en faire ressortir les diffÃ©rences. Ces diffÃ©rences mÃ¨nent
+directement Ã  une mÃ©thode de dÃ©veloppement qui seront complÃ¨tement
+diffÃ©rentes.
 
-Scheme a déjà été utilisé pour produire des jeux vidéo commerciaux de
-très bonne qualité. Certains seront cités et une revue de l'expérience
-acquise par les développeurs sera exposée.
+Scheme a dÃ©jÃ  Ã©tÃ© utilisÃ© pour produire des jeux vidÃ©o commerciaux de
+trÃ¨s bonne qualitÃ©. Certains seront citÃ©s et une revue de l'expÃ©rience
+acquise par les dÃ©veloppeurs sera exposÃ©e.
 
 \section{Comparaison de langages}
 
 \subsection{Lua}
-Langage utilisé très fréquemment pour effectuer le \og scripting \fg
-dans les jeu vidéo.
+Langage utilisÃ© trÃ¨s frÃ©quemment pour effectuer le \og scripting \fg
+dans les jeu vidÃ©o.
 
 Differences entre lua et Scheme
 \begin{itemize}
@@ -1845,12 +1999,12 @@ Differences entre lua et Scheme
 \end{itemize}
 
 \subsection{C++}
-Langage principal de développement de jeu vidéo en industrie.
+Langage principal de dÃ©veloppement de jeu vidÃ©o en industrie.
 
 Differences entre Scheme et C++
 \begin{itemize}
 \item Gestion memoire manuelle vs GC
-\item méthode surdéfinies vs fonctions génériques
+\item mÃ©thode surdÃ©finies vs fonctions gÃ©nÃ©riques
 \item ...
 \end{itemize}
 
@@ -1858,10 +2012,10 @@ Differences entre Scheme et C++
 \section{Jeux en Lisp}
 
 \subsection{QuantZ}
-Jeu de type \og casual \fg de très bonne qualité écrit presque
-entièrement en Scheme.
+Jeu de type \og casual \fg de trÃ¨s bonne qualitÃ© Ã©crit presque
+entiÃ¨rement en Scheme.
 
-À voir avec Robert
+Ã€ voir avec Robert
 
 FRP?
 
@@ -1870,11 +2024,11 @@ Techniques anti-gc
 Delegation de fermetures
 
 \subsection{Naughty Dogz}
-Compagnie très connue associée à Sony qui utilisent Scheme pour
-produire leurs jeux vidéo.
+Compagnie trÃ¨s connue associÃ©e Ã  Sony qui utilisent Scheme pour
+produire leurs jeux vidÃ©o.
 
 \subsubsection{GOAL}
-Compilateur Scheme utilisé pour produire les jeux sur PlayStation 2
+Compilateur Scheme utilisÃ© pour produire les jeux sur PlayStation 2
 
 %% http://en.wikipedia.org/wiki/Game_Oriented_Assembly_Lisp
 %% http://grammerjack.spaces.live.com/blog/cns!F2629C772A178A7C!135.entry
@@ -1891,19 +2045,19 @@ Compilateur Scheme utilisé pour produire les jeux sur PlayStation 2
 \chapter{Conclusion}
 
 
-L'expérience d'écriture de ces jeux aura permis de faire le point sur
-les avantages et les inconvénients de l'utilisation d'un langage tel
-que Scheme pour le développement de jeu vidéo.
+L'expÃ©rience d'Ã©criture de ces jeux aura permis de faire le point sur
+les avantages et les inconvÃ©nients de l'utilisation d'un langage tel
+que Scheme pour le dÃ©veloppement de jeu vidÃ©o.
 
 
 \begin{itemize}
   \item[+] puissance d'expression / d'abstraction
-  \item[+] langage dynamique (développement en-direct, malléabilités)
-  \item[+] création de langages spécifiques au domaine
+  \item[+] langage dynamique (dÃ©veloppement en-direct, mallÃ©abilitÃ©s)
+  \item[+] crÃ©ation de langages spÃ©cifiques au domaine
 
   \item[-] Garbage Collection et sur-allocation
   \item[-] Profilage plus difficile avec des LSD (pour Gambit-C et statprof)
-  \item[-] Balance entre abstraction et efficacité
+  \item[-] Balance entre abstraction et efficacitÃ©
 \end{itemize}
 
 
@@ -1916,7 +2070,7 @@ que Scheme pour le développement de jeu vidéo.
 
 %%%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \appendix
-% TODO: ce compteur doit être ajusté à la main 
+% TODO: ce compteur doit Ãªtre ajustÃ© Ã  la main 
 % \setcounter{page}{99}
 
 %% \chapter{Code des exemples}
@@ -1945,16 +2099,16 @@ que Scheme pour le développement de jeu vidéo.
 
 %% \newpage 
 
-%% \section{Serveur générique: genserver.scm}
+%% \section{Serveur gÃ©nÃ©rique: genserver.scm}
 %% \schemeinput{genserver.scm}
 
-%% %% \section{Superviseur générique: supervisor.scm}
+%% %% \section{Superviseur gÃ©nÃ©rique: supervisor.scm}
 %% %% 
 %% %% \schemeinput{supervisor.scm}
 
 %% \newpage
 
-%% \section{Définition de type}\label{define_termite_type}
+%% \section{DÃ©finition de type}\label{define_termite_type}
 %% \schemeinput{deftype.scm}
 
 %% \newpage
@@ -1972,7 +2126,7 @@ que Scheme pour le développement de jeu vidéo.
 %% \subsection{Erlang}\codeinput{bench/tak.erl}
 
 %% \newpage
-%% \section{Inversion naïve}
+%% \section{Inversion naÃ¯ve}
 %% \subsection{Scheme}\codeinput{bench/nrev.scm}
 %% \subsection{Erlang}\codeinput{bench/nrev.erl}
 

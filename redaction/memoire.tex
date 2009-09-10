@@ -1683,16 +1683,79 @@ lorsqu'une gestion manuelle de mémoire est utilisée.
 Plusieurs techniques de gestion de mémoire automatique ont été
 développées au cours des années. Cette section effectue un bref survol
 de ces différentes techniques. Plusieurs articles effectuant une revue
-des techniques sont disponibles pour avoir de plus amples
-renseignements sur le sujet.
+des techniques sont disponibles pour fournir plus de détails sur ces
+techniques sur le
+sujet~\cite{GC_REVIEW1}~\cite{GC_REVIEW2}~\cite{GC_REVIEW3}. 
 
-\todo{Mark and sweep}
+Une des techniques les plus simples de gestion de mémoire automatique
+est le \textit{mark and sweep}~\cite{LISP_ORIGINS}. Cette technique
+consiste à traverser la mémoire à partir des racines et à marquer
+chacun des espaces mémoire rencontrés lors du parcours. Ensuite, tous
+les espaces mémoires alloués sont parcourus et tout ceux qui ne sont
+pas marqués sont récupérés. Cette technique est très simple, mais
+telle quelle, peut mener à des problèmes de fragmentations de la
+mémoire. De plus, elle requiert de traverser toute la mémoire utilisée
+par deux fois, impliquant donc un certaine pause dans l'exécution du
+programme.
 
-\todo{Stop and copy}
+Une autre technique classique se nomme \textit{Stop And
+  Copy}~\cite{STOP_AND_COPY}. De manière similaire au \textit{Mark And
+  Sweep}, cette technique parcours les zones mémoires utilisées à
+partir des racines. Par contre, le \textit{Stop And Copy} doit séparer
+la mémoire disponible en deux zones distinctes, l'une dans laquelle
+les allocations sont effectuées et l'autre demeure réservée. Lorsque
+le ramasse miettes atteint un objet en mémoire, il le copie vers la
+nouvelle zone réservée et laisse une indication de sa nouvelle
+position dans son ancien emplacement. Toutes les zones mémoires sont
+ainsi copiées et compactées et donc, les allocations subséquentes sont
+par la suite dans la nouvelles zone mémoire, résultant en une
+désallocation implicite des espaces inutilisées dans la zone
+précédente. Cette technique est légèrement plus efficace que le
+\textit{Mark And Sweep} traditionnel, mais nécessite le double
+d'espace mémoire pour faire la gestion de la mémoire. Cette technique
+est utilisée dans l'implantation Scheme Gambit-C.
 
-\todo{GC générationnels}
+Une amélioration notable de la technique du \textit{Mark And Sweep} a
+donné naissance aux ramasses miettes
+générationnels~\cite{GEN_GC}. Sans entrer dans les détails, cette
+technique divise la mémoire en plusieurs générations. Les objets
+récemment alloués sont conservés dans la pouponnière puis, lorsque
+ceux-ci sont conservés plus longtemps, sont déplacés vers une
+génération plus ancienne, et ainsi de suite. Seul la pouponnière est
+parcourue lors de chaque récupérations et lorsque celle-ci devient
+remplie, elle déclenche une récupération dans la génération au dessus
+d'elle. Cette algorithme est beaucoup plus efficace, car les objets
+récemment alloués ont une petite durée de vie moyenne, contrairement
+aux objets déjà retenus qui eux ont une meilleur chance d'être
+toujours retenus. Tout comme les deux techniques précédentes, les
+ramasses miettes générationnels nécessitent l'arrêt du programme
+durant l'opération récupération, qui peu, dans le pire cas,
+s'effectuer sur toute la mémoire.
 
-\todo{GC temps réels ou incrémentaux}
+Afin de remédier au problème d'arrêt complet de l'exécution du
+programme, deux nouveaux types de ramasses miettes ont été
+développées: les ramasses miettes incrémentaux (ou
+temps-réels)~\cite{INCR_BAKER}. Ceux-ci utilisent un algorithme de
+marquage à trois couleurs de la mémoire afin de permettre de faire
+partiellement le travail de récupération et de poursuivre
+l'application dans le but de continuer plus tard. Il en résulte donc
+que les pauses dues à la récupérations peuvent être contrôlées et de
+temps constant.
+
+\subsection{Conclusion}
+
+Malgré que les techniques de récupération automatique de mémoire
+impliquent des coût supplémentaires en utilisation du processeur et de
+la mémoire, le gain en productivité pour le développement est
+tellement supérieur qu'ils sont devenus adoptés par presque tout les
+nouveaux langages de programmations. 
+
+Le fait que l'exécution du programme puisse être arrêtée durant le
+moment de la récupération est potentiellement problématique pour
+l'écriture de jeux vidéo, car ceux-ci se doivent d'avoir des bonnes
+performances et ce, de manière continues. Ainsi, une attention
+particulière devra être apportée sur l'utilisation de la mémoire
+d'avoir de trop grandes pauses de récupération.
 
 
 

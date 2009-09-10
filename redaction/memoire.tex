@@ -753,19 +753,81 @@ inspirés du langage Scheme sont mentionnés en expliquant brièvement
 les racines commune à Scheme est les principales disparités.
 
 \subsection{Histoire de LISP}
-\todo{McCarthy, GC, List Processing, AI...}
+Le langage LISP est le tout premier langage de programmation de haut
+niveau qui fut conçu et est le deuxième plus vieux langage de
+programmation toujours utilisé. Son histoire débute au MIT
+(\textit{Massachusetts Institute of Technology}), dans le début des
+années 1960, lorsque John McCarthy publia un article décrivant ce
+langage~\cite{LISP_ORIGINES}. Le langage original était relativement
+du LISP d'aujourd'hui mais introduisait déjà des concepts fondamentaux
+comme l'utilisation de listes pour représenter du code et le concept
+de ramasse miettes.
 
-\todo{Common LISP = Grosse Bébitte}
+Le langage fut aussitôt adopté par la communauté de recherche en
+intelligence artificielle, puisque l'utilisation de traitement
+symbolique permettait de pouvoir facilement développer de nouveaux
+algorithmes dans ce domaine.
+
+LISP évolua par la suite en de nombreux dialectes différents, chacun
+apportant ses propres extensions au langage. En 1984, Guy Steele
+publia un livre proposant d'unir ces dialectes dans le langage
+\textit{Common LISP}~\cite{CLISP}. Ce livre fut par la suite la
+fondation du standard créé pour le langage \textit{Common
+  Lisp}~\cite{ANSI_CLISP}. Il en résulte donc une spécification très
+complexe du langage qui s'est trouvé gonflé pour les multiples
+dialectes lui ayant donné naissance. Ainsi, Common Lisp possède
+beaucoup de bagage, mais il devient difficile pour un programmeur de
+pouvoir maîtriser tout les concepts de base de ce langage.
 
 \subsection{Avènement de Scheme}
-\todo{Épuration de LISP à l'essence du langage}
+Peu avant la création de Common Lisp, Guy Steele et Gerald J. Sussman
+conçurent la spécification d'un nouveau dialecte du langage LISP
+appelé Scheme~\cite{SCHEME_ORIGINS}. Ce dialecte était sensiblement
+différent des autres dialectes de LISP existant puisqu'au lieu
+d'ajouter des nouvelles composantes ou d'étendre le langage, il
+l'épura au maximum afin d'en extraire l'essence même. La spécification
+du langage étant écrite sur une trentaine de pages faisait contrastes
+aux spécifications des autres dialectes, notamment à Common Lisp qui
+vint peu après qui s'étalent sur plusieurs centaine de pages. Il en
+résultat que plusieurs implantations du langage apparurent grâce à la
+spécification beaucoup plus accessible.
 
-\todo{évolution du langage via RNRS, SRFIs}
+Scheme devint ainsi populaire et est présentement l'un des deux
+dialecte les plus utilisé de LISP, en concurrence avec Common Lisp. On
+retrouve pas moins d'une cinquantaine d'implantation disponible, dont
+une douzaine sont considérées comme étant des implantations
+majeures. Ces implantation majeures offrent non seulement plusieurs
+extensions du langage, mais aussi de très bonnes performances grâce à
+l'implantation d'optimisations de compilation avancées.
 
-\todo{simplicité du langage, beaucoup d'extension disponibles }
+Le langage Scheme impose une philosophie de minimalisme à ces
+programmeurs en ne leur fournissant que la base dans le
+standard. Cette philosophie est souvent apprécié car elle mène à
+utiliser ce qui est vraiment nécessaire et faire soi même ce qui n'est
+pas disponible, créant ainsi une bonne indépendance chez les
+programmeurs Scheme. De plus, le langage est accompagné d'une centaine
+librairies externes de traitement générique dénommées SRFI~\cite{SRFI}
+(\textit{Scheme Request For Implementation}).
 
 \subsection{Langages inspirés de Scheme}
-\todo{Javascript, Ruby: lang de scripting. Concept de fermetures}
+
+Plusieurs langages de programmation récent furent inspirés dans
+langages LISP. Pour la plupart, il s'agit de langages de script comme
+JavaScript~\cite{ECMA-262}, Ruby~\cite{RUBY} ou Perl~\cite{PERL}. Ces
+languages vont notamment chercher l'aspect dynamique de LISP afin de
+pouvoir être interprétés. Ces langages utilisent aussi un ramasse
+miettes afin de simplifier leurs utilisation. Finalement, certains
+d'entre eux offrent des fonctions en tant que données de premières
+classe, permettant ainsi l'utilisation de la programmation
+fonctionnelle. 
+
+Ces langages demeurent par contre toujours des sous-ensemble, en terme
+de fonctionnalités, des langages LISP. Ils sont devenus populaires
+pour leurs simplicité d'utilisation, mais un bon apprentissage de
+Scheme pourrait certainement être plus bénéfique à long terme. Entre
+autre, Scheme est un langage interprété \emph{et} compilé, permettant
+de développer des application très efficaces.
+
 
 \todo{Java??}
 
@@ -1579,18 +1641,51 @@ modulaires.
 
 
 \section{Gestion mémoire automatique}
-\subsection{Motivation}
-\todo{Gestion mémoire manuelle ou semi-automatique causent énormément
-  de problèmes de fuites de mémoire (ou de pointeurs fous).}
 
-\todo{En connaissant les racines, on peut automatiser la récupérations
-  de mémoire, au coût d'un certain temps de calcul.}
+L'écriture de code effectuant gestion de la mémoire d'un programme à
+toujours été une partie délicate du développement d'un logiciel. Non
+seulement, il est très facile de faire des erreurs, mais ces erreurs
+sont très difficiles à détecter et à être trouvées. Les problèmes
+reliées à une mauvaise gestion de la mémoire sont classifiées en deux
+catégories: des fuites de mémoire ou des pointeurs fous. Les fuites de
+mémoire sont causées par la rétention de mémoire par des objets qui ne
+sont plus utilisés par le programme et les pointeurs fous sont des
+pointeurs toujours accessible par le programme, mais dont l'espace
+mémoire correspondant a été récupéré par le système d'exploitation.
 
-\todo{Date des premières version de LISP.}
+Dans les deux cas, ces erreurs sont très problématiques. C'est
+probablement pour cette raison que déjà très tôt, cette gestion a été
+automatisée par des systèmes de gestions automatiques de mémoire. Les
+premiers systèmes de gestion de mémoires automatique, appelles aussi
+ramasses miettes, apparurent avec le langages LISP. Le principe de
+base est simple, il s'agit de parcourir la mémoire utilisée par le
+programme en partant des \emph{racines} de celui-ci. Les racines sont
+tous les points d'accès aux données accessibles, comme par exemple les
+variables globales ou locales d'une fonction en cours
+d'exécution. Lorsque la mémoire est parcourue, on garde trace des
+zones accessibles. Après avoir parcouru toute la mémoire accessible,
+il ne suffit que de récupérer automatiquement les zones qui ne sont
+plus accessibles par le programme.
 
+Bien sûr, la gestion de mémoire automatique se fait avec un certain
+\emph{coût en temps de calcul}. La répartition de se temps dépend
+grandement de la technique de gestion utilisée. Aussi, les algorithmes
+de parcours de mémoire se doivent d'être \emph{conservateurs} afin
+d'assurer de ne pas causer de pointeurs fous. Ainsi, il peut y avoir
+des cas où le système de gestion pense qu'un pointeur est toujours
+accessible, alors qu'en réalité, il ne sera plus jamais utilisé par le
+programme créant ainsi des fuites de mémoires. Ces fuites sont
+toutefois beaucoup plus difficile à créer que des fuites de mémoires
+lorsqu'une gestion manuelle de mémoire est utilisée.
 
 
 \subsection{Survol des techniques}
+Plusieurs techniques de gestion de mémoire automatique ont été
+développées au cours des années. Cette section effectue un bref survol
+de ces différentes techniques. Plusieurs articles effectuant une revue
+des techniques sont disponibles pour avoir de plus amples
+renseignements sur le sujet.
+
 \todo{Mark and sweep}
 
 \todo{Stop and copy}

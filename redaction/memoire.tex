@@ -738,7 +738,8 @@ une brève explications de concepts de bases du langage est
 donnée. Plus d'informations sur les bases de Scheme peuvent êtres
 obtenues dans la littérature~\cite{R5RS}~\cite{SICP}. Finalement, les
 particularités du langages sont mise en lumière dans le but de faire
-comprendre au lecteur quelle est l'ampleur de celles-ci.
+comprendre au lecteur quelles sont l'ampleur de celles-ci dans le but
+de développer des jeux vidéo.
 
 \todo{d'autres idées?}
 
@@ -758,7 +759,7 @@ niveau qui fut conçu et est le deuxième plus vieux langage de
 programmation toujours utilisé. Son histoire débute au MIT
 (\textit{Massachusetts Institute of Technology}), dans le début des
 années 1960, lorsque John McCarthy publia un article décrivant ce
-langage~\cite{LISP_ORIGINES}. Le langage original était relativement
+langage~\cite{LISP_ORIGINS}. Le langage original était relativement
 du LISP d'aujourd'hui mais introduisait déjà des concepts fondamentaux
 comme l'utilisation de listes pour représenter du code et le concept
 de ramasse miettes.
@@ -835,24 +836,23 @@ de développer des application très efficaces.
 \section{Introduction au langage}
 Tout en bénéficiant du riche héritage des langages LISP, Scheme
 demeure un langage épuré et très simple à la base. Cette section vise
-à présenter les bases du langages Scheme et de son implantation dans
-le système Gambit-C afin de familiariser le lecteur avec non seulement
-la syntaxe du langage, mais aussi les fonctionnalités de base et les
+à présenter les bases du langages Scheme et de son implantation par le
+système Gambit-C afin de familiariser le lecteur avec non seulement la
+syntaxe du langage, mais aussi les fonctionnalités de base et les
 extensions au langages fournies par Gambit-C.
 
 \subsection{Syntaxe}
-La syntaxe de Scheme est une des caractéristique qui distingue le
-distingue le plus des autres langages de programmation. En effet, la
-syntaxe utilisée est extrêmement simple. À la base, toute expression
-Scheme est une expression symbolique, nommée aussi \textit{S
-  expression}. Une S expression est une forme de donnée structurée
-récursive qui doit débuter par une parenthèse ouvrante, contient un
-nombre arbitraire de données qui sont soit des atomes ou des S
-expressions et qui doit se terminer par une parenthèse fermante. Les
-atomes sont des symboles, des nombres, des valeurs booléennes,
-etc.. La figure \ref{FIG:sexp} donne un exemple très simple de S
-expression contenant des informations sur les prix de la nourriture
-dans une épicerie.\\
+La syntaxe de Scheme est une des caractéristique qui le distingue le
+plus des autres langages de programmation. En effet, la syntaxe
+utilisée est extrêmement simple. À la base, toute expression Scheme
+est une expression symbolique, nommée aussi \textit{S expression}. Une
+S expression est une forme de donnée structurée récursive qui doit
+débuter par une parenthèse ouvrante, contient un nombre arbitraire de
+données qui sont soit des atomes ou des S expressions et qui doit se
+terminer par une parenthèse fermante. Les atomes sont des symboles,
+des nombres, des valeurs booléennes, etc.. La figure \ref{FIG:sexp}
+donne un exemple très simple de S expression contenant des
+informations sur les prix de la nourriture dans une épicerie.\\
 
 \begin{figure}[htb!]
   \schemeresult{((bananes 1.52)(bonbons 1/100))}
@@ -1055,7 +1055,7 @@ mutation de l'état de l'exécution d'un programme. Les programmes
 écrits en utilisant des langages sont généralement beaucoup plus
 facile à comprendre, ce qui attire un grand nombre de chercheurs à
 contribuer au développement et l'utilisation de tels langages dans le
-milieu commercial.
+milieu commercial. 
 
 Une caractéristique importante des langages de programmation
 fonctionnelle est la présence de fonctions de premier ordre, \ie que
@@ -1162,6 +1162,16 @@ mémoires. Ainsi, Scheme partage le meilleur des deux mondes en
 laissant la liberté au programmeur de choisir le paradigme de
 programmation qui lui apparaît le plus approprié. Par contre, un abus
 de mutation est considéré comme étant de très mauvais style en Scheme.
+
+Ainsi, les l'utilisation de fonctions en tant que données de premières
+classes permet de pouvoir faire de puissantes abstractions
+algorithmiques. De plus, l'utilisation des paradigme de programmation
+fonctionnelle facilite beaucoup la modularisation du logiciel. En
+effet, puisque peu ou pas de mutations d'état sont utilisées, il
+devient alors facile de pouvoir combiner différents modules ensembles,
+sans avoir d'interférences dans l'état du programme, ce qui n'est pas
+nécessairement le cas avec des modules impératifs dépendant
+directement de l'état du programme pour leur exécution.
 
 
 \section{Macros}
@@ -1294,7 +1304,7 @@ passé par nom est illustré dans la figure \ref{Scheme:macro-ex2}.\\
 Cette macro très simple utilise le passage par nom pour permettre
 d'incrémenter la valeur d'une variable. Un exemple plus complexe de
 macro utilisant le passage par nom est donné dans la figure
-\ref{Sceme:macro-ex3}. Cette macro permet d'augmenter le langage
+\ref{Scheme:macro-ex3}. Cette macro permet d'augmenter le langage
 Scheme d'une nouvelle forme spéciale qui correspond à une forme simple
 d'itération. \\
 
@@ -1363,6 +1373,13 @@ elle permet une plus grande liberté d'écriture. En effet, parfois la
 collision de nom peut, par exemple, être intentionnelle. Aussi, le
 problème est facilement résolu avec l'utilisation de symboles uniques.
 
+Ainsi, en utilisant les macros de Scheme, il est possible d'ajouter
+des nouvelles formes spéciales au langages. On peut ainsi créer des
+langages spécifiques au domaine (\textit{Domain specific languages}),
+en se créant un langage complet ou partiel au dessus de Scheme à
+l'aide des macros. Ces langages sont conçus dans le but de résoudre un
+problème précis et l'utilisation de macros permet pouvoir exprimer ce
+langage en Scheme, sans aucun coûts additionnels.
 
 
 \section{Continuations}
@@ -1450,7 +1467,7 @@ qui exigent l'utilisation de fonctions externes dont on ne peut pas
 modifier le contenu. De telles situations peuvent mener à des
 inefficacités algorithmiques. La figure \ref{Scheme:bad-fold} illustre
 une utilisation de la fonction d'ordre supérieur \scheme{foldl}
-présentée dans la figure \ref{Scheme:foldl} afin d'implanter un
+présentée dans la figure \ref{Scheme:fold} afin d'implanter un
 algorithme permettant de déterminer s'il existe au moins une valeur
 supérieure à 10 dans une liste. En utilisant la fonctionnalité de
 traces qu'offre Gambit-C, on constate que malgré le fait que
@@ -1854,13 +1871,15 @@ clairement que le langage répond grandement aux besoins établis par
 les jeux vidéo. Notamment, la puissance d'abstraction provenant de
 l'aspect de programmation fonctionnel du langage et de sont puissant
 système de macro permettrait de faciliter les abstractions nécessaires
-à une bonne modularisation du code source. Le dynamisme du langage
-apporte des outils de développement puissant, comme un interprète et
-un déboggeur à distance, mais aussi permet de faciliter le
-développement itératif avec un approche par prototypage. La présence
-d'un ramasse miettes évite la présence de beaucoup d'erreurs
-potentielles de gestion de mémoire, mais pourrait causer des problèmes
-de ralentissement lors de l'exécution de tels jeux. Finalement, la
+à une bonne modularisation du code source et par la possibilité de
+création de langages spécific au domaines répondant à des problèmes
+précis pour l'écriture de jeux vidéo.Le dynamisme du langage apporte
+des outils de développement puissant, comme un interprète et un
+déboggeur à distance, mais aussi permet de faciliter le développement
+itératif avec un approche par prototypage. La présence d'un ramasse
+miettes évite la présence de beaucoup d'erreurs potentielles de
+gestion de mémoire, mais pourrait causer des problèmes de
+ralentissement lors de l'exécution de tels jeux. Finalement, la
 possibilité de pouvoir réifier les continuations d'un programme en
 cours d'exécution offre beaucoup de puissance expressive au
 programmeur.

@@ -1896,7 +1896,60 @@ vidéo.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Programmation orientée objet}
 
+
+
+Scheme est un langage offrant beaucoup de ressources à l'état brut aux
+programmeurs et leurs permet donc de pouvoir se bâtir les outils
+personnalisés pour mieux répondre leurs besoins. 
+
+Un paradigme absent du langage Scheme est celui de la programmation
+orientée objet. Ce paradigme implique l'utilisation structures de
+données hiérarchiques, les objets, favorisant la modularité et
+l'abstraction de celles-ci. Le sous-typage résultant de la création de
+méta-objet, les classes, permet entre autre l'utilisation générique de
+fonctions (appelées des méthodes). 
+
+Ces objets sont centrés sur la notion d'états, qui évoluent au fil de
+l'exécution du programme. Malgré le fait que la notion d'état se marie
+moins bien avec la programmation fonctionnelle, l'utilisation d'objets
+pour représenter les entités dans un jeu est très naturelle et
+appropriée. En effet, ces entités possèdent des caractéristiques
+propres à elles et qui évoluent dans le temps. Par exemple, on peut
+imaginer une balle qui possède une vitesse de déplacement et une
+position. 
+
+De plus, l'utilisation de méthodes permet de pouvoir, d'une part,
+facilement réutiliser des comportements communs à des objets d'une
+même hiérarchie de classe et, d'autre part, à pouvoir facilement
+choisir un comportement approprié pour un objet donné, via le
+\textit{dispatch} de méthode qui sélectionne automatiquement la
+méthode la plus appropriée disponible pour un objet donné.
+
 \todo{Parler des define-type de Gambit-C et du SRFI-9}
+
+Le neuvième SRFI~\cite{SRFI_9} suggère un système très rudimentaire
+d'objets qui fut implémenté et étendu par le système Gambit-C. Ce
+système permet la construction de manière générique d'objets typés de
+manière hiérarchique simple. L'exemple de la figure
+\ref{OO:gambit-obj} illustre l'étendu de ce qui peut être tiré de ce
+système. On arrive donc à utiliser le polymorphisme pour l'accès aux
+membres des objets issus de la même hiérarchie.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-type point x y)
+(define-type point x y extender: define-point-type)
+(define-point-type circle r)
+(define (add x y)
+  (make-point (+ (point-x x) (point-x y))
+              (+ (point-y x) (point-y y))))
+(add (make-point 1 2) (make-circle 3 4 5))
+  \end{schemecode}
+  \schemeresult{\#\textless point \#135 x: 4 y: 6\textgreater}
+  \caption{Exemple de création d'objets hiérarchique et de
+    polymorphisme simple de Gambit-C}
+  \label{OO:gambit-obj}
+\end{figure}
 
 \todo{Approche traditionnelle de la prog OO: Surdéfinition de méthodes de
   classe, héritage simple, polymorphisme, etc...}
@@ -1904,7 +1957,7 @@ vidéo.
 \todo{Parler de CLOS: intégré à Common LISP, fonctions génériques, héritage
   multiple}
 
-\todo{Besoins pour jeux vidéo}
+
 
 \section{Description du langage}
 \todo{Langage orienté objet qui a pour but d'être efficace tout en

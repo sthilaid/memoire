@@ -5,6 +5,7 @@ memoire.dvi : memoire.tex memoire.bib r5rscommands.tex doublespace.sty udem_thes
 	latex memoire
 	bibtex memoire
 	latex memoire
+	@echo ";;;;;;; Last Run (undef) ;;;;;;;;;;"
 	latex memoire
 
 again :

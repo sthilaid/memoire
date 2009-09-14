@@ -2121,7 +2121,10 @@ basé sur les objets de \textit{define-type} est extrêmement simple, il
 ne suffit qu'à remplacer la définition du type par une définition de
 classe de notre système d'objets. Les figures \ref{OO:define-type} et
 \ref{OO:defclass-simple} illustrent la conversion de code nécessaire
-pour passer d'une forme define-type à notre système objet.
+pour passer d'une forme define-type à notre système objet. Aussi, le
+choix d'utiliser des fonctions compatibles à \scheme{define-type} rend
+la base du système d'objets triviale à utiliser par des nouveaux
+utilisateurs déjà familier avec \scheme{define-type}.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -2174,21 +2177,233 @@ Les fonctions utilitaires générées par la création de la classe
   \scheme{\#f} sinon.
 \end{itemize}
 
-\todo{Compatibilité avec les define-type}
+En plus de pouvoir allouer des attributs d'instances, il est possible
+d'allouer des attributs de classes, communs à toutes les instances de
+la classe. Ainsi les informations communes à toutes les instances
+peuvent être factorisées, tout en conservant l'encapsulation de
+l'information dans l'objet. Il est important de noter qu'après la
+déclaration de la classe, toutes les attributs de classes se
+retrouvent dans un état non-initialisés et doivent donc être
+initialisés avant de pouvoir être utilisés. L'héritage d'attributs de
+classes fera en sorte que chaque sous-classe possède sa propre
+instance de l'attribut, permettant ainsi des personnalisations des
+instances de cette classe face à cet attribut. 
 
-\todo{Définitions simples (instance slots et class slots)}
+Puisque ces attributs sont communs, ils ne nécessitent pas d'instance
+pour être accédés ou modifiés, mais ces fonctions d'accès ou de
+modification de valeur d'attributs de classes permettent de prendre
+tout de même une instance pour pouvoir utiliser ces fonctions de
+manière dynamique, ou encore, polymorphique. La figure
+\ref{OO:class-slot} illustre ce processus.
 
-\todo{Héritages des membres}
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-class toto () (class-slot: t))
+(define-class blub (toto))
+(toto-t-set! 10) (blub-t-set! 'allo)
+(toto-t)
+  \end{schemecode}
+  \schemeresult{10}
+  \begin{schemecode}
+(blub-t)
+  \end{schemecode}
+  \schemeresult{allo}
+  \begin{schemecode}
+(toto-t (make-toto))
+  \end{schemecode}
+  \schemeresult{10}
+  \begin{schemecode}
+(toto-t (make-blub))
+  \end{schemecode}
+  \schemeresult{allo}
+  \begin{schemecode}
+(toto-t-set! (make-blub) 'salut) (toto-t (make-blub))
+  \end{schemecode}
+  \schemeresult{salut}
+  \caption{Exemple d'utilisation dynamique d'attributs de classes.}
+  \label{OO:class-slot}
+\end{figure}
 
-\todo{Utilisation de hook sur les slots}
 
-\todo{Constructeurs}
+En plus des créateurs d'instances à la \scheme{define-type}, le
+système objet permet la définition d'un ou de plusieurs constructeurs
+pour la création de nouvelles instances simplifiée. Ces constructeurs
+sont plustôt des fonctions d'initialisation de nouvelles
+instances. Elles \emph{doivent} avoir un premier argument
+correspondant à l'instance à initialiser et peuvent posséder un nombre
+arbitraire de paramètre. Ces constructeurs sont en fait utiliser pour
+créer une nouvelle instance de la fonction générique \scheme{init!},
+et donc, il est également possible d'utiliser la discrimination de
+type faite par les fonctions générique, comme décrit dans la section
+\ref{OO:genfun}. L'accès aux constructeurs se fait par la forme
+spéciale \scheme{new} qui s'occupe de créer la nouvelle instance de
+l'objet et d'appeler la fonction générique \scheme{init!}. La figure
+\ref{OO:constructeurs} illustre l'utilisation de constructeurs
+génériques d'objets.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-class titi () (slot: i))
+(define-class toto ()
+  (slot: t)
+  (constructor: (lambda (self t) (toto-t-set! self t)))
+  (constructor: (lambda (self (t titi)) (toto-t-set! self (titi-i t)))))
+(let ((obj1 (new toto 1))
+      (obj2 (new toto (new titi 2))))
+  (pp (toto-t obj1))
+  (toto-t obj2))
+  \end{schemecode}
+{{\it
+1\\
+2}}
+  \caption{Utilisation générique de constructeurs}
+  \label{OO:constructeurs}
+\end{figure}
+
+Finalement, l'utilisation de crochets (\textit{hooks}) sur les
+fonctions assesseur et de modifications d'états d'attributs est
+possible en ajoutant les des mots clés (\textit{keywords}) à
+l'intérieur des attributs désirés. Il est possible de définir des
+crochets en lecture ou en écriture avec respectivement les mots clés
+\scheme{read-hooks:} et \scheme{write-hooks:}. Ces mots clés doivent
+être le premier élément d'une liste qui contiendra tous les crochets
+désirés. Des crochets d'attributs d'instance doivent prendre en
+paramètre une référence vers l'instance en question et la valeur (ou
+nouvelle valeur) de l'attribut. Les crochets d'attributs de classes ne
+doivent pas prendre d'instances en paramètres.
+
+\todo{Encore un exemple, ou bien est-ce deja suffisant? hehe}
+
 
 
 \subsection{Définition de fonctions génériques}
-\todo{Dispatch simple}
+\label{OO:genfun}
 
-\todo{Dispatch multiple (avec les problèmes reliés à la résolution de la méthode à choisir)}
+Toujours avec une forte inspiration du modèle éprouvé du système
+objets de Common Lisp, le système d'objet développé possède des
+fonctions génériques permettant de faire du \textit{dispatch} multiple
+sur les arguments de celles-ci. Le choix d'adhérer à la philosophie de
+LISP s'explique non seulement par le fait que nous souhaitions que
+notre système d'objets puisse offrir le plus de puissance expressive
+que possible aux programmeurs de jeux vidéo et, plusieurs problèmes se
+retrouvant dans le développement jeux vidéo peuvent être exprimés de
+manières très concise avec des fonctions génériques. 
+
+La déclaration d'une nouvelle fonction générique se fait par le biais
+de la forme spéciale
+
+ \scheme{(define-generic <gen-fun-name>)} 
+
+\noindent
+qui ne prend que le nom de la fonction générique définie, puisque le
+nombre de ses arguments peut être variable. Cette déclaration est
+optionnelle, car si elle n'a pas été faite, elle sera ajoutée lors de
+la déclaration de la première instance automatiquement.
+
+Les déclarations d'instances de fonctions génériques se font par
+l'entremise de la forme spéciale 
+
+\scheme{(define-method (<gen-fun-name> <arg-desc1> ...) <body>)}
+
+\noindent
+qui possède une syntaxe similaire à une définition de fonction, mais
+où la syntaxe des arguments a été étendue. Une description d'argument
+est généralement une liste de la forme \scheme{(<arg-name arg-type>)},
+où le premier élément est le nom de la variable et le deuxième le type
+de celle-ci. Le type est normalement le nom de la classe à laquelle
+l'instance peut appartenir (incluant le polymorphisme).
+
+Une description d'argument peut être uniquement un symbole qui sera le
+nom de la variable liée à la valeur passée en argument. Puisque dans
+un tel cas, aucune information n'est donnée sur l'argument à recevoir,
+aucune discrimination d'instance ne sera fait en utilisant cet
+argument, outre le fait qu'il s'agit d'un argument de plus. Le type de
+l'argument sera implicitement \scheme{*} et donc, une telle
+déclaration est strictement équivalente à \scheme{(<arg-name> *)}. La
+figure \ref{OO:genfun-ex} présente un exemple de déclarations et
+d'utilisations d'instances d'une fonction générique effectuant des
+additions sur des objets s'étalant sur plusieurs types et avec un
+nombre variable de paramètres.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-class length () (slot: l))
+(define-class point () (slot: x) (slot: y))
+(define-class circle (point) (slot: radius))
+(define-generic add)
+(define-method (add x y) (+ x y))
+(define-method (add x y z) (+ x y z))
+(define-method (add (p1 point) (p2 point))
+  (new point (+ (point-x p1) (point-x p2))
+             (+ (point-y p1) (point-y p2))))
+(define-method (add (p point) (l length)) (+ (point-x p) (length-l l)))
+(let ((p (new point 1 2)) (l (new length 5)))
+    (pp (add 10 11))
+    (pp (add 10 11 12))
+    (pp (point-x (add p p)))
+    (pp (add p l)))
+  \end{schemecode}
+  {{\it
+21\\
+33\\
+2\\
+6}}
+  \caption{Exemple de déclarations et d'utilisations d'une fonction
+    générique.}
+  \label{OO:genfun-ex}
+\end{figure}
+
+Le type d'un argument d'une méthode (instance de fonction générique),
+peut être membre d'une syntaxe étendue permettant de faire de la
+discrimination d'instances de fonctions génériques sur la
+\emph{valeur} des paramètres passés. Cette syntaxe est l'une parmi:
+
+\begin{itemize}
+\item \scheme{(match-value: <value>)} : La valeur du paramètre actuel
+  doit être égal (selon \scheme{equal}) à \scheme{<value>} pour
+  pouvoir discriminer ce paramètre d'une fonction générique.
+
+\item \scheme{(match-member-value: <class> <slot-name> <value>)} : Le
+  paramètre actuel doit être une sous-classe de \scheme{<class>} et la
+  valeur de son attribut \scheme{<slot-name>} doit être égale (selon
+  \scheme{equal}) à \scheme{<value>}.
+
+\item \scheme{(or <match1> ...)} : La valeur du paramètre doit
+  correspondre à au moins une des clause \scheme{<match>} pour pouvoir
+  discriminer l'instance de la fonction générique correspondante. Les
+  clauses \scheme{<match>} peuvent être des clauses
+  \scheme{match-value} ou \scheme{match-member-value}.
+\end{itemize}
+
+Un exemple simple de discrimination par valeur de paramètre est donné
+dans la figure \ref{OO:genfun-val-dispatch}.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-class point () (slot: x) (slot: y) (class-slot: zero))
+(point-zero-set! (new point 0 0))
+(define-method (div (p point) (n (match-value: 0)))
+  'Error!)
+(define-method (div (p point) n)
+  (new point (/ (point-x p) n) (/ (point-y p) n)))
+(define-method (div (p (and (match-member: point x 0)
+                            (match-member: point y 0)))
+                    n)
+  (point-zero))
+(pp (point-x (div (new point 1 2) 2)))
+(pp (div (new point 1 2) 0))
+(pp (eq? (div (new point 0 0) 5) (point-zero)))
+  \end{schemecode}
+{{\it
+1/2\\
+Error!\\
+\#t}}
+  \caption{Exemple de discrimination d'instance de fonctions
+    génériques par la valeur des arguments.}
+  \label{OO:genfun-val-dispatch}
+\end{figure}
+
+\todo{instances doivent venir *apres* les declrations de classes...}
 
 \todo{call-next-method}
 

@@ -1925,8 +1925,6 @@ choisir un comportement approprié pour un objet donné, via le
 \textit{dispatch} de méthode qui sélectionne automatiquement la
 méthode la plus appropriée disponible pour un objet donné.
 
-\todo{Parler des define-type de Gambit-C et du SRFI-9}
-
 Le neuvième SRFI~\cite{SRFI_9} suggère un système très rudimentaire
 d'objets qui fut implémenté et étendu par le système Gambit-C. Ce
 système permet la construction de manière générique d'objets typés de
@@ -1940,9 +1938,8 @@ membres des objets issus de la même hiérarchie.
 (define-type point x y)
 (define-type point x y extender: define-point-type)
 (define-point-type circle r)
-(define (add x y)
-  (make-point (+ (point-x x) (point-x y))
-              (+ (point-y x) (point-y y))))
+(define (add p1 p2) (make-point (+ (point-x p1) (point-x p2))
+                                (+ (point-y p1) (point-y p2))))
 (add (make-point 1 2) (make-circle 3 4 5))
   \end{schemecode}
   \schemeresult{\#\textless point \#135 x: 4 y: 6\textgreater}
@@ -1951,28 +1948,232 @@ membres des objets issus de la même hiérarchie.
   \label{OO:gambit-obj}
 \end{figure}
 
-\todo{Approche traditionnelle de la prog OO: Surdéfinition de méthodes de
-  classe, héritage simple, polymorphisme, etc...}
+Ainsi, le système Gambit-C nous permet d'utiliser des concepts de la
+programmation orientée objet, mais d'une manière très limitée. Cette
+approche ne fournie aucune possibilité de créer des méthodes qui sont
+au coeur du réel intérêt du polymorphisme. L'approche plus
+traditionnelle quant à la déclaration de méthodes de classes est celle
+utilisée par le langage de programmation Java~\cite{JavaSpec}. Cette
+approche lie les méthodes à une et une seule classe. Les appels de ces
+méthodes possèdent ainsi un argument caché (souvent nommé
+\textit{self}) qui se trouve à être une instance de cette classe. Le
+\textit{dispatch} dynamique s'effectue \emph{uniquement sur le type de
+  ce premier argument}. C'est l'approche appelée \textit{dispatch}
+simple (\textit{Single Dispatch}). Cette approche est bien adaptée
+pour une interaction centrée sur un seul objet à la fois, mais est
+très limitée pour des interactions \emph{génériques} sur plusieurs
+objets à la fois. L'exemple de la figure \ref{OO:JavaDispatch}
+illustre la manière d'utiliser des méthodes traditionnelles pour
+effectuer du dispatch multiple. On constate que le \textit{dispatch}
+se fait implicitement sur l'objet possédant la méthode, mais que le
+dispatch sur d'autres objets doit être fait manuellement. L'exemple
+illustré demeure encore très simple puisqu'il s'agit de
+\textit{dispatch} double sur deux types, mais pourrait devenir très
+complexe en se compliquant légèrement.
 
-\todo{Parler de CLOS: intégré à Common LISP, fonctions génériques, héritage
-  multiple}
+\begin{figure}[htb!]
+  \begin{verbatim}
+class Toto {
+  public static void main(String[] args){
+    Titi t = new Titi(1); Blub b = new Blub(2);
+    System.out.println("t.add(t) = " + t.add(t));
+    System.out.println("t.add(b) = " + t.add(b));
+  }
+} 
+class Blub {
+  int val;
+  Blub(int x){ val = x; }
+}
+class Titi {
+  int x;
+  Titi (int x){ this.x = x; }
+  int add(Object other){
+    int y = -1;
+    if (other instanceof Titi) { y = ((Titi)other).x; }
+    else if (other instanceof Blub) { y = ((Blub)other).val; }
+    return x+y;
+  }
+}
+  \end{verbatim}
+  {{\it
+t.add(t) = 2\\
+t.add(b) = 3
+  }}
+  \caption{Exemple d'utilisation de méthodes à la manière
+    traditionnelle (en Java)}
+  \label{OO:JavaDispatch}
+\end{figure}
 
 
+Le langage Common Lisp possède un système orienté objet, le Common
+Lisp Object System~\cite{CLOS} (CLOS), qui diverge beaucoup de
+l'approche traditionnelle. Entre autre, ce système offre une grande
+flexibilité de comportement et une riche introspection via un
+protocole de méta-objets~\cite{MOP}. Par contre, l'aspect le plus
+intéressant de ce système est l'utilisation de fonctions génériques,
+éliminant l'utilisation de méthodes traditionnelles. Une fonction
+générique est un ensemble de fonctions possédant le même nom, et qui
+possède des spécifications optionnelles de types pour ses
+arguments. Lorsqu'un appel de fonction est fait sur une fonction
+générique, le système décide alors de l'instance de la fonction
+générique la meilleure à utiliser en fonction des instances
+existantes, des types des arguments actuels et de leur nombre. On
+obtient donc un système très dynamique effectuant du \textit{dispatch}
+multiple. La figure \ref{OO:CLOS_ex} contient la définition d'une
+fonction générique effectuant automatiquement le choix de la bonne
+instance en se basant dynamiquement sur les types des arguments
+passés.
 
-\section{Description du langage}
-\todo{Langage orienté objet qui a pour but d'être efficace tout en
-  apportant l'expressivité offerte par la programmation orientée
-  object à la CLOS.}
+\begin{figure}[htb!]
+  \begin{schemecode}
+(defclass Titi () ((x :accessor x :initarg :x)))
+(defclass Blub () ((val :accessor val :initarg :val)))
+(defgeneric add (p1 p2))
+(defmethod add ((p1 Titi) (p2 Titi)) (+ (x p1) (x p2)))
+(defmethod add ((p1 Titi) (p2 Blub)) (+ (x p1) (val p2)))
+(let ((p1 (make-instance 'Titi :x 1))
+            (p2 (make-instance 'Blub :val 2)))
+        (print (add p1 p1))
+        (add p1 p2))
+  \end{schemecode}
+  {{\it
+2\\
+3}}
+  \caption{Exemple de \textit{dispatch} multiple écrit en CLOS.}
+  \label{OO:CLOS_ex}
+\end{figure}
 
-Résumé des fonctionnalités:
-\begin{itemize}
-\item Accès aux membres rapide
-\item Héritage multiple
-\item Polymorphisme
-\item Fonctions génériques à \og dispatch \fg multiple
-\end{itemize}
+Il est ainsi possible d'écrire de manière concise des fonctions
+génériques effectuant un \textit{dispatch} sur plusieurs arguments à
+la fois. On peut aussi constater que les fonctions génériques ne sont
+pas définies dans l'espace de nom d'une classe en particulier. Ceci
+résulte en un meilleur découplage entre les classes et les opérateurs
+interagissant avec leurs instances.
+
+Il serait donc très intéressant de pouvoir utiliser la programmation
+orientée objet afin de pouvoir écrire des jeux vidéo en Scheme, afin
+de pouvoir facilement abstraire les comportements communs à plusieurs
+types d'objets tout en gérant de manière générique leurs
+états. Plusieurs système objets sont déjà disponible pour des système
+Scheme, dont la plupart sont inspirés de la puissance expressive de
+CLOS. Pour Gambit-C, on retrouve entre autre le système orienté objet
+Meroon~\cite{MEROON}. Ce système semble offrir de bonnes
+performances. Par contre, il implique plusieurs limitations, dont le
+fait que la hiérarchie de classe est limitée à un héritage
+simple. Aussi, il n'est pas possible d'allouer des attributs de
+classes, communs à toutes les instances. OOPS~\cite{OOPS} est un autre
+système objet disponible pour Gambit-C. Celui-ci est beaucoup plus
+générique que Meroon, mais après essaie à démontré des sérieux
+problèmes de performances, ce qui ne peut pas être acceptables dans un
+jeu vidéo.
+
+Ainsi, un système d'objet a été écrit afin de répondre le mieux
+possible aux besoins en efficacité d'un jeu vidéo, tout en apportant
+le plus d'outils et de puissance d'abstraction que possible. Ce
+système et les motivations derrière les choix fait pour le développer
+sont décrits en détails dans le reste de ce chapitre.
+
+
+\section{Description du système}
+
+Le système de programmation orientée objet développé est fortement
+inspiré du Common Lisp Object System et possède la plupart des
+propriétés intéressantes de ce dernier. On retrouve entre autre un
+héritage multiple de classes, du polymorphisme d'instance de classes
+et surtout, des fonctions génériques à \textit{dispatch} multiple
+personnalisé. Malgré ces fonctionnalités de haut niveaux, une
+attention a été apporté aux performances, tout spécialement à l'accès
+aux membres d'instances, puisque ces opérations sont très fréquentes
+dans un jeu vidéo.
+
+Le reste de cette section fourni un API (\textit{Application
+  Programming Interface}) au système, tout en motivant l'ajout des
+fonctionnalités clés de celui-ci et fournissant des exemples
+d'utilisations.
 
 \subsection{Définition de classes}
+La définition de classes, faite via la forme spéciale
+\textit{define-class}, est une version simplifiée de la forme
+\scheme{defclass} de CLOS. La syntaxe de \scheme{define-class} est
+présentée dans la figure \ref{OO:defclass-syntaxe}.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-class <class-name> (<super1> ...) <member1> ...)
+  \end{schemecode}
+  \caption{Syntaxe de la forme spéciale \scheme{define-type}.}
+  \label{OO:defclass-syntaxe}
+\end{figure}
+
+Le méta symbole \scheme{<class-name>} représente le nom que portera la
+classe définie. Suivant ce nom se trouve la liste de super classes,
+données par leurs noms respectifs. Par la suite, les membres de la
+classe sont donnés. Ces membres peuvent être un attribut d'instance
+\scheme{(slot: <slot-name>)}, un attribut de classe
+\scheme{(class-slot: <slot-name>)} ou un constructeur d'instances
+\scheme{(constructor: <fun>)}.
+
+Cette forme spéciale, à la base, est très similaire avec la forme
+spéciale \scheme{define-type} fournie par Gambit-C et fut conçue pour
+que les fonctions utilitaires générées soient compatibles avec celles
+générées par \scheme{define-type}. Ainsi, une conversion d'un système
+basé sur les objets de \textit{define-type} est extrêmement simple, il
+ne suffit qu'à remplacer la définition du type par une définition de
+classe de notre système d'objets. Les figures \ref{OO:define-type} et
+\ref{OO:defclass-simple} illustrent la conversion de code nécessaire
+pour passer d'une forme define-type à notre système objet.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-type point x y extender: define-point-type)
+(define-point-type circle radius)
+(let ((p1 (make-point 1 2)) (p2 (make-circle 3 4 5)))
+  (sqrt (+ (expt (- (point-x p2) (point-x p1)) 2)
+           (expt (- (point-y p2) (point-y p1)) 2))))
+  \end{schemecode}
+  \schemeresult{2.8284271247461903}
+  \caption{Utilisation d'objets créés par la forme spéciale
+    \scheme{define-type} de Gambit-C.}
+  \label{OO:define-type}
+\end{figure}
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-class point () (slot: x) (slot: y))
+(define-class circle (point) (slot: radius))
+(let ((p1 (make-point 1 2)) (p2 (make-circle 3 4 5)))
+  (sqrt (+ (expt (- (point-x p2) (point-x p1)) 2)
+           (expt (- (point-y p2) (point-y p1)) 2))))
+  \end{schemecode}
+  \schemeresult{2.8284271247461903}
+  \caption{Utilisation simple du système objets pour une utilisation
+    similaire à celle pouvant être fait avec la forme \scheme{define-type}.}
+  \label{OO:defclass-simple}
+\end{figure}
+
+Les fonctions utilitaires générées par la création de la classe
+\scheme{point} sont:
+
+\begin{itemize}
+\item \scheme{(make-point <x-val> <y-val>)} : Construit une nouvelle
+  instance de la classe avec \scheme{<x-val>} et \scheme{<y-val>}
+  comme valeurs initiales d'attributs.
+
+\item \scheme{(point-x <instance>)} : Assesseur de l'attribut
+  \scheme{x} de l'instance passée en argument. Une fonction
+  similairement générée pour l'attribut \scheme{y}.
+
+\item \scheme{(point-x-set! <instance> <new-x-val>)} : Fonctions de
+  changement de l'état de l'attribut \scheme{x}. Une fonction
+  similairement générée pour l'attribut \scheme{y}.
+
+\item \scheme{(point? <any-value>)} : Prédicat de type de la classe
+  \scheme{point}. Cette fonction retourne la valeur \scheme{\#t} si la
+  valeur passée est une instance de la classe \scheme{point} ou de
+  n'importe qu'elle sous-classe de celle-ci. La fonction retourne
+  \scheme{\#f} sinon.
+\end{itemize}
+
 \todo{Compatibilité avec les define-type}
 
 \todo{Définitions simples (instance slots et class slots)}

@@ -2369,14 +2369,26 @@ discrimination d'instances de fonctions génériques sur la
   \scheme{equal}) à \scheme{<value>}.
 
 \item \scheme{(or <match1> ...)} : La valeur du paramètre doit
-  correspondre à au moins une des clause \scheme{<match>} pour pouvoir
+  correspondre à \emph{au moins une} des clause \scheme{<match>} pour
+  pouvoir discriminer l'instance de la fonction générique
+  correspondante. Les clauses \scheme{<match>} peuvent être des
+  clauses \scheme{match-value} ou \scheme{match-member-value}.
+
+\item \scheme{(and <match1> ...)} : La valeur du paramètre doit
+  correspondre à \emph{toutes} les clauses \scheme{<match>} pour pouvoir
   discriminer l'instance de la fonction générique correspondante. Les
   clauses \scheme{<match>} peuvent être des clauses
   \scheme{match-value} ou \scheme{match-member-value}.
+
 \end{itemize}
 
 Un exemple simple de discrimination par valeur de paramètre est donné
-dans la figure \ref{OO:genfun-val-dispatch}.
+dans la figure \ref{OO:genfun-val-dispatch}. Il est important de noter
+que la discrimination fonctionne bien lorsque les instances effectuent
+de la discrimination orthogonale, \ie que les possibilités ne se
+recoupent pas entre elles. Une discrimination arbitraire pourrait se
+produire si plusieurs instances peuvent être discriminées de manières
+équivalentes pour un même appel.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -2403,11 +2415,124 @@ Error!\\
   \label{OO:genfun-val-dispatch}
 \end{figure}
 
-\todo{instances doivent venir *apres* les declrations de classes...}
 
-\todo{call-next-method}
+Une note importante reliée à l'utilisation des fonctions génériques
+est que les instances discriminant sur une classe données doivent
+apparaître \emph{après} la déclaration de celle-ci, sinon le
+comportement est indéterminée.
 
-\todo{Type '*'}
+Puisque le système d'objet supporte un héritage multiple, il est
+possible qu'une fonction générique possède uniquement deux instance
+correspondant à des super classes d'une classe donnée, comme c'est le
+cas dans la figure \ref{OO:discrimination}. Les classes
+\scheme{colored} et \scheme{circle} sont toutes deux des super classes
+de \scheme{colored-circle} et il n'existe pas d'instance de la
+fonction générique \scheme{test} discriminant directement sur le type
+\scheme{colored-circle}, ainsi le système doit choisir entre les deux
+instances disponibles puisque ces deux dernières sont utilisable pour
+une instance de la classe \scheme{colored-circle}. L'algorithme
+discrimine alors de la manière suivante: il considère que l'instance
+de la fonction générique qui possède la plus profonde hiérarchie de
+classe est la plus spécifique. Cette profondeur est approximée par la
+somme du nombre de super classe que possède chacun des arguments de
+l'instance de la fonction générique en question. Ainsi, l'instance
+\scheme{(test (x colored))} obtient une valeur de 0, puisque
+\scheme{colored} ne possède aucune super classe et l'instance
+\scheme{(test (x circle))} obtient une valeur de 1, puisque la classe
+\scheme{circle} est une sous-classe de \scheme{point}. C'est donc
+l'instance utilisant un objet de type \scheme{circle} qui est
+utilisée.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-class point () (slot: x) (slot: y))
+(define-class circle (point) (slot: radius))
+(define-class colored () (slot: color))
+(define-class colored-circle (circle colored))
+(define-method (test (x colored)) (pp 'colored))
+(define-method (test (x circle)) (pp 'circle))
+(test (new colored-circle 1 2 3 'red))
+  \end{schemecode}
+  \schemeresult{circle}
+  \caption{Exemple illustrant l'algorithme de sélection d'instances de
+    fonctions génériques.}
+  \label{OO:discrimination}
+\end{figure}
+
+Finalement, la fonction \scheme{call-next-method} dans le contexte du
+corps d'une instance de fonction générique pour appeler la prochaine
+instance la plus approprié pour les arguments actuels passés. Si une
+instance précise doit être appelée, il est également possible
+d'utiliser un \textit{cast} pour effectuer l'appel spécifiquement
+désiré. Le \textit{cast} est passé comme mot clé dans l'appel de la
+fonction générique et sont argument doit être une liste des types de
+l'instance à choisir. Un exemple d'utilisation de ces deux propriétés
+est illustré dans la figure \ref{OO:cast}. La première création
+d'instance de la classe \scheme{blue-circle} n'utilise que 2
+arguments. L'appel au super constructeur avec \textit{cast} est
+direct. Par contre, puisque la super classe \scheme{circle} de la
+classe \scheme{blue-circle} est plus spécifique, elle est considérée
+en premier pour l'appel à \scheme{call-next-method}. Cette classe
+possède bien un constructeur à deux paramètre de type \scheme{*}, et
+donc c'est cette instance qui se trouve à être appelée par cet
+appel. Cette instance utilise elle même un appel à
+\scheme{call-next-method}. Puisque la classe \scheme{circle} ne
+possède qu'une seule super classe et que les arguments du constructeur
+de celle-ci correspondent au constructeur de \scheme{circle}
+actuellement utilisé, c'est alors ce super constructeur qui est
+utilisé. Pour la deuxième construction d'objet, trois arguments sont
+utilisés, mais aucun constructeur de la classe \scheme{blue-circle} ne
+possède 3 arguments. Ainsi, c'est le constructeur le plus spécifique
+qui est utilisé, soit celui de la super classe \scheme{circle}. Il en
+résulte donc que le champs \scheme{color} de ce deuxième objet ne sera
+pas initialisé par cette instantiation.
+
+\begin{figure}[p!]
+  \begin{schemecode}
+(define-class point () (slot: x) (slot: y)
+  (constructor: (lambda (self x y)
+                  (pp 'point-constructor)
+                  (point-x-set! self x) (point-y-set! self y))))
+(define-class circle (point) (slot: radius)
+  (constructor: (lambda (self x y)
+                  (pp 'circle-constructor-1)
+                  (circle-radius-set! self 1.0)
+                  (call-next-method)))
+  (constructor: (lambda (self x y r)
+                  (pp 'circle-constructor-2)
+                  (circle-radius-set! self r)
+                  (init! cast: '(point * *) self x y))))
+(define-class colored () (slot: color)
+  (constructor: (lambda (self color)
+                  (pp 'colored-constructor)
+                  (colored-color-set! self color))))
+(define-class blue-circle (circle colored)
+  (constructor: (lambda (self x y)
+                  (pp 'blue-cicrle-constructor)
+                  (init! cast: '(colored *) self 'blue)
+                  (call-next-method))))
+(new blue-circle 1 2)
+  \end{schemecode}
+  {{\it
+blue-cicrle-constructor\\
+colored-constructor\\
+circle-constructor-1\\
+point-constructor\\
+\textless blue-circle-obj x: 1 y: 2 radius: 3 color: blue \textgreater 
+  }}
+  \begin{schemecode}
+    (new blue-cicrle 1 2 3)
+  \end{schemecode}
+  {{\it
+circle-constructor-2\\
+point-constructor\\
+\textless blue-circle-obj x: 1 y: 2 radius: 3 color: undefined!  \textgreater
+  }}
+  \caption{Exemple d'utilisation de \textit{cast} et de
+    \scheme{call-next-method} avec des fonctions génériques.}
+  \label{OO:cast}
+\end{figure}
+
 
 \subsection{Fonctions et formes spéciales utilitaires}
 
@@ -2415,28 +2540,252 @@ Error!\\
   (instance-object?, instance-of?, find-class?, get-class-id,
   is-subclass?, get-supers)}
 
+Plusieurs fonctions et formes spéciales utilitaires sont disponible
+afin de simplifier les tâches répétitives ou bien de permettre une
+introspection limitée avec le système objet.
 
+D'une part, on retrouve plusieurs fonctions permettant d'obtenir de
+l'information sur les types d'instances ou de classes. Parmi
+celles-ci, les principales sont:
+
+\begin{enumerate}
+\item \scheme{(instance-of? <any-value> <class-name>)} : Prédicat
+  similaire au mot clé de même nom en Java qui permet de déterminer si
+  la valeur passée est une instance de la classe spécifiée. Ce
+  prédicat retourne vraie si et seulement si cette valeur est une
+  instance directe (et non polymorphe) de cette classe. Cette fonction
+  est donc beaucoup plus efficace que sa contrepartie
+  \scheme{is-subclass?}.
+
+\item \scheme{(is-subclass? <any-value> <class-name>)} : Prédicat
+  similaire au précédent, qui retourne vrai si et seulement si la
+  valeur est une instance (incluant les instance polymorphes) de la
+  classe spécifiée.
+
+\item \scheme{(find-class? <class-name>)} : Retourne le descripteur de
+  la classe spécifiée si elle existe, ou \scheme{\#f} sinon.
+
+\item \scheme{(get-class-id <any-value>)} : Retourne le nom de la
+  classe associée à la valeur spécifiée. S'il s'agit d'une instance de
+  classe, alors le nom de la classe sera retourné, sinon le type
+  universel \scheme{*} sera retourné.
+
+\item \scheme{(get-supers <class-name>)} : Retourne la liste de toutes
+  les super classes associées à la classe spécifiée.
+\end{enumerate}
+
+D'autre part, trois formes spéciales sont fournies pour simplifier les
+tâches répétitives pour la gestions d'instances de classes. Celles-ci sont:
+
+\begin{itemize}
+\item \scheme{(new <class-name> <value1> ...)} : Forme spéciale créant
+  une nouvelle instance non-initialisée et appelant la fonction
+  générique d'initialisation \scheme{init!} avec cette nouvelle
+  instance et les valeur spécifiées.
+
+\item \scheme{(update! <instance> <class-name> <slot-name> <fun>)} :
+  Cette forme spéciale permet de pouvoir modifier facilement la valeur
+  d'un attribut en fonction de sa valeur précédente. La fonction
+  passée doit prendre un seul argument en paramètre, qui est la valeur
+  courante de cet attribut. La valeur retournée par la fonction sera
+  alors utilisée comme nouvelle valeur de cet attribut.
+
+\item \scheme{(set-fields <instance> <class-name> ((<slot-name>
+  <value>) ...))} : Cette forme spéciale permet de modifier de manière
+  plus concise la valeur de plusieurs attributs en même temps. Elle
+  est entre autre très utiles dans l'écriture de constructeurs
+  d'instances.
+\end{itemize}
+
+La figure \ref{OO:specform} illustre un exemple d'utilisation de ces
+formes spéciales.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-class point () (slot: x) (slot: y))
+(define-class colored-circle (point) (slot: radius) (slot: color)
+  (constructor:
+   (lambda (self x y r c)
+     (init! cast: '(point * *) self x y)
+     (set-fields! self colored-circle ((radius r) (color c))))))
+(let ((p (new colored-circle 1 2 3 'red)))
+  (update! p point x (flip + 1))
+  (point-x p))
+  \end{schemecode}
+  \schemeresult{2}
+  \caption{Exemple d'utilisation des formes spéciales fournies par le
+    système objet.}
+  \label{OO:specform}
+\end{figure}
+
+Ainsi, l'introspection demeure très limitée en comparaison à celle
+rendu disponible par le protocole de méta objet de CLOS, mais elle
+demeure tout de même fonctionnelle.
 
 
 \section{Implantation}
-\todo{Apercu global: Utilisation de macros scheme pour effectuer la
-  génération de code nécessaire au fonctionnement du système.}
 
-\todo{Séparation entre le travail fait durant l'expantion macro et
-  l'exécution}
+Afin de pouvoir implanter ce système objet comme une extension directe
+du langage Scheme, les macros Scheme ont dû être utilisées. Il en
+résulte donc en l'ajout d'un langage spécifique au domaine de la
+programmation orientée objet.
 
-\todo{Passage d'informations entre le moment de l'expansion et
-  l'exécution (informations sur les classes, les fonctions génériques,
-  etc...)}
+Puisque l'expansion de macro Scheme se fait lors de la compilation
+(lorsque le code est compilé), il devient très avantageux de faire le
+plus de travail possible durant cette expansion afin de pouvoir
+obtenir de bonnes performances lors de l'exécution. Par contre, afin
+de pouvoir effectuer beaucoup de travail lors de cette expansion,
+beaucoup d'informations doivent être disponible de manière statique,
+ce qui brime la philosophie dynamique de la programmation en
+Scheme. Ainsi, nous avons opté pour un compromis entre la division du
+travail effectuer lors de la compilation et de celui effectuer lors de
+l'exécution du système d'objets.
+
+De plus, les informations recueillies lors de l'expansion macro sont
+souvent nécessaire au fonctionnement du système lors de son exécution
+et donc, un passage d'information entre ces deux mondes doit être
+fait. Afin d'y arriver, les structures correspondantes (descripteurs
+de classes, descripteurs de fonction génériques, etc...) sont recréés
+durant l'exécution. Afin de pouvoir faire plus facilement la
+distinction entre ces deux types de structures, les préfixes
+\scheme{mt} (\textit{macro time} et \scheme{rt} (\textit{runtime})
+sont utilisés dans le code source.
+
+Les sections qui suivent expliquent les grandes lignes de
+l'implantation de ce système objet et justifient les choix
+d'implantations qui ont dû être faits.
+
+\todo{Mettre en annexe le code source et le lie ici?}
 
 \subsection{Implantation de define-class}
-\todo{Structures de données (descripteurs de classes, format des
-  instances, etc..)}
 
-\todo{Polymorphisme: chaque index dans les descripteurs de classes
-  sont orthogonaux (implique que les descripteurs grossissent
-  linéairement en fonction du nombre de classes) et passage aux
-  classes enfants des indexes utilisés par les parents.}
+Le fonctionnement de \scheme{define-class} est intimement lié aux
+structures de données utilisées pour conserver l'information sur les
+classes et conserver l'information dans les instances. L'expansion de
+la forme spéciale \scheme{define-class} résulte la définition de
+plusieurs fonctions de création et d'accès au données d'instances,
+mais aussi en la création d'un \emph{descripteur de classe}. Ce
+dernier à pour rôle de conserver non seulement les super classes
+associées à la classe définie, mais aussi elle conserve de
+l'information sur comment accéder aux attributs d'une instance. En
+effet, afin de permettre le polymorphisme d'attributs, une indirection
+est nécessaire. Cette indirection permet aussi d'avoir des instances
+de taille optimales. Malgré le fait qu'une indirection vient ralentir
+légèrement l'accès aux attributs, puisqu'il y a généralement beaucoup
+plus d'instances que de classes, cette approche a été utilisée. Ainsi,
+la taille des descripteur de classe augmente linéairement en fonction
+du nombre d'attributs des classes déjà définies lors de la création de
+cette nouvelle classe. La figure \ref{OO:classdesc} illustre les
+structures utilisées pour effectuer cette indirection sur l'accès aux
+données durant l'exécution.
+
+\begin{figure}[htb!]
+  \center
+  \includegraphics[scale=0.7]{oo-schema}
+  \caption{Illustration des structures de données utilisées pour
+    implanter l'exécution des classes et de leurs instances.}
+  \label{OO:classdesc}
+\end{figure}
+
+Ainsi, l'endroit pour trouver l'index d'instance d'un champ donné
+\emph{se trouve toujours au même endroit} dans tous les descripteurs
+de classes. C'est ce qui permet de pouvoir utiliser les fonction
+d'accès à un membre même avec une instance d'une sous-classe. Les
+descripteurs de classes, tout comme les instances, sont implantés avec
+des vecteurs Scheme afin d'avoir un accès rapide aux champs de ceux-ci.
+
+Lorsque la forme spéciale \scheme{define-class} est expansée,
+plusieurs informations sont extraites et traités afin de pouvoir
+générer correctement les fonctions de création et d'accès aux
+attributs. Entre autre, il faut obtenir la liste complète de tous les
+attributs hérités par les classes parents à la classe décrite. Cette
+information est stockée dans une table de hachage globale à
+l'expansion macro nommée \scheme{mt-class-table} qui conserve
+l'information disponible pour chaque classe déjà créées. Cette
+information est aussi stockée sous forme de \emph{descripteurs de
+  classes}, mais qui seront disponible uniquement pour l'expansion
+macro. Ces derniers gardent trace du nom des classes créées, de leurs
+hiérarchie et des indexes associés à leurs attributs. Ces indexes
+correspondent à l'endroit dans les descripteurs de classes où l'on
+trouvera les indexes d'indirection vers les instances.
+
+Lorsque les nouveaux attributs (attributs non-hérités) sont inclus
+dans descripteurs de classe de l'exécution, un compteur global
+(expansion macro) est utilisé pour obtenir l'index du nouveau champs
+dans le vecteur correspondant à ce descripteur. Un deuxième index,
+local celui-ci, sera utilisé pour trouvé l'index de la position de
+l'attribut dans l'instance. Ainsi, l'index global pointera vers
+l'index d'instance dans le descripteur de classe. La création du
+descripteur de classe pour l'expansion macro est donnée dans la figure
+\ref{OO:classdesc-code}. Ce même objet sera recréé et utilisé comme
+descripteur de classe durant l'exécution.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(let* ((instance-index 1) ; 0 -> class-desc
+       (desc (make-class-desc
+              name supers
+              (if (pair? field-indices)
+                  (- (slot-index
+                      (cdar (take-right field-indices 1)))
+                     1)
+                  0))))
+  (for-each
+   (lambda (fi)
+     (let ((index (slot-index fi)))
+       (cond ((is-instance-slot? fi)
+              (vector-set! desc index (instance-index++)))
+             ((is-class-slot? fi)
+              (vector-set! desc index 'unbound-class-slot))
+             (else
+              (error "Unknown slot type")))))
+   (map cdr field-indices))
+  desc)
+  \end{schemecode}
+  \caption{Création du descripteur de classe de l'expansion macro.}
+  \label{OO:classdesc-code}
+\end{figure}
+
+Une fois cette information en main, toutes les fonctions d'accès et de
+modification d'attributs et les fonctions de constructions d'instances
+peuvent être générées sans problèmes. La plupart contiendront des
+indirections pour l'accès aux champs, sauf pour les attributs de
+classes qui eux, se retrouvent directement dans les descripteurs de
+classes. La figure \ref{OO:obj-struct} donne un exemple concret de
+illustrant les structures utilisées. On constate bien que le premier
+élément du vecteur correspondant à l'instance créée est aussi un
+vecteur qui correspond au descripteur de la classe \scheme{toto}. Le
+premier élément de ce descripteur est le nom de la classe, le deuxième
+est la liste des super classes par la suite viennent les indexes des
+attributs dans l'instance. Par contre, puisque la classe \scheme{blub}
+a été préalablement définie, le premier conteneur d'indirection a été
+reservé pour le champs \scheme{b} de la classe \scheme{blub}. Ainsi,
+l'indirection vers le champs \scheme{titi} se trouve dans le quatrième
+éléments ($index = 3$) du descripteur. L'affichage de la fonction
+d'accès au champs \scheme{titi} confirme bien ce fait et montre que la
+valeur obtenue, en l'occurance 1, est utilisée comme index pour
+obtenir la valeur du champs dans l'instance.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-class blub () (slot: b))
+(define-class toto () (slot: titi) (class-slot: tutu))
+(toto-tutu-set! 'allo!)
+(new toto 12)
+  \end{schemecode}
+  \schemeresult{\#(\#(toto () unknown-slot 1 allo!) 12)}
+  \begin{schemecode}
+(pp toto-titi)
+  \end{schemecode}
+{{\it
+(lambda (\#:obj445)
+  (vector-ref \#:obj445\\
+              (vector-ref (instance-class-descriptor \#:obj445) 3)))
+}}
+  \caption{Exemple concret de structure d'instance, descripteur de
+    classe et de fonction d'accès à un attribut par indirection.}
+  \label{OO:obj-struct}
+\end{figure}
 
 \todo{Constructeurs et describe comme fonctions génériques}
 

@@ -1,21 +1,14 @@
 
 memoire: memoire.pdf
 
-memoire.dvi : memoire.tex memoire.bib r5rscommands.tex doublespace.sty udem_these_fr.sty
-	latex memoire
+LATEX=pdflatex
+
+memoire.pdf : memoire.tex memoire.bib r5rscommands.tex doublespace.sty udem_these_fr.sty
+	$(LATEX) memoire
 	bibtex memoire
-	latex memoire
+	$(LATEX) memoire
 	@echo ";;;;;;; Last Run (undef) ;;;;;;;;;;"
-	latex memoire
-
-again :
-	latex memoire
-
-memoire.ps : memoire.dvi
-	dvips -t letter memoire.dvi -o memoire.ps
-
-memoire.pdf : memoire.ps
-	ps2pdf memoire.ps
+	$(LATEX) memoire
 
 test : memoire.pdf
 	xpdf memoire.pdf

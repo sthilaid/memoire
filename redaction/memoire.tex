@@ -175,12 +175,12 @@ haut niveau suivantes:
 Ces particularités du langage Scheme sont discutées plus en détail
 dans le chapitre \ref{Chap:Scheme}.
 
-Le système Gambit-C, l'une des implantations de Scheme les plus
-performantes~\cite{GAMBIT_BENCHMARKS} sera utilisée pour effectuer les
-expériences pratiques. Ce système comporte de nombreuses extensions
-pouvant être très utiles au développement de jeux vidéo. On y retrouve
-entre autres des tables de hachages ou des \textit{threads} (processus
-légers).
+Le système Gambit-C~\cite{Gambit4}, l'une des implantations de Scheme
+les plus performantes~\cite{GAMBIT_BENCHMARKS} sera utilisée pour
+effectuer les expériences pratiques. Ce système comporte de nombreuses
+extensions pouvant être très utiles au développement de jeux vidéo. On
+y retrouve entre autres des tables de hachages ou des \textit{threads}
+(processus légers).
 
 Il semble donc qu'une utilisation judicieuse de ce système pourrait
 faire bénéficier des projets aussi complexes que le sont les
@@ -837,9 +837,9 @@ de développer des application très efficaces.
 Tout en bénéficiant du riche héritage des langages LISP, Scheme
 demeure un langage épuré et très simple à la base. Cette section vise
 à présenter les bases du langages Scheme et de son implantation par le
-système Gambit-C afin de familiariser le lecteur avec non seulement la
-syntaxe du langage, mais aussi les fonctionnalités de base et les
-extensions au langages fournies par Gambit-C.
+système Gambit-C~\cite{Gambit4} afin de familiariser le lecteur avec
+non seulement la syntaxe du langage, mais aussi les fonctionnalités de
+base et les extensions au langages fournies par Gambit-C.
 
 \subsection{Syntaxe}
 La syntaxe de Scheme est une des caractéristique qui le distingue le
@@ -1926,12 +1926,12 @@ choisir un comportement approprié pour un objet donné, via le
 méthode la plus appropriée disponible pour un objet donné.
 
 Le neuvième SRFI~\cite{SRFI_9} suggère un système très rudimentaire
-d'objets qui fut implémenté et étendu par le système Gambit-C. Ce
-système permet la construction de manière générique d'objets typés de
-manière hiérarchique simple. L'exemple de la figure
-\ref{OO:gambit-obj} illustre l'étendu de ce qui peut être tiré de ce
-système. On arrive donc à utiliser le polymorphisme pour l'accès aux
-membres des objets issus de la même hiérarchie.
+d'objets qui fut implémenté et étendu par le système
+Gambit-C~\cite{Gambit4}. Ce système permet la construction de manière
+générique d'objets typés de manière hiérarchique simple. L'exemple de
+la figure \ref{OO:gambit-obj} illustre l'étendu de ce qui peut être
+tiré de ce système. On arrive donc à utiliser le polymorphisme pour
+l'accès aux membres des objets issus de la même hiérarchie.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -2936,40 +2936,209 @@ afin de respecter la philosophie de base de ce système.
   nous permettre de faire ce que l'on veut et surtout de la manière
   désirée.}
 
-\todo{Implantation de son propre système: contrôle fin du comportement
-  de threads}
+Le langage Scheme tel que décrit par le standard~\cite{R5RS} ne fourni
+pas de système de \textit{threads}. Par contre, le document
+\textit{Scheme Request For Implementation 18}~\cite{SRFI18} décrit un
+\textit{API} de système de \textit{thread} concurrents. Le système
+Gambit-C~\cite{Gambit4} supporte cet \textit{API} sous forme de
+\textit{threads} verts. Ainsi, en plus d'avoir à utiliser les
+mécanismes de synchronisations de \textit{thread} traditionnels afin
+d'éviter les erreurs dues à la concurrence, aucun bénéfice en terme
+d'accélération matérielle ne sera obtenu.
 
-\todo{Parler de Termite: Calcul distribué sur plusieurs
-  noeuds. Synchronisation par passage de message. Communication via
-  TCP/IP.}
+L'utilisation de \textit{threads} dans un jeu vidéo peut être très
+pertinente et permettre de pouvoir exprimer de manière concise
+beaucoup de concepts comme par exemple l'implantation de parties
+multi-joueurs où ces derniers jouent à tours de rôles. Par contre, le
+coût d'utiliser des synchronisation explicite est très élevé en temps
+de développement et en utilisation du processeur lors de l'exécution. 
 
-\todo{Motivation de l'utilisation de coroutines (contrôle exact sur le
-  flot de contrôle == système toujours dans un état consistant).}
+Puisque les fonctionnalités offertes ne répondaient pas bien aux
+besoins de la cause, un nouveau système a été développé. Cette
+approche se marie bien avec la philosophie de Scheme qui incite les
+programmeurs à utiliser l'expressivité de Scheme pour développer leurs
+propres outils lorsque ceux disponible ne sont pas
+satisfaisant. Ainsi, les programmes Scheme ne se plient pas aux
+contraintes de ces systèmes pour arriver à être exprimer de la manière
+désirée. Ce chapitre vise donc à présenter un système de
+\textit{threads} \emph{coopératifs} qui vient pallier aux lacunes que
+présente le système offert par Gambit-C en ce qui à attrait au
+développement de jeux vidéo.
+
+Un net avantage lorsque le système est directement implanté par
+l'utilisateur est qu'il répond sur mesures aux demandes de ce dernier
+et donc l'utilisateur peut utiliser une syntaxe simple d'utilisation
+tout en conservant un contrôle fin sur le comportement du système.
+
+Ce chapitre a pour but de décrire le langage de programmation de
+\textit{threads} coopératifs créé et d'en expliquer le
+fonctionnement. 
 
 \section{Description du langage}
-\todo{Idée sur nos coroutines}
 
-\todo{Systèmes récursifs}
+Un système de \textit{threads} coopératifs implique donc que le
+changement de contexte d'exécution associé aux changement de
+\textit{threads} doit être fait de manière explicite par les
+utilisateurs. Ces \textit{threads} coopératifs sont aussi connus sous
+le nom de coroutines. Ainsi, ces changements de contextes peuvent être
+faits aux moments opportuns, assurant ainsi l'intégrité des données.
 
-\todo{Timers: abstraction du temps écoulé permettant l'accélération ou
-  le ralentissement de l'exécution d'une simulation.}
+Une synchronisation entre les différents \textit{threads} sera encore
+nécessaire afin qu'ils puissent bien être orchestrer, mais les
+synchronisation similaire aux section critiques ne seront plus
+nécessaires. Afin de permettre aux coroutines de pouvoir communiquer
+entre elles, une synchronisation par passage de message avec
+\textit{pattern matching} à la Termite~\cite{Termite_paper} a été
+adoptée. Ce mécanisme permet de pouvoir synchroniser de manière
+élégante
+
+De plus, le système a été conçu afin de permettre d'être utilisé de
+manière récursive. Il est donc possible d'avoir une coroutine qui sera
+elle-même un système de coroutine, et ainsi de suite. Cette
+fonctionnalité a été implantée de manière à ce que le système soit le
+plus générique possible. De plus, l'idée de système récursifs est
+aussi très près du langage Scheme dans lequel la récursion de
+fonctions est très courante et commune grâce à l'implantation de
+l'optimisation d'appels terminaux.
+
+Aussi, la notion de temps a été abstraite dans le système avec
+l'introduction de compteurs de temps (\textit{timers}). Il est donc
+possible de choisir non seulement une granularité temporelle en
+spécifiant la fréquence de se compteur de temps, mais il est aussi
+possible de spécifier un facteur d'accélération, permettant de pouvoir
+accélérer la simulation en cours.
+
+Les sections suivantes décrivent un \textit{API} permettant
+l'utilisation du système de coroutines créé.
+
 
 \subsection{Création de coroutines}
-\todo{Création d'une coroutine détachée du système: (new corout <id>
-  <thunk>)}
+Les coroutines sont des objets en eux même et peuvent être créés de
+manière externe au système de coroutines pour, par la suite, être
+intégrées à celui-ci. L'avantage de cette approche, utilisée aussi par
+le système de \textit{threads} de Gambit-C, réside dans le fait que
+les objets correspondant aux \textit{threads} peuvent être préparés à
+l'avance et conservés jusqu'au moment opportun de leurs intégration
+dans le système. Une nouvelle instance de coroutine s'effectue avec
 
-\todo{intégrée au système via le démarrage (boot) ou via une autre
-  coroutine (spawn-brother)}
+\begin{schemecode}
+(new corout <corout-id> <thunk>)
+\end{schemecode}
+
+\noindent
+où \scheme{<corout-id>} est un symbol permettant d'identifier la
+coroutine et le dernier argument est une fonction prenant aucun
+argument (appelée aussi \textit{thunk}), qui contient le corps de
+l'exécution de cette coroutine.
+
+L'objet créé pourra être par la suite intégré à un nouveau système par
+les fonctions d'initialisations \scheme{boot} et \scheme{simple-boot}
+ou encore intégrés à une coroutine d'une simulation existante avec la
+fonction \scheme{spawn-brother} décritent plus bas.
+
+\subsection{Démarrage du système}
+
+Le système de coroutines peut être démarrer en utilisant la fonction 
+
+\begin{schemecode}
+(boot <timer> <return-val-handler> <corout1> ...)
+\end{schemecode}
+
+\noindent
+dont le premier argument doit être un objet correspondant à un
+compteur de temps pour le système, le deuxième paramètre est une
+fonction permettant la gestion des valeurs de retours des coroutines
+et par la suite viennent les coroutines qui seront présentent au
+démarrage du système créé. L'ordre de ces coroutines est significatif
+: il indique dans quel ordre seront exécutées les coroutines.
+
+La création de \textit{timers} se fait par un appel à la fonction 
+
+\begin{schemecode}
+(start-timer! <period> [time-multiplier: <time-mult-value>]))
+\end{schemecode}
+
+\noindent
+qui s'occupe de créer un objet faisant abstraction du temps avec une
+granularité associé à la période (en secondes) spécifiée. La fonction
+\scheme{(stop-timer! <timer>)} doit être utilisée afin d'arrêter le
+compteur de temps, lorsque son utilisation n'est plus nécessaire.
+
+La fonction s'occupant de gérer les valeurs de retour des coroutines
+se doit de recevoir deux arguments, le premier étant le résultat
+accumulé des précédentes terminaisons de coroutines et le deuxième
+étant la valeur de retour de la dernière coroutine à avoir terminer
+son exécution. La valeur de retour de cette fonction sera alors
+utilisée comme la prochaine valeur accumulée lors de la terminaison
+subséquente d'une coroutine, comme c'est le cas avec la fonction
+\scheme{fold} (voir la figure \ref{Scheme:fold}.
+
+La figure \ref{Corout:boot} présente un exemple de démarrage d'un
+système de coroutine où le temps sera augmenté toutes les secondes et
+où le résultat finale de la simulation sera la somme des valeurs
+retournées par chacune des coroutines. Il est important de noter qu'il
+ne faut pas oublier d'arrêter le \textit{timer} lorsqu'il n'est plus
+nécessaire.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(let* ((c1 (new corout 'c1 (lambda () 1)))
+       (c2 (new corout 'c2 (lambda () 2)))
+       (c3 (new corout 'c3 (lambda () 3)))
+       (timer (start-timer! 1.0))
+       (result (boot timer + c1 c2 c3)))
+    (stop-timer! timer)
+    result)
+  \end{schemecode}
+  \schemeresult{6}
+  \caption{Exemple de démarrage d'un système de coroutines}
+  \label{Corout:boot}
+\end{figure}
+
+Le processus de démarrage peut être simplifié avec l'utilisation de la
+fonction \scheme{(simple-boot <corout1> ...)} qui utilise un
+\textit{timer} par défaut avec une période de $0.001$ secondes et
+retourne la valeur de la dernière coroutine à être exécutée dans le
+système comme valeur de retour du système. La figure
+\ref{Corout:simple-boot} illustre le démarrage d'un système de
+coroutines en utilisant \scheme{simple-boot}. 
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(let* ((c1 (new corout 'c1 (lambda () 1)))
+         (c2 (new corout 'c2 (lambda () 2)))
+         (c3 (new corout 'c3 (lambda () 3))))
+    (simple-boot c1 c2 c3))
+  \end{schemecode}
+  \schemeresult{3}
+  \caption{Exemple de démarrage simple de système de coroutines}
+  \label{Corout:simple-boot}
+\end{figure}
+
+\todo{Systèmes cascadés?}
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(let* ((c1 (new corout 'c1 (lambda () 1)))
+       (c2 (new corout 'c2 (lambda () 2)))
+       (c3 (new corout 'c3 (lambda () 3)))
+       (c4 (new corout 'c4 (lambda () 1)))
+       (c5 (new corout 'c5 (lambda () 2)))
+       (c6 (new corout 'c6 (lambda () 3)))
+       (timer (start-timer! 1.0))
+       (s1 (new corout 's1 (lambda () (boot timer + c1 c2 c3))))
+       (s2 (new corout 's2 (lambda () (boot timer - c4 c5 c6)))))
+  (boot timer * s1 s2))
+  \end{schemecode}
+  \schemeresult{-24}
+  \caption{Exemple de démarrage de système de coroutines en cascade}
+  \label{Corout:cascade}
+\end{figure}
 
 \subsection{Manipulation du flot de contrôle}
 \subsubsection{yield} 
 \todo{Transfert à la prochaine coroutine}
 
-\subsubsection{super-yield} 
-\todo{Transfert au prochain système de coroutine (frère du système courant).}
-
-\subsubsection{terminate-corout, kill-all!, super-kill-all!}
-\todo{Terminaison de coroutines. }
 
 \subsubsection{sleep-for}
 \todo{Sommeil pour un temps prédéterminé.}
@@ -2982,6 +3151,13 @@ afin de respecter la philosophie de base de ce système.
 
 \subsubsection{Composition of coroutines}
 \todo{Compositions ou séquençage de coroutine}
+
+\subsubsection{terminate-corout, kill-all!}
+\todo{Terminaison de coroutines. }
+
+\subsubsection{super-yield, super-kill-all!} 
+\todo{Transfert au prochain système de coroutine (frère du système courant).}
+
 
 \subsection{Système de communication inter coroutines}
 \subsubsection{!} 
@@ -3002,16 +3178,6 @@ afin de respecter la philosophie de base de ce système.
 \todo{Système permettant de regrouper des coroutines et de leurs
   diffuser des messages. }
 
-\subsection{Démarrage du système}
-\subsubsection{simple-boot}
-\todo{Démarrage rapide du système.}
-
-\subsubsection{boot}
-\todo{Démarrage permettant de spécifier un timer spécifique à
-  l'utilisation et une fonction personnalisée effectuant la gestion
-  des valeurs de retour des coroutines.}
-
-\todo{Systèmes cascadés?}
 
 
 \section{Implantation}

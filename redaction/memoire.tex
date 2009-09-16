@@ -2536,10 +2536,6 @@ point-constructor\\
 
 \subsection{Fonctions et formes spéciales utilitaires}
 
-\todo{Vérifications manuelles de typages et introspections
-  (instance-object?, instance-of?, find-class?, get-class-id,
-  is-subclass?, get-supers)}
-
 Plusieurs fonctions et formes spéciales utilitaires sont disponible
 afin de simplifier les tâches répétitives ou bien de permettre une
 introspection limitée avec le système objet.
@@ -2851,8 +2847,6 @@ manière polymorphe à ces arguments.
 \end{figure}
 
 
-\todo{Implantation du polymorphisme des fonctions génériques}
-
 L'algorithme qui détermine qu'elle instance est la plus spécifique
 pour un ensemble d'argument donné est simple: On cherche a trouver la
 première instance dont chacun des types est considéré équivalent au
@@ -2882,9 +2876,6 @@ pour réalisé ce \textit{dispatch} polymorphique.
     d'une fonction générique}
   \label{OO:polymorphism}
 \end{figure}
-
-\todo{Implantation du call-next-method faite avec l'utilisation de
-  variables à portée dynamique}
 
 Finalement, la fonction \scheme{call-next-method} fonctionne grâce au
 mécanisme de variables dynamique fourni par Gambit-C. Une variable

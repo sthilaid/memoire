@@ -2747,16 +2747,16 @@ descripteur de classe durant l'exécution.
 \end{figure}
 
 Une fois cette information en main, toutes les fonctions d'accès et de
-modification d'attributs et les fonctions de constructions d'instances
-peuvent être générées sans problèmes. La plupart contiendront des
-indirections pour l'accès aux champs, sauf pour les attributs de
-classes qui eux, se retrouvent directement dans les descripteurs de
-classes. La figure \ref{OO:obj-struct} donne un exemple concret de
-illustrant les structures utilisées. On constate bien que le premier
-élément du vecteur correspondant à l'instance créée est aussi un
-vecteur qui correspond au descripteur de la classe \scheme{toto}. Le
-premier élément de ce descripteur est le nom de la classe, le deuxième
-est la liste des super classes par la suite viennent les indexes des
+modification d'attributs peuvent être générées sans problèmes. La
+plupart contiendront des indirections pour l'accès aux champs, sauf
+pour les attributs de classes qui eux, se retrouvent directement dans
+les descripteurs de classes. La figure \ref{OO:obj-struct} donne un
+exemple concret de illustrant les structures utilisées lors de
+l'exécution du système. On constate que le premier élément du vecteur
+correspondant à l'instance créée est aussi un vecteur, qui lui,
+correspond au descripteur de la classe \scheme{toto}. Le premier
+élément de ce descripteur est le nom de la classe, le deuxième est la
+liste des super classes par la suite viennent les indexes des
 attributs dans l'instance. Par contre, puisque la classe \scheme{blub}
 a été préalablement définie, le premier conteneur d'indirection a été
 reservé pour le champs \scheme{b} de la classe \scheme{blub}. Ainsi,
@@ -2777,38 +2777,163 @@ obtenir la valeur du champs dans l'instance.
   \begin{schemecode}
 (pp toto-titi)
   \end{schemecode}
-{{\it
-(lambda (\#:obj445)
-  (vector-ref \#:obj445\\
-              (vector-ref (instance-class-descriptor \#:obj445) 3)))
-}}
+  \begin{verbatim}
+(lambda (#:obj445)
+  (vector-ref #:obj445
+              (vector-ref (instance-class-descriptor #:obj445) 
+                          3)))
+  \end{verbatim}
   \caption{Exemple concret de structure d'instance, descripteur de
     classe et de fonction d'accès à un attribut par indirection.}
   \label{OO:obj-struct}
 \end{figure}
 
-\todo{Constructeurs et describe comme fonctions génériques}
+Deux constructeurs d'instances sont finalement générés avec les
+accesseurs. Le premier constructeur (\scheme{make-<class-name>})
+construit et initialise \emph{tous} les champs d'une instance de la
+même manière que procède le constructeur d'instance pour la forme
+\scheme{define-type} de Gambit-C. Le deuxième
+(\scheme{make-<class-name>-instance}) ne prend aucun argument et
+produit une instance non-initialisée qui pourra être passée à
+\scheme{init!}, la fonction générique d'initialisation d'objets. Par
+défaut, une instance de cette fonction générique est créée, et fait
+exactement le même travail que le premier constructeur. Aussi, une
+fonction très rudimentaire d'introspection d'instance de classe est
+aussi implantée sous la forme d'instances de la fonction générique
+\scheme{describe}.
+
 
 \subsection{Implantation de define-generic}
-\todo{Registre des méthode: Conservations d'informations sur les
-  fonctions génériques et leurs instances }
+
+De manière similaire à la définition de nouvelles classes, des
+informations sur les fonctions génériques définies et sur leurs
+instances sont conservées dans une table de hachage globale durant
+l'expansion macro et se nomme \scheme{mt-meth-table}. Ces informations
+seront par la suite transférées vers l'exécution du programme sous la
+forme de structures propres à chaque fonction génériques qui se
+nomment \scheme{<genfun-name>-meth-table}. Ces structures contiennent
+le nom de la fonction génériques, une table de hachage permettant de
+vérifier rapidement l'existence d'une instance en utilisant le types
+des arguments de cette fonction générique comme clé de la table et une
+liste \emph{triée} des instances permettant d'accélérer le
+polymorphisme de fonction génériques.
+
+L'expansion macro de la définition d'une nouvelle fonction générique
+résulte donc en la création de cette structure et en la création d'une
+fonction, portant le nom de la fonction générique, qui a pour but de
+faire le choix de la bonne instance, en fonction des paramètres qui
+lui sont passés. La fonction de \textit{dispatch} générée pour la
+fonction générique \scheme{init!} est illustrée dans la figure
+\ref{OO:init!-gf}. Le code présenté a été légèrement modifié afin
+d'illustrer uniquement l'essence du \textit{dispatch} effectué. On
+constate que dans un premier temps, on cherche dans la table de
+hachage de cette fonction générique si une instance associée aux types
+des arguments passés (ou du \textit{cast} effectué) existe, et si ce
+ne pas le cas, on cherche explicitement une instance admissible de
+manière polymorphe à ces arguments.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(lambda (\#!key cast . args)
+  (let ((types (cond ((pair? cast) cast) 
+                     (else (map get-class-id args)))))
+    (cond
+      ((or (generic-function-get-instance init!-meth-table types))
+           (find-polymorphic-instance? init!-meth-table 
+                                       args types))
+           => (lambda (method) 
+                (apply (method-body method) args)))
+      (else (error ...)))))
+  \end{schemecode}
+  \caption{Code expansé effectuant le \textit{dispatch} dynamique pour
+    la fonction générique \scheme{init!}}
+  \label{OO:init!-gf}
+\end{figure}
+
 
 \todo{Implantation du polymorphisme des fonctions génériques}
+
+L'algorithme qui détermine qu'elle instance est la plus spécifique
+pour un ensemble d'argument donné est simple: On cherche a trouver la
+première instance dont chacun des types est considéré équivalent au
+type des arguments actuels \emph{dans une liste triée} des instances
+en fonction spécificité. Le critère de spécificité est déterminé par
+la profondeur dans la hiérarchie du type des arguments de l'instance,
+\ie par la somme du nombre de classes parents pour chacun des types
+des arguments passés. En ce qui concerne les types spéciaux comme
+\scheme{match-value}, ces types sont considérés comme étant très
+spécifiques et donc prioritaires à un simple correspondance du type
+d'un objet. La figure \ref{OO:polymorphism} illustre le code utilisé
+pour réalisé ce \textit{dispatch} polymorphique.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (find-polymorphic-instance? genfun actual-params actual-types)
+  (let ((args-nb (length actual-params))
+        (sorted-instances (generic-function-sorted-instances genfun)))
+    (exists (lambda (method)
+              (equivalent-types? (method-types method)
+                                 actual-params
+                                 actual-types))
+            (filter (lambda (i) (= (length (method-types i)) args-nb))
+                    sorted-instances))))
+  \end{schemecode}
+  \caption{Implantation de la recherche d'instances polymorphiques
+    d'une fonction générique}
+  \label{OO:polymorphism}
+\end{figure}
 
 \todo{Implantation du call-next-method faite avec l'utilisation de
   variables à portée dynamique}
 
-\todo{Coût de l'utilisation des fonctions génériques}
+Finalement, la fonction \scheme{call-next-method} fonctionne grâce au
+mécanisme de variables dynamique fourni par Gambit-C. Une variable
+dynamique interne (\scheme{\_\_\_call-next-method}) est utilisé pour
+contenir un appel à la fonction générique appellée avec un
+\textit{cast} spécial des arguments ou chaque argument est une liste
+des super classes des types de l'instance actuellement
+utilisée. Ainsi, lorsque cette appel est fait, l'on cherchera
+l'instance polymorphique la plus spécifique pour ces types. Ainsi,
+comme désiré, l'instance de cette fonction générique la plus
+spécifique sera appelée
 
 \subsection{Implantation de define-method}
-\todo{Stockages des fermetures durant l'expansion macro et l'exécution}
+L'expansion de la macro \scheme{define-method} est très simple, elle 
+consiste en la création d'une structure de donnée qui contient le
+corps de l'instance définie, ainsi que les types associés aux
+arguments attendus. Cette structure existera durant l'expansion et
+sera recréée lors de l'exécution du programme afin de pouvoir être
+appelée par la fonction de \textit{dispatch}.
 
 
 
 
 \section{Conclusion}
-\todo{Ouverture sur le fait qu'un meta-protocole serait très intéressant à
-  ajouter, mais à quel prix?}
+Ainsi un système objet complet a été développé dans le but d'étendre
+le langage Scheme et d'y inclure les paradigme de la programmation
+orientée objet. Ce système objet permet la déclaration de classes avec
+héritage multiple et polymorphisme et de fonctions génériques
+effectuant du \textit{dispatch} multiple. Ces choix de
+caractéristiques ont été faite dans le but de donner le plus de
+liberté aux programmeurs de jeux vidéo, tout en gardant en tête de
+fournir de bonnes performances, tant en temps sur processeur qu'en
+utilisation de la mémoire.
+
+Les structures de données utilisées pour l'implantation d'objets sont
+de tailles optimales, et ne requièrent qu'une indirection
+supplémentaire afin de pouvoir accéder aux champs de ceux-ci. 
+
+Les fonctions génériques utilisent des mécanisme de tri pré-calculé
+afin d'accélérer le \textit{dispatch} d'instances de fonctions
+génériques de manière polymorphe. 
+
+Il serait maintenant très intéressant de modifier le système afin
+qu'il supporte un protocole de méta objets. Un tel protocole donnerait
+accès à une introspection très développée et permettrait aux
+utilisateurs de modifier facilement le comportement du système selon
+leurs besoins. Par contre, une attention particulière devrait être
+portée aux coûts en performance que ce protocole pourrait impliquer
+afin de respecter la philosophie de base de ce système.
 
 
 

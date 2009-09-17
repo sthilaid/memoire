@@ -1895,7 +1895,7 @@ vidéo.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Programmation orientée objet}
-
+\label{Chapter:OO}
 
 
 Scheme est un langage offrant beaucoup de ressources à l'état brut aux
@@ -2959,13 +2959,24 @@ multi-joueurs où ces derniers jouent à tours de rôles. Par contre, le
 coût d'utiliser des synchronisation explicite est très élevé en temps
 de développement et en utilisation du processeur lors de l'exécution. 
 
+Par contre, un système de coroutines (appelé aussi \textit{threads}
+coopératifs) permettrait d'éviter d'avoir à spécifier explicitement
+ces synchronisations entre entités. En effet, si le flot de contrôle
+est changé durant des moments opportuns, aucune synchronisation
+supplémentaire n'est requise pour assurer des sections critiques. En
+fait, le problème ne se pose même plus, mais disparaît
+complètement. Ceci rend donc très attrayant de tels systèmes pour le
+développement de jeux vidéo. Ils permettraient de pouvoir exprimer de
+manière simple des changements de contextes dans le jeu, ou même, de
+modulariser le comportement de chacune des entités du jeu.
 
-
-Ce chapitre vise donc à présenter un système de \textit{threads}
-\emph{coopératifs} qui vient pallier aux lacunes que présente le
-système offert par Gambit-C en ce qui à attrait au développement de
-jeux vidéo.
-
+Malheureusement, ni Scheme, ni Gambit-C n'offrent de tels système de
+coroutines. Par contre, l'expressivité du langage Scheme, notamment
+grâce à la réification de continuations rend la tâche tout à fait
+accessible et réalisable. Ce chapitre vise donc à présenter un système
+de \textit{threads} \emph{coopératifs} développé dans le but de aux
+lacunes que présente le système de \textit{threads} offert par
+Gambit-C en ce qui à attrait au développement de jeux vidéo.
 
 
 \section{Description du langage}
@@ -3437,19 +3448,112 @@ l'utilisation de la forme spéciale \scheme{call/cc} afin de permettre
 la conservation de l'état courant d'une coroutine.
 
 Un net avantage lorsque le système est directement implanté par
-l'utilisateur est qu'il répond sur mesures aux demandes de ce dernier
-et donc l'utilisateur peut utiliser une syntaxe simple d'utilisation
-tout en conservant un contrôle fin sur le comportement du système.
+l'utilisateur est qu'il répond sur mesure aux demandes de ce dernier
+et donc il peut s'exprimer dans une syntaxe simple, tout en conservant
+un contrôle fin sur le comportement du système.
 
+Cette section explique les mécaniques internes du système de
+coroutines développé, en expliquant non seulement les structures de
+données utilisées, mais aussi les algorithmes utilisés.
 
 \subsection{Implantation des coroutines}
 
-\todo{Structure de données}
+La structure de donnée des coroutine est implantée en utilisant le
+système d'objets présenté dans le chapitre \ref{Chap:OO}. La structure
+employée est illustrée dans la figure \ref{Corout:corout-class}. Elle
+contient toutes les informations essentielles au fonctionnement de
+celle-ci, dont entre autre sa continuation (\scheme{kont}), sa boîte
+de messagerie, une sauvegarde de l'environnement d'un sous-système de
+coroutine (\scheme{state-env}), etc... 
 
-\todo{États d'une coroutines}
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-class corout ()
+  (slot: id)
+  (slot: kont)
+  (slot: mailbox)
+  (slot: state-env) ;; should be unprintable
+  (slot: prioritize?)
+  (slot: sleeping?)
+  (slot: delta-t)
+  (slot: msg-lists)
+  (constructor:
+   (lambda (obj id thunk)
+     (set-fields! obj corout
+       ((id          id)
+        (kont        (lambda (dummy) (terminate-corout (thunk))))
+        (mailbox     (new-queue))
+        (state-env   \#f)
+        (prioritize? \#f)
+        (sleeping?   \#f)
+        (delta-t     \#f)
+        (msg-lists   (empty-set)))))))
+  \end{schemecode}
+  \caption{Structure de donnée représentant une coroutine}
+  \label{Corout:corout-class}
+\end{figure}
 
-\subsection{Scheduler}
-\todo{Abstraction du temps via timer}
+La continuation primordiale d'une coroutine est sa terminaison de
+manière \og propre \fg, \ie en utilisant la fonction de terminaison de
+coroutines. C'est ce qui permet à une coroutine ayant comme corps
+uniquement \scheme{(lambda () 1)} de terminer correctement avec la
+valeur de retour 1.
+
+La variable d'état \scheme{sleeping?} permet d'indiquer à
+l'ordonnanceur de savoir si la coroutine qui vient de céder le
+contrôle a été mise en veuille ou non, afin de savoir si cette
+dernière doit retourner dans la file d'attente des coroutine prêtes.
+
+\subsection{Timers}
+Les timers sont aussi implantés comme des instances d'une classe
+appartenant au système objet du chapitre \ref{Chap:OO}. Leurs rôle est
+de fournir une abstraction temporelle pour le déroulement du système
+de coroutines, qui peut être perçu comme une simulation. Cette classe
+très simple contient des champs afin de garder compte du temps courant
+de la simulation, de la période du timer, etc... 
+
+Les timers doivent être rafraîchis régulièrement selon une période
+fixe, ainsi il doivent être exécutés complètement à l'extérieur du
+système de coroutine pour y arriver et donc, sont implantés en
+utilisant le système de \textit{threads} de Gambit-C. Il en résulte
+donc que ces derniers sont rafraîchis régulièrement de manière
+concurrente avec le système de coroutines.
+
+\subsection{Ordonnancement}
+L'ordonnancement est le coeur du système de coroutine. Le système
+évolue dans un environnement dynamique décrivant l'état de ce
+dernier. Cet environnement dynamique comprend les paramètres:
+
+\begin{itemize}
+\item \scheme{current-corout} : Paramètre contenant la coroutine
+  actuellement exécutée. Lorsque celle-ci termine sont exécution, sa
+  valeur de retour doit être placée dans ce paramètre pour signaler à
+  l'ordonnanceur la terminaison de la coroutine.
+\item \scheme{q} : File d'attente des coroutines prêtes à être
+  exécutée (\textit{ready queue}).
+\item \scheme{timer} : \textit{Timer} utilisé pour la simulation.
+\item \scheme{time-sleep-q} : File prioritaire implantée avec un arbre
+  rouge-noire qui contient les coroutines en attentes sur le temps.
+\item \scheme{root-k} : Continuation primordiale, \ie continuation de
+  du système de coroutine courant.
+\item \scheme{return-value-handler} : Fonction utilisée pour accumuler
+  les résultats de terminaison des coroutines.
+\item \scheme{return-value} : Accumulateur de valeurs de retours des
+  coroutines terminées.
+\item \scheme{parent-state} : Sauvegarde de l'état du système de
+  coroutine \emph{parent} au système actuel, dans des système
+  cascadés. Cet état est décrit par les paramètres présentés ici.
+\item \scheme{return-to-sched} : Continuation de l'ordonnanceur
+\item \scheme{dynamic-handlers} : Liste de patrons dynamiques utilisés
+  avec la forme spéciale \scheme{recv}.
+\item \scheme{sleeping-coroutines}: Nombres de coroutines en
+  attentes. Cette variable est nécessaire parce que l'accès aux files
+  \scheme{q} et \scheme{time-sleep-q} n'est pas suffisante. En effet,
+  les coroutines peuvent être en attente sur des mutex ou sur eux-même
+  (reception d'un message), ainsi ce paramètre permet à l'ordonnanceur
+  de savoir s'il existe toujours au moins une coroutine en attente.
+\end{itemize}
+
 
 \todo{États du scheduler}
 

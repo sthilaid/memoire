@@ -2922,9 +2922,15 @@ Il serait maintenant très intéressant de modifier le système afin
 qu'il supporte un protocole de méta objets. Un tel protocole donnerait
 accès à une introspection très développée et permettrait aux
 utilisateurs de modifier facilement le comportement du système selon
-leurs besoins. Par contre, une attention particulière devrait être
-portée aux coûts en performance que ce protocole pourrait impliquer
-afin de respecter la philosophie de base de ce système.
+leurs besoins. 
+
+Aussi, une modification du système afin de le rendre compatible avec
+des objets de manière inter-modulaire serait une grande amélioration
+en ce qui a attrait à la modularité du code. 
+
+Par contre, une attention particulière devrait être portée aux coûts
+en performance que ces modifications pourraient impliquer afin de
+respecter la philosophie de base de ce système.
 
 
 
@@ -2953,26 +2959,14 @@ multi-joueurs où ces derniers jouent à tours de rôles. Par contre, le
 coût d'utiliser des synchronisation explicite est très élevé en temps
 de développement et en utilisation du processeur lors de l'exécution. 
 
-Puisque les fonctionnalités offertes ne répondaient pas bien aux
-besoins de la cause, un nouveau système a été développé. Cette
-approche se marie bien avec la philosophie de Scheme qui incite les
-programmeurs à utiliser l'expressivité de Scheme pour développer leurs
-propres outils lorsque ceux disponible ne sont pas
-satisfaisant. Ainsi, les programmes Scheme ne se plient pas aux
-contraintes de ces systèmes pour arriver à être exprimer de la manière
-désirée. Ce chapitre vise donc à présenter un système de
-\textit{threads} \emph{coopératifs} qui vient pallier aux lacunes que
-présente le système offert par Gambit-C en ce qui à attrait au
-développement de jeux vidéo.
 
-Un net avantage lorsque le système est directement implanté par
-l'utilisateur est qu'il répond sur mesures aux demandes de ce dernier
-et donc l'utilisateur peut utiliser une syntaxe simple d'utilisation
-tout en conservant un contrôle fin sur le comportement du système.
 
-Ce chapitre a pour but de décrire le langage de programmation de
-\textit{threads} coopératifs créé et d'en expliquer le
-fonctionnement. 
+Ce chapitre vise donc à présenter un système de \textit{threads}
+\emph{coopératifs} qui vient pallier aux lacunes que présente le
+système offert par Gambit-C en ce qui à attrait au développement de
+jeux vidéo.
+
+
 
 \section{Description du langage}
 
@@ -3008,7 +3002,24 @@ spécifiant la fréquence de se compteur de temps, mais il est aussi
 possible de spécifier un facteur d'accélération, permettant de pouvoir
 accélérer la simulation en cours.
 
-Les sections suivantes décrivent un \textit{API} permettant
+Le système se résume à un schéduleur de coroutine qui utilise une file
+de coroutines prêtes pour choisir la prochaine coroutine à exécuter, à
+une file de coroutine en attente sur le temps et à des coroutine en
+attente de conditions, comme de la réception d'un message par
+exemple. Lorsqu'une coroutine décide de passer la main à une coroutine
+suivante ou lorsqu'elle ne doit plus attendre après le temps ou une
+condition, elle se fait enfiler à la fait de la file d'attente de
+coroutines prêtes. La figure \ref{Corout:system-schema} illustre
+l'architecture globale du système.
+
+\begin{figure}[htb!]
+  \center
+  \includegraphics[scale=0.7]{corout-system}
+  \caption{Architecture globale du système de coroutine}
+  \label{Corout:system-schema}
+\end{figure}
+
+ Les sections suivantes décrivent un \textit{API} permettant
 l'utilisation du système de coroutines créé.
 
 
@@ -3034,7 +3045,16 @@ l'exécution de cette coroutine.
 L'objet créé pourra être par la suite intégré à un nouveau système par
 les fonctions d'initialisations \scheme{boot} et \scheme{simple-boot}
 ou encore intégrés à une coroutine d'une simulation existante avec la
-fonction \scheme{spawn-brother} décritent plus bas.
+fonction \scheme{spawn-brother}. Ces fonction sont décrites plus bas.
+
+Finalement, il est possible de rendre une coroutine prioritaire ou non
+prioritaire en utilisant les fonctions \scheme{(prioritize! <corout>)}
+et \scheme{(unprioritize! <corout>)}. Lors de leurs création, toute
+les coroutines sont considérées comme étant non
+prioritaire. Lorsqu'une coroutine devient prioritaire, elle sera
+automatiquement \emph{la prochaine} a être exécutée lors d'un
+changement de coroutine. Il est donc important que cette coroutine
+enlève sa priorité pour éviter des boucles infinies par la suite.
 
 \subsection{Démarrage du système}
 
@@ -3071,7 +3091,7 @@ accumulé des précédentes terminaisons de coroutines et le deuxième
 son exécution. La valeur de retour de cette fonction sera alors
 utilisée comme la prochaine valeur accumulée lors de la terminaison
 subséquente d'une coroutine, comme c'est le cas avec la fonction
-\scheme{fold} (voir la figure \ref{Scheme:fold}.
+\scheme{fold} (voir la figure \ref{Scheme:fold}).
 
 La figure \ref{Corout:boot} présente un exemple de démarrage d'un
 système de coroutine où le temps sera augmenté toutes les secondes et
@@ -3115,72 +3135,312 @@ coroutines en utilisant \scheme{simple-boot}.
   \label{Corout:simple-boot}
 \end{figure}
 
-\todo{Systèmes cascadés?}
+
+\subsection{Manipulation du contrôle de flot}
+Puisque le contrôle du flot d'exécution entre les coroutines doit être
+explicité par l'utilisateur, une bonne diversité de fonctions
+permettent la manipulation de celui-ci. Il est important de noter que,
+sauf avec avis contraire, toutes les fonctions décrites dans cette
+section doivent être exécutée \emph{par} une coroutine, \ie dans leur
+corps.
+
+La fonction la plus simple de manipulation du flot d'exécution est
+\scheme{(yield)}. Celle-ci arrête temporairement la coroutine actuelle
+et passe le contrôle à la \emph{prochaine} coroutine disponible. La
+prochaine coroutine sera déterminée de manière déterministe avec une
+simple file d'attente. La coroutine actuelle sera donc placée à la fin
+de cette file d'attente (à moins d'être prioritaire). Ainsi, le retour
+du contrôle à cette coroutine ne sera exécutée uniquement lorsque
+toutes les autres coroutines prêtes auront décidée de passer la main à
+la coroutine suivante.
+
+Une coroutine peut aussi décider de se mettre en attente pour une
+certaine période de temps avec la fonction \scheme{(sleep-for <sec>)}
+un certain nombre de secondes. Il en résultera que la coroutine
+actuelle sera placée dans une file d'attente séparée et ne sera
+ré-enfilée dans la file de coroutines prêtes uniquement lorsque le
+délais prescrit sera dépassé. Cela n'implique pas que la coroutine
+sera exécutée à ce moment là, car si cette file contient déjà des
+coroutines en attentes, elle devra attendre sont tour pour pouvoir
+poursuivre son exécution.
+
+Il est également possible pour une coroutine d'intégrer des nouvelles
+coroutines dans le système en utilisant les fonctions:
+
+\begin{schemecode}
+(spawn-brother <corout>)
+(spawn-brother-thunk <corout-id> <thunk>)
+\end{schemecode}
+
+La première intégrera simplement la coroutine spécifiée dans la file
+de coroutines prêtes. Cette coroutine \emph{ne doit pas} déjà être
+présente dans le système. La deuxième fonction,
+\scheme{spawn-brother-thunk} créera une nouvelle coroutine ayant comme
+identificateur \scheme{<corout-id>} et la fonction spécifiée comme
+corps et sera, par la suite, intégrée de même manière dans le système.
+
+Une coroutine peut aussi altérer le fil de son exécution en modifiant
+la continuation de son calcul par celui d'une autre coroutine ou d'un
+\textit{thunk} (fonction sans argument) de manière similaire à la
+forme spéciale \scheme{call/cc} de Scheme. Ainsi, un appel à la forme
+spéciale \scheme{(continue-with <corout>)} fera en sorte que la
+continuation de la coroutine devienne celle de cette autre
+coroutine. De manière similaire, \scheme{(continue-with-thunk!
+  <thunk>)} utilisera la fonction passée comme continuation du
+calcul. La figure \ref{Corout:cont-mod} présente un exemple utilisant
+ces deux formes spéciales. Lorsque la coroutine \scheme{c1} s'exécute,
+sa continue change pour celle de \scheme{c2} qui change à sont tour
+pour la fonction \scheme{t}. Ainsi, les suites des coroutines
+\scheme{c1} et \scheme{c2} ne sont jamais exécutés puisque leurs
+continuation ont été altérées.
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(let* ((c1 (new corout 'c1 (lambda () 1)))
-       (c2 (new corout 'c2 (lambda () 2)))
-       (c3 (new corout 'c3 (lambda () 3)))
-       (c4 (new corout 'c4 (lambda () 1)))
-       (c5 (new corout 'c5 (lambda () 2)))
-       (c6 (new corout 'c6 (lambda () 3)))
+(let* ((t (lambda () (pp 'bonjour) 0))
+       (c2 (new corout 'c2
+                (lambda () (continue-with-thunk! t) (pp 'allo ) 2)))
+       (c1 (new corout 'c1
+                (lambda () (continue-with c2) (pp 'salut) 1))))
+  (simple-boot c1))
+  \end{schemecode}
+  {{\it
+bonjour\\
+0}}
+  \caption{Exemple de modification de la continuation d'une coroutine}
+  \label{Corout:cont-mod}
+\end{figure}
+
+Finalement, une coroutine peut changer sa continuation de manière plus
+drastique en forçant la terminaison du fil d'exécution de celle-ci en
+utilisant la fonction \scheme{(terminate-corout <return-val>)}. La
+valeur de retour de la coroutine sera alors la valeur spécifiée en
+paramètre. Il est aussi possible de faire terminer le système actuel
+de coroutine, au complet, en faisant appel à \scheme{(kill-all!
+  <return-val>)}. La valeur de retour finale de l'exécution du système
+sera alors la valeur spécifiée.
+
+
+
+\subsection{Environnement dynamique}
+Un environnement dynamique est disponible pour les coroutines, lors de
+leurs exécution. Cet environnement donne accès à de l'information sur
+ce dernier. il comprend les paramètres:
+
+\begin{itemize}
+\item \scheme{(current-corout)} : retourne l'instance de la coroutine
+  actuellement exécutée. 
+
+\item \scheme{(timer)} : retourne l'objet d'abstraction du temps
+  associé avec le système courant. La valeur actuelle du temps peut
+  être obtenue facilement en appellent plustôt la fonction
+  \scheme{(current-sim-time)}.
+
+\item \scheme{(return-value)} : Valeur de retour accumulée des
+  coroutines au moment de l'appel.
+\end{itemize}
+
+
+
+\subsection{Système de communication inter coroutines}
+Le mécanisme principal de synchronisation des coroutines est basé sur
+le passage de message, tel que fait dans le système de programmation
+distribué Termite~\cite{Termite_paper}. Cette approche semble
+naturelle pour la programmation de jeux vidéo où les coroutines
+peuvent devenir des entités à part entière et pourraient ainsi
+communiquer avec d'autres entités par ces mécanismes d'une manière
+naturelle.
+
+L'envoi de message se fait par la fonction \scheme{(! <corout> <msg>)}
+qui s'occupe d'acheminer le message désiré à la coroutine spécifiée.
+
+La réception de messages peut se faire avec deux fonctions distinctes
+ou une forme spéciale:
+
+\begin{itemize}
+\item \scheme{(? [timeout: <sec>])} : Réception du premier message
+  disponible avec attente bloquante. Un \textit{timeout} peut être
+  optionnelement spécifié afin de limiter l'attente faite. Si
+  plusieurs messages sont disponible, le premier arrivé sera alors
+  retourné, afin de respecter une politique équitable de réception de
+  messages.
+
+\item \scheme{(?? <predicat> [timeout: <secs>])} : Réception du
+  premier message qui retourne vrai, selon le prédicat spécifié. Le
+  prédicat doit prendre un seul argument, un message reçu. Comme pour
+  la fonction \scheme{?}, l'attente bloquante peut être interrompue
+  après un délais de temps optionnlement spécifié.
+
+\item \scheme{(recv (<pattern> <body>) ...)} : Cette forme spéciale
+  permet la réception sélective de messages selon des patrons de
+  filtrage par motifs (\textit{pattern matching}). Ces patrons
+  permettent de pouvoir facilement exprimer la forme attendue du
+  message et de pouvoir lier des variables locales à des parties du
+  messages reçu et les utiliser dans le corps du patron. Lorsque
+  plusieurs messages reçus peuvent correspondre aux motifs donnés, la
+  sélection du message se fait en choisissant dans un premier temps le
+  premier motifs possible, et par la suite le premier message
+  répondant à ce motif. Ainsi l'ordre de spécification des motifs est
+  importante et significative.
+
+\end{itemize}
+
+Les patrons utilisé dans le filtrage de motifs de la forme spéciale
+\scheme{recv} diffèrent de ceux dans Termite. Ici, le patron doit être
+une donnée Scheme. Lorsque, dans cette donnée, un symbole est précédé
+d'une virgule (\textit{unquote}), le symbole est \emph{lié} à la
+valeur trouvée à cet endroit du motif dans le message reçu. Les
+formats de motifs reconnus sont les symboles, les mots clés, les
+caractères, les valeurs booléennes, les nombres, les chaînes de
+caractères, les listes et les vecteurs. La figure
+\ref{Corout:recv-pat} illustre plusieurs motifs différents qui peuvent
+être utilisés.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(recv (salut 'got-salut)                   ; symbol match
+      ("bonjour" 'bonjour)                 ; strng match
+      (1011 '11-or-1011?)                  ; number match
+      ((a ,b c) (string b \#\textbackslash k))           ; list match
+      (\#(a b ,c) c)                        ; vector match
+      ((tata 1 \#(toto ,x) "titi") (+ x 1)) ; complex match
+      (,anything anything))                ; can match anything
+  \end{schemecode}
+  \caption{Exemple de patrons pouvant être utilisés dans le filtrage
+    par motifs de la forme spécial \scheme{recv}}
+  \label{Corout:recv-pat}
+\end{figure}
+
+Une particularité intéressante de ce filtrage par motif reliée au fait
+qu'il est possible d'utiliser des patrons de manière dynamique, \ie
+qui n'apparaissent pas dans la forme spéciale, mais plutôt qui ont été
+spécifiés grâce à la forme spéciale \scheme{(with-dynamic-handlers
+  ((<pattern> <handler-body>) ...) <body>)}. Tous les appels à la
+forme spéciale \scheme{recv} se trouvant dans le corps
+(\scheme{<body>}) se trouveront augmenter de ces nouveaux patrons,
+mais ces derniers seront considérés en dernier lieu. Il est donc
+possible ainsi de pouvoir factoriser des patrons communs et de les
+appliquer à tous les appels de la forme spéciale de réception de
+message par filtrage de motifs.
+
+Aussi, un mécanisme de liste de diffusion a été inclus. Ce mécanisme
+simple permet d'enregistrer des coroutine dans une liste de diffusion
+et, par la suite, d'envoyer à toutes les coroutines inscrite des
+messages de manière simultanée. Quoi que très primitif, ce système
+permet d'émuler la base de système de programmation réactive. Les
+fonctions de gestion et d'utilisation de listes de diffusions sont:
+
+\begin{itemize}
+\item \scheme{(subscribe <list-id> <corout>)} : Inscription de la
+  coroutine spécifiée à la liste de diffusion identifiée par le symbole
+  choisi. Si la liste n'existait pas, elle sera créée.
+
+\item \scheme{(unsubscribe <list-id> <corout>} : Désinscription d'une
+  coroutine à une liste de diffusion.
+
+\item \scheme{(broadcast <list-id> <msg>)} : Envoi d'un message à une
+  liste de diffusion.
+\end{itemize}
+
+\subsection{Autres mécanismes de synchronisation}
+En plus du mécanisme de messagerie sophistiqué du système de
+coroutine, les coroutines disposent d'un système de sémaphores afin de
+pouvoir exécuter des synchronisation de manière plus
+traditionnelle. Ces dernières sont manipulés par les fonctions:
+
+\begin{itemize}
+\item \scheme{(new-semaphore <init-value>)} : Création d'une nouvelle
+  sémaphore ayant comme valeur initiale \scheme{<init-value>}.
+
+\item \scheme{(new-mutex)} : Création d'une nouvelle sémaphore ayant
+  comme valeur initiale 1.
+
+\item \scheme{(sem-locked? <sem>)} : Permet de vérifier s'il reste des
+  ressources disponibles dans une sémaphore. S'il en reste, la
+  fonction retournera vrai, ou faux sinon.
+
+\item \scheme{(sem-lock! <sem>)} : Prend une ressource de la sémaphore
+  spécifiée. Si aucune ressource n'est disponible, la coroutine se met
+  en étant d'attente bloquante jusqu'à ce qu'une ressource soit
+  libérée.
+
+\item \scheme{(sem-unlock! <sem>)} : Libère une ressource de la
+  sémaphore spécifiée. Aucune vérification n'est faite qu'en a
+  s'assurer que la coroutine courante possède réellement cette
+  ressource. Si des coroutines sont en attentes de ressources, la
+  première à s'être mise en attente est alors réveillée.
+\end{itemize}
+
+L'utilisation de sémaphores n'est pas nécessaire, puisque
+l'utilisation du système de messagerie permet d'effectuer n'importe
+qu'elle synchronisation. Par contre, les sémaphores permettent de
+pouvoir exprimer d'une manières différente des synchronisations et
+donc donnent plus de liberté aux utilisateurs du système.
+
+\subsection{Systèmes en cascades}
+
+Le système de coroutine a été conçu de manière à pouvoir permettre de
+créer des systèmes coroutines de manière cascadée, \ie de créer des
+coroutines qui sont elles-mêmes des système de coroutines. La
+procédure de création de ces derniers est simple, il ne suffit que de
+démarrer un nouveau système de coroutine à l'intérieur d'une coroutine
+existante. Par contre, un problème se pose: il devient alors
+impossible de pouvoir retourner le contrôle aux coroutines appartenant
+au système primordial, puisque \scheme{(yield)} ne fera que changer de
+contexte que les coroutines du sous-système.
+
+Ce problème est résolu par l'utilisation de la fonction
+\scheme{(super-yield)} qui effectue un changement de contexte pour le
+système de coroutine courant. Si le système courant ne se retrouve pas
+dans un système cascadé, alors rien ne se produira. Une fonction
+similaire, \scheme{(super-kill-all! <return-value>)} terminera
+\emph{tous} les systèmes de coroutines se retrouvant dans
+l'arborescence de système de coroutine présentement active. Un exemple
+de système de coroutines en cascade est donné dans la figure
+\ref{Corout:cascade}.  On constate que les appels à
+\scheme{super-yield} ont bien effectué les changements de contextes de
+des coroutines hôtes des sous-systèmes de coroutines (\scheme{s1} et
+\scheme{s2}).
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(let* ((ret (lambda (x) (pp `(now returning: ,x)) x))
+       (c1 (new corout 'c1 (lambda () (ret 1))))
+       (c2 (new corout 'c2 (lambda () (super-yield) (ret 2))))
+       (c3 (new corout 'c3 (lambda () (ret 3))))
+       (c4 (new corout 'c4 (lambda () (ret 8))))
+       (c5 (new corout 'c5 (lambda () (super-yield) (ret 4))))
+       (c6 (new corout 'c6 (lambda () (ret 2))))
        (timer (start-timer! 1.0))
        (s1 (new corout 's1 (lambda () (boot timer + c1 c2 c3))))
        (s2 (new corout 's2 (lambda () (boot timer - c4 c5 c6)))))
   (boot timer * s1 s2))
   \end{schemecode}
-  \schemeresult{-24}
+  {{\it
+(now returning: 1)\\
+(now returning: 8)\\
+(now returning: 2)\\
+(now returning: 3)\\
+(now returning: 4)\\
+(now returning: 2)\\
+12}}
   \caption{Exemple de démarrage de système de coroutines en cascade}
   \label{Corout:cascade}
 \end{figure}
 
-\subsection{Manipulation du flot de contrôle}
-\subsubsection{yield} 
-\todo{Transfert à la prochaine coroutine}
-
-
-\subsubsection{sleep-for}
-\todo{Sommeil pour un temps prédéterminé.}
-
-\subsubsection{continue-with}
-\todo{Continuation de la coroutine.}
-
-\subsubsection{spawn-brother, spawn-brother-thunk}
-\todo{Démarrage de nouvelles coroutines.}
-
-\subsubsection{Composition of coroutines}
-\todo{Compositions ou séquençage de coroutine}
-
-\subsubsection{terminate-corout, kill-all!}
-\todo{Terminaison de coroutines. }
-
-\subsubsection{super-yield, super-kill-all!} 
-\todo{Transfert au prochain système de coroutine (frère du système courant).}
-
-
-\subsection{Système de communication inter coroutines}
-\subsubsection{!} 
-\todo{Envoi de message à une coroutine}
-
-\subsubsection{?}
-\todo{Réception d'un message bloquante (avec possibilité de timeout)}
-
-\subsubsection{??}
-\todo{Réception sélective de message bloquante (avec possibilité de timeout)}
-
-\subsubsection{recv, dynamic msg handlers}
-\todo{Forme spéciale permettant la réception sélective de messages via
-  un \og pattern matching \fg qui permet une notation concise et
-  l'utilisation aisée du contenu des messages reçus.}
-
-\subsubsection{Messaging lists}
-\todo{Système permettant de regrouper des coroutines et de leurs
-  diffuser des messages. }
 
 
 
 \section{Implantation}
+
+L'implantation de ce système de coroutine est centralisée sur
+l'utilisation de la forme spéciale \scheme{call/cc} afin de permettre
+la conservation de l'état courant d'une coroutine.
+
+Un net avantage lorsque le système est directement implanté par
+l'utilisateur est qu'il répond sur mesures aux demandes de ce dernier
+et donc l'utilisateur peut utiliser une syntaxe simple d'utilisation
+tout en conservant un contrôle fin sur le comportement du système.
+
 
 \subsection{Implantation des coroutines}
 

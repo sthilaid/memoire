@@ -3329,6 +3329,12 @@ ou une forme spéciale:
 
 \end{itemize}
 
+Les valeurs de délais d'attentes maximums spécifiés pour la réception
+de messages impliquent qu'il est possible qu'une réception
+échoue. Dans un tel cas, une exception de type
+\scheme{mailbox-timeout-exception} est lancée par la fonction de
+réception utilisée.
+
 Les patrons utilisé dans le filtrage de motifs de la forme spéciale
 \scheme{recv} diffèrent de ceux dans Termite. Ici, le patron doit être
 une donnée Scheme. Lorsque, dans cette donnée, un symbole est précédé
@@ -3371,8 +3377,9 @@ Aussi, un mécanisme de liste de diffusion a été inclus. Ce mécanisme
 simple permet d'enregistrer des coroutine dans une liste de diffusion
 et, par la suite, d'envoyer à toutes les coroutines inscrite des
 messages de manière simultanée. Quoi que très primitif, ce système
-permet d'émuler la base de système de programmation réactive. Les
-fonctions de gestion et d'utilisation de listes de diffusions sont:
+permet d'émuler la base de système de programmation
+réactive~\cite{FRP}. Les fonctions de gestion et d'utilisation de
+listes de diffusions sont:
 
 \begin{itemize}
 \item \scheme{(subscribe <list-id> <corout>)} : Inscription de la
@@ -3748,17 +3755,145 @@ l'environnement du \textit{thread} exécutant le système de coroutines.
 \end{figure}
 
 
+
 \subsection{Système de messagerie}
-\todo{Structures de données}
 
-\todo{Envoi de messages}
+La fonctionnalité de messagerie du système de coroutines est à la base
+très simple. Comme l'illustre la figure \ref{Corout:corout-class},
+chaque objet coroutine possède une boîte de réception de
+messages. Cette boîte est implantée simplement comme une file
+d'attente, de manière similaire à la file d'attente des coroutines
+prêtes utilisée par l'ordonnanceur.
 
-\todo{Réception de messages}
+L'envoi de message n'est qu'alors l'ajout d'un nouveau message dans
+cette boîte de messages. Après cet ajout, le système vérifie si la
+coroutine réceptrice était en attente d'un message et si c'est le cas,
+alors cette dernière est remise en action dans l'ordonnanceur. La
+figure \ref{Corout:!} illustre ce procédé d'acheminement de
+message. Puisqu'il est possible de spécifier une valeur d'attente
+maximale de messages, la coroutine en attente pourrait se retrouver
+dans la file d'attente sur le temps des coroutines. Afin de pouvoir
+distinguer une telle attente bornée d'un appel à \scheme{sleep-for},
+l'état \scheme{interruptible?} est utilisé.
 
-\todo{Macro recv}
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (! dest-corout msg)
+  (enqueue! (corout-mailbox dest-corout) msg)
+  (cond ((sleeping-on-msg? dest-corout)
+         (corout-set-sleeping-mode! dest-corout \#f)
+         (corout-enqueue! (q) dest-corout))
+        ((and (sleeping-over-time? dest-corout)
+              (interruptible? dest-corout))
+         (time-sleep-q-remove! (sleeping-over-time?->node dest-corout))
+         (corout-set-sleeping-mode! dest-corout \#f)
+         (corout-enqueue! (q) dest-corout))))
+  \end{schemecode}
+  \caption{Envoi de messages entre coroutines}
+  \label{Corout:!}
+\end{figure}
+
+La réception de messages se marie bien avec l'envoi. La coroutine
+vérifies si un message est disponible et si c'est le cas retourne le
+retourne. Sinon, alors deux cas sont possibles: soit la coroutine va
+attendre jusqu'à la réception d'un nouveau message, soit cette attente
+sera bornée dans le temps. Pour une attente bornée, la coroutine est
+mise en veille pour la durée spécifiée, en spécifiant qu'elle peut
+être interrompue par la réception d'un message. Sinon, alors l'état de
+la coroutine est conservée et elle est considérée comme \og dormante
+en attente de message \fg. Si le délais d'attente est dépassé, alors
+une exception est lancée à l'utilisateur. La figure \ref{Corout:?}
+illustre l'implantation de la fonction \scheme{?}, la plus simple pour
+la réception de message. Elle permet par contre de donner une bonne
+idée du procédé employé.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (? \#!key (timeout 'infinity))
+  (define mailbox (corout-mailbox (current-corout)))
+  (if (empty-queue? mailbox)
+      (if (number? timeout)
+          (sleep-for timeout interruptible?: \#t)
+          (continuation-capture
+           (lambda (k)
+             (let ((corout (current-corout)))
+               (corout-kont-set! corout k)
+               (corout-set-sleeping-mode! corout (sleeping-on-msg))
+               (resume-scheduling))))))
+  (if (empty-queue? mailbox)
+      (raise mailbox-timeout-exception)
+      (dequeue! mailbox)))
+  \end{schemecode}
+  \caption{Réception de messages avec la fonction \scheme{?}}
+  \label{Corout:?}
+\end{figure}
+
+L'implantation de la forme spéciale de réception de messages
+\scheme{recv} est complexe et ne sera pas détaillée. Par contre, un
+exemple d'expansion de cette macro est donné dans la figure
+\ref{Corout:recv-exp}. On constate que le patron donné est vérifié en
+premier lieu. Par la suite, si aucun messages ne correspondent à ce
+patron, une vérification est faite parmi les patrons dynamique afin de
+trouver un message pouvant être utilisé. Si aucun message n'est
+trouvé, alors la coroutine est mise en veuille et recommencera la
+vérification après avoir reçu un nouveau message.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(let ((\#:mailbox3058 (corout-mailbox (current-corout))))
+  (let \#:loop3057 ()
+    (cond ((queue-find-and-remove!
+            (lambda (\#:msg3059) (match \#:msg3059 (\#(allo ,x) \#t) (,\_ \#f)))
+            \#:mailbox3058)
+           =>
+           (lambda (\#:msg3060) (match \#:msg3060 (\#(allo ,x) x) (,\_ \#f))))
+          ((find-value (lambda (pred) (pred)) (dynamic-handlers))
+           =>
+           (lambda (res) (unbox res) (\#:loop3057)))
+          (else
+           (begin
+             (continuation-capture
+              (lambda (k)
+                (let ((corout (current-corout)))
+                  (corout-kont-set! corout k)
+                  (corout-set-sleeping-mode! corout (sleeping-on-msg))
+                  (resume-scheduling))))
+             (\#:loop3057))))))
+  \end{schemecode}
+  \caption{Expansion macro de \texttt{(recv (\#(allo ,x) x))}}
+  \label{Corout:recv-exp}
+\end{figure}
 
 
 \section{Conclusion}
+
+Ainsi, un système de coroutine a été implanté de manière à pouvoir
+fournir aux programmeurs de jeux vidéo une interface à un système
+permettant de pouvoir facilement exprimer des problèmes de changements
+de contextes (notamment dans le cadre de jeux multi-joueurs), sans
+avoir à se soucier de synchroniser les coroutines dans le but d'éviter
+les problèmes de sections critiques.
+
+Ce système offre ainsi une interface similaire à celle offerte par le
+système Termite~\cite{Termite_paper}, orientée sur un calcul en série
+au lieu de distribué. Il est ainsi possible de concevoir des
+coroutines comme des entités évoluant dans un même environnement de
+manière successive (comme s'est souvent le cas dans un jeu vidéo).
+
+Le système a également été généralisé de manière à permettre une
+utilisation en cascade de systèmes de coroutines. Ainsi, l'utilisation
+du système ne se limite pas à un usage monolithique, mais permet de
+séparer de tâches en sous-systèmes de coroutines.
+
+L'utilisation de synchronisation de coroutines par envoi et réception
+de messages est très naturelle et donc facile à utiliser. Lorsqu'elle
+est combinée avec des listes de diffusion de message, on obtient un
+style de programmation se rapprochant beaucoup des système de
+programmation réactive~\cite{FRP}.
+
+Il serait maintenant intéressant d'ajouter un système de profilage de
+coroutine au système
+
 \todo{Ouverture sur le profilage des coroutine}
 
 
@@ -3770,7 +3905,7 @@ rencontrés durant la création de jeux vidéo et de proposer des
 méthodes pour résoudre ces problèmes.
 
 Aussi, on cherche à identifier les avantages que nous a fourni Scheme
-et à identifier les incovénients que pose l'utilisant du langage
+et à identifier les inconvénients que pose l'utilisant du langage
 Scheme pour le développement de ces jeux.
 
 Débute par un jeu simple afin de trouver les problèmes de base et

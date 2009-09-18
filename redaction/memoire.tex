@@ -3163,7 +3163,42 @@ simple file d'attente. La coroutine actuelle sera donc placée à la fin
 de cette file d'attente (à moins d'être prioritaire). Ainsi, le retour
 du contrôle à cette coroutine ne sera exécutée uniquement lorsque
 toutes les autres coroutines prêtes auront décidée de passer la main à
-la coroutine suivante.
+la coroutine suivante. Il est également possible de choisir
+explicitement à quelle coroutine le contrôle sera passé avec la
+fonction:
+
+\begin{schemecode}
+(yield-to <corout> [for: <sec>] [forced-yield: <thunk>])
+\end{schemecode}
+
+\noindent
+Cette fonction possède aussi une particularité intéressante. Elle
+permet aussi, si spécifié, de limiter en temps l'exécution de la
+coroutine. Cette particularité doit, par contre, être utilisée avec
+modération car elle brime l'atomicité du système qui est garantie avec
+les autres fonctions de changement de contexte. Elle permet ainsi de
+pouvoir exécuter une coroutine qui n'interfère pas avec les autres,
+tout en contrôlant l'étendu du calcul de celle-ci. Le mot clé
+\scheme{forced-yield:} permet, quant à lui, spécifier la fonction qui
+sera utilisé pour effectuer le changement de contexte forcé de cette
+coroutine. La figure \ref{Corout:yield-to-ex} illustre un exemple
+d'utilisation.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(let* ((c1 (new corout 'c1 (lambda () (write 1))))
+       (c2 (new corout 'c2 (lambda ()
+                             (yield-to c1 for: 0.1
+                                       forced-yield:
+                                         (lambda () (recv (go 'ok))))
+                             (fib 32) (write 2) (! c1 'go))))
+       (c3 (new corout 'c3 (lambda () (fib 32) (write 3)))))
+  (simple-boot c2 c3))
+  \end{schemecode}
+  \schemeresult{132}
+  \caption{Exemple d'utilisation de la fonction \scheme{yield-to}}
+  \label{Corout:yield-to-ex}
+\end{figure}
 
 Une coroutine peut aussi décider de se mettre en attente pour une
 certaine période de temps avec la fonction \scheme{(sleep-for <sec>)}
@@ -3270,16 +3305,15 @@ ou une forme spéciale:
 \begin{itemize}
 \item \scheme{(? [timeout: <sec>])} : Réception du premier message
   disponible avec attente bloquante. Un \textit{timeout} peut être
-  optionnelement spécifié afin de limiter l'attente faite. Si
-  plusieurs messages sont disponible, le premier arrivé sera alors
-  retourné, afin de respecter une politique équitable de réception de
-  messages.
+  spécifié afin de limiter l'attente faite. Si plusieurs messages sont
+  disponible, le premier arrivé sera alors retourné, afin de respecter
+  une politique équitable de réception de messages.
 
 \item \scheme{(?? <predicat> [timeout: <secs>])} : Réception du
   premier message qui retourne vrai, selon le prédicat spécifié. Le
   prédicat doit prendre un seul argument, un message reçu. Comme pour
   la fonction \scheme{?}, l'attente bloquante peut être interrompue
-  après un délais de temps optionnlement spécifié.
+  après un délais de temps, si ce dernier est spécifié.
 
 \item \scheme{(recv (<pattern> <body>) ...)} : Cette forme spéciale
   permet la réception sélective de messages selon des patrons de
@@ -3520,9 +3554,10 @@ donc que ces derniers sont rafraîchis régulièrement de manière
 concurrente avec le système de coroutines.
 
 \subsection{Ordonnancement}
-L'ordonnancement est le coeur du système de coroutine. Le système
-évolue dans un environnement dynamique décrivant l'état de ce
-dernier. Cet environnement dynamique comprend les paramètres:
+L'ordonnancement est le coeur du système de coroutine. Cet
+ordonnancement évolue dans un environnement dynamique contenant l'état
+du système de coroutines actif. Cet environnement dynamique comprend
+les paramètres:
 
 \begin{itemize}
 \item \scheme{current-corout} : Paramètre contenant la coroutine
@@ -3554,10 +3589,164 @@ dernier. Cet environnement dynamique comprend les paramètres:
   de savoir s'il existe toujours au moins une coroutine en attente.
 \end{itemize}
 
+La récursion de système fonctionne grâce à un système de sauvegarde
+de cet état dans le paramètre \scheme{parent-state} dans un sens ou
+dans le champs \scheme{state-env} d'un objet de coroutine dans
+l'autre.
 
-\todo{États du scheduler}
+L'algorithme d'ordonnancement, en lui même, est très simple. Ce
+dernier est présenté intégralement dans la figure
+\ref{Corout:scheduler}. Dans un premier temps, la valeur de retour de
+la coroutine précédente, si cette dernière a terminée, est traité ou
+dans le cas échéant, elle est automatiquement remise dans la file
+d'attente des coroutines prêtes. Par la suite, la file prioritaire de
+coroutines en attente sur le temps est regardée afin réveiller toutes
+coroutines ayant dépassé sont délais de sommeil. Finalement, la
+première coroutine disponible dans la file de coroutines prêtes est
+choisie comme prochaine coroutine et sont travail est poursuivi par un
+appel à \scheme{resume-coroutine}. Si aucune coroutine ne se trouvait
+dans la file \scheme{q}, alors une vérification des coroutines en
+attente sur le temps est faite afin de déterminer s'il reste du
+travail à faire. S'il y a des coroutine en attente sur le temps, alors
+l'ordonnanceur se met en veille pour le délais d'attente
+restant. Cette particularité se distingue nettement des simulations à
+événements discrets qui auraient plutôt incrémentés leur horloge
+interne directement de ce délais, chose qui est indésirable pour un
+jeu vidéo. Par contre, si aucune coroutine n'est prête ou ne dort sur
+le temps, alors le système ne peut plus rien faire. S'il existe
+d'autres coroutines en veille (par exemple sur l'attente d'un
+message), alors le système est un interblocage. Sinon, alors le
+travail est terminé et donc, l'état du système parent est rétabli et
+la continuation primordiale est invoquée.
 
-\todo{Algorithme de scheduling}
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (corout-scheduler)
+    (manage-return-value)
+    (wake-up-sleepers)
+    (current-corout (dequeue! (q)))
+    (cond
+     ((corout? (current-corout))
+      (resume-coroutine)
+      (corout-scheduler))
+     ((not (time-sleep-q-empty? (time-sleep-q)))
+      (let* ((next-wake-time
+              (time-sleep-q-el-wake-time
+               (time-sleep-q-peek? (time-sleep-q)))))
+        (thread-sleep! (/ (- next-wake-time (current-sim-time))
+                          (timer-time-multiplier (timer)))))
+      (current-corout \_\_\_scheduler-is-speeping\_\_\_)
+      (corout-scheduler))
+     (else
+      (let ((finish-scheduling (root-k))
+            (ret-val (return-value)))
+        (if (> (sleeping-coroutines) 0)
+            (error "Deadlock detected in coroutine system..."))
+        (restore-state (parent-state))
+        (continuation-return finish-scheduling ret-val)))))
+  \end{schemecode}
+  \caption{Algorithme d'ordonnancement}
+  \label{Corout:scheduler}
+\end{figure}
+
+Le changement de contexte et le retour au contexte d'une coroutine
+sont fait, à la base, par les fonctions \scheme{yield} et
+\scheme{resume-coroutine}, illustrée respectivement dans les figure
+\ref{Corout:yield} et \ref{Corout:resume-corout}. La figure
+\ref{Corout:yield} illustre aussi la version permettant le changement
+de contexte du système de coroutine. Ces fonctions illustre la base
+même du système de coroutine, où la réification de continuations
+permet la sauvegarde de l'état présent du calcul pour une utilisation
+future. Comme l'indique la figure \ref{Corout:resume-corout}, l'état
+de ces calculs sont poursuivis simplement par l'appel de ces
+continuations sauvegardées dans la structure de donnée des
+coroutine. Il est important de préciser que l'ordre dans lequel les
+états des systèmes de continuations (pour des systèmes récursifs) sont
+sauvegardés et restaurés est critique afin du bon fonctionnement de
+ces appels. Par exemple, lors d'un appel à \scheme{super-yield},
+l'état du système actuel doit absolument être sauvegardé avant de
+restauré l'état du système parent pour éviter de le perdre.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (yield)
+  (continuation-capture
+   (lambda (k)
+     (corout-kont-set! (current-corout) k)
+     (resume-scheduling))))
+(define (super-yield)
+  (continuation-capture
+   (lambda (k)
+     (if (parent-state)
+         (let ((state (save-state)))
+           (restore-state (parent-state))
+           (corout-state-env-set! (current-corout) state)
+           (corout-kont-set! (current-corout) k)
+           (resume-scheduling))))))
+
+  \end{schemecode}
+  \caption{Fonctions de changement de contexte explicite}
+  \label{Corout:yield}
+\end{figure}
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (resume-coroutine)
+  (continuation-capture
+   (lambda (k)
+     (return-to-sched k)
+     (let ((kontinuation (corout-kont (current-corout))))
+       (if (corout-state-env (current-corout))
+           (let ((state (save-state)))
+             (restore-state (corout-state-env (current-corout)))
+             (parent-state state)))
+       (continuation-return kontinuation 'go)))))
+  \end{schemecode}
+  \caption{Implantation du retour au contexte d'une coroutine}
+  \label{Corout:resume-corout}
+\end{figure}
+
+La fonction \scheme{yield-to}, présentée dans la figure
+\ref{Corout:yield-to}, diffère des autres fonctions de changement de
+contexte, puisqu'elle permet aux utilisateurs de s'assurer que
+l'exécution d'une coroutine ne dépassera pas un certain délais de
+temps donné. Cette particularité a été implantée grâce à l'utilisation
+des \textit{threads} de Gambit-C. Lorsqu'un délais maximal est
+spécifié, un \textit{thread} secondaire est démarré est effectuera une
+attente du délais prescrit de manière parallèle au système de
+coroutine. Lorsque le délais est dépassé, il vérifie alors si la
+coroutine exécutée est celle utilisée dans l'appel à \scheme{yield-to}
+et si c'est le cas, il force cette coroutine a effectuer un appel de
+changement de contexte qui peut être choisi par l'usager. Ce
+changement de contexte forcé est possible grâce à la fonction
+\scheme{thread-interrupt!} de Gambit-C qui permet au \textit{thread}
+auxiliaire de force l'évaluation d'un \textit{thunk} dans
+l'environnement du \textit{thread} exécutant le système de coroutines.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (yield-to corout \#!key (for \#f) (forced-yield yield))
+  (let* ((interupt-body
+          (lambda () (if (eq? (current-corout) corout) (forced-yield))))
+         (timer-body
+          (lambda ()
+            (thread-sleep! (/ for (timer-time-multiplier (timer))))
+            (thread-interrupt! (current-thread) interupt-body)))
+         (timer-thread
+          (and for
+               (make-thread timer-body (gensym 'yield-to-timer)))))
+    (if (not (corout-sleeping? corout))
+        (begin
+          (queue-find-and-remove! (lambda (x) (eq? x corout)) (q))
+          (queue-push! (q) corout)
+          (and timer-thread (thread-start! timer-thread))
+          (thread-yield!)
+          (yield)))))
+  \end{schemecode}
+  \caption{Implantation de \scheme{yield-to}}
+  \label{Corout:yield-to}
+\end{figure}
+
 
 \subsection{Système de messagerie}
 \todo{Structures de données}

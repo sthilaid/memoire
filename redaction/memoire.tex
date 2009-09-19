@@ -8,6 +8,7 @@
 \usepackage{url}
 \usepackage{setspace}
 \usepackage{verbatim}
+\usepackage{subfig}
 
 \usepackage{udem_these_fr}
 
@@ -1896,8 +1897,7 @@ vidéo.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Programmation orientée objet}
-\label{Chapter:OO}
-
+\label{Chap:OO}
 
 Scheme est un langage offrant beaucoup de ressources à l'état brut aux
 programmeurs et leurs permet donc de pouvoir se bâtir les outils
@@ -2937,11 +2937,7 @@ respecter la philosophie de base de ce système.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Système de coroutines}
-\todo{Système de threads offerts ne sont pas toujours
-  satisfaisant. Mentalité Scheme: au lieu de contraindre ce qu'on veut
-  faire en fonction de ce qui nous est offert, étendre le langage pour
-  nous permettre de faire ce que l'on veut et surtout de la manière
-  désirée.}
+\label{Chap:corout}
 
 Le langage Scheme tel que décrit par le standard~\cite{R5RS} ne fourni
 pas de système de \textit{threads}. Par contre, le document
@@ -4004,6 +4000,7 @@ problèmes potentiels ont été rencontrés:
 \begin{itemize}
 \item Rendu du jeu
 \item Contrôle du flot du jeu
+\item Structures de données
 \item Détection et résolution de collisions
 \item Animations
 \item Partie multi-joueurs
@@ -4016,29 +4013,307 @@ faire ce travail réside dans le but de demeurer indépendant d'autant
 de dépendances externes que possibles et d'avoir le plus de code
 Scheme impliqué dans le jeu que possible. Par contre, la librairie
 SDL~\cite{SDL} a été utilisé comme système de gestion d'entrés/sorties
-et de fenêtrage. Le système de rendu utilisé est nul autre que
+et de fenêtrage. Le système de rendu utilisé est
 \textit{OpenGL}~\cite{OpenGL} afin de pouvoir profiter d'un bonne
 portabilité et de permettre facilement d'ultérieurement utiliser les
 travaux effectués pour faire des jeux vidéo utilisant en rendu tri
-dimensionnel. Ainsi, la librairie de lecture et de chargement d'images
-s'occupe de lire des images en format textuel \textit{ppm}, qui est
-l'un des format les plus simple pour d'écrire une image
-\textit{bitmap}. Le système s'attend à lire des images sous forme de
-fontes, \ie des images contenant plusieurs sous-images.
+dimensionnel. 
 
-\todo{Premier jet dans le but de trouver des problèmes potitiels}
+Ainsi, la librairie de lecture et de chargement d'images s'occupe de
+lire des images en format textuel \textit{ppm}, qui est l'un des
+format les plus simple pour d'écrire une image \textit{bitmap}. Le
+système s'attend à lire des images sous forme de fontes, \ie des
+images contenant plusieurs sous-images. Ce choix semble raisonnable
+car une entité de jeu vidéo est souvent représentée par plusieurs
+images. Ceci permet donc de toutes les garder de manière cohésive dans
+une même image. Un fichier descriptif de la fonte, sous formes de S
+expressions doit être présent afin de permettre une correcte
+interprétation de la fonte lue. La figure \ref{Exp:font} doit être
+accompagnée d'un fichier de même nom, portant une extension
+\emph{.scm} contant la description \scheme{((colors: (white green
+  red)) (chars: (0 1)))}. 
 
-\todo{Simulation a evenements discrets}
+\begin{figure}[htb!]
+  \center
+  \includegraphics[scale=0.5]{font-example}
+  \caption{Exemple de fontes utilisée dans \si.}
+  \label{Exp:font}
+\end{figure}
 
-\begin{itemize}
-\item Comment faire des animations? => CPS
-\item Comment concevoir une partie a 2 joueurs? => coroutines
-\item Difficulté à décrire la résolution de collision de manière
-  efficace 
-\item Est-il possible d'écrire le comportement d'une entité de manière
-  indépendante, \ie que le code soit centralisé dans une même
-  fonction?
-\end{itemize}
+Cette fonte alors être lue et chargée en mémoire vidéo grâce à la
+forme spéciale:
+
+\begin{schemecode}
+(define-symmetric-font <font-name> <width> <height> 
+                       [static] [loop-x] [loop-y])
+\end{schemecode}
+
+Cette dernière effectue la génération de code permettant la lecture et
+le chargement de la font spécifiée, à condition que cette fonte soit
+symmétrique, \ie que toutes les sous images soient de même
+taille. L'option \scheme{static} permet d'effectuer la lecture durant
+l'expansion macro et d'inclure l'image dans le code source généré et
+les options \scheme{loop-x} et \scheme{loop-y} permettent de spécifier
+le comportement à entreprendre lorsque l'image est agrandie. Par
+défaut, l'image est lue dynamiquement et est étirée lorsqu'elle est
+agrandie.
+
+Le contrôle de flot d'exécution dans ce jeu fut expérimental. Dans
+cette première version, une simulation par événements discrets a été
+utilisée. L'idée derrière ce choix provenait du fait que dans un jeu
+vidéo, l'avancement de celui-ci peut être considéré comme une série
+d'événements discrets. Par exemple, le laser avance, le joueur se
+déplace à droite, le vaisseau ennemie explose, etc... Ainsi, un petit
+système de simulation par événements discrets à été développé et
+utilisé. La figure \ref{Exp:des} illustre des événements qui sont
+schédulés au tout début d'une partie. Un événement est une fonction ne
+prenant aucun argument (\textit{thunk}). Ainsi le premier événement se
+chargera de faire un \textit{dispatch} de d'autres événements débutant
+la partie. Les second et dernier événements sont des événements de
+gestion d'affichage et d'entrées/sorties du jeu.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(schedule-event! sim 0
+  (lambda () (new-player! level)
+             (in 0 (create-init-invader-move-event level))
+             (in 1 (create-invader-laser-event level))
+             (in (mothership-random-delay)
+                 (create-new-mothership-event level))))
+ 
+(schedule-event! sim 0 (create-main-manager-event level))
+(schedule-event! sim 0 (create-redraw-event level))
+  \end{schemecode}
+  \caption{Exemple de code de simulation par événements discrets}
+  \label{Exp:des}
+\end{figure}
+
+Ces événements doivent donc s'occuper de poursuivre le calcul du jeu
+leur étant assigné en reschédulant de nouveaux événements
+ultérieurement dans le jeu. Par exemple, la figure \ref{Exp:mother-ev}
+illustre l'évènement principal implantant le comportement désiré pour
+le vaisseau mère des ennemies.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (create-mothership-event level)
+ (define mothership-event
+   (synchronized-event-thunk level
+     (let ((mothership (level-mothership level)))
+       (if mothership
+           (let ((collision-occured? (move-object! level mothership)))
+             (if (or (not collision-occured?)
+                     (is-explosion? collision-occured?)
+                     (eq? collision-occured? 'message))
+                 (in mothership-update-interval mothership-event)))))))
+  mothership-event)
+  \end{schemecode}
+  \caption{Évènement représentant le vaisseau ennemie de type
+    \textit{mothership}.}
+  \label{Exp:mother-ev}
+\end{figure}
+
+Cet exemple illustre bien deux désavantages provenant de l'utilisation
+d'évènements discrets pour implanter le comportement d'entités dans un
+jeu. Le premier désavantage est que la plupart des évènements se
+trouvent à être récursifs, et donc ils se reschédulent par eux même un
+peu plus tard dans le temps, ce qui donne une écriture moins intuitive
+de ce comportement. Aussi, lorsqu'un évènement est déjà prévu, il est
+possible que l'état du jeu change entre temps rendant cet évènement
+désuet. Pour le vaisseau mère, il est possible que son prochain
+déplacement aie été déjà prévu, mais que ce dernier a explosé suite à
+la collision avec un laser du joueur. Donc de tels événements sont
+prompts à donner des erreurs dues à des inconsistance entre l'état du
+jeu attendu et l'état réel lorsque ce produit un événement.
+
+Toutefois, cette approche semble avoir été très bénéfique pour la
+création d'animations. En effet, en combinant des événements discrets
+avec un style d'écriture en CPS, il est possible de pouvoir très bien
+modulariser des animations dans le jeu. Par exemple, l'animation du
+début de jeu peut être écrite sous forme CPS de manière à ce que la
+suite de cette animation puisse être n'importe quel autre
+événement. La figure \ref{Exp:anim} illustre une partie de
+l'implantation de l'animation de début de partie. Celle reçoit une
+continuation en paramètre. Elle termine son animation en utilisant une
+animation CPS s'occupant de faire clignoter le score du joueur, et
+puisqu'il s'agit de la fin de l'animation de début de partie, la
+continuation est passée directement en paramètre à cette animation de
+clignotement (optimisation d'appel terminal). On a pu ainsi facilement
+utiliser l'animation de clignotement et de manière très modulaire
+l'animation de clignotement dans notre animation de début de
+partie. Cette figure illustre un exemple d'utilisation de cette
+animation en réécrivant de manière plus complète l'événement de début
+de partie de la figure \ref{Exp:des}.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (start-of-game-animation-event level continuation)
+  (lambda ()
+    ...
+    (in 0 (create-text-flash-animation-event level
+            (level-get level score-msg-obj)
+            animation-duration new-cont))))
+(schedule-event! sim 0
+  (start-of-game-animation-event level
+   (generate-invaders-event level
+    (lambda ()
+      (new-player! level)
+      (in 0 (create-init-invader-move-event level))
+      (in 1 (create-invader-laser-event level))
+      (in (mothership-random-delay)
+          (create-new-mothership-event level))))))
+  \end{schemecode}
+  \caption{Exemple d'animation combinant les événements discrets et
+    une programmation CPS}
+  \label{Exp:anim}
+\end{figure}
+
+Les structures de données utilisées dans \si furent définies par la
+forme spéciale \scheme{define-type} de Gambit-C. Ces dernières ont
+utilisé la hiérarchie simple que permet celle-ci de manière à
+permettre un minimum de polymorphisme et de modularisation de code. La
+figure \ref{Exp:deftyp-objs} donne certaines définitions de ces
+structures employées. L'avantage principal de l'utilisation de ces
+structures est qu'elles sont très performantes. 
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-type game-object id type pos state color speed
+  extender: define-type-of-game-object)
+(define-type-of-game-object invader-ship row col)
+(define-type-of-game-object player-ship)
+(define-type-of-game-object message-obj text)
+...
+  \end{schemecode}
+  \caption{Structures de données utilisées dans la première version de
+    \si}
+  \label{Exp:deftyp-objs}
+\end{figure}
+
+Par contre, un désavantage de celles-ci est, entre autre, le fait
+qu'elle ne permettent pas d'avoir facilement des champs communs à
+toutes les instances d'un type donné. Par exemple, l'expression du
+fait que toutes les instances du type \scheme{player-ship} possèdent
+doivent être associés à une boîte englobante (\textit{bounding box})
+de 13 par 8 pixels et qu'ils dont rendus par la fonte nommée
+\scheme{player} ne se fait pas de manière simple. Ces informations
+pourraient être ajoutées aux instance, mais ce serait un gaspillage
+d'espace mémoire puisque ces données sont commune à toutes les
+instances de ce type. Ainsi, pour cette version de \si, un système de
+type \emph{très rudimentaire} a été utilisé. Une structure de donnée
+décrivant un type a été utilisée, cette dernière contenant aussi les
+données communes aux instances de ce type. Un pointeur vers le bon
+type est par la suite ajouté dans le champs \scheme{game-object-type}
+de chacune des instances du jeu. L'utilisation de ce petit système de
+type demande ainsi l'écriture de code qui est fastidieuse et qui ne
+devrait pas être nécessaire.
+
+La détection de collision sur ces objets s'est faite relativement bien
+grâce aux types qui contiennent de l'information sur les boîtes
+englobantes des objets. Puisqu'il n'y a jamais beaucoup d'objets
+présent dans le jeu en même temps, une détection très rudimentaire de
+collisions est effectuée. Cette dernière est présentée dans la figure
+\ref{Exp:dc-si1}. 
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (detect-collision? obj level)
+  (or (exists (lambda (collision-obj)
+                (if (shield? collision-obj)
+                    (obj-shield-collision? obj collision-obj)
+                    (obj-obj-collision? obj collision-obj)))
+              (level-all-objects level))
+      (obj-wall-collision? obj (game-level-walls level))))
+  \end{schemecode}
+  \caption{Détection de collision dans \si}
+  \label{Exp:dc-si1}
+\end{figure}
+
+Un problème majeur relié à l'utilisation de ces structures de données
+est par contre apparu lorsque la résolution de collisions a due être
+implantée. En effet, cette résolution dépend du types des deux objets
+entrant en collision ensemble. La figure \ref{Exp:si1-col-res}
+illustre bien le problème rencontré. On constate que les types des
+objets doivent être manuellement analysés de manière a utiliser la
+bonne fonction de résolution qui, elle aussi, se doit d'analyser le
+type de l'objet reçu de manière a choisir la bonne résolution a
+adopter. Il en résulte en du code très lourd, où il est très facile
+d'introduire des erreurs.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (resolve-collision! level obj coll-obj)
+  (cond
+   ((player-ship? obj) (resolve-player-collision! level obj coll-obj))
+   ((laser-obj? obj) (resolve-laser-collision! level obj coll-obj))
+   ...))
+(define (resolve-laser-collision! level laser-obj collision-obj)
+  (cond ((invader-ship? collision-obj) ...)
+        ((laser-obj? collision-obj) ...)
+        ((player-ship? collision-obj) ...)
+        ...))
+  \end{schemecode}
+  \caption{Résolution de collision dans la première version de \si}
+  \label{Exp:si1-col-res}
+\end{figure}
+
+Les parties multi-joueurs de \si sont très simple. Chaque joueur joue
+en alternance jusqu'à se que son vaisseau se fasse détruire. Ainsi,
+cela implique de pouvoir conserver deux parties du jeu de manière
+\emph{parallèle}, où une seule des deux avance à la fois. Avec le flot
+de contrôle sous forme de simulation par événements discrets utilisé,
+cela implique d'avoir deux simulations en parallèle. Puisque le
+système de simulation ne permet pas de pouvoir facilement arrêter une
+simulation, une autre approche a été utilisée, utiliser un système de
+coroutine dans lequel les simulation seront exécuté dans des
+coroutines différentes. Ainsi, le changement de contexte pourra être
+manuellement utilisé lorsqu'un joueur meurt afin de réactiver la
+partie du prochain joueur.
+
+C'est de cette idée qu'est né le système de coroutine présenté dans le
+chapitre \ref{Chap:corout}. Il fut initialement beaucoup plus simple
+que tel qu'il est présenté dans ce chapitre, mais les composantes de
+bases restent les mêmes. La figure \ref{Exp:si-mort} résume la
+procédure utilisée lors de la mort d'un joueur. Après avoir effectuer
+la gestion des objets dans le niveau, un mutex est bloqué afin de
+permettre l'arrêt des animations du jeu, chose requise pour
+l'animation de mort d'un joueur. Ce mutex provient du système
+d'événement discret qui fut, par la suite, intégré au système de
+coroutine. Ensuite, l'animation de mort d'un joueur est lancée, avec
+comme continuation \scheme{continuation}. Cette dernière, dans le cas
+où le joueur n'a pas terminé sa partie, s'occupe d'effectuer le
+changement de coroutines, après avoir informé l'autre coroutine de
+certaines informations au préalable. Il est intéressant de noter que
+juste avant le changement de contexte, un événement très prioritaire
+est schédulé de manière à se produire immédiatement au retour du
+contexte de la coroutine. Il s'agit de l'animation ré-introduisant la
+partie du joueur actuel.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (explode-player! level player)
+  (level-loose-1-life! level)
+  (level-add-object! level player-expl-obj)
+  (level-remove-object! level player)
+  (let ((continuation
+         (if (<= (game-level-lives level) 0)
+             (begin ...)
+             (lambda ()
+               (if (2p-game-level? level)
+                   (begin
+                     (send-update-msg-to-other level \#f)
+                     (in NOW! (start-of-game-animation-event
+                               level (return-to-player-event level)))
+                     (yield-corout))
+                   (begin ...))))))
+     (in 0 (lambda ()
+            (sem-lock! (level-mutex level))
+            (in 0 (player-explosion-animation-event
+                   level expl-obj animation-duration continuation))))))
+   \end{schemecode}
+  \caption{Événement de mort d'un joueur}
+  \label{Exp:si-mort}
+\end{figure}
 
 \subsection{Version orientée objet}
 \label{Exp:sp2}

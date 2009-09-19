@@ -4126,6 +4126,12 @@ la collision avec un laser du joueur. Donc de tels événements sont
 prompts à donner des erreurs dues à des inconsistance entre l'état du
 jeu attendu et l'état réel lorsque ce produit un événement.
 
+Aussi, il est important de faire bien attention a doser le calcul
+effectuer par un événement de manière à ne pas éterniser le temps du
+processeur utilisé. Ainsi, les évènements sont souvent reschédulé avec
+un interval de temps de 0 de manière à laisser la chance aux autres
+coroutines de s'exécuter.
+
 Toutefois, cette approche semble avoir été très bénéfique pour la
 création d'animations. En effet, en combinant des événements discrets
 avec un style d'écriture en CPS, il est possible de pouvoir très bien
@@ -4315,6 +4321,25 @@ partie du joueur actuel.
   \label{Exp:si-mort}
 \end{figure}
 
+Ainsi, l'écriture de cette première version de \si a permise
+d'identifier plusieurs problèmes reliés au développement de jeux vidéo
+(détection et résolution de collisions, parties multi-joueurs,
+etc...). 
+
+En plus de permettre de pouvoir facilement expérimenter sur le type de
+flot de contrôle utilisé pour développer ce jeu, Scheme a permis de
+faire rapidement plusieurs outils non triviaux pour l'implantation du
+jeu, dont un système de fontes et un petit système de coroutines.
+
+Par contre, certains problèmes ne possèdent pas des solutions
+satisfaisantes. En effet, la résolution de collision est très
+fastidieuse et aurait besoin d'être modularisée et améliorée. Aussi,
+la technique de flot de contrôle expérimentale utilisée (simulation
+par événements discrets), fonctionne bien pour certains aspects, mais
+ne semble pas naturelles pour d'autre. Ainsi, le flot de contrôle
+pourrait aussi être améliorer de manière à pouvoir exprimer de manière
+plus naturelle le comportement de entités du jeu.
+
 \subsection{Version orientée objet}
 \label{Exp:sp2}
 \todo{Motivation: Utilisation de fonctions génériques}
@@ -4340,6 +4365,8 @@ partie du joueur actuel.
 
 \todo{Utilisation d'un système object a grandement contribué à
   améliorer le code du jeu.}
+
+\todo{GC pas un probleme}
 
 L'intégration du système de coroutines aux objets du jeu a causé plus
 de problème qu'elle en a résolu. L'utilisation des coroutines serait

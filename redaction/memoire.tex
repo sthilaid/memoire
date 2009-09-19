@@ -3994,7 +3994,41 @@ section \ref{Exp:sp3}
 
 \subsection{Version initiale}
 \label{Exp:sp1}
+
+Une première version du jeu \si a été écrite dans le but de rencontrer
+les problèmes reliés au développement de jeu vidéo et les résoudre en
+utilisant le langage Scheme. Ainsi, après l'analyse de la version
+arcade du jeu disponible sur l'émulateur MAME~\cite{MAME}, plusieurs
+problèmes potentiels ont été rencontrés:
+
+\begin{itemize}
+\item Rendu du jeu
+\item Contrôle du flot du jeu
+\item Détection et résolution de collisions
+\item Animations
+\item Partie multi-joueurs
+\end{itemize}
+
+Afin de pouvoir effectuer le rendu du jeu, une librairie de lecture et
+chargement d'image a dû être écrite. Le choix de l'écriture de cette
+librairie, plutôt que d'utiliser une librairie C déjà existante pour
+faire ce travail réside dans le but de demeurer indépendant d'autant
+de dépendances externes que possibles et d'avoir le plus de code
+Scheme impliqué dans le jeu que possible. Par contre, la librairie
+SDL~\cite{SDL} a été utilisé comme système de gestion d'entrés/sorties
+et de fenêtrage. Le système de rendu utilisé est nul autre que
+\textit{OpenGL}~\cite{OpenGL} afin de pouvoir profiter d'un bonne
+portabilité et de permettre facilement d'ultérieurement utiliser les
+travaux effectués pour faire des jeux vidéo utilisant en rendu tri
+dimensionnel. Ainsi, la librairie de lecture et de chargement d'images
+s'occupe de lire des images en format textuel \textit{ppm}, qui est
+l'un des format les plus simple pour d'écrire une image
+\textit{bitmap}. Le système s'attend à lire des images sous forme de
+fontes, \ie des images contenant plusieurs sous-images.
+
 \todo{Premier jet dans le but de trouver des problèmes potitiels}
+
+\todo{Simulation a evenements discrets}
 
 \begin{itemize}
 \item Comment faire des animations? => CPS

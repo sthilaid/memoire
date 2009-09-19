@@ -17,6 +17,8 @@
 \newcommand{\object}[1]{{\it #1}}
 
 \newcommand{\ie}{{\textit{i.e.}}}
+\newcommand{\lr}{{\textit{Lode Runner }}}
+\newcommand{\si}{{\textit{Space Invaders }}}
 
 \input{r5rscommands.tex}
 
@@ -332,9 +334,8 @@ de tennis de table permettant à un joueur de jouer contre une
 intelligence artificielle ou bien de se mesurer à un autre joueur.
 
 Ce fut alors l'âge d'or des machines d'arcade où l'on a créé beaucoup
-de jeu au contenu diversifié. Parmi ceux-ci, \textit{Space
-  Invaders}(1978) et \textit{PacMan}(1980) furent extrêmement
-populaires. 
+de jeu au contenu diversifié. Parmi ceux-ci, \si(1978) et
+\textit{PacMan}(1980) furent extrêmement populaires.
 
 Malgré que les jeux d'arcades étaient très simple, ils étaient
 beaucoup appréciés pour l'amusement qu'ils procuraient aux joueurs qui
@@ -375,7 +376,7 @@ Les jeux d'ordinateurs étaient distribués sur beaucoup de média
 différents. La distribution allait de cassettes, aux disquette, en
 passant bien sur par des échanges postaux de code sources.
 
-En 1982, le jeux \textit{Lode Runner} fut développé pour les
+En 1982, le jeux \lr fut développé pour les
 ordinateurs \textit{Apple II}. Ce jeux d'action fut l'un des premiers
 jeu comprenant un éditeur de niveaux.
 
@@ -3901,31 +3902,98 @@ balancer ou d'optimiser ces dernières.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Évaluation et expériences}
 
-Développement de jeu fait ayant comme but de trouver les problèmes
-rencontrés durant la création de jeux vidéo et de proposer des
-méthodes pour résoudre ces problèmes.
+Afin de pouvoir déterminer les forces et les faiblesses du
+développement de jeux vidéo en Scheme, des jeux doivent être
+développés en augmentant graduellement la complexité de ceux-ci de
+manière à résoudre les problèmes reliés au développement de jeu de
+manière itérative. Un jeu simple comprend les problèmes les plus
+basiques qu'un jeu peut avoir: détection de collisions, animations,
+concept de niveaux, etc... Ainsi, ces problèmes peuvent être adressés
+dans un premier temps, puis de nouveaux problèmes peuvent être
+entrepris par la suite en développant un jeu plus complexe. Aussi,
+cette approche permet de bâtir une infrastructure de développement de
+jeux vidéo qui abaisse la difficulté du développement de jeux plus
+complexes.
 
-Aussi, on cherche à identifier les avantages que nous a fourni Scheme
-et à identifier les inconvénients que pose l'utilisant du langage
-Scheme pour le développement de ces jeux.
+Le premier jeu choisi pour la résolution des problèmes de bases est
+\si (1978). Ce dernier date de la période des jeux
+d'arcades et, tout en étant très simple, adresse plusieurs problèmes
+fondamentaux qu'impliquent les jeux vidéo modernes: interactions avec
+usagers rapide, des niveaux, de la détection de collision et même des
+parties multi-joueurs. Puisque le graphisme de ce jeux est très
+rudimentaire, il consiste en un très bon choix pour un premier jeu,
+car il permet de concentrer le développement sur le moteur du jeu. Le
+développement de ce jeu est traité dans la section \ref{Exp:SI}.
 
-Débute par un jeu simple afin de trouver les problèmes de base et
-trouve des solutions à ces problèmes.
+Par la suite, le jeu \lr (1983) a été développé comme
+deuxième choix de jeu. Ce dernier date de l'époque des premiers
+ordinateurs personnels et est relativement plus élaboré. Par contre,
+c'est la version arcade du jeu (1984) qui a été reprise. Tout en
+conservant les problèmes fondamentaux traités dans \si, ce jeu étend
+le concept de niveaux déjà traitée, introduit la notion d'intelligence
+artificielle et possède des entités possédant des états beaucoup plus
+complexes. De plus, le développement de \lr de
+permettre de consolider les techniques développés pour la création du
+premier jeu. Le développement de ce jeu est traité dans la section
+\ref{Exp:ld}.
 
-Ensuite, un deuxième jeu a été écrit afin de consolider les solutions
-trouvées précédemment et de potentiellement trouver d'autres problèmes
-reliés aux nouvelles complexité présentent dans ce deuxième jeu.
+Ainsi, ce chapitre a pour but d'expliquer le cheminement du travail
+nécessaire à l'écriture de ces deux jeux afin de pouvoir répondre à la
+problématique de base traité par ce document.
 
-\section{Développement de \og Space Invaders \fg}
+\section{Développement de \si}
+\label{Exp:SI}
 
-\subsection{Objectifs}
-\todo{Expérimentation avec un jeu très simple}
+Ce jeu consiste à sauver la galaxie en éliminant une armée
+d'envahisseurs extra-terrestre grâce à un vaisseau spatial équipé de
+lasers et bénéficiant de la présence de trois boucliers. Le joueur ne
+peut se déplacer que de gauche à droite et tirer des lasers. Les
+ennemis sont placés en formations et se déplacent aussi latéralement
+jusqu'à ce qu'ils frappent un côté de l'écran, dans un tel cas, ils
+descendent d'une rangée, se rapprochant ainsi du joueur. La vitesse de
+déplacement des ennemis est inversement proportionnelle à leurs
+nombre. Le niveau se termine lorsque tous les ennemis sont
+détruits. Alors, le prochain niveau (qui est exactement le même que le
+précédant) débute. La figure \ref{Exp:si-screen} illustre une capture
+d'écran du jeu développé.
 
-\todo{Trouver les problèmes fondamentaux pour le développement de jeux}
+\begin{figure}[htb!]
+  \center
+  \includegraphics[scale=0.7]{space-invaders-screenshot}
+  \caption{Capture d'écran du jeu \si}
+  \label{Exp:si-screen}
+\end{figure}
 
-\todo{Tenter de les résoudre}
+L'objectif visé en développant \si est très simple: écrire un premier
+jeu qui permettra d'exposé les problèmes fondamentaux reliés au
+développement de jeux vidéo et résoudre ces problème en tentant de
+tirer profit de la puissance expressive du langage Scheme. Pour y
+arriver, une approche de développement itératif (en spirale) a été
+utilisée. 
+
+Une première version a été développé dans le but d'avoir
+l'infrastructure de base pour le jeu et d'identifier les problèmes
+rencontrés au cours du développement. Le développement de cette
+première version est décrit dans la section \ref{Exp:sp1}.
+
+Par la suite, une deuxième version fut écrite afin répondre aux
+problèmes rencontrés dans la première version du jeu. Pour ce, le
+développement du système objet et de coroutines furent
+entrepris. Cette démarche d'amélioration du jeu est décrite dans la
+section \ref{Exp:sp2}.
+
+Finalement, une version expérimentale fut écrite. Cette version
+tentait de s'éloigner de l'architecture classique de jeu vidéo où une
+boucle principale (\textit{main loop}) gère l'état du système en
+entier. L'idée a été de tenter de fusionner le système objet et le
+système de coroutine ensemble afin que tous les objets du jeu soient
+eux même des coroutines, en espérant ainsi simplifier l'écriture
+d'entités du jeu. Cette dernière version du jeu est décrite dans la
+section \ref{Exp:sp3}
+
 
 \subsection{Version initiale}
+\label{Exp:sp1}
 \todo{Premier jet dans le but de trouver des problèmes potitiels}
 
 \begin{itemize}
@@ -3939,6 +4007,7 @@ reliés aux nouvelles complexité présentent dans ce deuxième jeu.
 \end{itemize}
 
 \subsection{Version orientée objet}
+\label{Exp:sp2}
 \todo{Motivation: Utilisation de fonctions génériques}
 
 \todo{Hierarchie de classe}
@@ -3947,6 +4016,7 @@ reliés aux nouvelles complexité présentent dans ce deuxième jeu.
 
 
 \subsection{Version avec système de co-routine}
+\label{Exp:sp3}
 \todo{Motivation: Intégrer les coroutines a chaque objet de manière à
   ce que chaque instance soit une entité à part entière qui doit régir
   son propre comportement.}
@@ -3970,7 +4040,9 @@ mieux d'être limité à l'implantation du jeu multijoueur.
   voir si elles sont toujours valides}
 
 
-\section{Développement de \og Lode Runner \fg}
+\section{Développement de \lr}
+\label{Exp:ld}
+
 \subsection{Objectifs}
 \todo{Jeux plus complexe: plus d'interaction du joueur, intelligence
   artivicielle, niveaux, schema d'animations plus complexe, etc...}

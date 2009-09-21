@@ -4602,39 +4602,93 @@ programmations résultant de l'implantation d'un tel jeu.
 \section{Développement de \lr}
 \label{Exp:ld}
 
+Après avoir développé le premier jeu, un deuxième jeu a dû être
+développé afin de pouvoir consolider les techniques développées pour
+\si. Le jeu \lr a été choisi pour remplir cette tâche pour plusieurs
+raisons. Principalement, ce jeu contient de nouveaux éléments qui
+n'étaient pas présent dans \si comme par exemple le concept
+d'intelligence artificielle et étendait d'autre concepts qui y étaient
+très primitifs comme le concept de niveaux.
+
+Ce jeu consiste à tenter de capturer tout l'or dispersée dans le
+niveau en évitant de rentrer en contact avec les robots ennemis. Pour
+y arriver, le joueur doit grimper des échelles, passer sur des cordes
+et utiliser son pistolet laser qui permet de faire des trous à la
+gauche ou à la droite du joueur. Ces trous se referment après un
+délais prescrits et donc les joueurs doivent se dépêcher afin d'éviter
+de rester pris au piège à l'intérieur d'un trou. Lorsque tout l'or est
+en possession du joueur, un échelle de sortie apparaît et mène le
+joueur au niveau suivant. La joueur dispose de trois vies pour se
+rendre le plus loin possible dans le jeu et obtenir le meilleur score
+possible. La figure \ref{Exp:ld-screen} illustre une capture d'écran
+du jeu développé.
+
 \begin{figure}[htb!]
-  \begin{verbatim}
-dsladsdafsadfsdafafd
-adssdf
-  \end{verbatim}
-  \caption{blublublu}
-  \label{}
+  %\includegraphics[scale=0.6]{}
+  \caption{Capture d'écran du jeu \lr développé}
+  \label{Exp:ld-screen}
 \end{figure}
 
-\subsection{Objectifs}
-\todo{Jeux plus complexe: plus d'interaction du joueur, intelligence
-  artivicielle, niveaux, schema d'animations plus complexe, etc...}
+Afin de pouvoir développé ce jeu, les meilleurs techniques utilisées
+pour le développement de \si ont été réutilisées et raffinées pour les
+besoins plus grands de ce jeu. Par contre, le flot du contrôle est
+régi de manière beaucoup plus conservatrice en utilisant une boucle
+principale effectuant le travail à faire pour chaque image du jeu. Il
+en résulte qu'une fonction générique \scheme{animate} est appelée
+avant le rendu de chaque image de manière à effectuer le travail que
+doit accomplir chaque objet avant ce rendu. La figure
+\ref{Exp:lr-main} illustre une partie de la boucle principale du jeu
+et l'instance de la fonction générique \scheme{advance-frame!} pour un
+niveau de jeu. Cette figure illustre la simplicité du flot de contrôle
+du jeu résultante grâce à l'utilisation de fonction génériques et de
+fonctions d'ordre supérieures.
 
-\todo{Utiliser ce qui semblait de meilleur dans space-invaders de
-  manière a non seulement confirmer la pertinance de ces methodes,
-  mais aussi a potentiellement en developper de nouvelles dû aux
-  nouvelles contraintes de ce jeu.}
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-method (advance-frame! (level level) keys-down keys-up)
+  (cond ((level-get 'player level) =>
+         (lambda (player)
+           (player-velocity-set! player point-zero))))
+  (cond
+   ((level-paused? level) 'do-nothing)
+   ...
+   (else
+    (update! level level current-time (lambda (t) (+ t (fl/ 1. (FPS)))))
+    (if (> (level-current-time level) (level-time-limit level))
+        (level-game-over! level)
+        (begin
+          (for-each (flip process-key level) keys-down)
+          (for-each (flip animate level) (level-objects level)))))))
+(let loop ((level (current-level)))
+  (if exit-requested? (quit))
+  (poll-SDL-events)
+  (advance-frame! level (key-down-table-keys) (key-up-table-keys))
+  (render-scene screen level)
+  (loop (current-level)))
+  \end{schemecode}
+  \caption{Boucle principale du jeu \lr}
+  \label{Exp:lr-main}
+\end{figure}
 
-\subsection{Synchronisation}
-\todo{Utilisation du concept de frame pour faire la synchro. (manière
-  traditionnelle) Réduit de beaucoup la complexité.}
+Par contre, l'utilisation d'une telle boucle fait en sorte que la
+vitesse du jeu dépend directement du taux de rafraîchissement de
+celui-ci.
 
-\todo{Danger si le framerate varie, la vitesse du jeu varie.}
+ \todo{Danger si le framerate varie, la vitesse du jeu varie.}
 
-\subsection{Machines à états}
-\todo{Utiliation des fonctions génériques}
+\todo{Utilisation grid pour detection de collisions efficace}
 
-\todo{Utilisez un LSD pour ca??? Des idées?}
 
 \subsection{Intelligence Artificielle}
 \subsubsection{À venir...}
 
-\subsection{Conclusion}
+\subsection{Machines à états?}
+\todo{Utiliation des fonctions génériques}
+
+\todo{Utilisez un LSD pour ca??? Des idées?}
+
+
+\section{Conclusion}
 \subsubsection{À venir...}
 
 %% Figures qui occupent toute une page (placees a la fin du chap)

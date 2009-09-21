@@ -4674,10 +4674,95 @@ Par contre, l'utilisation d'une telle boucle fait en sorte que la
 vitesse du jeu dépend directement du taux de rafraîchissement de
 celui-ci.
 
- \todo{Danger si le framerate varie, la vitesse du jeu varie.}
+Cette approche vis-à-vis le flot de contrôle et le fait que le jeu \lr
+contient des entités plus complexes impliquent que le comportement des
+objets de ce jeu sont dépends de la situation. Encore une fois, ce
+sujet est traité de manière plus traditionnelle en utilisant des états
+d'objets et des machines à états afin de régir leurs animations. La
+figure \ref{Exp:hl} donne le contenu de la classe \scheme{human-like}
+qui sert de bases aux classes \scheme{player} et \scheme{robot} qui
+servent à implanter respectivement les instances du joueurs et des
+robots ennemis. Elle démontre bien la complexité de l'état de ces
+entités. 
 
-\todo{Utilisation grid pour detection de collisions efficace}
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-class human-like (game-object moving statefull)
+  (slot: can-climb-up?)
+  (slot: can-go-down?)
+  (slot: can-use-rope?)
+  (slot: can-walk?)
+  (slot: droped-rope?)
+  (slot: stuck-in-hole?)
+  (slot: facing-direction)
+  (slot: walk-cycle-state)
+  (slot: shooting?)
+  (slot: escaping?)
+  (constructor: (lambda (self x0 y0 initial-velocity id) ...)))
+  \end{schemecode}
+  \caption{Définition de la classe \scheme{human-like} dans le jeu \lr}
+  \label{Exp:hl}
+\end{figure}
 
+La fonction générique \scheme{change-state!}  utilise l'état des
+instances de ces classes pour déterminer l'animation qui doit être
+utilisée afin d'obtenir un rendu cohérent de l'entité. La figure
+\ref{Exp:lr-change-state} contient la gestion principale de l'état des
+entités appartenant à la hiérarchie de la classe \scheme{human-like}.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-method (change-state! (p human-like) level)
+  (let* ((v (moving-velocity p)))
+    (cond
+     ((eq? (human-like-escaping? p) 'escaping) (ascend-cycle! p))
+     ((human-like-shooting? p) (shoot-cycle p))
+     ((human-like-stuck-in-hole? p) (dying-cycle! p))
+     ((and (not (zero? (point-x v))) (human-like-can-walk? p))
+      (walk-cycle! p))
+     ((human-like-can-use-rope? p)
+       (if (or (not (zero? (point-x v)))
+               (not (memq (human-like-state p) rope-states)))
+           (rope-cycle! p)
+           'keep-same-state^\_^))
+     ((not (human-like-can-go-forward? p)) (fall-cycle! p))
+     ((not (zero? (point-y v))) (ascend-cycle! p))
+     (else (reset-walk-cycle! p)))))
+  \end{schemecode}
+  \caption{Gestion de l'état d'une entité appartenant à la hiérarchie
+    de type \scheme{human-like} dans \lr}
+  \label{Exp:lr-change-state}
+\end{figure}
+
+Une nette amélioration apportée au jeu, en comparaison celui
+développée précédemment, est l'utilisation d'une grille pour accélérer
+la détection de collisions. Le principe est simple: une grille
+bidimensionnelle contenant un nombre de subdivisions variable est
+créée. Lorsqu'un objet est ajouté au jeu, il est ajouté dans chacune
+des cases de la grilles auxquelles il entre en contacte et,
+réciproquement, cet objet possède des pointeurs vers chacune de ces
+cases de la grille. Si la grille est assez fine, alors la détection de
+collisions devient triviale: il ne suffit que de regarder dans cases
+de la grille qui touchent l'objet en question afin de voir si d'autres
+objets s'y trouvent et si c'est le cas, alors une collision est
+détectée. Bien sûr, la taille de la grille influence sur le travail
+nécessaire lors de chaque ajout et déplacement d'objets, mais puisque
+dans \lr la plupart des objets sont statiques, cela ne pose pas de
+problèmes réels. La figure \ref{Exp:lr-col-detection} illustre
+l'algorithme de détection de collisions utilisé.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (detect-collisions obj level)
+  (filter (lambda (x) (not (eq? x obj)))
+          (fold-l (curry2* set-union eq?)
+                  '()
+                  (map (curry2 grid-get (level-grid level))
+                       (game-object-grid-cells obj)))))
+  \end{schemecode}
+  \caption{Détection de collisions dans \lr}
+  \label{Exp:lr-col-detection}
+\end{figure}
 
 \subsection{Intelligence Artificielle}
 \subsubsection{À venir...}

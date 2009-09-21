@@ -3144,7 +3144,7 @@ coroutines en utilisant \scheme{simple-boot}.
 \end{figure}
 
 
-\subsection{Manipulation du contrôle de flot}
+\subsection{Manipulation du flot de contrôle}
 Puisque le contrôle du flot d'exécution entre les coroutines doit être
 explicité par l'utilisateur, une bonne diversité de fonctions
 permettent la manipulation de celui-ci. Il est important de noter que,
@@ -3339,9 +3339,12 @@ d'une virgule (\textit{unquote}), le symbole est \emph{lié} à la
 valeur trouvée à cet endroit du motif dans le message reçu. Les
 formats de motifs reconnus sont les symboles, les mots clés, les
 caractères, les valeurs booléennes, les nombres, les chaînes de
-caractères, les listes et les vecteurs. La figure
-\ref{Corout:recv-pat} illustre plusieurs motifs différents qui peuvent
-être utilisés.
+caractères, les listes et les vecteurs. Aussi, un patron spécial
+permettant d'effectuer des attentes bornées dans le temps est
+disponible sous la forme \scheme{(after <sec> <body> ...)}. Ce patron
+de spécial \emph{doit} être spécifié en dernier, s'il est présent. La
+figure \ref{Corout:recv-pat} illustre plusieurs motifs différents qui
+peuvent être utilisés.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -3351,7 +3354,8 @@ caractères, les listes et les vecteurs. La figure
       ((a ,b c) (string b \#\textbackslash k))           ; list match
       (\#(a b ,c) c)                        ; vector match
       ((tata 1 \#(toto ,x) "titi") (+ x 1)) ; complex match
-      (,anything anything))                ; can match anything
+      (,anything anything)                 ; can match anything
+      (after 2 'timeout!))                 ; timeout
   \end{schemecode}
   \caption{Exemple de patrons pouvant être utilisés dans le filtrage
     par motifs de la forme spécial \scheme{recv}}
@@ -4058,7 +4062,7 @@ le comportement à entreprendre lorsque l'image est agrandie. Par
 défaut, l'image est lue dynamiquement et est étirée lorsqu'elle est
 agrandie.
 
-Le contrôle de flot d'exécution dans ce jeu fut expérimental. Dans
+Le flot de contrôle d'exécution dans ce jeu fut expérimental. Dans
 cette première version, une simulation par événements discrets a été
 utilisée. L'idée derrière ce choix provenait du fait que dans un jeu
 vidéo, l'avancement de celui-ci peut être considéré comme une série
@@ -4454,52 +4458,158 @@ l'utilisation d'une hiérarchie de classe annotée de propriétés et
 comportant des membres de classes et de fonctions génériques pour
 effectuer de manière transparente les actions de bases sur les
 instances de ces classes. Par contre, un problème n'a toujours pas été
-adressé dans cette nouvelle version. En effet, le contrôle de flot
+adressé dans cette nouvelle version. En effet, le flot de contrôle
 implanté par une simulation à événement discret n'a pas été modifié
 afin de mieux l'adapter aux comportements des entités du jeu.
 
 
-\subsection{Version avec contrôle de flot sous forme de coroutines}
+\subsection{Version avec flot de contrôle sous forme de coroutines}
 \label{Exp:sp3}
 
 Ainsi, après deux version du jeu, \si possède toujours certains
-problèmes dont le contrôle de flot utilisé qui n'est très bien adapté
+problèmes dont le flot de contrôle utilisé qui n'est très bien adapté
 aux objets du jeu. Afin d'adresser ce problème, le système de
 coroutine présenté dans le chapitre \ref{Chap:corout} a été étendu de
 manière à ce que le flot de contrôle des entités du jeu soit exprimé
 plutôt sous forme de \emph{coroutine}. Cette approche sur le contrôle
 de flot est aussi expérimentale, mais l'utilisation d'une simulation à
-événements discrets a 
+événements discrets a laissée croire que la description du comportent
+des entités sous forme de \textit{threads} serait beaucoup plus
+naturelle. En effet, en utilisant des événements discrets, le corps
+des événements devait faire en sorte que l'événement se poursuive en
+se reschédulant un peu plus tard, donnant ainsi la chance aux autres
+événements de pouvoir s'exécuter. Ce phénomène correspond très bien à
+la fonction \scheme{yield} du système de coroutine qui interrompt de
+manière temporaire l'exécution d'une coroutine afin de laisser la
+chance aux autre coroutine de pouvoir continuer leur travail.
 
-\todo{Motivation: Intégrer les coroutines a chaque objet de manière à
-  ce que chaque instance soit une entité à part entière qui doit régir
-  son propre comportement.}
+Ainsi, dans cette nouvelle version du jeu, \emph{tous} les objets sont
+maintenant des coroutines exécutant leurs comportement de manière
+indépendante. La figure \ref{Exp:si3-class} illustre l'intégration du
+système de coroutine aux objets du jeu. L'utilisation de constructeurs
+permet l'appel du constructeur de base des coroutines afin de
+spécifier le comportement que devra entreprendre l'objet. Ce corps est
+déterminer de manière dynamique avec la fonction générique
+\scheme{behaviour} et sera exécuté dans un environnement contenant des
+gestionnaires de messages dynamique, communs à tous les objets,
+permettant de pauser le jeu ou de détruire ces derniers.
 
-\todo{Difficultés: synchronisation des entités}
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-class game-object (corout)
+  (slot: pos)
+  (slot: state)
+  (slot: color)
+  (slot: speed)
+  (class-slot: sprite-id)
+  (class-slot: bbox)
+  (class-slot: state-num)
+  (class-slot: score-value)
+  (constructor: (lambda (obj id pos state color speed level)
+                  (init! cast: '(corout * *) obj id
+                         (lambda ()(with-dynamic-handlers
+                                    ((pause (pause obj level))
+                                     (die   (die   obj level)))
+                                    ((behaviour obj level)))))
+                  (set-fields! obj game-object
+                    ((pos pos)     (state state)
+                     (color color) (speed speed))))))
+  \end{schemecode}
+  \caption{Classe de base des objets en tant que coroutine}
+  \label{Exp:si3-class}
+\end{figure}
 
-\todo{Code Highlight: synchronisation des invaders}
+Malgré l'idéologie prometteuse d'avoir des objets indépendant régis
+chacun par leurs comportement, l'implantation du comportement des
+entités du jeu est devenu très rapidement \emph{cauchemardesque}. En
+effet, puisque toutes les entités possèdent leurs fils d'exécution et
+que ceux-ci sont tous équivalents, la \emph{synchronisation} entre ces
+entités est primordiale et implique des protocoles de communication
+entre ceux-ci. Ces protocoles doivent régir tout le comportent du jeu
+et, en bout de ligne, le flot de contrôle devient soudainement très
+difficile à exprimer. Ainsi, des méta-objets ont dû être introduits
+afin de pouvoir effectuer la synchronisation entre les objets. La
+figure \ref{Exp:inv-cnt} donne le comportement du méta-objet régissant
+l'activité d'une rangée d'\textit{invader}. Ce dernier utilise des
+listes de diffusions pour envoyer des messages aux \textit{invader} de
+sa rangée. Il possède deux états: l'état initial qui attend la
+réception d'un message lui indiquant que c'est le tour de sa rangée de
+se déplacer et un deuxième états consistant à une barrière de
+synchronisation effectuant l'attente de la réception du message
+\scheme{moved} de la part de tous les \textit{invader} de la
+rangée. Puis, vérifie si une collision s'est produite avec un mur
+durant se déplacement et effectue la gestion de cette collision si
+c'est le cas en avertissant les autres contrôleurs de la situation. 
 
+De plus, l'utilisation intensive (voir abusive) du système de
+coroutine couplé avec le système d'objet a résulté en une chute
+dramatique des performances du jeu. Cette chute de performance a
+permis d'améliorer le système de coroutine en implantant un système de
+profilage des coroutine afin de pouvoir visualiser qu'elles coroutines
+monopolisaient le contrôle de l'ordonnanceur pour une durée trop
+longue. Ce système a permis d'identifier des coroutine attendant trop
+longtemps avant d'effectuer une opération permettant de redonner le
+contrôle à l'ordonnanceur, et d'ainsi l'optimiser afin d'améliorer les
+performances globales du système. 
+
+Par contre, même après avoir optimiser du système sont très mauvaise
+et donc, la troisième itération de \si fut abandonné en cours de
+route, après avoir implanté la majeur partie de la logique du jeu sous
+forme de coroutines. Cette version a permis de réaliser que l'approche
+plus tradionnelle pour le flot de contrôle serait plus appropriée que
+les approches utilisées pour implanter \si. Par contre, cette
+expérimentation sur la technique de flot de contrôle a permis de
+démontrer la facilité avec laquelle il a été possible de modifier le
+coeur du jeu pour essayer de nouvelles options quant à l'architecture
+du programme et de son flot de contrôle.
 
 \subsection{Conclusion}
-\todo{Trouvé plusieurs problèmes et pu résoudres ces derniers}
 
-\todo{Utilisation exp de controles de flot => maleabilite de Scheme}
+Ainsi, le développement de \si en Scheme fut très riche en
+expériences. Cela a permis, entre autre de trouver plusieurs problèmes
+généraux reliés au développement de jeux vidéo, comme des problèmes de
+rendus graphiques, de flot de contrôle, de résolution de collisions,
+etc... Ces problèmes ont été résolus en utilisant le mieux possible
+les avantages qu'offrent un langage de haut niveau tel que Scheme.
 
-\todo{Utilisation d'un système object a grandement contribué à
-  améliorer le code du jeu.}
+La création d'un système de programmation orienté objet a grandement
+permis d'améliorer la qualité du code écrit lors du développement de
+la première version du jeu grâce à l'utilisation des fonctions
+génériques permettant de faire un choix dynamique de procédure en
+fonctions des objets passés en paramètres.
 
-\todo{GC pas un probleme}
+L'expérimentation effectuée sur le flot de contrôle du jeu a permis de
+démontrer que l'architecture du moteur peut être facilement modifier
+afin de mettre à l'essai de nouvelles techniques de gestion du flot de
+contrôle du jeu. L'utilisation du système de coroutines pour
+d'implanter efficacement une version multijoueurs du jeu, mais fut
+inappropriée pour effectuer la gestion complète du flot de contrôle du
+jeu.
 
-L'intégration du système de coroutines aux objets du jeu a causé plus
-de problème qu'elle en a résolu. L'utilisation des coroutines serait
-mieux d'être limité à l'implantation du jeu multijoueur.
+Puisque \si est un jeu très simple, la gestion mémoire automatique n'a
+jamais constituée un obstacle au développement puisque trop peu
+d'objets étaient utilisés et les pauses dues à la récupération mémoire
+utilisaient environ 2 millisecondes, soit environ 1\% du temps
+processeur requis pour le rendu d'une image.
 
-\todo{ouverture: Essayer ces techniques dans un jeu plus complexe pour
-  voir si elles sont toujours valides}
+Il serait maintenant intéressant d'implanter un jeu plus complexe afin
+de valider si les techniques utilisées pour \si sont toujours
+applicables et de voir si elles s'étendent bien aux nouveaux défis de
+programmations résultant de l'implantation d'un tel jeu.
+
 
 
 \section{Développement de \lr}
 \label{Exp:ld}
+
+\begin{figure}[htb!]
+  \begin{verbatim}
+dsladsdafsadfsdafafd
+adssdf
+  \end{verbatim}
+  \caption{blublublu}
+  \label{}
+\end{figure}
 
 \subsection{Objectifs}
 \todo{Jeux plus complexe: plus d'interaction du joueur, intelligence
@@ -4526,6 +4636,56 @@ mieux d'être limité à l'implantation du jeu multijoueur.
 
 \subsection{Conclusion}
 \subsubsection{À venir...}
+
+%% Figures qui occupent toute une page (placees a la fin du chap)
+\begin{figure}[htb!]
+  \subfloat[Avant optimisation de la coroutine \scheme{invader-move}]
+           {\includegraphics[scale=0.55]{histo-corout-threads1}}
+
+  \subfloat[Après optimisation de la coroutine \scheme{invader-move}]
+           {\includegraphics[scale=0.55]{histo-corout-threads2}}
+
+  \caption{Profilage de coroutines du jeux \si}
+  \label{Exp:prof-corout}
+\end{figure}
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (invader-controller)
+  (define (init-state)
+    (recv
+     (init
+      (subscribe instant-components (self))
+      (broadcast `(invader-row ,(Inv-Controller-row (self)))
+                 'move)
+      (wait-state))))
+  (define-wait-state wait-state moved (inv-nb)
+    (recv
+     (go-down-warning
+      (let ((row-nb (Inv-Controller-row (self))))
+        (broadcast `(invader-row ,row-nb) 'wall-collision)
+        (for i 0 (< i invader-row-number)
+             (if (not (= i row-nb))
+                 (if (not (zero? (msg-list-size `(invader-row ,i))))
+                     (let ((move-back? (< i row-nb)))
+                       (broadcast `(invader-row ,i)
+                                  `(wall-collision ,move-back? \#f))))
+                 (broadcast `(invader-row ,i)
+                            `(wall-collision  \#t ,(self))))))
+      (wait-state))
+     (after 0
+            (wait-for-next-instant)
+            (broadcast `(row-controller
+                         ,(next-row (Inv-Controller-row (self))))
+                       'init)
+            (unsubscribe instant-components (self))
+            (init-state))))
+  (init-state))
+  \end{schemecode}
+  \caption{Comportement du méta-objet \scheme{invader-controller} qui
+    régi le comportement d'une rangée d'\textit{invaders}}
+  \label{Exp:inv-cnt}
+\end{figure}
 
 
 

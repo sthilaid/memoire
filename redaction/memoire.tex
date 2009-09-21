@@ -4342,15 +4342,135 @@ plus naturelle le comportement de entités du jeu.
 
 \subsection{Version orientée objet}
 \label{Exp:sp2}
-\todo{Motivation: Utilisation de fonctions génériques}
 
-\todo{Hierarchie de classe}
+Ainsi, une nouvelle version de \si fut développé afin de pallier à une
+lacune existante dans la première version écrite: le problème relié
+aux types de structures de données qui engendrait des cascades
+fastidieuses de vérifications de types de manière manuelle pour, entre
+autre, la résolution de collisions (voir la figure
+\ref{Exp:si1-col-res}).
 
-\todo{Code Highlight: Résolution de collisions}
+Initialement, plusieurs systèmes objets existant pour Gambit-C furent
+mis à l'essai pour pallier à ce problème, mais aucun ne répondait bien
+aux besoins présents. Certains offraient beaucoup de puissance
+expressive, mais avec un coût de performance trop élevé tandis que
+d'autre, plus performants, étaient trop restrictifs dans l'interface
+offerte. Pour ces raisons, un système de programmation orientée objet
+fut développé de manière à pouvoir bien répondre aux besoins dans \si,
+sans apporter un coût d'utilisation trop élevé. Ce système fait
+l'objet du chapitre \ref{Chap:OO}.
+
+Ainsi, les objets sont donc maintenant déclarés comme des classes
+appartenant à une hiérarchie relativement simple et tirant profit de
+la possibilité de concevoir des hiérarchies multiple afin de donner
+des propriétés aux objets du jeux. La figure \ref{Exp:sp2-class}
+illustre un échantillon de la hiérarchie de classes utilisée dans le
+jeu. On constate que les champs communs à toutes les instances ont été
+ajoutés comme membre de classe. Une classe abstraite,
+\scheme{sprite-obj}, a aussi été ajoutée afin de donner la propriété
+de \textit{sprite} aux objets dont le rendu dépend d'images dans une
+fonte. Par la suite, la classe \scheme{invader-ship} devient enfant de
+ses deux classes, tout en ajoutant les deux champs communs à tous les
+types d'\textit{invader}. Cette classe est sous-classée par les trois
+types d'ennemis existant (à l'exeption du vaisseau mère qui est traité
+à part). Puisque chaque type d'\textit{invader} possède sa propre
+classe, on peut alors spécifier les valeurs des champs de classes pour
+chacune de celles-ci de manière simple et claire. L'utilisation de ces
+champs pourra être, par la suite, faite de manière complètement
+uniforme et transparente. La macro \scheme{setup-static-fields} a été
+écrite afin de permettre de facilement assigner les champs de classes
+pour les classes enfants de \scheme{game-object}.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-class game-object ()
+  (slot: id) (slot: pos) (slot: state) (slot: color) (slot: speed)
+  (class-slot: sprite-id) (class-slot: bbox)
+  (class-slot: state-num) (class-slot: score-value))
+(define-class sprite-obj ())
+(define-class invader-ship (game-object sprite-obj) (slot: row) (slot: col))
+(define-class easy-invader   (invader-ship))
+(define-class medium-invader (invader-ship))
+(define-class hard-invader   (invader-ship))
+(setup-static-fields! easy-invader 'easy (make-rect 0 0 12 8) 2 10)
+(setup-static-fields! medium-invader 'medium (make-rect 0 0 12 8) 2 20)
+(setup-static-fields! hard-invader 'hard (make-rect 0 0 12 8) 2 30)
+  \end{schemecode}
+  \caption{Aperçu de la hiérarchie de classe du jeu}
+  \label{Exp:sp2-class}
+\end{figure}
+
+L'attrait principal du développement et de l'intégration du système
+objet pour la création du jeu réside dans l'utilisation des fonctions
+génériques. L'utilisation de celles-ci permet ainsi d'utiliser des
+opérations spécifiques aux objets donnés de manière complètement
+transparente, ce qui rend l'écriture de ces parties du jeu beaucoup
+plus élégante et solides face aux changements éventuels des structures
+de donnés ou de l'architecture du jeu.
+
+Ainsi, trois fonctions génériques ont été utilisée pour améliorer \si:
+\scheme{detect-collision?}, \scheme{resolve-collision!} et
+\scheme{render} qui effectuent respectivement la détection de
+collision, la résolution de collisions et le rendu graphique des
+objets. La figure \ref{Exp:si2-genfun} donne un aperçu de
+l'utilisation faite de la fonction générique
+\scheme{resolve-collision!}. Des instance de cette dernière sont
+définies pour les paires de collisions possibles dans le jeu et le
+système s'occupe de faire automatiquement le choix dynamique de la
+bonne instance en fonction des objets passés en paramètre. Le code
+résultant est beaucoup plus modulaire et clair que celui de la version
+précédente du jeu.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-method (resolve-collision! level (laser laser-obj) (inv invader-ship))
+  (invader-ship? inv) 
+  (level-increase-score! level inv)
+  (destroy-laser! level laser)
+  (explode-invader! level inv))
+
+(define-method (resolve-collision! level (laser1 laser-obj) (laser2 laser-obj))
+  (let ((inv-laser (if (player\_laser? laser1) laser2 laser1)))
+    (explode-laser! level inv-laser)
+    (destroy-laser! level inv-laser)))
+...
+(define (move-object! level obj)
+  (move-object-raw! obj)
+  (let ((collision-obj (detect-collision? obj level)))
+    (if collision-obj
+        (begin (resolve-collision! level obj collision-obj)
+               collision-obj)
+        \#f)))
+  \end{schemecode}
+  \caption{Exemple d'utilisation de fonction générique dans \si}
+  \label{Exp:si2-genfun}
+\end{figure}
+
+La deuxième version du jeu apporte beaucoup d'amélioration face au
+développement de jeu vidéo en Scheme grâce à l'utilisation de la
+programmation orientée objet. La modularité et l'abstraction du code
+de la première version a été améliorée de beaucoup grâce à
+l'utilisation d'une hiérarchie de classe annotée de propriétés et
+comportant des membres de classes et de fonctions génériques pour
+effectuer de manière transparente les actions de bases sur les
+instances de ces classes. Par contre, un problème n'a toujours pas été
+adressé dans cette nouvelle version. En effet, le contrôle de flot
+implanté par une simulation à événement discret n'a pas été modifié
+afin de mieux l'adapter aux comportements des entités du jeu.
 
 
-\subsection{Version avec système de co-routine}
+\subsection{Version avec contrôle de flot sous forme de coroutines}
 \label{Exp:sp3}
+
+Ainsi, après deux version du jeu, \si possède toujours certains
+problèmes dont le contrôle de flot utilisé qui n'est très bien adapté
+aux objets du jeu. Afin d'adresser ce problème, le système de
+coroutine présenté dans le chapitre \ref{Chap:corout} a été étendu de
+manière à ce que le flot de contrôle des entités du jeu soit exprimé
+plutôt sous forme de \emph{coroutine}. Cette approche sur le contrôle
+de flot est aussi expérimentale, mais l'utilisation d'une simulation à
+événements discrets a 
+
 \todo{Motivation: Intégrer les coroutines a chaque objet de manière à
   ce que chaque instance soit une entité à part entière qui doit régir
   son propre comportement.}
@@ -4362,6 +4482,8 @@ plus naturelle le comportement de entités du jeu.
 
 \subsection{Conclusion}
 \todo{Trouvé plusieurs problèmes et pu résoudres ces derniers}
+
+\todo{Utilisation exp de controles de flot => maleabilite de Scheme}
 
 \todo{Utilisation d'un système object a grandement contribué à
   améliorer le code du jeu.}

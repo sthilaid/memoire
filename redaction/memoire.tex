@@ -707,7 +707,7 @@ Il semble donc que le choix d'un langage permettant de pouvoir
 facilement répondre à ces contraintes pourrait certainement faciliter
 le développement de jeux vidéo et ainsi, engendrer des économies
 substantielles aux compagnies de l'industrie et rendant plus
-accessible le développement de jeu aux plus petites compagnies
+accessible le développement de jeux au plus petites compagnies
 possédant des budgets moins importants.
 
 
@@ -4992,23 +4992,79 @@ Compilateur Scheme utilisé pour produire les jeux sur PlayStation 2
 
 
 L'expérience acquise lors du développement des jeux \si et \lr permet
-donc de faire le point sur les avantages et les inconvénients de
+donc de faire le point sur les forces et les faiblesses sur
 l'utilisation d'un langage de programmation fonctionnelle tel que
 Scheme pour le développement de jeux vidéo.
 
-Malgré le fait que Scheme est, à la base, un langage très épuré, la 
+L'expressivité du langage Scheme, notamment grâce aux fonctions de
+premier ordre et aux macros, a permis de pouvoir développer un système
+de programmation orienté objet et l'intégrer directement au
+langage. Aussi, la réification de continuations a rendu possible le
+développement d'un système de coroutines élaboré.  L'utilisation de
+ces systèmes dans la programmation de jeu vidéo fut très bénéfique
+quant à l'amélioration du code produit grâce à l'introduction d'une
+bonne modularité fournie par les fonctions génériques du système
+objets et une grande simplicité pour l'implantation de parties
+multi-joueurs grâce à l'utilisation de coroutines pour encapsuler les
+parties se déroulant en parallèle. Le coût de développement de tels
+modules en utilisant des langages donnant accès à moins de puissance
+d'abstraction aurait certainement rendu le développement de ceux-ci
+impossible et donc Scheme s'est révélé un langage très puissant pour
+le développement de ces outils indispensables.
 
+Le dynamisme du langage a également jouer un rôle implicite très
+important pour le développement de ces jeux. En effet, la présence
+d'un déboggeur très dynamique a apporté une grande flexibilité au
+développement et permis de développer efficacement ces deux jeux.
 
-\begin{itemize}
-  \item[+] puissance d'expression / d'abstraction
-  \item[+] langage dynamique (développement en-direct, malléabilités)
-  \item[+] création de langages spécifiques au domaine
+Aussi, le langage Scheme a permis de facilement pouvoir expérimenter
+sur le contrôle de flot des jeux en permettant de développer
+facilement des systèmes non-triviaux de simulations à événements
+discrets et de simulation par agents (coroutines). La modification du
+flot de contrôle du premier jeu a pu être fait sont trop d'efforts
+grâce aux abstractions faites entre autre par le système d'objets.
 
-  \item[-] Garbage Collection et sur-allocation
-  \item[-] Profilage plus difficile avec des LSD (pour Gambit-C et statprof)
-  \item[-] Balance entre abstraction et efficacité
-\end{itemize}
+Bien sûr, la modularité de programmes apporte généralement des coût en
+performances pour ceux-ci. Ainsi, une difficulté d'utiliser un langage
+comme Scheme face à la programmation de jeux vidéo réside entre
+trouver le bon équilibre entre le niveau d'abstraction et la
+spécification de code (optimisations). Bien sûr cette balance varie
+grandement en fonction du matériel sur lequel le jeu sera porté. S'il
+s'agit d'une plateforme au matériel très limité, alors le coût
+d'abstraction pourrait peut-être s'avérer trop grand. Par contre, s'il
+s'agit de plateforme performantes, comme c'est le cas pour les jeux
+développés dans le cadre de ce mémoire, alors la possibilité de
+modulariser le code est beaucoup plus grande et les performances
+deviennent moins critiques, face à la réutilisabilité potentielle du
+code écrit.
 
+Un problème potentiel qui n'a pas été adressé dans ce mémoire est
+relié à l'allocation et la gestion de mémoire automatique utilisée par
+le langage Scheme. En effet, puisque Scheme est un langage
+fonctionnel, ce dernier effectue généralement beaucoup d'allocations
+mémoire. Ainsi, il est possible que sur des systèmes où le coût
+d'allocation mémoire est élevé, l'utilisation d'un tel langage
+devienne plus grand. De même, l'utilisation de ramasse miettes
+pourrait potentiellement engendrer des pauses du jeu qui sont très
+indésirables, si les pause dues à la gestion automatiques deviennent
+trop grandes. Ces phénomènes n'ont par contre pas été observés dans
+les jeux développés pour ce mémoire, puisqu'ils demeuraient trop
+simples.
+
+Ainsi, malgré le coût que peut apporter l'utilisation d'abstractions,
+nous croyons que le bénéfice résultant est bien supérieur à ce dernier
+sur des plateformes performantes. Les techniques de programmations
+orientées objets développées nous ont permis de rapidement pouvoir
+développer un nouveau jeu en réutilisant plusieurs modules, dont
+notamment les modules de rendus graphiques et de résolution de
+collisions. 
+
+Si la plateforme sur laquelle un jeu développé est plus limitée,
+surtout en ce qui a attrait à la puissance du processeur et aux temps
+d'allocations et d'accès mémoires, l'aspect dynamique du langage
+Scheme pourrait alors être utilisé comme langage de script afin de
+permettre un développement dynamique de prototypes ou de niveaux de
+jeu.
 
 %%%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %chapter{Bibliographie}

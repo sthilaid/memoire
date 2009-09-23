@@ -5111,7 +5111,47 @@ exclusivement en utilisant le langage Scheme. Ce dernier constitue un
 jeu de puzzle où le but est d'agencer des billes de même couleurs sur
 un cube. 
 
-\todo{parler de quantz (a discuter avec dom et rob)}
+\todo{Trouver comment dire que j'ai travaille sur le jeu... O\_O}
+
+L'utilisation de Scheme dans QuantZ a apporté plusieurs avantages
+technologiques. En effet, le dynamisme du langage a su profiter aux
+développeurs en leur permettant de pouvoir débugger le jeu lors de son
+exécution résultant permettant ainsi la résolution rapides de
+problèmes.
+
+Aussi, la syntaxe sous formes de S expressions de a été utilisée a
+profit en créant un système d'analyse de code permettant de pouvoir
+extraire toutes les chaînes de caractères présente de le jeu afin de
+pouvoir créer facilement des outils d'internationalisations. Ces
+outils permettent entre autre la création automatiques de fontes
+optimisées par langues, qui contiennent uniquement les caractères
+utilisées dans celles-ci.
+
+Les fermetures disponible en Scheme ont été utilisées comme base d'un
+système d'interface graphique complet permettant la création de
+fenêtres, de boutons, etc... En utilisant ces fermetures pour
+conserver l'état de ces entités, on obtient ainsi un résultat
+équivalent l'utilisation d'un système de programmation orienté objet,
+où l'état est conservé dans ces fermetures.
+
+Afin d'éviter d'avoir des problèmes de pauses dues à la gestion de
+mémoire automatique, plusieurs techniques ont été utilisées afin de
+cacher des données statiques au ramasse miettes. En effet,
+l'utilisation de la sérialisation de données disponible dans Gambit-C
+a été utilisé afin de transformer de grosses structures de données
+statiques lors du jeu et ainsi éviter que le ramasse miettes n'aies à
+la parcourir pour chaque images du jeu générées.
+
+L'état du jeu a été implanté en utilisant un mécanisme de
+programmation fonctionnelle réactive basée sur Scheme permettant
+l'écriture élégante de niveaux grâce à la propagation de signaux
+correspondant à l'état du jeu.
+
+Ainsi, le jeu QuantZ représente un exemple concret d'un jeu commercial
+ayant utilisé Scheme comme langage principal de développement. Leur
+utilisation du langage a su tirer profit de la plupart des
+particularité de Scheme dont notamment l'utilisation de fonctions de
+premier ordre et du dynamisme du système Gambit-C. 
 
 \section{Conclusion}
 Ainsi, plusieurs langages sont utilisés dans l'industrie du jeu vidéo

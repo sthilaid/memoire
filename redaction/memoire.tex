@@ -184,8 +184,6 @@ les productions de jeux vidéo.
 \section{Problématique}
 Ce mémoire de maîtrise vise à répondre à la problématique suivante:
 
-\todo{Inserer dans un texte ou garder en quotation?}
-
 \begin{quote}
   Quelles sont les forces et les faiblesses du langages de
   programmation Scheme pour le développement de jeux vidéo.
@@ -269,113 +267,111 @@ effervescence grâce à une demande constante de nouveaux
 produits. 
 
 L'histoire des jeux vidéo possède déjà un demi-siècle de créations de
-tout genres qui ont contribué à générer l'engouement actuel pour ces
+tous genres qui ont contribué à générer l'engouement actuel pour ces
 derniers. Une brève historique des jeux vidéo sera présentée dans ce
 chapitre afin de pouvoir illustrer l'évolution des jeux vidéo et de
-permettre de situer dans le temps où se situent les jeux développés
+permettre de situer dans le temps où se trouvent les jeux développés
 pour ce mémoire.
 
 L'industrie du jeu vidéo actuelle est le moteur qui permet aux jeux
 vidéo de continuer à évoluer et se raffiner. Un aperçu global de
 l'industrie du jeu vidéo est ainsi donné dans ce chapitre.
 
-Finalement, les besoins aux niveau de la programmation exprimés par
-les jeux vidéo sont énoncées afin de permettre de pouvoir cerner les
-composantes importantes pour un langage de programmation utilisé pour
-le développement de jeux.
+Finalement, les besoins au niveau de la programmation de jeux vidéo
+sont énoncés afin de pouvoir cerner les composantes importantes pour
+un langage de programmation utilisé pour le développement de jeux.
 
 
 \section{Historique}
 
-L'histoire des jeux vidéo s'étale sur environ un demi-siècle et
-renferme une mine d'informations importante qui permet d'exposer la
-manière avec laquelle les jeux vidéo évoluent. Seulement un bref
-résumé de cette histoire est présenté afin de donner présenter les
-grandes ligne de l'évolution des jeux au cours des cinquante dernières
+L'histoire des jeux vidéo s'étale sur environ un demi-siècle et est
+une source importante d'informations qui permet d'exposer la manière
+avec laquelle les jeux vidéo évoluent. Seulement un bref résumé est
+présenté afin de donner les grandes lignes de l'évolution des
+jeux au cours des cinquante dernières
 années~\cite{VIDEOGAMES_history}~\cite{HISCORE}.
-
-\todo{Mettre des references partout, ou bien ne pas en mettre du tout?}
 
 %% http://en.wikipedia.org/wiki/History_of_video_games
 
 \subsection{Préhistoire 1948-1970}
-Les jeux vidéo ont fait leurs apparitions avant même les premiers
+Les jeux vidéo ont fait leur apparition avant même les premiers
 ordinateurs. En effet, le \textit{Cathode Ray Amusement
   Device}~\cite{CRTAD} fit sont apparition en 1948. Il s'agissait d'un
 jeu rendu sur un tube cathodique simulant le lancement de missiles sur
-des cibles. 
+des cibles.
 
-Vers le début des années 1960, quelques jeux ont fait leurs apparition
+Vers le début des années 1960, quelques jeux ont fait leur apparition
 sur les premiers ordinateurs universitaires, notamment au \textit{MIT}
-et à l'université de Cambridge. On y retrouve notamment le jeu
-\textit{Spacewar!} qui est l'un des premier jeu multi-joueurs mettant
-les joueurs en adversité dans leurs vaisseaux spatiaux pouvant lancer
-des missiles. 
+(Massachusetts Institute of Technology) et à l'université de
+Cambridge. On y retrouve notamment le jeu \textit{Spacewar!} qui est
+l'un des premiers jeux multi-joueurs mettant les joueurs en adversité
+dans leurs vaisseaux spatiaux pouvant lancer des missiles. Ce jeu a
+d'ailleurs été une motivation pour les premiers efforts de
+développement du système d'exploitation UNICS (UNiplexed Information
+and Computing Service)~\cite{SPACEWAR-UNICS}.
 
-Avec un intérêt stimulé envers le potentiel de divertissement
+Avec un intérêt soutenu envers le potentiel de divertissement
 qu'offrait les jeux vidéo de l'époque, le développement de machines
 dédiées aux jeux vidéo a ainsi débuté.
 
 \subsection{Système arcade 1970-1985}
-En 1971, des étudiants de l'université de Standford ont porté le jeu
-\textit{Spacewar!} sur une machine fonctionnant avec de l'argent (de
-la monnaie). Ce fut la première machine arcade.
+En 1971, des étudiants de l'université de Stanford ont réimplanté le
+jeu \textit{Spacewar!} sur une machine fonctionnant avec de l'argent
+(de la monnaie). Ce fut la première machine arcade.
 
 Par la suite, le développement de telles machines est devenu très
-répandu. En 1972, la compagnie \textit{Atari} fut fondé et démarra
+répandu. En 1972, la compagnie \textit{Atari} fut fondée et démarra
 l'industrie du jeu vidéo sur arcade avec le jeu \textit{Pong}, un jeu
-de tennis de table permettant à un joueur de jouer contre une
-intelligence artificielle ou bien de se mesurer à un autre joueur.
+de tennis de table permettant à un joueur de se mesurer à un autre
+joueur dans une simulation de tennis de table qui demeure toujours
+très célèbre.
 
 Ce fut alors l'âge d'or des machines d'arcade où l'on a créé beaucoup
 de jeu au contenu diversifié. Parmi ceux-ci, \si(1978) et
 \textit{PacMan}(1980) furent extrêmement populaires.
 
-Malgré que les jeux d'arcades étaient très simple, ils étaient
-beaucoup appréciés pour l'amusement qu'ils procuraient aux joueurs qui
-tentaient toujours de se surpasser.
-
-\todo{Marc, quelles genre de machines est-ce que c'etait? Processeur
-  8bit?}
+Malgré que les jeux d'arcades étaient très simples, ils étaient
+beaucoup appréciés par les joueurs qui tentaient toujours de se
+surpasser.
 
 On retrouve toujours des salles d'arcades de nos jours, mais celles-ci
-sont devenues beaucoup moins populaire que les consoles de jeu qui se
+ont perdu de la popularité puisque les consoles de jeu se
 retrouvent dans nos salons.
 
 \subsection{Premières consoles 1972-1984}
 
-La première console de jeu vidéo, le \textit{Magnavox Odyssey} fut son
-apparition en Amérique du Nord en 1972. Cette console permettant aux
-joueurs de jouer sur le télévision assis confortablement dans leurs
+La première console de jeu vidéo, le \textit{Magnavox Odyssey} fit son
+apparition en Amérique du Nord en 1972. Cette console permettait aux
+joueurs de jouer sur la télévision assis confortablement dans leurs
 salon. Elle permettait aussi d'insérer des jeux sous forme de
-cartouches. Un total de 28 jeux ont été disponible pour cette console,
-qui malgré l'absence de périphérique audio, a été vendu pour environ
-300 000 exemplaires.
+cartouches. Un total de 28 jeux ont été disponibles pour cette
+console, qui malgré l'absence de périphérique audio, a été vendue pour
+environ 300 000 exemplaires.
 
 Plusieurs autres consoles ont par la suite été créées. Allant d'une
-version console de \textit{Pong} jusqu'à des consoles plus puissante
+version console de \textit{Pong} jusqu'à des consoles plus puissantes
 comme le \textit{ColecoVision} qui démarrèrent l'ère des consoles
 8-bit. La vocation principale de ces consoles n'étaient pas d'innover
-dans le développement de jeu, mais plutôt de porter les jeux
-d'arcades populaires sur leurs consoles.
+dans le développement de jeu, mais plutôt de rendre disponible les
+jeux d'arcades populaires sur les consoles.
 
 \subsection{Ordinateurs personnels 1977-...}
-Les premiers ordinateurs personnels furent leurs apparition vers la
-fin des années 1970, dont notamment l'ordinateur \textit{Apple II}
-produit par \textit{Apple Inc.}. Ces ordinateurs personnels offraient
+Les premiers ordinateurs personnels firent leur apparition vers la
+fin des années 1970, notamment l'ordinateur \textit{Apple II}
+produit par \textit{Apple Inc}. Ces ordinateurs personnels offraient
 plus de puissance que les consoles de l'époque et offraient la
 possibilité aux amateurs de créer leurs propres jeux.
 
 Les jeux d'ordinateurs étaient distribués sur beaucoup de média
-différents. La distribution allait de cassettes, aux disquette, en
-passant bien sur par des échanges postaux de code sources.
+différents. La distribution allait de cassettes, aux disquettes, en
+passant bien sûr par des échanges postaux de code sources.
 
 En 1982, le jeux \lr fut développé pour les
 ordinateurs \textit{Apple II}. Ce jeux d'action fut l'un des premiers
 jeu comprenant un éditeur de niveaux.
 
 Aussi, le jeu \textit{Rogue} fut créé durant les années 1980, pour les
-premiers système Unix. Il fut le pionnier d'un nouveau genre de jeu
+premiers systèmes Unix. Il fut le pionnier d'un nouveau genre de jeu
 (surnommé \textit{Roguelike}) qui différait beaucoup des jeux
 d'actions retrouvés en sales d'arcades ou sur consoles. Il présentait
 une interface visuelle très minimaliste. La narration, qui était un
@@ -386,15 +382,15 @@ Les jeux d'ordinateurs ont longtemps été supérieurs aux jeux de
 consoles puisque les ordinateurs étaient toujours à la fine pointe de
 la technologie, et les consoles traînaient un peu derrière en terme de
 technologies. Ainsi, on retrouvait des jeux ayant de meilleurs
-graphique ou utilisant des périphériques plus variés sur les
-ordinateurs personnels. Ainsi, les jeux d'ordinateurs existait dans un
-monde parallèle à celui des consoles, ne se livrant pas de compétition
-réelle.
+graphiques ou utilisant des périphériques plus variés sur les
+ordinateurs personnels. Ainsi, les jeux d'ordinateurs existent dans un
+monde parallèle à celui des consoles et donc, ne se livraient pas de
+compétition réelle.
 
 Par contre, avec l'avènement des consoles modernes qui sont plus
 performantes que la plupart des ordinateurs personnels, cet énoncé
-n'est plus valide. Ainsi, les jeux sur des consoles actuelles
-rivalisent avec les jeux d'ordinateurs.
+n'est plus valide. Il en résulte que les jeux sur des consoles
+actuelles surpassent souvent les jeux d'ordinateurs.
 
 
 \subsection{Consoles portables 1980-...}
@@ -406,83 +402,90 @@ externes à la console et étaient dédiées à un seul jeu. Ces consoles
 furent un succès rapportant plusieurs centaines de millions de dollars
 à leurs créateurs.
 
-Par la suite, les grandes compagnie du jeu vidéo comme
-\textit{Nintendo} et \textit{Bandai} se sont intéressée à de telles
-consoles et en produisirent plusieurs exemplaires des consoles
+Par la suite, les grandes compagnies du jeu vidéo comme
+\textit{Nintendo} et \textit{Bandai} se sont intéressées à de telles
+consoles et produisirent plusieurs exemplaires des consoles
 \textit{Game \& Watch} qui contenaient des succès d'arcades tel
-\textit{Mario's Cement Factory} et \textit{Donkey Kong Jr.}.
+\textit{Mario's Cement Factory} et \textit{Donkey Kong Jr}.
 
-Le même concepteur de ces consoles à par la suite fusionner ces
-dernière avec le contrôleur du \textit{Nintendo Entertainement
+Le même concepteur de ces consoles a par la suite fusionné ces
+dernières avec le contrôleur du \textit{Nintendo Entertainement
   System}(NES) pour obtenir la première console à grand succès: le
 \textit{GameBoy}. Cette console qui offrait un écran monochrome fut
 vendue à 118 million d'exemplaire dans le monde. Le jeu le plus vendu
 sur cette console fut nulle autre que le jeu \textit{Tetris} qui a
 vendu environ 33 millions d'unités.
 
-Les consoles ont continuées d'évoluer grandement et elles sont
-actuellement équivalente aux consoles de une ou deux génération
-précédente. Par exemple, le Sony \textit{PlayStation Portable}
+Les consoles portables ont continuées d'évoluer grandement et elles
+sont actuellement équivalentes aux consoles d'une ou deux générations
+précédentes. Par exemple, le Sony \textit{PlayStation Portable}
 rivalise en matière de puissance de matériel à la précédente console
 de Sony, le \textit{PlayStation 2}. On peut donc développer des jeux
-très complexe sur ces consoles portables, mais ils ne peuvent toujours
+très complexes sur ces consoles portables, mais ils ne peuvent toujours
 pas rivaliser avec les jeux sur consoles ou d'ordinateurs.
 
 \subsection{Consoles intermédiaires 1984-2006}
 Au début des années 1980, plusieurs consoles étaient disponibles sur
 le marché, mais une saturation de mauvais jeux et des problèmes de
-mauvaises gestions ont fait en sorte que l'industrie du jeux vidéo à
-connu une grande dépression vers en 1983. Par exemple, il y a eu une
-plus grande production d'unités du jeu \textit{PacMan} qu'il n'y avait
-eu de console d'Atari vendues.
+gestion ont fait en sorte que l'industrie du jeux vidéo a connu une
+grande dépression vers en 1983. Par exemple, il y a eu une plus grande
+production d'unités du jeu \textit{PacMan} qu'il n'y a eu de console
+d'Atari vendues.
 
 Cette dépression a pris subitement fin avec la sortie de la console
 produite par \textit{Nintendo}, le \textit{Nintendo Entertainement
   System} (NES) qui connu un succès fulgurant en vendant 62 millions
-de consoles dans le monde. La grande qualité des jeux produits ont
+de consoles dans le monde. La grande qualité des jeux produits a
 certainement favorisé l'adoption de cette nouvelle console. On
-retrouve entre autre des jeux de tout genre comme le jeu de
-plate-forme \textit{Super Mario Bros}, le jeux d'aventure \textit{The
+retrouve entre autres des jeux de tout genre comme le jeu de
+plate-forme \textit{Super Mario Bros}, le jeu d'aventure \textit{The
   Legend of Zelda} et le jeu d'action aventure \textit{Metroid}.
 
 Par la suite, la compagnie SEGA sortit un compétiteur sérieux au NES,
 le \textit{Master System}, qui rivalisait en terme de puissance
-matérielle et de prix. Depuis ce temps, c'est la guerre des consoles
-qui se livre où lorsqu'une compagnie développe un nouveau jeu ou une
-nouvelle console, les compétiteurs ne tardent pas à produire un jeu ou
-console équivalent pour les utilisateurs de leurs produits.
+matérielle et de prix. Depuis ce temps se livre la guerre des consoles
+où lorsqu'une compagnie développe un nouveau jeu ou une nouvelle
+console, les compétiteurs ne tardent pas à produire un jeu ou console
+équivalent pour les utilisateurs de leurs produits.
 
 \subsection{Consoles modernes 2005-...}
 Les consoles modernes sont généralement conçues avec du matériel à la
-fine pointe de la technologie et tentent de séduire un certain public
+fine pointe de la technologie et sont adaptées un certain public
 cible.
 
 Au moment de l'écriture de ce mémoire, on retrouve la console
-\textit{Wii} de Nintendo conçu pour un publique constitué de joueurs
-occasionnels grâce au contrôleur révolutionnaire de cette console
+\textit{Wii} de Nintendo conçue pour un public constitué de joueurs
+occasionnels grâce au contrôleur innovateur de cette console
 permettant de jouer en effectuant des mouvement plus naturels.
 
 D'un autre côté compétionnent le \textit{PlayStation 3} de Sony et le
 \textit{XBox 360} de Microsoft qui cherchent à convaincre les joueurs
-plus sérieux d'utiliser leur système en offrant des consoles à la fine
+plus assidus d'utiliser leur système en offrant des consoles à la fine
 pointe de la technologie et à prix très raisonnable en comparaison aux
-prix des ordinateurs de jeu équivalents. 
+prix des ordinateurs de jeux équivalents. Par exemple, le
+\textit{PlayStation 3} utilise une architecture \textit{Cell} qui
+comprend une unité principale de 3,2 GHz et 8 sous processeurs moins
+puissant permettant d'exécuter plusieurs processus en parallèle. Ce
+dernier possède aussi une carte graphique très puissante comprenant
+une mémoire vidéo de 256 Mo de mémoire vidéo. 
 
 
 
 \section{Industrie du jeu vidéo}
-Comme mentionné dans le chapitre \ref{Chap:Intro}, l'industrie du jeu
-vidéo est très importante et génère des milliards de dollars de
-revenus par années. Ce profit provient d'une grande diversité de
-joueurs, allant de jeunes enfants jusqu'à leurs grands-parents avec
-une population féminine presque aussi importante que celle
-masculine. Il en résulte donc qu'une grande diversité de jeux et de
-plates-formes de jeux se retrouvent sur le marché.
+Tel que mentionné mentionné dans le chapitre \ref{Chap:Intro},
+l'industrie du jeu vidéo est très importante et génère des milliards
+de dollars de revenus par années. Ce profit provient d'une grande
+diversité de joueurs, allant de jeunes enfants jusqu'à leurs
+grands-parents avec une population féminine presque aussi importante
+que celle masculine. Il en résulte donc qu'une grande diversité de
+jeux et de plates-formes de jeux se retrouvent sur le marché.
 
-Ces produits possèdent plusieurs caractéristiques de qualité communes
-auxquelles les consommateurs s'attendent à obtenir en effectuant
-l'acquisition d'un nouveau titre. Ces attentes du consommateur peuvent
-se traduire essentiellement par les besoins suivant:
+La grande quantité de jeux qui ont été produits a fait en sorte que
+caractéristiques de qualité sont devenues essentielle afin qu'un jeu
+vidéo puisse se comparer aux jeux déjà existant et ainsi avoir une
+chance d'être adopté par les consommateurs. Ces attentes du
+consommateur peuvent se traduire essentiellement par les besoins
+suivant:
 
 \begin{itemize}
 \item Exposer un \textit{gameplay} amusant
@@ -492,33 +495,38 @@ se traduire essentiellement par les besoins suivant:
 \item Optionnellement contenir une narration 
 \end{itemize}
 
+Le \textit{gameplay} d'un jeu représente le facteur de plaisir qu'un
+joueur obtient en jouant à un jeu. Ce facteur est souvent découplé en
+plusieurs sous catégories comme la diversité et la quantité de
+niveaux, la difficulté, la réponse des contrôles du jeu, etc...
+
 Ces besoins semblent simple, \textit{a priori}, mais impliquent
 beaucoup de travail et imposent des contraintes sévères au
 développeurs de jeux vidéo.
 
-Afin qu'un jeu puisse offrir un \textit{gameplay} intéressant au
+Afin qu'un jeu puisse offrir un \textit{gameplay} intéressant aux
 joueurs, une étroite collaboration entre les développeurs et les
 designers doit être établie. Cela implique aussi de faire beaucoup
-d'essaies de possibilités en testant sur des prototypes et en
+d'essais de possibilités en testant sur des prototypes et en
 effectuant de nombreux cycles de développement du jeu.
 
 En ce qui concerne le rendu graphique du jeu, en plus des designers du
 jeu, c'est aussi avec les artistes que les développeurs doivent
 s'accorder dans le but de concevoir un moteur de rendu répondant bien
 aux besoins de leurs créations et, leurs créations doivent être bien
-sûr faites en respectant les contraintes imposées par le matériel ou
+sûr faites en respectant les contraintes imposées par le matériel où
 sera déployé le produit. Ainsi, le moteur de rendu doit pouvoir être
 facilement extensible afin de pouvoir accommoder facilement les
 nouvelles idées et les nouveaux concepts à intégrer.
 
 Une composante multi-joueur, tout dépendant si elle implique des
 parties faites sur le réseau ou non, pourrait nécessiter une grande
-rigeur de programmation afin d'assurer une stabilité de connections et
-empêcher les joueurs de tricher. Ces sujets ne sont pas discuter dans
+rigueur de programmation afin d'assurer une stabilité de connections et
+empêcher les joueurs de tricher. Ces sujets ne sont pas discutés dans
 ce mémoire.
 
-La diversité des jeux développés a mené à une caractérisation des jeux
-et une classification de ceux-ci. Les principaux genres de jeux sont:
+La diversité des jeux développés a mené à une classification des
+jeux. Les principaux genres de jeux sont:
 
 \begin{itemize}
 \item Action: Jeux rapides demandant souvent de l'habileté de la part
@@ -535,34 +543,34 @@ et une classification de ceux-ci. Les principaux genres de jeux sont:
   appartenant à ce genre.
 \end{itemize}
 
-Il existe d'innombrables autres genres et genres hybrides de ces
-catégories, mais celles-ci donnent une idée de la diversité du contenu
-des jeux vidéo produits.
-
-\todo{Ajouter du texte liant a la prochaine section?}
+Il existe d'innombrables autres genres et d'hybrides de ces
+catégories. Notre but ici est simplement de donner une idée de la
+diversité du contenu des jeux vidéo produits.
 
 
 
 \section{Contraintes de programmation}
 
 Le développement de jeu vidéo implique une programmation sous des
-contraints sévères afin que le jeu respecte les normes de l'industrie
+contraintes sévères afin que le jeu respecte les normes du marché
 et respecte les attentes des joueurs.
 
-Une contrainte importante portant sur les jeux vidéo est relié à
+Une contrainte importante portant sur les jeux vidéo est reliée à
 l'efficacité algorithmique résultant du programme développé. En effet,
 la fluidité d'un jeu est critique face à l'immersion du joueur dans
-l'univers créé par le jeu. Les jeux doivent donc être des programmes
-très efficaces de manière à inviter le joueur à entrer le plus
-possible dans la narration du jeu.
+l'univers créé par le jeu dans certains genres. Les jeux doivent donc
+être des programmes efficaces de manière à inviter le joueur à entrer
+le plus possible dans la narration du jeu.
 
-Une autre contrainte importante relié au développement de jeu est la
+Une autre contrainte importante reliée au développement de jeu est la
 modularité du code produit. En effet, afin que les efforts placés dans
 la production d'un jeu vidéo puissent être réutilisés dans les
 productions subséquentes, des abstractions doivent être bien faites
-afin de faciliter la réutilisation de ces dernières.
+afin de faciliter la réutilisation de ces dernières. Souvent, pour
+obtenir des performances adéquates, les développeurs doivent sacrifier
+la modularité. La conséquence est que chaque jeu représente un énorme
+travail car peu de code peut être réutilisé.
 
-\todo{Autres choses?}
 
 \subsection{Fluidité}
 
@@ -583,16 +591,15 @@ parfaitement nettes et ne contiennent donc pas ce flou de mouvement,
 ce qui vient réduire la crédibilité de l'illusion faite par la
 succession des images à l'écran. Il faut donc augmenter le taux de
 rafraîchissement à environ 60 trames par secondes pour obtenir le
-niveau de crédibilité du projection cinématographique.
-
-\todo{references necessaire?}
+niveau de crédibilité d'une projection
+cinématographique~\cite{30vs60}.
 
 Ceci étant dit, un taux de rafraîchissement de 60 trames par secondes
-n'est pas nécessaire pour tout les jeux. Cela varie grandement avec la
+n'est pas nécessaire pour tous les jeux. Cela varie grandement avec la
 nature des jeux. Par exemple, un jeu de stratégie où les joueurs
 jouent à tours de rôles possède peu d'animations et donc pourrait très
 probablement être satisfaisant avec un taux de rafraîchissement de 30
-trames par secondes.
+trames par secondes ou moins.
 
 Aussi, il est possible que les designers du jeu acceptent de réduire
 volontairement le taux de rafraîchissement afin d'avoir plus de temps
@@ -605,60 +612,62 @@ faire une bonne partie du rendu laissant ainsi le ou les processeurs
 principaux libres pour exécuter le moteur du jeu.
 
 Il n'en demeure pas moins que toute la logique du jeu doit être aussi
-optimisée que possible afin que le processus de rendu des trames soit
+efficace que possible afin que le processus de rendu des trames soit
 transparent au joueur.
 
 \subsubsection{Réponse quasi temps réelle}
 
 Une autre implication de la fluidité requise par un jeu vidéo est le
-délais de réponse face aux entrées du joueur. Ce délais aussi doit
-être aussi faible que possible pour donner l'impression que le
-personnage dans le jeu ne soit qu'une extension de la volonté du
-joueur. Ainsi le traitement des entrées du joueurs se doit aussi
-d'être très efficace afin de ne pas encombré le moteur du jeu qui n'a
-déjà pas beaucoup de temps pour effectuer son travail.
+délai de réponse face aux entrées du joueur. Ce délai aussi doit être
+aussi faible que possible pour donner l'impression que le personnage
+dans le jeu ne soit qu'une extension de la volonté du joueur. Ainsi le
+traitement des entrées du joueur se doit aussi d'être très efficace
+afin de ne pas encombrer le moteur du jeu qui n'a déjà pas beaucoup de
+temps pour effectuer son travail.
 
 \subsection{Modularité}
 
 En plus de devoir être efficacement implanté, un jeu vidéo moderne se
 doit d'être aussi modulaire que possible. Pour y arriver, le couplage
-entre les différentes composantes de ce dernières doit être faible. 
+entre les différentes composantes de ces dernières doit être faible. 
 
 Le développement de logiciel favorisant la modularité est une qualité
 standard en génie logiciel, mais elle vient très bien se marier avec
-le développement de jeu, surtout de jeux modernes, car ce sont de
+le développement des jeu, surtout de jeux modernes, car ce sont des
 projets de très grande envergure impliquant beaucoup de
 programmeurs. Il en résulte qu'un bon design modulaire permet de bien
-séparer les tâches à effectuer de manière parallèles par des équipes
+séparer les tâches à effectuer de manière parallèle par des équipes
 spécialisées. Si le projet est bien géré, cela pourrait certainement
 réduire le coût de développement de tels projets.
 
 Aussi, une bonne modularité permet de créer des composantes qui sont
-cohésives et donc qui permettent d'être réutilisée par la suite. Une
+cohésives et qui permettent donc d'être réutilisées par la suite. Une
 réutilisation de composantes complexes tel un moteur de physique évite
 de faire un travail supplémentaire non trivial pour chaque nouveau
-projet. Ainsi, il est clair que l'effort supplémentaire placé pour
-bien modulariser les composantes d'un jeu seront retables pour le
-développement des prochains jeu.
+projet. Ainsi, il est clair que l'effort supplémentaire investi pour
+bien modulariser les composantes d'un jeu seront rentables pour le
+développement des prochains jeux.
 
-Bien sûr, toute abstraction possède sont coût, notamment en coût de
+Bien sûr, toute abstraction possède son coût, notamment en coût de
 performances. Ainsi, il faut bien pouvoir estimer les endroits où
 l'utilisation de modules externes n'apportera pas de trop grands
-impacts de performances.
+impacts négatifs de performances.
 
 Il est clair qu'un langage de programmation ayant un bon potentiel
 d'abstraction, comme c'est généralement le cas pour les langages de
 haut niveau, facilite cette tâche. Un système orienté objet ou un bon
-système de module permettraient certainement aussi à bien modulariser
+système de module permettraient certainement aussi de bien modulariser
 les composantes d'un jeu.
 
 \subsection{Malléabilité}
 
-Puisque le développement d'un jeu implique généralement de faire
-beaucoup de prototypage, le code d'un jeu se doit d'être très
-malléable afin d'aider à faire des changements rapidement au moteur du
-jeu pour tester de nouvelles idées, sans ajouter un trop grand coût
-pour le faire.
+La malléabilité d'un logiciel pourrait se définir comme la facilité
+avec laquelle ce dernier peut être modifié ou transformé. Cette
+qualité est importante pour le développement de jeu puisqu'un tel
+processus implique généralement de faire beaucoup de prototypage. Le
+code d'un jeu se doit alors d'être très malléable afin d'aider à faire
+des changements rapidement au moteur du jeu pour tester de nouvelles
+idées, sans ajouter un trop grand coût pour le faire.
 
 La modularité du jeu aura un effet positif sur la malléabilité en
 permettant de modifier les mécanismes internes des composantes sans
@@ -681,17 +690,17 @@ ceux-ci.
 
 Les coûts de développement de jeux modernes sont de l'ordre des
 millions de dollars et impliquent des dizaines voir des centaines
-d'artistes, de programmeurs et de designers. Ainsi, mêmes de toutes
-petites accélérations d'un cycle de développement, pourrait avoir de
-l'impacte sur le travail de beaucoup de gens et ainsi se traduire en
+d'artistes, de programmeurs et de designers. Ainsi, même de toutes
+petites accélérations d'un cycle de développement, pourrait avoir un
+l'impact sur le travail de beaucoup de gens et ainsi se traduire en
 de grandes économies sur les coûts de développement.
 
-Les contraintes impliqués au niveau de la programmation par le
-développement de jeux vidéo ont été étudiés. Ces derniers se résument
-par les concepts de fluidité, modularité et de malléabilité du jeu
-vidéo. Le respect de la contrainte de fluidité résulte en une bonne
-immersion pour le joueur, qui est nécessaire afin que le jeu soit
-considéré comme \og jouable \fg. La modularité facilite le
+Les contraintes impliquées au niveau de la programmation par le
+développement de jeux vidéo ont été étudiées. Ces dernières se
+résument par les concepts de fluidité, modularité et de malléabilité
+du jeu vidéo. Le respect de la contrainte de fluidité résulte en une
+bonne immersion pour le joueur, qui est nécessaire afin que le jeu
+soit considéré comme \og jouable \fg. La modularité facilite le
 développement collaboratif et parallèle tout en permettant d'améliorer
 la réutilisation des composantes communes à plusieurs jeux. L'aspect
 de la malléabilité du code permet d'accélérer le prototypage du jeu.

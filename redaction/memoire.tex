@@ -119,75 +119,67 @@ occupée par l'industrie du jeu vidéo durant cette même année s'estime
 
 L'engouement du marché du jeu vidéo incite les compagnies oeuvrant
 dans le domaine à repousser les limites de l'état de l'art du
-développement de jeux. La compétition est féroce et donc beaucoup
-d'efforts doivent être investis dans la création d'un jeu afin qu'il
+développement de jeux. La compétition est féroce et beaucoup
+d'efforts doivent donc être investis dans la création d'un jeu afin qu'il
 se démarque de la masse et devienne un nouveau \og Blockbuster Hit
-\fg. Le président de la compagnie Française UbiSoft estime que le coût
+\fg. Le président de la compagnie française UbiSoft estime que le coût
 moyen de développement d'un jeu sur une console moderne se situe entre
 20 et 30 millions de dollars~\cite{cbc_ubisoft}. Si l'on estime le
 salaire moyen d'un artiste ou d'un développeur de jeu vidéo à 60
 000\$ par année, cela reviendrait à un travail d'environ 300 à 500
-hommes par année.
+années/hommes.
 
-Puisque la création d'un jeu vidéo peu nécessiter autant d'efforts, il
-semble très intéressant de vouloir tenter de faciliter le
+Puisque la création d'un jeu vidéo peut nécessiter autant d'efforts,
+il semble très intéressant de vouloir tenter de faciliter le
 développement de ces derniers. Avec autant d'efforts mis en place,
-même une petite amélioration sur le cycle de développement peu
-engendrer une diminution énorme des coûts de production et aussi
-améliorer la qualité des environnements utilisés par les développeurs.
+même une petite amélioration sur le cycle de développement peut
+engendrer une diminution énorme des coûts de production et améliorer
+la qualité des environnements utilisés par les développeurs.
 
 Jusqu'à ce jour, la grande majorité des jeux vidéo sont écrits à
-l'aide de langages de relativement bas niveau, par exemple en C, C++
-ou encore C\#~\cite{CSHARP_SPEC}. Ces langages sont généralement
-utilisés parce qu'ils sont déjà bien établis et que la main d'oeuvre
-est facilement accessible.
-
-\todo{expliquer haut niveau / bas niveau}
+l'aide de langages de relativement bas niveau, comme par exemple en C,
+C++ ou encore C\#~\cite{CSHARP_SPEC}. Les langages de bas niveaux sont
+caractérisés par contact facile au matériel du système utilisé pour
+exécuter le programme. Ces langages sont généralement utilisés parce
+qu'ils sont déjà bien établis et que la main d'oeuvre est facilement
+accessible.
 
 Les langages de haut niveau sont généralement caractérisés par le fait
 qu'ils font une bonne abstraction du système utilisé et permettent
-d'utiliser celles-ci de manière naturelle. Elles facilitent donc le
+d'exprimer un calcul de manière naturelle. Elles facilitent donc le
 travail de programmation. Le coût de ces abstractions se répercute
 généralement en un coût de performance du programme. Dans le passé, la
 performance était critique dans les jeux vidéo, mais les consoles
 modernes sont devenues plus performantes que la plupart des
 ordinateurs personnels. Actuellement la performance n'est donc plus
-aussi important. Aussi, les améliorations du domaine de la compilation
+aussi critique. Aussi, les améliorations du domaine de la compilation
 de langages de haut niveau font en sorte que les performances de ces
 systèmes sont comparables à l'utilisation de langages de plus bas
 niveau.
 
 Ainsi, l'utilisation de langages de plus haut niveau pourrait
-potentiellement améliorer les délais occasionnés par les cycles de
-développement des jeux en permettant aux programmeurs et designers de
-s'exprimer plus facilement. Le langage de programmation
-Scheme~\cite{R5RS} semble être un bon candidat en tant que langage de
-haut niveau. En effet, le langage Scheme offre les fonctionnalités de
-haut niveau suivantes:
-
-\todo{Gardes les bullets ou changer en texte??}
-
-\begin{itemize}
-\item Typage dynamique
-\item Fonctions de premier ordre
-\item Système de macros évolué
-\item Accès direct aux continuations du calcul
-\item Un système de déboggage très efficace
-\end{itemize}
-
-Ces particularités du langage Scheme sont discutées plus en détail
-dans le chapitre \ref{Chap:Scheme}.
+potentiellement améliorer le temps de développement des jeux en
+permettant aux programmeurs et designers de s'exprimer plus
+facilement. Les langages dans la famille Lisp semblent être de bons
+candidats en tant que langages de haut niveau. Le langage
+Scheme~\cite{R5RS}, un Lisp moderne et performant, offre ainsi
+beaucoup ainsi plusieurs fonctionnalités de haut niveau. On retrouve,
+entre autre, du typage dynamique, des fonctions de premier ordre, un
+système de macro évolué, un accès direct aux continuation du calcul et
+un système de déboggage très efficace. Ces particularités du langage
+Scheme sont discutées plus en détail dans le chapitre
+\ref{Chap:Scheme}.
 
 Le système Gambit-C~\cite{Gambit4}, l'une des implantations de Scheme
-les plus performantes~\cite{GAMBIT_BENCHMARKS} sera utilisée pour
+les plus performantes~\cite{GAMBIT_BENCHMARKS} sera utilisé pour
 effectuer les expériences pratiques. Ce système comporte de nombreuses
 extensions pouvant être très utiles au développement de jeux vidéo. On
-y retrouve entre autres des tables de hachages ou des \textit{threads}
+y retrouve entre autres des tables de hachages et des \textit{threads}
 (processus légers).
 
-Il semble donc qu'une utilisation judicieuse de ce système pourrait
-faire bénéficier des projets aussi complexes que le sont les
-productions de jeux vidéo.
+Il semble donc qu'une utilisation judicieuse de ce système a le
+potentiel de faire bénéficier des projets aussi complexes que le sont
+les productions de jeux vidéo.
 
 \section{Problématique}
 Ce mémoire de maîtrise vise à répondre à la problématique suivante:
@@ -212,11 +204,12 @@ Ce mémoire de maîtrise vise à répondre à la problématique suivante:
 
 Afin de pouvoir répondre à la problématique posée, nous avons étudié
 les caractéristiques de Scheme et du compilateur Gambit-C, ainsi que
-les besoins au niveau du développement de jeux vidéo. Concurremment, 2
-jeux ont été développés pour raffiner nos approches et les évaluer
+les besoins au niveau du développement de jeux vidéo. Par la suite,
+deux jeux ont été développés en tentant d'utiliser a profit ces
+caractéristiques dans le but de raffiner nos approches et les évaluer
 dans un contexte réel.
 
-Le premier jeux a servi de plate-forme d'exploration permettant
+Le premier jeu a servi de plate-forme d'exploration permettant
 d'élaborer une méthodologie qui semble efficace pour le développement
 de jeux. Afin d'obtenir une telle méthodologie, plusieurs itérations
 de développement ont été effectuées, chacune permettant d'explorer de
@@ -249,15 +242,15 @@ programmation de jeux vidéo. Un système de coroutines conçu dans les
 mêmes optiques est également présenté.
 
 La troisième partie du mémoire porte sur l'expérience acquise par
-l'auteur en effectuant l'écriture de 2 jeux vidéo simples, mais
+l'auteur en effectuant l'écriture de deux jeux vidéo simples, mais
 possédant suffisamment de complexité pour exposer les problèmes
 associés à la création de jeux vidéo et comment tirer profit du
 langage de programmation Scheme pour résoudre ces problèmes. Une
 présentation des travaux reliés aux résultats présentés suit ce
-dernier chapitre. On y parle de l'utilisation d'autres langages
-pour le développement de jeux vidéo et cite des exemple d'utilisation
-du langage Scheme dans des jeux vidéo commerciaux et de l'expérience
-tirée de cette utilisation par les développeurs.
+dernier chapitre. On y parle de l'utilisation d'autres langages pour
+le développement de jeux vidéo et cite des exemples d'utilisation des
+langages Scheme et Lisp dans des jeux vidéo commerciaux et de
+l'expérience tirée de cette utilisation par les développeurs.
 
 Finalement, une conclusion apporte la lumière sur la problématique
 exposée dans ce mémoire. Le point sur l'expérience acquise pour le

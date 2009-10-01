@@ -3847,35 +3847,34 @@ balancer ou d'optimiser ces dernières.
 Afin de pouvoir déterminer les forces et les faiblesses du
 développement de jeux vidéo en Scheme, des jeux doivent être
 développés en augmentant graduellement la complexité de ceux-ci de
-manière à résoudre les problèmes reliés au développement de jeu de
+manière à résoudre les problèmes reliés à leur développement de
 manière itérative. Un jeu simple comprend les problèmes les plus
-basiques qu'un jeu peut avoir: détection de collisions, animations,
-concept de niveaux, etc... Ainsi, ces problèmes peuvent être adressés
-dans un premier temps, puis de nouveaux problèmes peuvent être
-entrepris par la suite en développant un jeu plus complexe. Aussi,
-cette approche permet de bâtir une infrastructure de développement de
-jeux vidéo qui abaisse la difficulté du développement de jeux plus
-complexes.
+fondamentaux qu'un jeu puisse avoir: détection de collisions,
+animations, concept de niveaux, etc... Ainsi, ces problèmes peuvent
+être adressés dans un premier temps, puis de nouveaux problèmes
+peuvent être entrepris par la suite en développant un jeu plus
+complexe. Aussi, cette approche permet de bâtir une infrastructure de
+développement de jeux vidéo qui abaisse la difficulté du développement
+de jeux plus complexes.
 
 Le premier jeu choisi pour la résolution des problèmes de bases est
-\si (1978). Ce dernier date de la période des jeux
-d'arcades et, tout en étant très simple, adresse plusieurs problèmes
-fondamentaux qu'impliquent les jeux vidéo modernes: interactions avec
-usagers rapide, des niveaux, de la détection de collision et même des
-parties multi-joueurs. Puisque le graphisme de ce jeux est très
-rudimentaire, il consiste en un très bon choix pour un premier jeu,
-car il permet de concentrer le développement sur le moteur du jeu. Le
+\si (1978). Ce dernier date de la période des jeux d'arcades et, tout
+en étant très simple, adresse plusieurs problèmes fondamentaux
+qu'impliquent les jeux vidéo modernes: interactions avec usagers
+rapide, des niveaux, de la détection de collision et même des parties
+multi-joueurs. Puisque le graphisme de ce jeux est très rudimentaire,
+il consiste en un très bon choix pour un premier jeu, car il permet de
+concentrer le développement sur le moteur de celui-ci. Le
 développement de ce jeu est traité dans la section \ref{Exp:SI}.
 
-Par la suite, le jeu \lr (1983) a été développé comme
-deuxième choix de jeu. Ce dernier date de l'époque des premiers
-ordinateurs personnels et est relativement plus élaboré. Par contre,
-c'est la version arcade du jeu (1984) qui a été reprise. Tout en
-conservant les problèmes fondamentaux traités dans \si, ce jeu étend
-le concept de niveaux déjà traitée, introduit la notion d'intelligence
-artificielle et possède des entités possédant des états beaucoup plus
-complexes. De plus, le développement de \lr de
-permettre de consolider les techniques développés pour la création du
+Par la suite, le jeu \lr (1983) a été développé. Ce dernier date de
+l'époque des premiers ordinateurs personnels et est relativement plus
+élaboré. Par contre, c'est la version arcade du jeu (1984) qui a été
+reprise. Tout en conservant les problèmes fondamentaux traités dans
+\si, ce jeu étend le concept de niveaux déjà traité, introduit la
+notion d'intelligence artificielle et possède des entités possédant
+des états beaucoup plus complexes. De plus, le développement de \lr a
+pour but de consolider les techniques développées pour la création du
 premier jeu. Le développement de ce jeu est traité dans la section
 \ref{Exp:ld}.
 
@@ -3907,31 +3906,33 @@ d'écran du jeu développé.
 \end{figure}
 
 L'objectif visé en développant \si est très simple: écrire un premier
-jeu qui permettra d'exposé les problèmes fondamentaux reliés au
+jeu qui permet d'exposer les problèmes fondamentaux reliés au
 développement de jeux vidéo et résoudre ces problème en tentant de
 tirer profit de la puissance expressive du langage Scheme. Pour y
 arriver, une approche de développement itératif (en spirale) a été
-utilisée. 
+utilisée.
 
-Une première version a été développé dans le but d'avoir
-l'infrastructure de base pour le jeu et d'identifier les problèmes
+Une première version a été développée dans le but d'avoir
+l'infrastructure de base du jeu et d'identifier les problèmes
 rencontrés au cours du développement. Le développement de cette
 première version est décrit dans la section \ref{Exp:sp1}.
 
-Par la suite, une deuxième version fut écrite afin répondre aux
-problèmes rencontrés dans la première version du jeu. Pour ce, le
-développement du système objet et de coroutines furent
-entrepris. Cette démarche d'amélioration du jeu est décrite dans la
-section \ref{Exp:sp2}.
+Par la suite, une deuxième version fut écrite afin répondre à
+certaines lacunes que présentait la première version du jeu. Pour ce,
+le développement du système objet~\ref{Chap:OO} fut entrepris. Cette
+démarche d'amélioration du jeu est décrite dans la section
+\ref{Exp:sp2}.
 
-Finalement, une version expérimentale fut écrite. Cette version
+Finalement, une version expérimentale fut développée. Cette version
 tentait de s'éloigner de l'architecture classique de jeu vidéo où une
 boucle principale (\textit{main loop}) gère l'état du système en
 entier. L'idée a été de tenter de fusionner le système objet et le
 système de coroutine ensemble afin que tous les objets du jeu soient
 eux même des coroutines, en espérant ainsi simplifier l'écriture
-d'entités du jeu. Cette dernière version du jeu est décrite dans la
-section \ref{Exp:sp3}
+d'entités du jeu. En expérimentant ainsi sur le contrôle de flot du
+jeu, il est possible de démontrer si l'utilisation de Scheme permet de
+faciliter de telles expérimentations. Cette dernière version du jeu
+est décrite dans la section \ref{Exp:sp3}
 
 
 \subsection{Version initiale}
@@ -3945,25 +3946,25 @@ problèmes potentiels ont été rencontrés:
 
 \begin{itemize}
 \item Rendu du jeu
-\item Contrôle du flot du jeu
+\item Flot du contrôle du jeu
 \item Structures de données
-\item Détection et résolution de collisions
+\item Détection et résolutions de collisions
 \item Animations
-\item Partie multi-joueurs
+\item Parties multi-joueurs
 \end{itemize}
 
 Afin de pouvoir effectuer le rendu du jeu, une librairie de lecture et
 chargement d'image a dû être écrite. Le choix de l'écriture de cette
 librairie, plutôt que d'utiliser une librairie C déjà existante pour
 faire ce travail réside dans le but de demeurer indépendant d'autant
-de dépendances externes que possibles et d'avoir le plus de code
-Scheme impliqué dans le jeu que possible. Par contre, la librairie
+de dépendances externes que possibles et d'avoir autant de code Scheme
+impliqué dans le jeu que possible. Par contre, la librairie
 SDL~\cite{SDL} a été utilisé comme système de gestion d'entrés/sorties
 et de fenêtrage. Le système de rendu utilisé est
 \textit{OpenGL}~\cite{OpenGL} afin de pouvoir profiter d'un bonne
 portabilité et de permettre facilement d'ultérieurement utiliser les
-travaux effectués pour faire des jeux vidéo utilisant en rendu tri
-dimensionnel. 
+travaux effectués pour faire des jeux vidéo produisant rendu tri
+dimensionnel.
 
 Ainsi, la librairie de lecture et de chargement d'images s'occupe de
 lire des images en format textuel \textit{ppm}, qui est l'un des
@@ -3974,10 +3975,10 @@ car une entité de jeu vidéo est souvent représentée par plusieurs
 images. Ceci permet donc de toutes les garder de manière cohésive dans
 une même image. Un fichier descriptif de la fonte, sous formes de S
 expressions doit être présent afin de permettre une correcte
-interprétation de la fonte lue. La figure \ref{Exp:font} doit être
-accompagnée d'un fichier de même nom, portant une extension
-\emph{.scm} contant la description \scheme{((colors: (white green
-  red)) (chars: (0 1)))}. 
+interprétation de la fonte lue. Par exemple, l'image fournie dans la
+figure \ref{Exp:font} doit être accompagnée d'un fichier de même nom,
+portant une extension \emph{.scm} contant la description
+\scheme{((colors: (white green red)) (chars: (0 1)))}.
 
 \begin{figure}[htb!]
   \center
@@ -3996,23 +3997,24 @@ forme spéciale:
 
 Cette dernière effectue la génération de code permettant la lecture et
 le chargement de la font spécifiée, à condition que cette fonte soit
-symmétrique, \ie que toutes les sous images soient de même
+symétrique, \ie que toutes les sous images soient de même
 taille. L'option \scheme{static} permet d'effectuer la lecture durant
-l'expansion macro et d'inclure l'image dans le code source généré et
-les options \scheme{loop-x} et \scheme{loop-y} permettent de spécifier
+l'expansion macro et d'inclure l'image dans le code source généré.
+Les options \scheme{loop-x} et \scheme{loop-y} permettent de spécifier
 le comportement à entreprendre lorsque l'image est agrandie. Par
 défaut, l'image est lue dynamiquement et est étirée lorsqu'elle est
-agrandie.
+agrandie, mais elle peut être lue dynamiquement et/ou répétée
+lorsque agrandie dans la direction de l'axe des X ou des Y.
 
-Le flot de contrôle d'exécution dans ce jeu fut expérimental. Dans
-cette première version, une simulation par événements discrets a été
-utilisée. L'idée derrière ce choix provenait du fait que dans un jeu
-vidéo, l'avancement de celui-ci peut être considéré comme une série
-d'événements discrets. Par exemple, le laser avance, le joueur se
-déplace à droite, le vaisseau ennemie explose, etc... Ainsi, un petit
-système de simulation par événements discrets à été développé et
+Le flot de contrôle d'exécution dans ce jeu fut expérimental dès le
+départ. Dans cette première version, une simulation par événements
+discrets a été utilisée. L'idée derrière ce choix provenait du fait
+que dans un jeu vidéo, la progression peut être considéré comme une
+série d'événements discrets. Par exemple, le laser avance, le joueur
+se déplace à droite, le vaisseau ennemie explose, etc... Ainsi, un
+petit système de simulation par événements discrets à été développé et
 utilisé. La figure \ref{Exp:des} illustre des événements qui sont
-schédulés au tout début d'une partie. Un événement est une fonction ne
+ordonnancés au tout début d'une partie. Un événement est une fonction ne
 prenant aucun argument (\textit{thunk}). Ainsi le premier événement se
 chargera de faire un \textit{dispatch} de d'autres événements débutant
 la partie. Les second et dernier événements sont des événements de
@@ -4035,7 +4037,7 @@ gestion d'affichage et d'entrées/sorties du jeu.
 \end{figure}
 
 Ces événements doivent donc s'occuper de poursuivre le calcul du jeu
-leur étant assigné en reschédulant de nouveaux événements
+leur étant assigné en ré-ordonnacant de nouveaux événements
 ultérieurement dans le jeu. Par exemple, la figure \ref{Exp:mother-ev}
 illustre l'évènement principal implantant le comportement désiré pour
 le vaisseau mère des ennemies.
@@ -4062,21 +4064,22 @@ le vaisseau mère des ennemies.
 Cet exemple illustre bien deux désavantages provenant de l'utilisation
 d'évènements discrets pour implanter le comportement d'entités dans un
 jeu. Le premier désavantage est que la plupart des évènements se
-trouvent à être récursifs, et donc ils se reschédulent par eux même un
-peu plus tard dans le temps, ce qui donne une écriture moins intuitive
-de ce comportement. Aussi, lorsqu'un évènement est déjà prévu, il est
-possible que l'état du jeu change entre temps rendant cet évènement
-désuet. Pour le vaisseau mère, il est possible que son prochain
-déplacement aie été déjà prévu, mais que ce dernier a explosé suite à
-la collision avec un laser du joueur. Donc de tels événements sont
-prompts à donner des erreurs dues à des inconsistance entre l'état du
-jeu attendu et l'état réel lorsque ce produit un événement.
+trouvent à être récursifs, et donc ils se ré-ordonnancent par eux même
+un peu plus tard dans le temps, ce qui donne une écriture moins
+intuitive de ce comportement. Aussi, lorsqu'un évènement est déjà
+prévu, il est possible que l'état du jeu change entre temps rendant
+cet évènement désuet. Pour le vaisseau mère, il est possible que son
+prochain déplacement aie été déjà prévu, mais que ce dernier a explosé
+suite à la collision avec un laser du joueur. Donc de tels événements
+sont prompts à donner des erreurs dues à des inconsistance entre
+l'état du jeu attendu et l'état réel lorsque ce produit un événement.
 
 Aussi, il est important de faire bien attention a doser le calcul
 effectuer par un événement de manière à ne pas éterniser le temps du
-processeur utilisé. Ainsi, les évènements sont souvent reschédulé avec
-un interval de temps de 0 de manière à laisser la chance aux autres
-coroutines de s'exécuter.
+processeur utilisé. Ainsi, les évènements sont souvent ré-ordonnancés
+avec une intervalle de temps de 0 de manière à laisser la chance aux
+autres évènements de s'exécuter, tout en forçant l'évènement courant
+de s'exécuter le plus tôt possible.
 
 Toutefois, cette approche semble avoir été très bénéfique pour la
 création d'animations. En effet, en combinant des événements discrets
@@ -4091,11 +4094,10 @@ animation CPS s'occupant de faire clignoter le score du joueur, et
 puisqu'il s'agit de la fin de l'animation de début de partie, la
 continuation est passée directement en paramètre à cette animation de
 clignotement (optimisation d'appel terminal). On a pu ainsi facilement
-utiliser l'animation de clignotement et de manière très modulaire
-l'animation de clignotement dans notre animation de début de
-partie. Cette figure illustre un exemple d'utilisation de cette
-animation en réécrivant de manière plus complète l'événement de début
-de partie de la figure \ref{Exp:des}.
+utiliser l'animation de clignotement de manière très modulaire dans
+notre animation de début de partie. Cette figure illustre un exemple
+d'utilisation de cette animation en réécrivant de manière plus
+complète l'événement de début de partie de la figure \ref{Exp:des}.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4121,12 +4123,11 @@ de partie de la figure \ref{Exp:des}.
 \end{figure}
 
 Les structures de données utilisées dans \si furent définies par la
-forme spéciale \scheme{define-type} de Gambit-C. Ces dernières ont
-utilisé la hiérarchie simple que permet celle-ci de manière à
-permettre un minimum de polymorphisme et de modularisation de code. La
-figure \ref{Exp:deftyp-objs} donne certaines définitions de ces
-structures employées. L'avantage principal de l'utilisation de ces
-structures est qu'elles sont très performantes. 
+forme spéciale \scheme{define-type} de Gambit-C. Elles ont utilisé la
+hiérarchie simple que permet \scheme{define-type} de manière à tirer
+profit du maximum de polymorphisme et de modularisation de code
+possible. La figure \ref{Exp:deftyp-objs} donne certaines définitions
+de ces structures employées. 
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4142,30 +4143,31 @@ structures est qu'elles sont très performantes.
   \label{Exp:deftyp-objs}
 \end{figure}
 
-Par contre, un désavantage de celles-ci est, entre autre, le fait
-qu'elle ne permettent pas d'avoir facilement des champs communs à
-toutes les instances d'un type donné. Par exemple, l'expression du
-fait que toutes les instances du type \scheme{player-ship} possèdent
-doivent être associés à une boîte englobante (\textit{bounding box})
-de 13 par 8 pixels et qu'ils dont rendus par la fonte nommée
-\scheme{player} ne se fait pas de manière simple. Ces informations
-pourraient être ajoutées aux instance, mais ce serait un gaspillage
-d'espace mémoire puisque ces données sont commune à toutes les
-instances de ce type. Ainsi, pour cette version de \si, un système de
-type \emph{très rudimentaire} a été utilisé. Une structure de donnée
-décrivant un type a été utilisée, cette dernière contenant aussi les
-données communes aux instances de ce type. Un pointeur vers le bon
-type est par la suite ajouté dans le champs \scheme{game-object-type}
-de chacune des instances du jeu. L'utilisation de ce petit système de
-type demande ainsi l'écriture de code qui est fastidieuse et qui ne
-devrait pas être nécessaire.
+L'avantage principal de l'utilisation de ces structures est qu'elles
+sont très performantes. Par contre, elles ne permettent pas d'avoir
+facilement des champs communs à toutes les instances d'un type
+donné. Par exemple, l'expression du fait que toutes les instances du
+type \scheme{player-ship} possèdent doivent être associés à une boîte
+englobante (\textit{bounding box}) de 13 par 8 pixels et qu'ils sont
+rendus par la fonte nommée \scheme{player}. Ces informations
+pourraient être ajoutées dans chaque instances, mais ce serait un
+gaspillage important d'espace mémoire puisque ces données sont commune
+à toutes les instances de ce type. Ainsi, pour cette version de \si,
+un système de type \emph{très rudimentaire} a été utilisé. Une
+structure de donnée décrivant un type est créée. Cette dernière
+contient les données communes aux instances de ce type. Un pointeur
+vers le bon type est par la suite ajouté dans le champs
+\scheme{game-object-type} de chacune des instances du
+jeu. L'utilisation de ce petit système de type demande ainsi
+l'écriture de code qui est fastidieuse et qui ne devrait pas être
+nécessaire.
 
-La détection de collision sur ces objets s'est faite relativement bien
-grâce aux types qui contiennent de l'information sur les boîtes
-englobantes des objets. Puisqu'il n'y a jamais beaucoup d'objets
-présent dans le jeu en même temps, une détection très rudimentaire de
-collisions est effectuée. Cette dernière est présentée dans la figure
-\ref{Exp:dc-si1}. 
+La détection de collisions sur ces objets a pu être fait de manière
+efficace et modulaire grâce aux types qui contiennent de l'information
+sur les boîtes englobantes des objets. Puisqu'il n'y a jamais beaucoup
+d'objets présent dans le jeu en même temps, une détection très
+rudimentaire de collisions est effectuée. Cette dernière est présentée
+dans la figure \ref{Exp:dc-si1}.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4182,15 +4184,15 @@ collisions est effectuée. Cette dernière est présentée dans la figure
 \end{figure}
 
 Un problème majeur relié à l'utilisation de ces structures de données
-est par contre apparu lorsque la résolution de collisions a due être
-implantée. En effet, cette résolution dépend du types des deux objets
-entrant en collision ensemble. La figure \ref{Exp:si1-col-res}
-illustre bien le problème rencontré. On constate que les types des
-objets doivent être manuellement analysés de manière a utiliser la
-bonne fonction de résolution qui, elle aussi, se doit d'analyser le
-type de l'objet reçu de manière a choisir la bonne résolution a
-adopter. Il en résulte en du code très lourd, où il est très facile
-d'introduire des erreurs.
+est par contre apparu lorsque la \emph{résolution de collisions} a due
+être implantée. En effet, cette résolution dépend du types des deux
+objets entrant mutuellement en collision. La figure
+\ref{Exp:si1-col-res} illustre bien le problème rencontré. On constate
+que les types des objets doivent être manuellement analysés de manière
+a utiliser la bonne fonction de résolution qui, elle aussi, se doit
+d'analyser le type de l'objet reçu de manière a choisir la bonne
+résolution a adopter. Il en résulte en du code très lourd, où il est
+très facile d'introduire des erreurs.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4216,11 +4218,12 @@ cela implique de pouvoir conserver deux parties du jeu de manière
 de contrôle sous forme de simulation par événements discrets utilisé,
 cela implique d'avoir deux simulations en parallèle. Puisque le
 système de simulation ne permet pas de pouvoir facilement arrêter une
-simulation, une autre approche a été utilisée, utiliser un système de
-coroutine dans lequel les simulation seront exécuté dans des
-coroutines différentes. Ainsi, le changement de contexte pourra être
-manuellement utilisé lorsqu'un joueur meurt afin de réactiver la
-partie du prochain joueur.
+simulation et d'avoir une deuxième simulation se produisant en même
+temps, une autre approche a été utilisée. Un système de coroutines
+dans lequel les simulations seront exécutés dans des coroutines
+différentes a été développé et utilisé. Ainsi, le changement de
+contexte peut être manuellement utilisé lorsqu'un joueur meurt afin de
+réactiver la partie du prochain joueur.
 
 C'est de cette idée qu'est né le système de coroutine présenté dans le
 chapitre \ref{Chap:corout}. Il fut initialement beaucoup plus simple
@@ -4237,9 +4240,9 @@ où le joueur n'a pas terminé sa partie, s'occupe d'effectuer le
 changement de coroutines, après avoir informé l'autre coroutine de
 certaines informations au préalable. Il est intéressant de noter que
 juste avant le changement de contexte, un événement très prioritaire
-est schédulé de manière à se produire immédiatement au retour du
-contexte de la coroutine. Il s'agit de l'animation ré-introduisant la
-partie du joueur actuel.
+doit être ordonnancé de manière à se produire immédiatement au retour
+du contexte de la coroutine. Il s'agit de l'animation ré-introduisant
+la partie du joueur actuel.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4270,28 +4273,27 @@ partie du joueur actuel.
 Ainsi, l'écriture de cette première version de \si a permise
 d'identifier plusieurs problèmes reliés au développement de jeux vidéo
 (détection et résolution de collisions, parties multi-joueurs,
-etc...). 
-
-En plus de permettre de pouvoir facilement expérimenter sur le type de
-flot de contrôle utilisé pour développer ce jeu, Scheme a permis de
-faire rapidement plusieurs outils non triviaux pour l'implantation du
-jeu, dont un système de fontes et un petit système de coroutines.
+etc...). En plus de permettre de pouvoir facilement expérimenter sur
+le type de flot de contrôle utilisé pour développer ce jeu, Scheme a
+permis de faire rapidement plusieurs outils non triviaux pour
+l'implantation du jeu, dont un système de fontes et un petit système
+de coroutines.
 
 Par contre, certains problèmes ne possèdent pas des solutions
 satisfaisantes. En effet, la résolution de collision est très
 fastidieuse et aurait besoin d'être modularisée et améliorée. Aussi,
 la technique de flot de contrôle expérimentale utilisée (simulation
 par événements discrets), fonctionne bien pour certains aspects, mais
-ne semble pas naturelles pour d'autre. Ainsi, le flot de contrôle
-pourrait aussi être améliorer de manière à pouvoir exprimer de manière
-plus naturelle le comportement de entités du jeu.
+ne semble pas naturelle pour d'autre. Ainsi, le flot de contrôle
+pourrait aussi être amélioré de manière à pouvoir exprimer de manière
+plus naturelle le comportement des entités du jeu.
 
 \subsection{Version orientée objet}
 \label{Exp:sp2}
 
-Ainsi, une nouvelle version de \si fut développé afin de pallier à une
-lacune existante dans la première version écrite: le problème relié
-aux types de structures de données qui engendrait des cascades
+Ainsi, une nouvelle version de \si fut développée afin de pallier à
+une lacune existante dans la première version écrite: le problème
+relié aux types de structures de données qui engendrait des cascades
 fastidieuses de vérifications de types de manière manuelle pour, entre
 autre, la résolution de collisions (voir la figure
 \ref{Exp:si1-col-res}).
@@ -4308,7 +4310,7 @@ l'objet du chapitre \ref{Chap:OO}.
 
 Ainsi, les objets sont donc maintenant déclarés comme des classes
 appartenant à une hiérarchie relativement simple et tirant profit de
-la possibilité de concevoir des hiérarchies multiple afin de donner
+la possibilité de concevoir des hiérarchies multiples afin de donner
 des propriétés aux objets du jeux. La figure \ref{Exp:sp2-class}
 illustre un échantillon de la hiérarchie de classes utilisée dans le
 jeu. On constate que les champs communs à toutes les instances ont été
@@ -4349,18 +4351,18 @@ pour les classes enfants de \scheme{game-object}.
 L'attrait principal du développement et de l'intégration du système
 objet pour la création du jeu réside dans l'utilisation des fonctions
 génériques. L'utilisation de celles-ci permet ainsi d'utiliser des
-opérations spécifiques aux objets donnés de manière complètement
+opérations spécifiques aux objets de manière complètement
 transparente, ce qui rend l'écriture de ces parties du jeu beaucoup
-plus élégante et solides face aux changements éventuels des structures
+plus élégante et solide face aux changements éventuels des structures
 de donnés ou de l'architecture du jeu.
 
-Ainsi, trois fonctions génériques ont été utilisée pour améliorer \si:
-\scheme{detect-collision?}, \scheme{resolve-collision!} et
+Ainsi, trois fonctions génériques ont été utilisées pour améliorer
+\si: \scheme{detect-collision?}, \scheme{resolve-collision!} et
 \scheme{render} qui effectuent respectivement la détection de
-collision, la résolution de collisions et le rendu graphique des
+collisions, la résolution de collisions et le rendu graphique des
 objets. La figure \ref{Exp:si2-genfun} donne un aperçu de
 l'utilisation faite de la fonction générique
-\scheme{resolve-collision!}. Des instance de cette dernière sont
+\scheme{resolve-collision!}. Des instances de cette dernière sont
 définies pour les paires de collisions possibles dans le jeu et le
 système s'occupe de faire automatiquement le choix dynamique de la
 bonne instance en fonction des objets passés en paramètre. Le code
@@ -4396,9 +4398,9 @@ La deuxième version du jeu apporte beaucoup d'amélioration face au
 développement de jeu vidéo en Scheme grâce à l'utilisation de la
 programmation orientée objet. La modularité et l'abstraction du code
 de la première version a été améliorée de beaucoup grâce à
-l'utilisation d'une hiérarchie de classe annotée de propriétés et
-comportant des membres de classes et de fonctions génériques pour
-effectuer de manière transparente les actions de bases sur les
+l'utilisation d'une hiérarchie de classes annotée de propriétés et
+comportant des membres de classe et des fonctions génériques pour
+effectuer de manière transparente les actions de base sur les
 instances de ces classes. Par contre, un problème n'a toujours pas été
 adressé dans cette nouvelle version. En effet, le flot de contrôle
 implanté par une simulation à événement discret n'a pas été modifié
@@ -4419,21 +4421,23 @@ de flot est aussi expérimentale, mais l'utilisation d'une simulation à
 des entités sous forme de \textit{threads} serait beaucoup plus
 naturelle. En effet, en utilisant des événements discrets, le corps
 des événements devait faire en sorte que l'événement se poursuive en
-se reschédulant un peu plus tard, donnant ainsi la chance aux autres
-événements de pouvoir s'exécuter. Ce phénomène correspond très bien à
-la fonction \scheme{yield} du système de coroutine qui interrompt de
-manière temporaire l'exécution d'une coroutine afin de laisser la
-chance aux autre coroutine de pouvoir continuer leur travail.
+se ré-ordonnancant un peu plus tard, donnant ainsi la chance aux
+autres événements de pouvoir s'exécuter. Ce phénomène correspond très
+bien à la fonction \scheme{yield} du système de coroutine qui
+interrompt de manière temporaire l'exécution d'une coroutine afin de
+laisser la chance aux autre coroutine de pouvoir continuer leur
+travail.
 
 Ainsi, dans cette nouvelle version du jeu, \emph{tous} les objets sont
 maintenant des coroutines exécutant leurs comportement de manière
-indépendante. La figure \ref{Exp:si3-class} illustre l'intégration du
-système de coroutine aux objets du jeu. L'utilisation de constructeurs
-permet l'appel du constructeur de base des coroutines afin de
-spécifier le comportement que devra entreprendre l'objet. Ce corps est
-déterminer de manière dynamique avec la fonction générique
+indépendante. Pour ce, une version orientée objet du système de
+coroutine fut produite. La figure \ref{Exp:si3-class} illustre
+l'intégration du système de coroutine aux objets du jeu. L'utilisation
+de constructeurs permet l'appel du constructeur de base des coroutines
+afin de spécifier le comportement que devra entreprendre l'objet. Ce
+corps est déterminé de manière dynamique avec la fonction générique
 \scheme{behaviour} et sera exécuté dans un environnement contenant des
-gestionnaires de messages dynamique, communs à tous les objets,
+gestionnaires de messages dynamiques, communs à tous les objets,
 permettant de pauser le jeu ou de détruire ces derniers.
 
 \begin{figure}[htb!]
@@ -4462,68 +4466,71 @@ permettant de pauser le jeu ou de détruire ces derniers.
 \end{figure}
 
 Malgré l'idéologie prometteuse d'avoir des objets indépendant régis
-chacun par leurs comportement, l'implantation du comportement des
-entités du jeu est devenu très rapidement \emph{cauchemardesque}. En
-effet, puisque toutes les entités possèdent leurs fils d'exécution et
-que ceux-ci sont tous équivalents, la \emph{synchronisation} entre ces
-entités est primordiale et implique des protocoles de communication
-entre ceux-ci. Ces protocoles doivent régir tout le comportent du jeu
-et, en bout de ligne, le flot de contrôle devient soudainement très
-difficile à exprimer. Ainsi, des méta-objets ont dû être introduits
-afin de pouvoir effectuer la synchronisation entre les objets. La
-figure \ref{Exp:inv-cnt} donne le comportement du méta-objet régissant
-l'activité d'une rangée d'\textit{invader}. Ce dernier utilise des
-listes de diffusions pour envoyer des messages aux \textit{invader} de
-sa rangée. Il possède deux états: l'état initial qui attend la
-réception d'un message lui indiquant que c'est le tour de sa rangée de
-se déplacer et un deuxième états consistant à une barrière de
-synchronisation effectuant l'attente de la réception du message
-\scheme{moved} de la part de tous les \textit{invader} de la
-rangée. Puis, vérifie si une collision s'est produite avec un mur
-durant se déplacement et effectue la gestion de cette collision si
-c'est le cas en avertissant les autres contrôleurs de la situation. 
+chacun par leurs propres comportements, l'implantation du comportement
+des entités du jeu est devenu très rapidement
+\emph{cauchemardesque}. En effet, puisque toutes les entités possèdent
+leurs fils d'exécution et que ceux-ci sont tous équivalents, la
+\emph{synchronisation} entre ces entités est primordiale et implique
+des protocoles de communication complexes entre les objets. Ces
+protocoles doivent régir tout le comportent du jeu et, en bout de
+ligne, le flot de contrôle devient soudainement très difficile à
+exprimer. Ainsi, des méta-objets ont dû être introduits afin de
+pouvoir effectuer la synchronisation entre les objets de base, comme
+les ennemis. La figure \ref{Exp:inv-cnt} donne le comportement du
+méta-objet régissant l'activité d'une rangée d'\textit{invader}. Ce
+dernier utilise des listes de diffusions pour envoyer des messages aux
+\textit{invader} de la rangée qu'il coordonne. Il possède deux états:
+l'état initial qui attend la réception d'un message lui indiquant que
+c'est le tour de sa rangée de se déplacer et un deuxième état
+consistant à une barrière de synchronisation effectuant l'attente de
+la réception du message \scheme{moved} de la part de tous les
+\textit{invader} de la rangée. Puis, il vérifie si une collision s'est
+produite avec un mur durant se déplacement et effectue la gestion de
+cette collision si c'est le cas en avertissant les autres contrôleurs
+de la situation.
 
 De plus, l'utilisation intensive (voir abusive) du système de
 coroutine couplé avec le système d'objet a résulté en une chute
 dramatique des performances du jeu. Cette chute de performance a
 permis d'améliorer le système de coroutine en implantant un système de
-profilage des coroutine afin de pouvoir visualiser qu'elles coroutines
+profilage des coroutine afin de pouvoir visualiser quelles coroutines
 monopolisaient le contrôle de l'ordonnanceur pour une durée trop
-longue. Ce système a permis d'identifier des coroutine attendant trop
-longtemps avant d'effectuer une opération permettant de redonner le
-contrôle à l'ordonnanceur, et d'ainsi l'optimiser afin d'améliorer les
-performances globales du système. 
+longue. Il était ainsi possible d'optimiser certaines coroutines afin
+d'améliorer les performances globales du système.
 
-Par contre, même après avoir optimiser du système sont très mauvaise
-et donc, la troisième itération de \si fut abandonné en cours de
-route, après avoir implanté la majeur partie de la logique du jeu sous
-forme de coroutines. Cette version a permis de réaliser que l'approche
-plus tradionnelle pour le flot de contrôle serait plus appropriée que
-les approches utilisées pour implanter \si. Par contre, cette
-expérimentation sur la technique de flot de contrôle a permis de
-démontrer la facilité avec laquelle il a été possible de modifier le
-coeur du jeu pour essayer de nouvelles options quant à l'architecture
-du programme et de son flot de contrôle.
+Par contre, même après avoir optimisé certaines coroutine, les
+performances du jeu demeuraient très mauvaises et donc, la troisième
+itération de \si fut abandonné en cours de route, après avoir implanté
+la majeur partie de la logique du jeu sous forme de coroutines. Cette
+version a permis de réaliser que l'approche plus tradionnelle pour le
+flot de contrôle serait plus appropriée que les approches utilisées
+pour implanter \si. Par contre, cette expérimentation sur la technique
+de flot de contrôle a permis de démontrer la facilité avec laquelle il
+a été possible de modifier le coeur du jeu pour essayer de nouvelles
+options quant à l'architecture du programme et de son flot de
+contrôle.
 
 \subsection{Conclusion}
 
 Ainsi, le développement de \si en Scheme fut très riche en
-expériences. Cela a permis, entre autre de trouver plusieurs problèmes
-généraux reliés au développement de jeux vidéo, comme des problèmes de
+expériences. Il a permis, entre autre, de trouver plusieurs problèmes
+généraux reliés au développement de jeux vidéo comme des problèmes de
 rendus graphiques, de flot de contrôle, de résolution de collisions,
 etc... Ces problèmes ont été résolus en utilisant le mieux possible
-les avantages qu'offrent un langage de haut niveau tel que Scheme.
+les avantages qu'offrent un langage de haut niveau tel que Scheme en
+utilisant les fonctions d'ordres supérieures, un style de
+programmation CPS et en développant un système de coroutines.
 
 La création d'un système de programmation orienté objet a grandement
 permis d'améliorer la qualité du code écrit lors du développement de
 la première version du jeu grâce à l'utilisation des fonctions
-génériques permettant de faire un choix dynamique de procédure en
+génériques permettant de faire un choix dynamique de procédures en
 fonctions des objets passés en paramètres.
 
 L'expérimentation effectuée sur le flot de contrôle du jeu a permis de
 démontrer que l'architecture du moteur peut être facilement modifier
 afin de mettre à l'essai de nouvelles techniques de gestion du flot de
-contrôle du jeu. L'utilisation du système de coroutines pour
+contrôle pour jeu. L'utilisation du système de coroutines permis
 d'implanter efficacement une version multijoueurs du jeu, mais fut
 inappropriée pour effectuer la gestion complète du flot de contrôle du
 jeu.

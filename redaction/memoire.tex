@@ -4870,12 +4870,16 @@ Dans un premier temps, il serait intéressant de comparer les
 différents langages utilisés dans l'industrie du jeu vidéo avec Scheme
 afin d'en faire ressortir les différences. Ces différences mènent
 directement à une méthode de développement qui seront nécessairement
-différentes.
+différentes. Ainsi, un portrait des techniques de programmation
+utilisées dans l'industrie est dressé dans le but de situer où se
+retrouvent les travaux présentés dans ce mémoire.
 
-Le langage de programmation Scheme a déjà été utilisé pour produire
-des jeux vidéo commerciaux de très bonne qualité. Certains seront
-cités et une revue de l'expérience acquise par les développeurs sera
-exposée.
+Les langages de programmation de la famille Lisp ont déjà été utilisés
+pour produire des jeux vidéo commerciaux de très bonne
+qualité. Certains seront cités et une revue de l'expérience acquise
+par les développeurs sera exposée dans le but de pouvoir comparer
+leurs expériences avec celle acquise pour le développement de \si et
+de \lr.
 
 \section{Comparaison de langages}
 
@@ -4898,14 +4902,14 @@ possède également un système de gestion d'exceptions et de
 
 Ainsi, le langage C++ semble être grandement apprécié pour son mélange
 de concepts de haut niveau comme la programmation orientée objet et de
-bas niveau, comme la gestion de mémoire manuelle. Il diffère
-grandement d'un langage de haut niveau tel que Scheme. En effet, il ne
-possède pas de fermetures, de continuations et de système de macros
-évolué. La programmation en C++ est dite impérative parce que le
-résultat du programme dépend intrinsèquement de l'état de
-celui-ci. Puisqu'il s'agit d'un langage typé statiquement, il ne peut
-pas être interprété, même si les \textit{templates} permettent une
-émulation simple de typage dynamique.
+bas niveau, comme la gestion de mémoire manuelle et son modèle
+d'exécution très près du matériel. Il diffère grandement d'un langage
+de haut niveau tel que Scheme. En effet, il ne possède pas de
+fermetures, de continuations et de système de macros évolué. La
+programmation en C++ est dite impérative parce que le résultat du
+programme dépend intrinsèquement de l'état de celui-ci. Puisqu'il
+s'agit d'un langage typé statiquement, il peut difficilement être
+interprèté tout en conservant ses avantages de performances.
 
 Il en découle donc que C++ met à la disposition beaucoup moins de
 concepts de haut niveaux, réduisant ainsi la facilité d'abstractions
@@ -4927,7 +4931,8 @@ comparaison aux nombres de programmeurs C++ et donc, même si Scheme
 pourrait se révéler un meilleur choix technologique pour le
 développement d'un jeu, il est possible que l'embauche de suffisamment
 de programmeurs Scheme soit trop difficile et coûteux vis-à-vis
-l'embauche de programmeurs C++ beaucoup plus nombreux.
+l'embauche de programmeurs C++ beaucoup plus nombreux. Rendant ainsi
+C++ plus attrayant et moins risqué pour une entreprise.
 
 
 \subsection{Lua}
@@ -4936,8 +4941,8 @@ Un langage Lua~\cite{Lua} est fréquemment utilisé non pas pour
 implanter le moteur d'un jeu vidéo, mais plutôt pour effectuer le
 \textit{scripting} de celui-ci, \ie le développement dynamique de
 niveaux, d'environnements, etc... Lua a été utilisé notamment dans le
-jeu \textit{World Of Warcraft} afin, entre autre, de permettre aux
-joueurs de pouvoir ajouté des éléments au jeu de manière dynamique.
+jeu \textit{World Of Warcraft} afin de permettre aux joueurs de
+pouvoir ajouter des éléments au jeu de manière dynamique.
 
 Ce langage est reconnu pour avoir un environnement d'exécution très
 léger, environ 150 kilo-octets, ce qui fait en sorte que l'ajout de
@@ -4967,7 +4972,9 @@ constituent eux aussi un sous ensemble de Scheme.
 
 Malgré la domination du langage C++ dans l'industrie du jeu vidéo,
 certains jeux ont déjà été reconnu pour utiliser Scheme à différents
-degrés.
+degrés. Ceux-ci sont mis en lumière dans cette section afin de
+permettre de comparer l'expérience acquise par ces développeurs à
+celle acquise pour la rédaction de ce mémoire.
 
 
 \subsection{Naughty Dog}
@@ -4980,9 +4987,9 @@ compagnie a écrits plusieurs jeux sur la \textit{PlayStation 2} en
 utilisant le compilateur \textit{GOAL}(\textit{Game Oriented Assembly
   Lisp}), un système maison uniquement compilé vers du code machine
 pour le \textit{PlayStation 2} qui comprenait entre autre un système
-d'objet. Ce dernier fut utilisé pour développer de nombreux jeux sur
-la console dont les jeux \textit{Crash Bandicoot} et \textit{Jak and
-  Dexter}.
+d'objet. Ce dernier fut utilisé pour développer entièrement de
+nombreux jeux sur la console dont les jeux \textit{Crash Bandicoot} et
+\textit{Jak and Dexter}.
 
 Scott Shumaker, programmeur chef chez Naughty Dog, a commenté leur
 utilisation de GOAL dans un article sur le site
@@ -5015,16 +5022,16 @@ fut difficile de trouver de la main d'oeuvre maîtrisant le langage
 Lisp et que même ceux-ci devaient tout de même s'adapter au système
 utilisé.
 
-Ils ont par la suite créer les jeux \textit{Uncharted: Drake's
-  fortune} et \textit{Uncharted 2: Among Thieves} qui sont rapidement
-devenus très populaire pour l'action et le rendu graphique
-exceptionnel contenu dans ces titres. Dan Liebgold de Naughty Dog a
-donné une conférence sur le développement du jeu \textit{Uncharted:
-  Drake's fortune}~\cite{ND_DRAKE} et mentionna qu'ils ont utilisé le
-langage Scheme afin de pouvoir exprimer les données du jeu de manière
-dynamique, le moteur du jeu est écrit en C++. Ils profitent ainsi des
-performances qu'offrent C++ pour les zones critiques du jeu et
-utilisent un langage de plus haut niveau pour la description des
+Ils ont par la suite créé les jeux \textit{Uncharted: Drake's fortune}
+et \textit{Uncharted 2: Among Thieves} qui sont rapidement devenus
+très populaire pour l'action et le rendu graphique exceptionnel
+contenu dans ces titres. Dan Liebgold de Naughty Dog a donné une
+conférence sur le développement du jeu \textit{Uncharted: Drake's
+  fortune}~\cite{ND_DRAKE} et mentionna qu'ils ont utilisé le langage
+Scheme afin de pouvoir exprimer les données du jeu de manière
+dynamique, mais que le moteur du jeu est écrit en C++. Ils profitent
+ainsi des performances qu'offrent C++ pour les zones critiques du jeu
+et utilisent un langage de plus haut niveau pour la description des
 données et utilisent un schéma de compilation dynamique similaire à
 celui utilisé par GOAL. La figure \ref{Rev:Drake} illustre la
 constructions de données utilisées dans ce jeu.
@@ -5075,16 +5082,18 @@ Les fermetures disponible en Scheme ont été utilisées comme base d'un
 système d'interface graphique complet permettant la création de
 fenêtres, de boutons, etc... En utilisant ces fermetures pour
 conserver l'état de ces entités, on obtient ainsi un résultat
-équivalent l'utilisation d'un système de programmation orienté objet,
-où l'état est conservé dans ces fermetures.
+similaire l'utilisation d'un système de programmation orienté objet,
+où l'état est conservé dans ces fermetures, mais ne fournissant pas de
+fonctions génériques.
 
 Afin d'éviter d'avoir des problèmes de pauses dues à la gestion de
 mémoire automatique, plusieurs techniques ont été utilisées afin de
-cacher des données statiques au ramasse miettes. En effet,
-l'utilisation de la sérialisation de données disponible dans Gambit-C
-a été utilisé afin de transformer de grosses structures de données
-statiques lors du jeu et ainsi éviter que le ramasse miettes n'aies à
-la parcourir pour chaque images du jeu générées.
+cacher des données statiques au gestionnaire automatique de
+mémoire. En effet, l'utilisation de la sérialisation de données
+disponible dans Gambit-C a été utilisée afin de transformer de grosses
+structures de données statiques lors de l'exécution du jeu et ainsi
+éviter que le ramasse miettes n'aies à la parcourir pour chaque images
+du jeu générées.
 
 L'état du jeu a été implanté en utilisant un mécanisme de
 programmation fonctionnelle réactive basée sur Scheme permettant
@@ -5104,15 +5113,23 @@ langage Scheme, on constate que ces derniers répondent à des besoins
 précis présents dans les jeux vidéo. Lua propose un dynamisme
 permettant un développement dynamique tandis que C++ permet d'obtenir
 de très bonnes performances au coût d'avoir moins de puissance
-d'abstractions.
+d'abstractions. Le choix du langage le plus approprié pour le
+développement d'un jeu devrait donc être fait en prenant en
+considération le matériel utilisé afin d'assurer que de pouvoir
+utiliser le plus de puissance expressive que possible, sans toutefois
+avoir un coût relié à ces abstractions trop élevé.
 
 Aussi, Lisp et Scheme ont déjà été utilisés dans l'industrie du jeu
 vidéo pour développer des jeux de grandes qualités tels \textit{Jak
   and Dexter}, \textit{Uncharted: Drake's Fortune} et
 \textit{QuantZ}. L'expérience acquise par les développeurs de ces jeux
-est très positive. On constate de manière unanime que Scheme leurs a
-fourni un environnement de développement dynamique et l'extensibilité
-du langage a jouer à l'avantage de ceux-ci.
+est très positive. On constate de manière unanime ces langages leurs
+ont fourni un environnement de développement dynamique et
+l'extensibilité du langage a jouer à l'avantage de ceux-ci. On
+constate ainsi, que malgré la faible adoption de Scheme pour
+l'écriture de jeux vidéo commerciaux, les équipes l'ayant utilisé
+semblent l'avoir beaucoup apprécier et surtout, l'utilise toujours
+dans le développement de leurs jeux.
 
 
 
@@ -5121,9 +5138,9 @@ du langage a jouer à l'avantage de ceux-ci.
 
 
 L'expérience acquise lors du développement des jeux \si et \lr permet
-donc de faire le point sur les forces et les faiblesses sur
-l'utilisation d'un langage de programmation fonctionnelle tel que
-Scheme pour le développement de jeux vidéo.
+donc de faire le point sur les forces et les faiblesses de
+l'utilisation d'un langage de programmation fonctionnelle et dynamique
+tel que Scheme pour le développement de jeux vidéo.
 
 L'expressivité du langage Scheme, notamment grâce aux fonctions de
 premier ordre et aux macros, a permis de pouvoir développer un système
@@ -5136,15 +5153,19 @@ bonne modularité fournie par les fonctions génériques du système
 objets et une grande simplicité pour l'implantation de parties
 multi-joueurs grâce à l'utilisation de coroutines pour encapsuler les
 parties se déroulant en parallèle. Le coût de développement de tels
-modules en utilisant des langages donnant accès à moins de puissance
-d'abstraction aurait certainement rendu le développement de ceux-ci
+modules, en utilisant des langages donnant accès à moins de puissance
+d'abstraction, aurait certainement rendu le développement de ceux-ci
 impossible et donc, Scheme s'est révélé un langage très puissant pour
 le développement de ces outils indispensables.
 
 Le dynamisme du langage a également jouer un rôle implicite très
 important pour le développement de ces jeux. En effet, la présence
 d'un déboggeur très dynamique a apporté une grande flexibilité au
-développement et permis de développer efficacement ces deux jeux.
+développement et permis de développer efficacement ces deux jeux. En
+effet, malgré le fait que les erreurs de programmation sont signalées
+durant l'exécution du jeu, la résolution de celles-ci sont font très
+rapidement grâce à la possibilité d'introspection de l'état du
+programme et d'évaluation dynamique de code.
 
 Aussi, le langage Scheme a permis de facilement pouvoir expérimenter
 sur le contrôle de flot des jeux en permettant de développer
@@ -5162,14 +5183,14 @@ grandement en fonction du matériel sur lequel le jeu sera porté. S'il
 s'agit d'une plateforme au matériel très limité, alors le coût
 d'abstraction pourrait peut-être s'avérer trop grand. Dans un tel cas,
 l'utilisation de langages de plus bas niveau, comme C++, semble plus
-approprié afin de bâtir le moteur du jeu, mais Scheme pourrait alors
+appropriée afin de bâtir le moteur du jeu, mais Scheme pourrait alors
 très bien être utilisé comme langage de script afin de permettre de
 développer dynamiquement le \textit{gameplay} du jeu. Par contre, s'il
 s'agit de plateforme performantes, comme c'est le cas pour les jeux
 développés dans le cadre de ce mémoire, alors la possibilité de
 modulariser le code est beaucoup plus grande et les performances
 deviennent moins critiques, face à la réutilisabilité potentielle du
-code écrit.
+code écrit. Scheme devient alors un candidat idéal.
 
 Un problème potentiel qui n'a pas été adressé dans ce mémoire est
 relié à l'allocation et la gestion de mémoire automatique utilisée par
@@ -5177,12 +5198,12 @@ le langage Scheme. En effet, puisque Scheme est un langage
 fonctionnel, ce dernier effectue généralement beaucoup d'allocations
 mémoire. Ainsi, il est possible que sur des systèmes où le coût
 d'allocation mémoire est élevé, l'utilisation d'un tel langage
-devienne plus grand. De même, l'utilisation de ramasse miettes
-pourrait potentiellement engendrer des pauses du jeu qui sont très
-indésirables, si les pause dues à la gestion automatiques deviennent
-trop grandes. Ces phénomènes n'ont par contre pas été observés dans
-les jeux développés pour ce mémoire, puisqu'ils demeuraient trop
-simples.
+devienne plus grand. De même, la présence du gestionnaire automatique
+de mémoire pourrait potentiellement engendrer des pauses du jeu qui
+sont très indésirables, si les pause dues à la gestion automatiques
+deviennent trop grandes. Ces phénomènes n'ont par contre pas été
+observés dans les jeux développés pour ce mémoire, puisqu'ils
+demeuraient trop simples.
 
 Ainsi, malgré le coût que peut apporter l'utilisation d'abstractions,
 nous croyons que le bénéfice résultant est bien supérieur à ce

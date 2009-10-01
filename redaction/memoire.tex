@@ -4557,9 +4557,9 @@ développé afin de pouvoir consolider les techniques développées pour
 raisons. Principalement, ce jeu contient de nouveaux éléments qui
 n'étaient pas présent dans \si comme par exemple le concept
 d'intelligence artificielle et étendait d'autre concepts qui y étaient
-très primitifs comme le concept de niveaux.
+très primitifs comme le concept de niveaux et d'états d'entités.
 
-Ce jeu consiste à tenter de capturer tout l'or dispersée dans le
+Ce jeu consiste à tenter de capturer tout l'or dispersé dans le
 niveau en évitant de rentrer en contact avec les robots ennemis. Pour
 y arriver, le joueur doit grimper des échelles, passer sur des cordes
 et utiliser son pistolet laser qui permet de faire des trous à la
@@ -4573,13 +4573,13 @@ possible. La figure \ref{Exp:ld-screen} illustre une capture d'écran
 du jeu développé.
 
 \begin{figure}[htb!]
-  \todo{Ajouter un screen du jeu avec des robots}
-  %\includegraphics[scale=0.6]{}
+  \center
+  \includegraphics[scale=0.6]{lode-runner-screenshot}
   \caption{Capture d'écran du jeu \lr développé}
   \label{Exp:ld-screen}
 \end{figure}
 
-Afin de pouvoir développé ce jeu, les meilleurs techniques utilisées
+Afin de pouvoir développer ce jeu, les meilleurs techniques utilisées
 pour le développement de \si ont été réutilisées et raffinées pour les
 besoins plus grands de ce jeu. Par contre, le flot du contrôle est
 régi de manière beaucoup plus conservatrice en utilisant une boucle
@@ -4687,7 +4687,7 @@ entités appartenant à la hiérarchie de la classe \scheme{human-like}.
 \end{figure}
 
 Une nette amélioration apportée au jeu, en comparaison celui
-développée précédemment, est l'utilisation d'une grille pour accélérer
+développé précédemment, est l'utilisation d'une grille pour accélérer
 la détection de collisions. Le principe est simple: une grille
 bidimensionnelle contenant un nombre de subdivisions variable est
 créée. Lorsqu'un objet est ajouté au jeu, il est ajouté dans chacune
@@ -4736,22 +4736,17 @@ images.
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(enum background-layer stage-layer foreground-layer
-      human-like-layer top-layer)
-(define-method (get-layer (h human-like))
-  human-like-layer)
-(define-method (get-layer (h hole))
-  foreground-layer)
-(define-method (get-layer (s stage))
-  stage-layer)
-(define-method (get-layer (obj game-object))
-  foreground-layer)
+(enum background-layer stage-layer foreground-layer human-like-layer top-layer)
+(define-method (get-layer (h human-like))    human-like-layer)
+(define-method (get-layer (h hole))          foreground-layer)
+(define-method (get-layer (s stage))         stage-layer)
+(define-method (get-layer (obj game-object)) foreground-layer)
   \end{schemecode}
   \caption{Implantation des couches de rendu dans \lr}
   \label{Exp:layers}
 \end{figure}
 
-\todo{Intelligence Artificielle}
+\todo{Peut etre parler de l'intelligence artificielle...}
 
 \subsection{Conclusion}
 
@@ -4770,7 +4765,7 @@ contre, puisque le langage Scheme offre le meilleur des deux mondes,
 type de contrôle de flot a permis de tirer profit des avantages
 qu'offrent la programmation fonctionnelle (fonctions d'ordre
 supérieures, fermetures, etc...) tout en utilisant un modèle éprouvé
-de flot de contrôle.
+de flot de contrôle et de modularisation.
 
 L'ajout d'une grille pour accélérer la détection de collisions semble
 peut-être peu significative puisque \lr ne contient pas une très
@@ -4784,9 +4779,9 @@ un plus grand nombre d'objets présents, ceux-ci demeurent trop peu
 pour éprouver la gestion mémoire sur des ordinateurs récents.
 
 \section{Conclusion}
-Ainsi, il a été possible de développer deux jeux vidéo de complexité
-croissante en utilisant le langage Scheme. Le développement du premier
-jeu, \si, a permis d'identifier et de répondre aux besoins
+Ainsi, il a été possible de développer deux jeux vidéo de complexités
+croissantes en utilisant le langage Scheme. Le développement du
+premier jeu, \si, a permis d'identifier et de répondre aux besoins
 fondamentaux de jeux vidéo: rendu graphique, détection de collisions,
 etc... Pour ce faire, un système de programmation orienté objet et un
 système de coroutines ont été ajouté au langage Scheme. Aussi, le
@@ -4801,8 +4796,8 @@ vérifier si les techniques utilisées pour \si s'adaptaient à un autre
 jeu plus complexe. Ainsi, \lr fut développé en utilisant les
 abstractions de haut niveau que permettent les fonctions de premiers
 ordre combinées avec un système d'objets très polyvalent. En
-utilisant, cette fois-ci, une approche conservatrice sur le flot de
-contrôle, le résultat fut très clair: le jeu a été fait rapidement et
+utilisant, cette fois ci, une approche conservatrice sur le flot de
+contrôle. Le résultat fut très clair: le jeu a été fait rapidement et
 sans aucun problèmes. 
 
 Ainsi, il serait maintenant intéressant de voir quel serait l'impact

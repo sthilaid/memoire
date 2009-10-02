@@ -9,6 +9,7 @@
 \usepackage{setspace}
 \usepackage{verbatim}
 \usepackage{subfig}
+\usepackage{amssymb}
 
 \usepackage{udem_these_fr}
 
@@ -17,9 +18,11 @@
 %\newcommand{\object}[1]{$\#<#1 \ldots>$}
 \newcommand{\object}[1]{{\it #1}}
 
-\newcommand{\ie}{{\textit{i.e.}}}
+\newcommand{\ie}{{\textit{i.e. }}}
 \newcommand{\lr}{{\textit{Lode Runner }}}
 \newcommand{\si}{{\textit{Space Invaders }}}
+\newcommand{\lisp}{{\textit{Lisp }}}
+\newcommand{\clisp}{{\textit{Common Lisp }}}
 
 \input{r5rscommands.tex}
 
@@ -52,7 +55,7 @@
 
 %Pour un doctorat, changer simplement \MSc par \PhD
 %titre: 15 mots, max. 175 caractère
-\MSc{Dévelopment de jeux vidéo en Scheme}
+\MSc{Sur l'utilisation du langage de programmation Scheme pour le développement de jeux video}
     {}
     {d'informatique et de recherche op\'{e}rationnelle}
     {informatique}
@@ -160,9 +163,9 @@ niveau.
 Ainsi, l'utilisation de langages de plus haut niveau pourrait
 potentiellement améliorer le temps de développement des jeux en
 permettant aux programmeurs et designers de s'exprimer plus
-facilement. Les langages dans la famille Lisp semblent être de bons
+facilement. Les langages dans la famille \lisp semblent être de bons
 candidats en tant que langages de haut niveau. Le langage
-Scheme~\cite{R5RS}, un Lisp moderne et performant, offre ainsi
+Scheme~\cite{R5RS}, un \lisp moderne et performant, offre ainsi
 beaucoup ainsi plusieurs fonctionnalités de haut niveau. On retrouve,
 entre autre, du typage dynamique, des fonctions de premier ordre, un
 système de macro évolué, un accès direct aux continuation du calcul et
@@ -247,7 +250,7 @@ langage de programmation Scheme pour résoudre ces problèmes. Une
 présentation des travaux reliés aux résultats présentés suit ce
 dernier chapitre. On y parle de l'utilisation d'autres langages pour
 le développement de jeux vidéo et cite des exemples d'utilisation des
-langages Scheme et Lisp dans des jeux vidéo commerciaux et de
+langages Scheme et \lisp dans des jeux vidéo commerciaux et de
 l'expérience tirée de cette utilisation par les développeurs.
 
 Finalement, une conclusion apporte la lumière sur la problématique
@@ -721,367 +724,333 @@ possédant des budgets moins importants.
 
 Dans le cadre d'un projet donné, le choix d'un langage de
 programmation a beaucoup d'influence sur la structure du code écrit
-pour la réalisation de celui-ci. Plusieurs facteurs influencent ces
+pour sa réalisation. Plusieurs facteurs influencent ces
 différences. Par exemple, un langage à typage statique résultera en du
-code qui se doit d'être bien structuré, mais qui sera beaucoup moins
-malléable par la suite. Ainsi, afin d'optimiser les efforts
-développement pour un projet, une bonne analyse des besoins exprimés
-par le projet est de rigeur pour pouvoir faire le choix d'un langage
-répondant le mieux possible à ceux-ci.
+code qui a une structure adaptée aux besoins du moment, mais qui sera
+beaucoup moins malléable par la suite. Ainsi, afin d'optimiser les
+efforts de développement pour un projet, une bonne analyse des besoins
+exprimés par le projet est de rigueur pour pouvoir faire le choix d'un
+langage répondant le mieux possible à ceux-ci.
 
-En se basant sur les besoins et les contraintes énoncées dans le
+En se basant sur les besoins et les contraintes énoncés dans le
 chapitre \ref{Chap:JV}, nous proposons l'utilisation du langage de
 programmation Scheme comme outil principal de développement de jeux
 vidéo. Il s'agit d'un langage de très haut niveau qui semble être un
-candidat idéal afin de permettre un développement efficace de jeux
-vidéo. 
+candidat idéal pour de permettre un développement efficace de jeux
+vidéo. En effet, en plus de posséder plusieurs implantations très
+performantes, ce langage offre une très grande quantité de concepts de
+programmation de très haut niveau. Parmi ceux-ci, l'on retrouve entre
+autre les concepts de la programmation fonctionnelle qui offre un
+grand potentiel d'abstractions au niveau de la structure du code, un
+système de macro évolué qui permet d'augmenter Scheme avec des
+langages spécifiques au domaine, l'accès aux continuations du calculs
+qui permettent une manipulation très puissante du flot de contrôle du
+programme et un système de gestion mémoire automatique.
 
-Ce chapitre donne une historique du langage Scheme afin de mettre en
-situation le langage et donné un aperçu de son origine. Par la suite,
-une brève explications de concepts de bases du langage est
-donnée. Plus d'informations sur les bases de Scheme peuvent êtres
-obtenues dans la littérature~\cite{R5RS}~\cite{SICP}. Finalement, les
-particularités du langages sont mise en lumière dans le but de faire
-comprendre au lecteur quelles sont l'ampleur de celles-ci dans le but
-de développer des jeux vidéo.
+Ce chapitre donne un historique du langage Scheme afin de mettre en
+situation le langage et donner un aperçu de son origine. Par la suite,
+une brève explication des concepts de base du langage est donnée dans
+le but d'illustrer la simplicité du langage Scheme. Plus
+d'informations sur les bases de Scheme peuvent être obtenues dans la
+littérature~\cite{R5RS}~\cite{SICP}. Finalement, les particularités du
+langage sont mises en lumière pour rendre plus clair l'ampleur de
+celles-ci dans le contexte du développement de jeux vidéo.
 
-\todo{d'autres idées?}
-
-\section{Héritage LISP}
+\section{Héritage \lisp}
 \label{Scheme:hist}
 
 Le langage Scheme est une forme épurée du tout premier langage de
-programmation de haut niveau, le langage LISP. Ainsi, pour illustrer
-les origines de Scheme, une courte histoire du langage LISP est
+programmation de haut niveau, le langage \lisp. Ainsi, pour illustrer
+les origines de Scheme, une courte histoire du langage \lisp est
 présentée. Par la suite, les langages de programmation qui furent
 inspirés du langage Scheme sont mentionnés en expliquant brièvement
-les racines commune à Scheme est les principales disparités.
+leurs racines commune à Scheme et leurs principales disparités.
 
-\subsection{Histoire de LISP}
-Le langage LISP est le tout premier langage de programmation de haut
+\subsection{Histoire de \lisp}
+Le langage \lisp est le tout premier langage de programmation de haut
 niveau qui fut conçu et est le deuxième plus vieux langage de
-programmation toujours utilisé. Son histoire débute au MIT
-(\textit{Massachusetts Institute of Technology}), dans le début des
-années 1960, lorsque John McCarthy publia un article décrivant ce
-langage~\cite{LISP_ORIGINS}. Le langage original était relativement
-du LISP d'aujourd'hui mais introduisait déjà des concepts fondamentaux
-comme l'utilisation de listes pour représenter du code et le concept
-de ramasse miettes.
+programmation toujours utilisé. Sa première implantation fut réalisée
+en 1958 dans un laboratoire d'intelligence artificielle du MIT
+(\textit{Massachusetts Institute of Technology}) sous la direction de
+John McCarthy. Le langage original était relativement du \lisp
+d'aujourd'hui mais introduisait déjà des concepts fondamentaux comme
+l'utilisation de listes pour représenter du code, de la programmation
+fonctionnelle ainsi que le concept de gestion de mémoire
+automatique. Un article décrivant le langage \lisp comme un langage de
+programmation ainsi que comme un formalisme de définition de fonctions
+récursives fut publié un peu plus tard~\cite{LISP_ORIGINS}.
 
 Le langage fut aussitôt adopté par la communauté de recherche en
 intelligence artificielle, puisque l'utilisation de traitement
 symbolique permettait de pouvoir facilement développer de nouveaux
 algorithmes dans ce domaine.
 
-LISP évolua par la suite en de nombreux dialectes différents, chacun
-apportant ses propres extensions au langage. En 1984, Guy Steele
-publia un livre proposant d'unir ces dialectes dans le langage
-\textit{Common LISP}~\cite{CLISP}. Ce livre fut par la suite la
-fondation du standard créé pour le langage \textit{Common
-  Lisp}~\cite{ANSI_CLISP}. Il en résulte donc une spécification très
-complexe du langage qui s'est trouvé gonflé pour les multiples
-dialectes lui ayant donné naissance. Ainsi, Common Lisp possède
-beaucoup de bagage, mais il devient difficile pour un programmeur de
-pouvoir maîtriser tout les concepts de base de ce langage.
+\lisp évolua par la suite en de nombreux dialectes différents, chacun
+apportant ses propres extensions au langage. Vers le début des années
+1980, un comité d'unification de ces multiples dialectes est formé
+pour donner naissance au standard \clisp. En 1984, Guy Steele publia
+un livre~\cite{CLISP} donnant une description détaillée du standard
+établi par la communauté \lisp. Ce standard fut par la suite la
+fondation d'une standardisation officielle créé pour le langage
+\clisp~\cite{ANSI_CLISP}. Il en résulte donc une spécification très
+complexe du langage qui s'est trouvé gonflée par les multiples
+dialectes lui ayant donné naissance. Ainsi, \clisp possède beaucoup de
+bagages, et il devient difficile pour un programmeur de pouvoir
+maîtriser tous les concepts de ce langage.
 
 \subsection{Avènement de Scheme}
-Peu avant la création de Common Lisp, Guy Steele et Gerald J. Sussman
-conçurent la spécification d'un nouveau dialecte du langage LISP
-appelé Scheme~\cite{SCHEME_ORIGINS}. Ce dialecte était sensiblement
-différent des autres dialectes de LISP existant puisqu'au lieu
-d'ajouter des nouvelles composantes ou d'étendre le langage, il
-l'épura au maximum afin d'en extraire l'essence même. La spécification
-du langage étant écrite sur une trentaine de pages faisait contrastes
-aux spécifications des autres dialectes, notamment à Common Lisp qui
-vint peu après qui s'étalent sur plusieurs centaine de pages. Il en
-résultat que plusieurs implantations du langage apparurent grâce à la
-spécification beaucoup plus accessible.
+Peu avant la standardisation de \clisp, Guy Steele et Gerald
+J. Sussman conçurent la spécification d'un nouveau dialecte du langage
+\lisp appelé Scheme~\cite{SCHEME_ORIGINS}. L'origine du développement
+de Scheme provient de la tentative de compréhension d'un formalisme
+modulaire d'agents en intelligence
+artificielle~\cite{ACTOR}~\cite{Scheme-History}. Ils ont donc bâti un
+interprète minimaliste basé sur \lisp afin de pouvoir comprendre ce
+formalisme qui s'exprimait mal avec les langages disponibles à
+l'époque. Ce petit interprète supportait ainsi une portée statique
+appropriée pour la description d'acteurs, divergeant ainsi de \lisp en
+remplaçant de simples fonctions récursives par les fermetures du
+lambda calcul. Les deux auteurs furent très surpris de constater que
+le langage expérimental créé répondait parfaitement à leurs besoins et
+se trouvait à être très simple, beaucoup plus simple que ce qu'ils
+avaient anticipé. 
 
 Scheme devint ainsi populaire et est présentement l'un des deux
-dialecte les plus utilisé de LISP, en concurrence avec Common Lisp. On
-retrouve pas moins d'une cinquantaine d'implantation disponible, dont
-une douzaine sont considérées comme étant des implantations
-majeures. Ces implantation majeures offrent non seulement plusieurs
-extensions du langage, mais aussi de très bonnes performances grâce à
-l'implantation d'optimisations de compilation avancées.
+dialectes les plus utilisés de \lisp, en concurrence avec \clisp. Même
+après avoir subi 5 révisions, le langage Scheme demeure très simple
+avec un standard ne comptant qu'environ une trentaine de
+pages~\cite{R5RS}. Il en résulte qu'on ne retrouve actuellement pas
+moins d'une cinquantaine d'implantations disponibles, dont une
+douzaine sont considérées comme étant des implantations majeures. Ces
+implantations majeures offrent non seulement plusieurs extensions du
+langage, mais aussi de bonnes performances grâce à l'implantation
+d'optimisations de compilation avancées.
 
 Le langage Scheme impose une philosophie de minimalisme à ces
 programmeurs en ne leur fournissant que la base dans le
-standard. Cette philosophie est souvent apprécié car elle mène à
+standard. Cette philosophie est souvent appréciée car elle mène à
 utiliser ce qui est vraiment nécessaire et faire soi même ce qui n'est
-pas disponible, créant ainsi une bonne indépendance chez les
-programmeurs Scheme. De plus, le langage est accompagné d'une centaine
-librairies externes de traitement générique dénommées SRFI~\cite{SRFI}
-(\textit{Scheme Request For Implementation}).
+pas disponible, créant ainsi une bonne autonomie chez les programmeurs
+Scheme. De plus, le langage est accompagné d'une centaine librairies
+externes de traitement générique dénommées \textit{Scheme Request For Implementation} (SRFI~\cite{SRFI}).
 
 \subsection{Langages inspirés de Scheme}
 
-Plusieurs langages de programmation récent furent inspirés dans
-langages LISP. Pour la plupart, il s'agit de langages de script comme
+Plusieurs langages de programmation récents furent inspirés des
+langages \lisp. Pour la plupart, il s'agit de langages de script comme
 JavaScript~\cite{ECMA-262}, Ruby~\cite{RUBY} ou Perl~\cite{PERL}. Ces
-languages vont notamment chercher l'aspect dynamique de LISP afin de
-pouvoir être interprétés. Ces langages utilisent aussi un ramasse
-miettes afin de simplifier leurs utilisation. Finalement, certains
-d'entre eux offrent des fonctions en tant que données de premières
+langages s'inspirent notamment de l'aspect dynamique de \lisp afin de
+pouvoir être interprétés. Ils utilisent aussi une gestion de mémoire
+automatique afin de simplifier leur utilisation. Finalement, certains
+d'entre eux offrent des fonctions en tant que données de première
 classe, permettant ainsi l'utilisation de la programmation
-fonctionnelle. 
+fonctionnelle.
 
-Ces langages demeurent par contre toujours des sous-ensemble, en terme
-de fonctionnalités, des langages LISP. Ils sont devenus populaires
-pour leurs simplicité d'utilisation, mais un bon apprentissage de
-Scheme pourrait certainement être plus bénéfique à long terme. Entre
-autre, Scheme est un langage interprété \emph{et} compilé, permettant
-de développer des application très efficaces.
-
-
-\todo{Java??}
+Ces langages demeurent par contre toujours des sous-ensembles, en
+terme de fonctionnalités, des langages \lisp. Ils sont devenus
+populaires pour leur simplicité d'utilisation, mais un bon
+apprentissage de Scheme pourrait certainement être plus bénéfique à
+long terme. Entre autre, Scheme est un langage interprété et compilé,
+permettant de développer des applications très efficaces. Il en
+résulte que le code peut être développé de manière dynamique en
+utilisant une \textit{Read Eval Print Loop} (\textit{REPL}) afin de
+pouvoir tester et corriger facilement un programme développé. La
+présence d'une \textit{REPL} permet aussi un mode de récupération
+d'erreurs très dynamique et donnant accès à l'évaluation d'expressions
+Scheme lorsqu'une erreur se produit dans une telle boucle.
 
 
 \section{Introduction au langage}
-Tout en bénéficiant du riche héritage des langages LISP, Scheme
-demeure un langage épuré et très simple à la base. Cette section vise
-à présenter les bases du langages Scheme et de son implantation par le
+Tout en bénéficiant du riche héritage des langages \lisp, Scheme
+demeure un langage épuré et très simple. Cette section vise à
+présenter les bases du langage Scheme et de son implantation par le
 système Gambit-C~\cite{Gambit4} afin de familiariser le lecteur avec
 non seulement la syntaxe du langage, mais aussi les fonctionnalités de
-base et les extensions au langages fournies par Gambit-C.
+base et les extensions au langage fournies par Gambit-C.
 
 \subsection{Syntaxe}
-La syntaxe de Scheme est une des caractéristique qui le distingue le
-plus des autres langages de programmation. En effet, la syntaxe
-utilisée est extrêmement simple. À la base, toute expression Scheme
-est une expression symbolique, nommée aussi \textit{S expression}. Une
-S expression est une forme de donnée structurée récursive qui doit
-débuter par une parenthèse ouvrante, contient un nombre arbitraire de
-données qui sont soit des atomes ou des S expressions et qui doit se
-terminer par une parenthèse fermante. Les atomes sont des symboles,
-des nombres, des valeurs booléennes, etc.. La figure \ref{FIG:sexp}
-donne un exemple très simple de S expression contenant des
-informations sur les prix de la nourriture dans une épicerie.\\
+Les langages de la famille \lisp dont Scheme fait parti adoptent une
+notation préfixe parenthésée. Il en résulte que la syntaxe du langage
+est consistante et simple. La figure \ref{Scheme:simple-ex} illustre
+un exemple simple de calcul arithmétique.
 
-\begin{figure}[htb!]
-  \schemeresult{((bananes 1.52)(bonbons 1/100))}
-  \caption{Exemple simple de S expression}
-  \label{FIG:sexp}
-\end{figure}
-
-En Scheme, ces S expressions sont considérées comme étant des listes
-chaînées où chacun des éléments de la liste chaînée contient la valeur
-associée à cet élément et un pointeur vers le prochain élément. Les
-listes sont ainsi implantées en utilisant des paires. Le point
-(\scheme{.}) est utilisé pour démarquer le premier élément d'une paire
-du deuxième. La figure \ref{FIG:sexp->list} explicite la structure de
-liste de l'exemple de S expression provenant de la figure
-\ref{FIG:sexp} en utilisant la notation de paires..\\
-
-
-\begin{figure}[htb!]
-{{\it
-    ((bananes . (1.52 . ())) . ((bonbons . (1/100 . ())) . ()))
-    }}
-  \caption{Équivalence de la S expression de la figure \ref{FIG:sexp}
-    sous forme explicite de liste}
-  \label{FIG:sexp->list}
-\end{figure}
-
-Cette forme est strictement équivalente à celle donnée précédemment et
-correspond à la structure de donnée de base employé en Scheme, les
-listes. Toutes deux correspondent à des valeurs du langage, mais ne
-peuvent pas être données telles quel dans un programme car un
-programme Scheme est aussi une S expression qui correspond à \emph{un
-  appel de fonction} (ou à une forme spéciale du langage). Le premier
-élément de la liste doit être un symbole qui correspond à cette
-fonction ou cette forme spéciale et le restes des éléments sont les
-argument qui sont eux aussi des programmes Scheme sous forme de S
-expressions. Conséquemment, une notation préfixe est utilisée en
-Scheme.
-
-La distinction entre un appel de fonction et une forme spéciale est
-l'ordre d'évaluation des paramètres. Pour un appel de fonction, chacun
-des paramètres passés sont d'abord évalués et ensuite, la valeurs
-correspondante à leurs évaluation sont passées à la fonction
-appelée. Il s'agit donc d'un \emph{passage par valeur}. En opposition,
-les formes spéciales possèdent des règles d'évaluation propres à
-elles. Les formes spéciales de bases de Scheme peuvent être étendu par
-des macros qui utilisent un passage de valeur par nom, où les
-paramètres sont passés directement à la macro comme étant des données
-Scheme. Le fonctionnement des macros Scheme est détaillé dans la
-section \ref{Scheme:macros}.
-
-Il existe également quelques exception syntaxiques aux S expressions
-qui sont utilisées, entres autres, pour construire des données
-constantes. On utilise le caractère \scheme{'} ou la forme spéciale
-\textit{quote} pour signifier que la S expression subséquente est
-constante, \ie  qu'elle ne doit pas être considérée comme un
-programme Scheme, mais bien comme une valeur. L'utilisation du
-caractère \scheme{è} est strictement équivalente à l'utilisation de la
-forme spéciale correspondante. Une exemple d'utilisation est illustré
-dans la figure \ref{FIG:quote}.\\
-
-
-\begin{figure}[htb!]
+\begin{figure}[htb]
   \begin{schemecode}
-'((bananes 1.52)(bonbons 1/100))
-(quote ((bananes 1.52)(bonbons 1/100)))
+(+ (expt 2 5) (sin (/ 3.141592653589793 2)))
   \end{schemecode}
-  \caption{Exemples d'utilisation de la syntaxe \textit{quote} et de
-    la forme spéciale correspondante.}
-  \label{FIG:quote}
+  \schemeresult{33.}
+  \caption{}
+  \label{Scheme:simple-ex}
 \end{figure}
 
-Après évaluation, ces deux morceaux de code retournent tous deux la
-valeur \schemeresult{((bananes 1.52)(bonbons 1/100))}.
+Cette syntaxe apporte plusieurs bénéfices au langage. Puisque chaque
+appel de fonction (ou de forme spéciale) est parenthésé, il en résulte
+qu'un programme Scheme est très structuré et peut être manipulé
+efficacement en utilisant des outils de développement performant tel
+\textit{VI} ou \textit{Gnu Emacs}. De plus, Scheme utilise \emph{la
+  même syntaxe} pour les données d'un programme que pour le programme
+en lui même. Il devient ainsi possible concevoir des programmes qui
+créent des programmes Scheme. C'est ce qui constitue la base du
+système de macro de Scheme. On dit ainsi qu'un programme Scheme est
+représenté par des expressions symboliques, fréquemment appelées
+S-expression. La distinction dans un programme Scheme entre une donnée
+et le programme se fait par l'entremise des formes spéciales
+\scheme{quote} et \scheme{quasiquote} spécifient respectivement que
+l'expression doit être entièrement ou en partie traité comme une
+donnée et donc, ne doit pas être évaluée comme un programme. La figure
+\ref{Scheme:s-quote-ex} donne deux exemples d'utilisation de ces
+formes spéciales. Le premier exemple illustre l'utilisation de
+\scheme{quote} qui fait en sorte que la liste spécifié est considérée
+comme une donnée et non un appel de la fonction \scheme{abc}. Le
+deuxième exemple utilise la forme \scheme{quasiquote} qui permet de
+spécifier des données dont certaines parties peuvent être évaluées à
+l'aide de la forme spéciale \scheme{unquote}. Les formes spéciales
+\scheme{quote}, \scheme{quasiquote} et \scheme{unquote} peuvent être
+aussi utilisées en utilisant les caractères respectifs \scheme{'},
+\scheme{`} et \scheme{,}.
 
-On retrouve une forme altéré du \textit{quote} nommée
-\textit{quasiquote} qui permet des évaluations partielles à
-l'intérieur d'une forme \textit{quote} en utilisant le caractère
-\scheme{,} équivalent à la forme spéciale \scheme{unquote}. La figure
-\ref{FIG:quasiquote} illustre un exemple d'utilisation.\\
-
-\begin{figure}[htb!]
+\begin{figure}[htb]
   \begin{schemecode}
-`((bananes ,(+ 1.0 52/100)) (bonbons 1/100))
-(quasiquote ((bananes (unquote (+ 1.0 52/100))) (bonbons 1/100)))
+(+ 1 (list-ref '(abc 123 "toto") 1))
   \end{schemecode}
-  \caption{Exemple d'utilisation des formes spéciales
-    \scheme{quasiquote} et \scheme{unquote}}
-  \label{FIG:quasiquote}
+  \schemeresult{124}
+  \begin{schemecode}
+(list-ref `(abc ,(+ 122 1) "toto") 1)
+  \end{schemecode}
+  \schemeresult{(abc 123 "toto")}
+  \caption{Exemples d'utilisation de listes sous forme de S-expression}
+  \label{Scheme:s-quote-ex}
 \end{figure}
-
-L'utilisation de la forme \scheme{unquote} permet donc ici
-l'évaluation de la S expression effectuant l'addition pour donner
-comme résultat la liste donnée dans la figure \ref{FIG:sexp}.
-
-Malgré le fait que, pour certains, le parenthèsage des programmes
-Scheme peut sembler imposant, il en résulte un code \emph{structuré}
-et \emph{sans aucune ambiguïté}. Cette structure permet aussi de
-pouvoir utiliser très efficacement des outils de d'édition de S
-expressions, accélérant ainsi l'écriture de programmes.
 
 \subsection{Aperçu des fonctionnalités requise par le standard}
 
 Le standard du langage Scheme~\cite{R5RS} est très minimaliste, mais
-requiert toutes les fonctionnalités de bases requise par un langage de
+requiert toutes les fonctionnalités de base requises par un langage de
 haut niveau comme Scheme. On y spécifie que Scheme est un langage typé
-dynamiquement, \ie que les vérifications de types sont
-faites durant l'exécution d'un programme, et non durant la
-compilation. Cette particularité fait en sorte que Scheme est un
-langage qui peut être facilement interprété ou compilé. Les types de
-bases du langages sont tous disjoints entre eux (aucun n'objet ne peut
-appartenir a plus d'un de ces types, mais doit appartenir à un
-seul). Ces types sont vérifiés par les prédicats \scheme{boolean?},
-\scheme{pair?}, \scheme{symbol?}, \scheme{number?}, \scheme{char?},
-\scheme{string?}, \scheme{vector?}, \scheme{port?},
-\scheme{procedure?}. Chacun de ces types sont documentés et possèdent
-des fonctions standards de création et d'utilisation.
+dynamiquement, \ie que les vérifications de types sont faites durant
+l'exécution d'un programme, et non durant la compilation. Cette
+particularité fait en sorte que Scheme est un langage qui peut être
+facilement interprété ou compilé. Les types de base du langage sont
+tous disjoints entre eux (aucun objet ne peut appartenir a plus d'un
+de ces types). Ces types sont vérifiés par les prédicats
+\scheme{boolean?}, \scheme{pair?}, \scheme{symbol?}, \scheme{number?},
+\scheme{char?}, \scheme{string?}, \scheme{vector?}, \scheme{port?},
+\scheme{procedure?} et \scheme{null?}. Chacun de ces types sont
+documentés et possèdent des fonctions standards de création et
+d'utilisation. Entre autre, la forme spéciale \scheme{lambda} permet
+la création de fermeture telle qu'elles existent dans le lambda
+calcul. La figure \ref{Scheme:basic-ex} illustre l'utilisation des
+quelques uns parmi ces types de base.
 
-Les valeurs booléennes sont dénotées par \scheme{\#t} et
-\scheme{\#f}. Par contre, le langage tire profit du dynamisme du typage
-et considère que toute valeurs différentes à \scheme{\#f} est vraie.
-
-Les paires, comme mentionné précédemment, sont les structures de
-données de bases en Scheme. La fonction de création d'une paire se
-nomme \scheme{cons} et les accesseurs aux premier et deuxième valeurs
-sont nommés respectivement \scheme{car} et \scheme{cdr}. La figure
-\ref{FIG:cons} illustre la création programmatique de la S expression
-de la figure \ref{FIG:sexp}.\\
-
-\begin{figure}[htb!]
+\begin{figure}[htb1]
   \begin{schemecode}
-(cons (cons 'bananes (cons 1.52 '()))
-      (cons (cons 'bonbons (cons 1/100 '()))
-            '()))
+((lambda (x y) (+ (car x) (vector-ref y 2))) '(1 2 3) '\#(4 5 6))
   \end{schemecode}
-  \schemeresult{((bananes 1.52)(bonbons 1/100))}
-  \caption{Exemple de création programmatique de listes}
-  \label{FIG:cons}
-\end{figure}
-
-Les symboles se sont spécifié uniquement par du texte dans le
-programme et sont utilisé comme données, mais surtout pour faire des
-liaisons dans le programmes. En effet, les variables sont représentées
-par des symboles. Ainsi, pour utiliser un symbole comme une donnée
-(donc un symbol constant), la forme spéciale \scheme{quote} doit être
-utilisée. Aussi, plusieurs formes spéciales de liaisons sont spécifiée
-dans le standard. Les plus fondamentales étant \scheme{define} et
-\scheme{let}. La forme spéciale \scheme{define} permet la déclaration
-de variables globales ou locales permettant la récursion. La forme
-spéciale \scheme{let} permet la création de liaisons locales
-non-récursives. La figure \ref{FIG:deflet} illustres de création de
-liaisons globales, locales et d'utilisation de symboles comme
-données. Le morceau de code présenté définit une fonction globale qui
-vérifie si tout les éléments d'une liste sont strictement inférieurs à
-10. Ainsi l'appel \scheme{(drole-de-fonction (list 1 11 4))} s'évalue
-à la valeur \schemeresult{non}.\\
-
-\begin{figure}[htb!]
+  \schemeresult{7}
   \begin{schemecode}
-(define (drole-de-fonction x)
-  (let ((premier (car x))
-        (deuxieme (cdr x)))
-    (if (< premier 10)
-        (if (null? x)
-            'oui
-            (drole-de-fonction deuxieme))
-        'non)))
+(substring (list->string '(\#\textbackslash a \#\textbackslash l \#\textbackslash l \#\textbackslash o \#\textbackslash !)) 0 3)
   \end{schemecode}
-  \caption{Exemple de créations de liaisons et d'utilisation de
-    symboles comme données}
-  \label{FIG:deflet}
+  \schemeresult{"all"}
+  \caption{Exemples d'utilisation des type de bases de Scheme}
+  \label{Scheme:basic-ex}
 \end{figure}
-
-On y retrouve ainsi une spécification pour le calcul numérique qui
-offre la possibilité de faire du calcul sur nombres flottants,
-entiers, réels et même complexes. 
-
-L'utilisation caractères et les chaînes de caractères est très
-simple. Les caractères en tant que donné sont précédés par
-\scheme{\#\textbackslash} et les chaînes de caractères sont facilement
-convertibles en listes de caractères pour une manipulation plus \og
-Schemiène \fg ou l'on peut accéder directement et modifier des
-caractères dans l'objet de type \scheme{string}.
-
-\todo{vectors}
-
-\todo{ports}
-
-\todo{procedures, apply, appels terminaux}
-
-\subsection{Extensions présentées par Gambit-C}
 
 \section{Programmation fonctionnelle}
-Le langage Scheme est à la base un langage fonctionnel. Ces derniers
-sont caractérisés par une programmation centrée sur l'appel de
-fonctions dites avec une transparence référentielle, où la valeur de
-retour d'une fonction dépend uniquement des paramètres et non de
-l'état du système. Ce type de programmation fait contraste à la
-programmation impérative qui est centrée sur la notion d'état et de
-mutation de l'état de l'exécution d'un programme. Les programmes
-écrits en utilisant des langages sont généralement beaucoup plus
-facile à comprendre, ce qui attire un grand nombre de chercheurs à
-contribuer au développement et l'utilisation de tels langages dans le
-milieu commercial. 
+Le langage Scheme est à la base un langage fonctionnel. Cette famille
+de langage de programmation est caractérisée par une programmation
+centrée sur l'appel de fonctions dites avec une transparence
+référentielle, où la valeur de retour d'une fonction dépend uniquement
+des paramètres et non de l'état du système. Ce type de programmation
+fait contraste à la programmation impérative qui est centrée sur la
+notion d'état et de mutation de l'état de l'exécution d'un
+programme. Les programmes écrits en utilisant des langages sont
+généralement beaucoup plus faciles à comprendre, ce qui attire un
+grand nombre de chercheurs à contribuer au développement et
+l'utilisation de tels langages dans le milieu commercial.
 
-Une caractéristique importante des langages de programmation
-fonctionnelle est la présence de fonctions de premier ordre, \ie que
-les fonctions sont des objets appartenant aux valeurs du
-langages. Elles peuvent donc être créées et manipulées comme tout
-autre valeurs. Ces fonctions sont aussi appelées fermetures, car
-lorsqu'elles sont créés, elle conserve l'environnement d'exécution
-dans lequel elle se trouvait lors de sa création. 
+\subsection{Programmation fonctionnelle pure}
 
-Ce concept ouvre la porte à la création d'abstractions très
-intéressantes: les fonctions d'ordre supérieures. Celles ci reçoivent
-des fonctions en paramètre les manipulent en souvent en retournent de
+Une programmation dite purement fonctionnelle respecte de manière
+stricte le paradigme de la programmation fonctionnelle, \ie que les
+fonctions sont des entités mathématique qui ne sont pas affectées par
+l'état du système. Ce type de programmation est originaire d'avant
+même l'apparition des premiers ordinateurs. C'est dans les années 1936
+qu'Alonzo Church a introduit le formalisme mathématique de définition
+de fonctions mathématique dénommé lambda calcul non
+typé~\cite{LAMBDA_CALCULUS}. Ce formalisme introduit un formalisme de
+définition de fonctions qui sert de base aux langages de programmation
+fonctionnels. La figure \ref{FIG:lambda-calcul} illustre la définition
+de la fonction \scheme{flip} définie en Scheme dans la figure
+\ref{FIG:hof}.\\
+
+\begin{figure}[htb!]
+  \center
+  $\lambda f \rightarrow \lambda y \rightarrow \lambda x \rightarrow f x y$
+  \caption{Définition de la fonction \scheme{flip} en lambda calcul
+    non typé}
+  \label{FIG:lambda-calcul}
+\end{figure}
+
+Ces fonctions sont considérées comme pures car elles sont exemptes de
+mutations de l'état du calcul. Ainsi, le résultat de l'application
+d'une fonction (appellée $\beta$-reduction en lambda calcul) ne dépend
+que des paramètres de ces dernières.
+
+Une caractéristique importante présente dans le lambda calcul est la
+présence de fonctions de première classe, \ie que les fonctions sont
+des objets appartenant aux valeurs du langages. Elles peuvent donc
+être créées et manipulées comme tout autre valeurs. Ces fonctions sont
+aussi appelées fermetures, car elles implantent une portée statique de
+variable, \ie qu'elles conservent l'environnement d'exécution dans
+lequel elles se trouvaient lors de leur création. Cette capacité de
+retenir l'environnement est très puissante et permet l'utilisation de
+fermeture comme structure de données. Par exemple, la figure
+\ref{Scheme:lambda-pairs} illustre l'implantation de paires similaire
+à celles retrouvées dans Scheme en lambda calcul.
+
+\begin{figure}[htb]
+  \center
+  \begin{eqnarray*}
+   cons &=& \lambda car \rightarrow \lambda cdr \rightarrow \lambda f \rightarrow f x y \\
+   car &=& \lambda pair \rightarrow pair (\lambda car \rightarrow \lambda cdr \rightarrow car) \\
+   car &=& \lambda pair \rightarrow pair (\lambda car \rightarrow \lambda cdr \rightarrow cdr) \\
+  \end{eqnarray*}
+  $car (cons 1 2) \leadsto 1$
+  \caption{Implantation de paires en utilisant des fermetures du
+    lambda calcul}
+  \label{Scheme:lambda-pairs}
+\end{figure}
+
+Comme déjà mentionné dans la section \ref{Scheme:hist}, le lambda
+calcul a donné naissance à une famille de langages dont la racine est
+le langage \lisp. Dans cette famille, les langages ML~\cite{SML} et
+Haskell~\cite{HASKELL} sont parmi les plus connus de ceux qui adhèrent
+fidèlement au modèle de calcul de Alonzo Church. Le langage Scheme est
+lui aussi un langage fonctionnel, mais il n'est pas considéré comme
+étant pur puisque les mutations de l'état du programme sont
+permises. En effet, des opérateurs tels que \scheme{set!},
+\scheme{set-car!} ou encore \scheme{vector-set!}  permettent la
+modification de liaison ou du contenu de cellules mémoires. Ainsi,
+Scheme partage le meilleur des deux mondes en laissant la liberté au
+programmeur de choisir le paradigme de programmation qui lui apparaît
+le plus approprié. Par contre, un abus de mutation est considéré comme
+étant de très mauvais style en Scheme.
+
+\subsection{Programmation fonctionnelle en Scheme}
+
+Le lambda calcul ouvre la porte à la création d'abstractions très
+intéressantes: les fonctions d'ordre supérieure. Celles-ci reçoivent
+des fonctions en paramètre, les manipulent et en retournent de
 nouvelles. La figure \ref{FIG:hof} illustre un exemple d'écriture et
-d'utilisation de fonctions d'ordre supérieurs. La premières fonctions
+d'utilisation de fonctions d'ordre supérieur. La première fonction
 définie prend une fonction en paramètre et applique cette fonction sur
 chacun des éléments de la liste passée comme deuxième paramètre. La
 deuxième fonction prend une fonction à deux paramètres comme premier
 argument et prend le deuxième paramètre à appliquer à cette fonction
 en deuxième argument, dans le but de faire une application partielle
 de cet argument à cette fonction. L'exemple utilise ensuite ces deux
-fonctions afin de créer une nouvelle à partir de celle donnée où l'on
-aura retiré 1 à chaque élément.\\
+fonctions afin de soustraire un à chaque élément de la liste
+spécifiée.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1099,12 +1068,13 @@ aura retiré 1 à chaque élément.\\
   \label{FIG:hof}
 \end{figure}
 
-L'utilisation de fonctions d'ordre supérieure permet l'abstraction
+L'utilisation de fonctions d'ordre supérieur permet l'abstraction
 d'algorithmes de manière très générique. Une autre fonction d'ordre
-supérieur très utilisée est la fonction \scheme{foldl} qui permet
+supérieur très répandue est la fonction \scheme{foldl} qui permet
 d'utiliser chacun des éléments d'une liste pour calculer un résultat
 unique. La figure \ref{Scheme:fold} illustre l'utilisation de cette
-fonction pour faire la somme et le produit des nombres dans une liste.\\
+fonction pour faire la somme et le produit des nombres dans une
+liste.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1123,59 +1093,17 @@ fonction pour faire la somme et le produit des nombres dans une liste.\\
   \label{Scheme:fold}
 \end{figure}
 
-\subsection{Programmation fonctionnelle pure}
-
-Une programmation dite purement fonctionnelle respecte de manière
-stricte le paradigme de la programmation fonctionnelle, \ie que les
-fonctions sont des entités mathématique qui ne sont pas affectées par
-l'état du système. Ce type de programmation est originaire d'avant
-même la création des premiers ordinateurs. C'est dans les années 1936
-que nul autre qu'Alonzo Church a introduit le formalisme mathématique
-de définition de fonctions mathématique dénommé lambda calcul non
-typé~\cite{LAMBDA_CALCULUS}. Ce formalisme introduit des notations
-afin de définir des fonctions anonymes qui sert de base aux langages
-de programmation fonctionnels. La figure \ref{FIG:lambda-calcul}
-illustre la définition de la fonction \scheme{flip} définie en Scheme
-dans la figure \ref{FIG:hof}.\\
-
-\begin{figure}[htb!]
-  \center
-  $\lambda f \rightarrow \lambda y \rightarrow \lambda x \rightarrow f x y$
-  \caption{Définition de la fonction \scheme{flip} en lambda calcul
-    non typé}
-  \label{FIG:lambda-calcul}
-\end{figure}
-
-Ces fonctions sont considérées comme pures car elles sont exemptes de
-mutations de l'état du calcul. Ainsi, le résultat de l'application
-d'une fonction (appellée $\beta$-reduction en lambda calcul) ne dépend
-que des paramètres de ces dernières.
-
-Comme déjà mentionné dans la section \ref{Scheme:hist}, le lambda
-calcul a donné naissance une famille de langages dont la racine est le
-langage LISP. Parmi cette famille, les langages ML~\cite{SML} et
-Haskell~\cite{HASKELL} sont parmi les plus connu de ceux qui adhèrent
-fidèlement au modèle de calcul de Alonzo Church.
-
-Le langage Scheme est lui aussi un langage fonctionnel, mais il n'est
-pas considéré comme étant pur puisque les mutations de l'état du
-programme sont permises. En effet, des opérateurs tels que
-\scheme{set!}, \scheme{set-car!} ou encore \scheme{vector-set!}
-permettent la modification de liaison ou du contenu de cellules
-mémoires. Ainsi, Scheme partage le meilleur des deux mondes en
-laissant la liberté au programmeur de choisir le paradigme de
-programmation qui lui apparaît le plus approprié. Par contre, un abus
-de mutation est considéré comme étant de très mauvais style en Scheme.
-
-Ainsi, les l'utilisation de fonctions en tant que données de premières
-classes permet de pouvoir faire de puissantes abstractions
-algorithmiques. De plus, l'utilisation des paradigme de programmation
+Ainsi, l'utilisation de fonctions en tant que données de premières
+classes permet la création de puissantes abstractions
+algorithmiques. De plus, l'utilisation des paradigmes de programmation
 fonctionnelle facilite beaucoup la modularisation du logiciel. En
 effet, puisque peu ou pas de mutations d'état sont utilisées, il
-devient alors facile de pouvoir combiner différents modules ensembles,
-sans avoir d'interférences dans l'état du programme, ce qui n'est pas
+devient alors facile de pouvoir combiner différents modules, sans
+avoir d'interférences dans l'état du programme, ce qui n'est pas
 nécessairement le cas avec des modules impératifs dépendant
 directement de l'état du programme pour leur exécution.
+
+
 
 
 \section{Macros}
@@ -1237,7 +1165,7 @@ base de ce dernier. Ceci ouvre la porte à implanter un système de
 macro très puissant, un système de macro procédural. 
 
 Plusieurs systèmes d'expansions de macro sont disponible en Scheme. Le
-plus simple d'entre eux est celui qui provient directement de LISP, la
+plus simple d'entre eux est celui qui provient directement de \lisp, la
 forme spéciale \scheme{define-macro}. Avec cet expanseur, une macro
 Scheme est une fonction dont les paramètres \emph{ne sont pas évalués}
 avant d'être passés au corps de la fonction. Il en résulte ainsi que
@@ -1678,7 +1606,7 @@ Dans les deux cas, ces erreurs sont très problématiques. C'est
 probablement pour cette raison que déjà très tôt, cette gestion a été
 automatisée par des systèmes de gestions automatiques de mémoire. Les
 premiers systèmes de gestion de mémoires automatique, appelles aussi
-ramasses miettes, apparurent avec le langages LISP. Le principe de
+ramasses miettes, apparurent avec le langages \lisp. Le principe de
 base est simple, il s'agit de parcourir la mémoire utilisée par le
 programme en partant des \emph{racines} de celui-ci. Les racines sont
 tous les points d'accès aux données accessibles, comme par exemple les
@@ -2015,7 +1943,7 @@ t.add(b) = 3
 \end{figure}
 
 
-Le langage Common Lisp~\cite{CLISP} possède un système orienté objet,
+Le langage \clisp~\cite{CLISP} possède un système orienté objet,
 le Common Lisp Object System~\cite{CLOS} (CLOS), qui diverge beaucoup
 de l'approche traditionnelle. Entre autre, ce système offre une grande
 flexibilité de comportement et une riche introspection via un
@@ -2295,10 +2223,10 @@ classes ne doivent pas prendre d'instances en paramètres.
 \label{OO:genfun}
 
 Toujours avec une forte inspiration du modèle éprouvé du système
-objets de Common Lisp~\cite{CLOS}, le système d'objet développé
+objets de \clisp~\cite{CLOS}, le système d'objet développé
 possède des fonctions génériques permettant de faire du
 \textit{dispatch} multiple sur les arguments de celles-ci. Le choix
-d'adhérer à la philosophie de LISP s'explique non seulement par le
+d'adhérer à la philosophie de \lisp s'explique non seulement par le
 fait que nous souhaitions que notre système d'objets puisse offrir le
 plus de puissance expressive que possible aux programmeurs de jeux
 vidéo, mais surtout puisque \ plusieurs problèmes se retrouvant dans
@@ -4874,7 +4802,7 @@ différentes. Ainsi, un portrait des techniques de programmation
 utilisées dans l'industrie est dressé dans le but de situer où se
 retrouvent les travaux présentés dans ce mémoire.
 
-Les langages de programmation de la famille Lisp ont déjà été utilisés
+Les langages de programmation de la famille \lisp ont déjà été utilisés
 pour produire des jeux vidéo commerciaux de très bonne
 qualité. Certains seront cités et une revue de l'expérience acquise
 par les développeurs sera exposée dans le but de pouvoir comparer
@@ -4968,7 +4896,7 @@ Javascript~\cite{ECMA-262} qui sont très similaire à Lua et donc
 constituent eux aussi un sous ensemble de Scheme.
 
 
-\section{Jeux en Lisp}
+\section{Jeux en \lisp}
 
 Malgré la domination du langage C++ dans l'industrie du jeu vidéo,
 certains jeux ont déjà été reconnu pour utiliser Scheme à différents
@@ -4982,7 +4910,7 @@ celle acquise pour la rédaction de ce mémoire.
 %% http://www.naughtydog.com/site/post/presentations_from_game_developers_conference_2008/
 
 La compagnie Naughty Dog~\cite{ND} est bien connue pour utiliser des
-dialectes de Lisp dans le développement de jeux vidéo. En effet, cette
+dialectes de \lisp dans le développement de jeux vidéo. En effet, cette
 compagnie a écrits plusieurs jeux sur la \textit{PlayStation 2} en
 utilisant le compilateur \textit{GOAL}(\textit{Game Oriented Assembly
   Lisp}), un système maison uniquement compilé vers du code machine
@@ -4994,7 +4922,7 @@ nombreux jeux sur la console dont les jeux \textit{Crash Bandicoot} et
 Scott Shumaker, programmeur chef chez Naughty Dog, a commenté leur
 utilisation de GOAL dans un article sur le site
 Gamasutra~\cite{ND_GOAL}. Dans ce dernier, il mentionne que le
-développement de leur propre compilateur de Lisp leur a permis
+développement de leur propre compilateur de \lisp leur a permis
 d'utiliser plusieurs techniques qui n'auraient pas pu être utilisées
 avec d'autres langages. Entre autre, leur système, malgré le fait
 qu'il ne comprenait pas d'interpète, permettait la compilation de code
@@ -5016,10 +4944,10 @@ code simplifié pour GOAL est donné dans la figure \ref{Rev:goal}.
 
 Il mentionne également dans cet article que l'utilisation de leur
 système GOAL a été la source de plusieurs problèmes principalement dus
-au fait que GOAL fut développé par un seul programmeur Lisp et que lui
+au fait que GOAL fut développé par un seul programmeur \lisp et que lui
 seul en comprenait parfaitement l'étendue. Il mentionne aussi qu'il
 fut difficile de trouver de la main d'oeuvre maîtrisant le langage
-Lisp et que même ceux-ci devaient tout de même s'adapter au système
+\lisp et que même ceux-ci devaient tout de même s'adapter au système
 utilisé.
 
 Ils ont par la suite créé les jeux \textit{Uncharted: Drake's fortune}
@@ -5119,7 +5047,7 @@ considération le matériel utilisé afin d'assurer que de pouvoir
 utiliser le plus de puissance expressive que possible, sans toutefois
 avoir un coût relié à ces abstractions trop élevé.
 
-Aussi, Lisp et Scheme ont déjà été utilisés dans l'industrie du jeu
+Aussi, \lisp et Scheme ont déjà été utilisés dans l'industrie du jeu
 vidéo pour développer des jeux de grandes qualités tels \textit{Jak
   and Dexter}, \textit{Uncharted: Drake's Fortune} et
 \textit{QuantZ}. L'expérience acquise par les développeurs de ces jeux

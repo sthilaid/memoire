@@ -981,7 +981,7 @@ typé~\cite{LAMBDA_CALCULUS}. Ce formalisme introduit un formalisme de
 définition de fonctions qui sert de base aux langages de programmation
 fonctionnels. La figure \ref{FIG:lambda-calcul} illustre la définition
 de la fonction \scheme{flip} définie en Scheme dans la figure
-\ref{FIG:hof}.\\
+\ref{FIG:hof}.
 
 \begin{figure}[htb!]
   \center
@@ -1050,7 +1050,7 @@ argument et prend le deuxième paramètre à appliquer à cette fonction
 en deuxième argument, dans le but de faire une application partielle
 de cet argument à cette fonction. L'exemple utilise ensuite ces deux
 fonctions afin de soustraire un à chaque élément de la liste
-spécifiée.\\
+spécifiée.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1111,36 +1111,28 @@ directement de l'état du programme pour leur exécution.
 
 Les macros d'un langage de programmation sont des systèmes utilisés
 pour faire des abstractions qui sont résolues durant la compilation
-d'un fichier sources. Dans sa forme la plus élémentaire, un système de
+d'un fichier source. Dans sa forme la plus élémentaire, un système de
 macro peut être implanté sous la forme d'un pré-processeur de code qui
 ne fait que du remplacement de patrons par une expansion textuelle
 directe. C'est ce genre de système de macro que l'on retrouve entre
-autre dans le langage C. Ce type de macro, quoi que très simple,
-permet de faire déjà beaucoup d'abstractions allant à des abstractions
+autres dans le langage C. Ce type de macro, quoique très simple,
+permet de faire déjà beaucoup d'abstractions allant des abstractions
 d'optimisations à des expansions conditionnelles de code permettant de
 développer des librairies sur plusieurs plates-formes. La figure
 \ref{Scheme:c-macros} illustre des exemples de macros C. Dans cet
 exemple, on défini la macro \scheme{swap} qui interchange la valeur de
-deux variables entre elles. La fonction main retournera 1 si et
-seulement si le symbole \scheme{\_\_WEIRD\_OS\_\_} est défini, et
-retournera 0 sinon. On peut imaginer un système d'exploitation fictif
-qui s'attend à une valeur de statut de terminaison de processus qui
-doit être égale à 1 pour signaler la terminaison normale d'un
-processus. Puisque normalement, le statut de terminaison normal d'un
-processus est 0, on utilise une expansion conditionnelle à la présence
-d'un symbole qui ne devrait qu'être présent que lorsque l'on se trouve
-dans ce système fictif.\\
+deux variables entre elles. Le résultat de l'expansion sera donné par
+la substitution de l'appel de la macro par sont corps où les
+occurrences des paramètres sont intégralement substitués par les
+paramètres actuels, soient \texttt{a} et \texttt{b}.
 
 \begin{figure}[htb!]
   \begin{verbatim}
 #define swap(x,y) do { int tmp; tmp = x; x = y; y = tmp; } while(0)
 int main(){
-  int x = 0;
-  int y = 1;
-#ifdef __WEIRD_OS__
-  swap(x,y);
-#endif
-  return x;
+  int a = 1; int b = 2;
+  swap(a,b);
+  return a - (b<<1);
 }
   \end{verbatim}
   \caption{Exemple de macro C avec expansion conditionnelle.}
@@ -1149,77 +1141,37 @@ int main(){
 
 De telles macros comportent beaucoup de problèmes potentiels. Non
 seulement, elle ne sont limitées qu'a faire des remplacements
-syntaxiques très primitifs, mais aussi sont souvent la sources de
+syntaxiques très primitifs, mais aussi sont souvent la source de
 problèmes reliés au changement du contexte syntaxique des arguments de
 la macro ou à une expansion dans un contexte qui n'était pas
-prévu. Ces problèmes sont souvent très difficile à trouver car ils ne
-surviennent que le programme est compilé, bien après l'expansion des
-macros. Il en résulte que le code compilé ne contient aucune trace des
-macros et donc le compilateur donne souvent des erreurs qui ne sont
-pas reliées avec la vraie source du problème, soit la définition de la
-macro en question.
+prévu. Ces problèmes sont souvent très difficiles à trouver car ils ne
+surviennent uniquement lorsque le programme est compilé, bien après
+l'expansion des macros. Il en résulte que le code compilé ne contient
+aucune trace des appels macros et donc le compilateur donne souvent
+des erreurs qui ne sont pas reliées avec la vraie source du problème,
+soit la définition de la macro en question.
 
-La syntaxe préfixe extrêmement simple de Scheme donne la chance au
-langage de posséder la même syntaxe que les structures de données de
-base de ce dernier. Ceci ouvre la porte à implanter un système de
-macro très puissant, un système de macro procédural. 
-
-Plusieurs systèmes d'expansions de macro sont disponible en Scheme. Le
-plus simple d'entre eux est celui qui provient directement de \lisp, la
-forme spéciale \scheme{define-macro}. Avec cet expanseur, une macro
-Scheme est une fonction dont les paramètres \emph{ne sont pas évalués}
-avant d'être passés au corps de la fonction. Il en résulte ainsi que
-le code étant en position d'argument est considéré par la macro comme
-étant des données Scheme (listes, symboles, nombres, etc...). Puisque
-la macro Scheme est une fonction, elle possède toute la puissance du
-langage à sa disposition. La S expression retournée par la macro sera
-le résultat de l'expansion de celle-ci et sera donc évalué durant
+L'utilisation d'expressions symboliques pour représenter de la même
+manière les données d'un programme et le code source de celui-ci en
+Scheme la porte à l'implanter un système de macro très puissant, un
+système de macro procédural. Plusieurs de ces systèmes d'expansion de
+macro sont disponibles en Scheme. Le plus simple d'entre eux est celui
+qui provient directement de \lisp, soit la forme spéciale
+\scheme{define-macro}. Avec cet expanseur, une macro Scheme est une
+fonction dont les paramètres \emph{ne sont pas évalués} avant d'être
+passés au corps de la fonction. Il en résulte ainsi que le code étant
+en position d'argument est considéré par la macro comme étant des
+données Scheme (listes, symboles, nombres, etc...). Puisque la macro
+Scheme est une fonction, elle possède toute la puissance du langage à
+sa disposition. La S expression retournée par la macro sera le
+résultat de l'expansion de celle-ci et sera donc évalué durant
 l'exécution du programme à l'endroit où l'appel de la macro se
-retrouvait.
-
-Un exemple simple mais convaincant de macro Scheme est illustré dans
-la figure \ref{Scheme:macro-ex1}. Cette macro sert à définir des
-variables constantes correspondant à des nombres de la série de
-Fibonacci. Le nombre \scheme{n} passé à la macro est utilisé pour
-calculer le n\ieme nombre de Fibonacci \emph{durant l'expansion de la
-  macro} pour générer le code présenté dans la figure
-\ref{Scheme:macro-ex1-exp}. Ainsi, le code résultant de l'expansion
-est par la suite évalué durant l'exécution du programme, et il est
-possible de faire référence à la variable \scheme{fib10}.\\
-
-\begin{figure}[htb!]
-  \begin{schemecode}
-(define-macro (define-fib n)
-    (letrec ((fib (lambda (n) (if (< n 3) 1 (+ (fib (- n 1)) (fib (- n 2)))))))
-      `(define ,(string->symbol (string-append "fib" (number->string n)))
-         ,(fib n))))
-(define-fib 10)
-  \end{schemecode}
-  \caption{Exemple simple de macro Scheme.}
-  \label{Scheme:macro-ex1}
-\end{figure}
-
-\begin{figure}[htb!]
-  \begin{schemecode}
-(define fib10 55)
-  \end{schemecode}
-  \caption{Résultat de l'expansion de la macro présentée dans la
-    figure \ref{Scheme:macro-ex1} avec 10 comme paramètre.}
-  \label{Scheme:macro-ex1-exp}
-\end{figure}
-
-Cet exemple très simple n'a pas utilisé le passage de paramètre par
-nom dont disposent les macros Scheme, \ie que la macro de la figure
-\ref{Scheme:macro-ex1} n'a pas utiliser le fait que le code passé en
-paramètre est une donnée Scheme, puisqu'un nombre s'évalue en lui même
-en Scheme. Il est intéressant de noter qu'un appel à cette macro comme
-\scheme{define-fib (+ 1 2))}, est une erreur. En effet, puisque la
-macro s'attend à avoir un nombre en paramètre, mais elle reçoit plutôt
-de ce cas ci la liste \scheme{(+ 1 2)}, puisque l'évaluation de
-l'addition ne sera fait que durant l'exécution du programme.
-
-Un exemple simple de macro tirant profit du fait que l'argument est
-passé par nom est illustré dans la figure \ref{Scheme:macro-ex2}.\\
+retrouvait. Un exemple simple de macro tirant profit du fait que
+l'argument est passé par nom est illustré dans la figure
+\ref{Scheme:macro-ex2}. Cette macro très simple utilise le passage par
+nom pour permettre d'incrémenter la valeur d'une variable, ce qui ne
+serait pas possible autrement en Scheme puisque le passage d'argument
+se fait normalement par valeur.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1233,12 +1185,14 @@ passé par nom est illustré dans la figure \ref{Scheme:macro-ex2}.\\
   \label{Scheme:macro-ex2}
 \end{figure}
 
-Cette macro très simple utilise le passage par nom pour permettre
-d'incrémenter la valeur d'une variable. Un exemple plus complexe de
-macro utilisant le passage par nom est donné dans la figure
-\ref{Scheme:macro-ex3}. Cette macro permet d'augmenter le langage
-Scheme d'une nouvelle forme spéciale qui correspond à une forme simple
-d'itération. \\
+
+Un autre exemple de macro utilisant le passage par nom est donné dans
+la figure \ref{Scheme:macro-ex3}. Cette macro permet d'augmenter le
+langage Scheme d'une nouvelle forme spéciale qui correspond à une
+forme simple d'itération comme l'on retrouve souvent dans les langages
+impératifs. L'expansion de l'appel à cette macro illustré dans la
+figure \ref{Scheme:macro-ex3} est présentée dans la figure
+\ref{Scheme:macro-ex3-exp}.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1256,22 +1210,37 @@ d'itération. \\
   \label{Scheme:macro-ex3}
 \end{figure}
 
-Cette macro comporte, par contre plusieurs problèmes. L'un d'entre eux
-est relié à l'introduction de la variable \scheme{loop}. L'ajout de
-cette variable peut causer le problème connu sous le nom de
-\emph{Capture de Variables}. En effet, la macro n'aura pas le
-comportement escompté si l'un de ses paramètres possède une référence
-à une variable déjà existante nommée \scheme{loop}. Le problème de
-capture de variables était tout aussi présent dans les macro à la C et
-constituait pour ce type de macro un problème insolvable. Par contre,
-il est possible d'éviter ce problème en Scheme en générant un nom de
-variable pour \scheme{loop} qui est assurément unique. L'implantation
-Gambit-C offre la fonction \scheme{gensym} pour ces besoins.
+\begin{figure}[htb!]
+  \begin{schemecode}
+(let ((v (make-vector 5)))
+  (let loop ((x 0))
+    (if (< x 5) (begin (vector-set! v x x)
+                       (loop (+ x 1)))))
+  v)
+  \end{schemecode}
+  \caption{Résultat de l'expansion macro de l'appel présenté dans la
+    figure \ref{Scheme-macro-ex3}.}
+  \label{Scheme:macro-ex3-exp}
+\end{figure}
+
+Ces macros demeurent très simples et se rapprochent de ce qui peut
+être exprimé à l'aide de macro C. Toutefois, la macro \scheme{for}
+comporte plusieurs problèmes. L'un d'entre eux est relié à
+l'introduction de la variable \scheme{loop}. L'ajout de cette variable
+peut causer le problème connu sous le nom de \emph{Capture de
+  noms}. En effet, la macro n'aura pas le comportement escompté si
+l'un de ses paramètres possède une référence à une variable déjà
+existante nommée \scheme{loop}. Le problème de capture de variables
+était tout aussi présent dans les macro de C et constituait pour ce
+type de macro un problème insolvable. Par contre, il est possible
+d'éviter ce problème en Scheme en générant un nom de variable pour
+\scheme{loop} qui est assurément unique. L'implantation Gambit-C offre
+la fonction \scheme{gensym} pour ces besoins.
 
 Le problème de capture de nom est associé au phénomène appelé hygiène
 des macros. Ce problème peut être résolu manuellement comme suggéré,
-mais il existe aussi d'autres expansées de macro assurant l'hygiène
-des macros, dont entre autres la forme spéciale
+mais il existe aussi d'autres expanseurs de macros assurant l'hygiène
+des macros, dont entre autres, la forme spéciale
 \scheme{syntax-rules}~\cite{SCHEME_HYG_MACRO}. La réécriture de la
 macro \scheme{for} en utilisant un système de macro hygiénique est
 donnée dans la figure \ref{Scheme:macro-ex4}. Cette figure donne aussi
@@ -1279,7 +1248,7 @@ un exemple d'utilisation de la macro mettant à l'épreuve l'hygiène de
 celle-ci. On constate que malgré le fait qu'aucun effort n'a dû être
 mis en place pour éviter les collisions de noms pour la variable
 \scheme{loop} introduite, la macro réalise le comportement attendu
-d'elle dans des conditions potentiellement problématiques.
+dans des conditions potentiellement problématiques.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1299,19 +1268,89 @@ d'elle dans des conditions potentiellement problématiques.
   \label{Scheme:macro-ex4}
 \end{figure}
 
-Malgré le fait que l'expansion de macro faite avec
+Bien que fait que l'expansion de macro faite avec
 \scheme{define-macro} puisse impliquer des collisions de variables,
 elle permet une plus grande liberté d'écriture. En effet, parfois la
-collision de nom peut, par exemple, être intentionnelle. Aussi, le
-problème est facilement résolu avec l'utilisation de symboles uniques.
+collision de nom peut, être intentionnelle. Aussi, le problème est
+facilement résolu avec l'utilisation de symboles uniques.
 
-Ainsi, en utilisant les macros de Scheme, il est possible d'ajouter
-des nouvelles formes spéciales au langages. On peut ainsi créer des
-langages spécifiques au domaine (\textit{Domain specific languages}),
-en se créant un langage complet ou partiel au dessus de Scheme à
-l'aide des macros. Ces langages sont conçus dans le but de résoudre un
-problème précis et l'utilisation de macros permet pouvoir exprimer ce
-langage en Scheme, sans aucun coûts additionnels.
+Un exemple plus convaincant d'une macro Scheme utilisant la puissance
+de calcul du langage est illustré dans la figure
+\ref{Scheme:macro-ex1}. Cette macro résulte en la création d'un masque
+binaire ayant les bits des puissances de deux spécifiées en
+argument. Ainsi, l'expansion de l'appel \scheme{(mask 1 3 8)} résulte
+à être directement \scheme{266}. Il est intéressant de noter qu'un
+appel à cette macro tel que \scheme{(mask 1 (+ 1 2))}, est une
+erreur. En effet, puisque la macro s'attend à avoir un nombre en
+paramètre, mais elle reçoit plutôt de ce cas ci la liste \scheme{(+ 1
+  2)}, puisque les arguments de macros ne sont pas évalués.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-macro (mask . bits)
+  (define (curry2 f x) (lambda (y) (f x y)))
+  (apply + (map (curry2 expt 2) bits)))
+(number->string (mask 1 3 8) 2)
+  \end{schemecode}
+  \schemeresult{"100001010"}
+  \caption{Exemple plus avancé de macro Scheme.}
+  \label{Scheme:macro-ex1}
+\end{figure}
+
+Le calcul de la somme des puissance de deux se fait donc durant la
+compilation du programme, donnant accès à des optimisations
+intéressantes, sans toutefois perdre au niveau de l'élégance du
+code. Ce genre de macros mènent directement vers la construction de
+langages spécifiques au domaine (\textit{Domain Specific Languages} ou
+simplement \textit{DSL}). Ces derniers constituent l'ajout de
+nouvelles constructions à Scheme permettant d'exprimer facilement des
+idées relié à un concept précis de manière élégante, sans perte de
+performances. La macro \scheme{mask} pourrait constituer le pilier de
+base d'un \textit{DSL} effectuant la création et la manipulation de
+masques binaires. La figure \ref{Scheme:macro-mini-dsl} illustre une
+deuxième macro effectuant durant l'expansion macro la combinaison de
+masques binaires. On obtient un petit langage pour la déclaration
+efficace de tels masques. 
+
+\begin{figure}[htb1]
+  \begin{schemecode}
+(define-macro (mask-or . masks)
+  (apply bitwise-ior (map eval masks)))
+(mask-or (mask 1 3) (mask 8))
+  \end{schemecode}
+  \schemeresult{266}
+  \caption{Macro venant augmenter le petit \textit{DSL} portant sur la
+    manipulation de masques binaires}
+  \label{Scheme:macro-mini-dsl}
+\end{figure}
+
+On peut maintenant imaginer de tels langages spécifiques au domaine
+pour n'importe quel problème associé aux jeux vidéo. Par exemple, une
+macro pour être écrite pour la description détaillée d'un modèle
+tridimensionnel et une autre pour la combinaison de ces
+dernières. Ainsi, ces macros pourraient permettre de décrire le modèle
+d'une manière simple pour les artistes, en utilisant un syntaxe près
+de d'un langage naturel et, durant l'expansion, transformer ces
+déclaration et combinaisons, en des structures de données efficaces
+tant en utilisation mémoire qu'en rapidité d'accès et de
+manipulation. Un autre exemple pourrait être la création d'un système
+de programmation orienté objet à l'aide de macros Scheme. La puissance
+de calcul disponible durant l'expansion pourrait ainsi servir à la
+création des fonctions auxiliaire d'accès aux membres, à la
+détermination des membres hérités, etc...
+
+En conclusion, les macros Scheme donnent accès à une très grande
+puissance expressive en permettant l'utilisation de la puissance
+complète du langage durant l'expansion de ces dernières. Cette
+puissance de calcul et cette simplicité provient du fait que le code
+source de Scheme et les données du langage Scheme utilisent la même
+syntaxe, soit les S-expressions. Ainsi, en utilisant ce système de
+macros, il est possible d'ajouter des nouvelles formes spéciales au
+langages et ainsi créer des langages spécifiques au domaine
+(\textit{Domain specific languages}). Ces derniers sont créés au
+dessus de Scheme dans le but de résoudre un problème précis de manière
+efficace, tout en offrant une syntaxe facilitant leur utilisation.
+
 
 
 \section{Continuations}
@@ -1339,7 +1378,7 @@ Les figures \ref{Scheme:cont-ex1} et \ref{Scheme:cont-ex2} illustrent
 la continuation d'un appel de fonction dans un calcul très
 simple. Ainsi, après avoir exécuté l'appel de la fonction \scheme{f},
 le reste du calcul à effectuer peut être représenté par une fermeture
-attendant le résultat de l'appel de fonction en entrée. \\
+attendant le résultat de l'appel de fonction en entrée. 
 
 \begin{figure}[htb!]
   \begin{schemecode}

@@ -1355,51 +1355,80 @@ efficace, tout en offrant une syntaxe facilitant leur utilisation.
 
 \section{Continuations}
 
-L'état d'un calcul en cours d'exécution est souvent implanté ou
-illustré par une pile d'exécution. C'est le modèle d'implantation
-utilisé en C et dans la plupart des langages de programmation. Ainsi,
-l'exécution d'un appel de fonction empile l'adresses de retour et
-utilise le dessus de la pile pour les variables locales à la
-fonction. Lorsque la fonction termine, l'adresse de retour est dépilée
-et le contrôle revient à l'endroit de l'appel de
-fonction. L'environnement d'exécution de cet appel est contenu
-partiellement dans l'état de la pile et devient donc perdu lorsque
-l'appel se termine.
-
-En Scheme, le modèle d'exécution, quoi que similaire, est sensiblement
-différent. L'évolution de l'exécution d'un programme est implanté par
-des continuations. Ces dernières sont des fermetures qui représentent
-le reste du calcul à faire à un moment du calcul donné. La
-continuation initiale d'un programme est la terminaison de ce dernier,
-puisque après avoir exécuter le programme, il ne restera plus rien à
-faire.
-
-Les figures \ref{Scheme:cont-ex1} et \ref{Scheme:cont-ex2} illustrent
-la continuation d'un appel de fonction dans un calcul très
-simple. Ainsi, après avoir exécuté l'appel de la fonction \scheme{f},
-le reste du calcul à effectuer peut être représenté par une fermeture
-attendant le résultat de l'appel de fonction en entrée. 
+La forme d'écriture de code appelée CPS (\textit{Continuation Passing
+  Style}) est un style d'écriture utilisé dans les langages
+fonctionnels qui permet d'expliciter la suite du calcul d'une fonction
+explicitement. La figure \ref{Scheme:fact} illustre une implantation
+simple de la fonction factoriel. La suite du calcul effectuée après un
+appel à la fonction \scheme{fact} est implicite dans l'écriture de son
+appel. Dans l'exemple d'appel présent dans cette figure, on constate
+que la suite de ce calcul sera l'addition de un au résultat obtenu.
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(+ a (- [f x y] 2))
+(define (fact n)
+  (if (< n 2)
+      1
+      (* n (fact (- n 1)))))
+(+ (fact 10) 1)
   \end{schemecode}
-  \caption{Exemple simple de calcul en Scheme}
-  \label{Scheme:cont-ex1}
+  \schemeresult{3628801}
+  \caption{Implantation simple de la fonction factoriel}
+  \label{Scheme:fact}
 \end{figure}
+
+Le corps de la fonction \scheme{fact} présentée possède deux types
+d'appels de fonctions, soient les appels terminaux et
+non-terminaux. La distinction entre ces deux types d'appels est la
+suivante: un appel terminal est un appel qui termine l'exécution d'une
+fonction et un appel non-terminal est tel que le résultat de cet appel
+nécessitera du traitement ultérieur dans la fonction avant que
+celle-ci termine. Ainsi, seul l'appel à la fonction \scheme{*} est
+terminal dans la fonction \scheme{fact}. Le standard du langage Scheme
+requiert l'implantation de l'optimisation d'appels terminaux. Cette
+dernière fait en sorte que le résultat d'un appel terminal est passé
+directement à la continuation de l'appel à la fonction en question. Il
+en résulte que le résultat d'un appel terminal ne sera pas attendu par
+la fonction qui le contient. Il est ainsi possible de pouvoir
+effectuer des itérations à l'aide d'appels terminaux de fonctions.
+
+La transformation de cette fonction en style CPS est donnée dans la
+figure \ref{Scheme:cps-fact}. Dans cette nouvelle version, la suite de
+l'exécution d'un appel est explicite, il s'agit d'un appel à la
+continuation passée en paramètre, nommée \scheme{k}.
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(lambda (res-f) (+ a (- res-f 2)))
+(define (minusk n1 n2 k) (k (- n1 n2)))
+(define (timesk n1 n2 k) (k (* n1 n2)))
+(define (factk n k)
+  (if (< n 2)
+      (k 1)
+      (minusk n 1 (lambda (r)
+                    (factk r (lambda (r2)
+                               (timesk n r2 k)))))))
+(factk 10 (lambda (x) x))
   \end{schemecode}
-  \caption{Continuation de l'appel de la fonction \scheme{f} présenté
-    dans la figure \ref{Scheme:cont-ex1}}
-  \label{Scheme:cont-ex2}
+  \schemeresult{3628800}
+  \caption{Forme CPS de la fonction factoriel}
+  \label{Scheme:cps-fact}
 \end{figure}
 
-Le langage Scheme offre la possibilité de réifier la continuation d'un
-calcul donné par l'entremise de la forme spéciale
-\scheme{call-with-current-continuation} souvent disponible aussi via
+Une propriété intéressante de cette transformation de code est reliée
+au fait que tous les appels de fonctions deviennent des appels
+terminaux. La transformation CPS est souvent utilisée par les
+implantations de Scheme car elle facilite l'implantation de
+l'optimisation d'appels terminaux. Ce style de programmation permet
+aussi d'utiliser de manière élégante la puissance d'abstraction des
+langages fonctionnels en permettant de diviser le calcul en petites
+parties facilement interchangeables et modulaires.
+
+Le langage Scheme offre la possibilité de réifier automatiquement la
+continuation d'un calcul donné par l'entremise de la forme spéciale
+\scheme{call-with-current-continuation} souvent nommée aussi
+\scheme{call/cc}. Cette forme spéciale s'attend à recevoir une
+fermeture en argument, cette dernière n'attendant qu'un seul
+paramètre: la continuation réifiée du calcul au point d'appel de
 \scheme{call/cc}. La figure \ref{Scheme:cont-ex3} donne un exemple de
 la réification d'un calcul similaire à celui présenté dans la figure
 \ref{Scheme:cont-ex1}. La mutation de la variable \scheme{k} est
@@ -1422,7 +1451,7 @@ le but de la réutiliser plus tard.
 \end{figure}
 
 Ainsi, la sauvegarde d'une continuation permet de conserver l'état du
-calcul et la réutilisation de celui-ci.
+calcul et la réutilisation de celui-ci. 
 
 \subsection{Exemples d'utilisations}
 L'utilisation de continuations ajoute beaucoup de puissance au niveau
@@ -1509,9 +1538,9 @@ prenant comme valeur de retour la valeur trouvée.
   \label{Scheme:better-foldl}
 \end{figure}
 
-\subsubsection{Recherche par retour sur trace}
+\subsubsection{Recherche par retour arrière}
 Un autre exemple d'utilisation intéressant de continuations est dans
-la création d'un système de recherche par retour sur trace
+la création d'un système de recherche par retour arrière
 (\textit{backtracking}). La figure \ref{Scheme:backtrack} illustre un
 exemple simple de recherche d'un triplet de nombres entiers tel que
 $x^2 = y^2+z^2$.
@@ -1519,8 +1548,9 @@ $x^2 = y^2+z^2$.
 \begin{figure}[htb!]
   \begin{schemecode}
 (define fail (lambda () (error "can't backtrack")))
-(define (in-range a b)
-  (call/cc (lambda (cont) (enumerate a b cont))))
+
+(define (in-range a b) (call/cc (lambda (cont) (enumerate a b cont))))
+
 (define (enumerate a b cont)
   (if (> a b)
       (fail)
@@ -1528,6 +1558,7 @@ $x^2 = y^2+z^2$.
          (set! fail (lambda () (set! fail save)
                                (enumerate (+ a 1) b cont)))
          (cont a))))
+
 (let ((x  (in-range 1 9))
       (y  (in-range 1 9))
       (z  (in-range 1 9)))
@@ -1536,7 +1567,7 @@ $x^2 = y^2+z^2$.
       (fail)))
   \end{schemecode}
   \schemeresult{(5 3 4)}
-  \caption{Exemple de recherche par retour sur trace}
+  \caption{Exemple de recherche par retour arrière}
   \label{Scheme:backtrack}
 \end{figure}
 
@@ -1547,82 +1578,16 @@ décision à cet endroit. Cet exemple illustre bien l'élégance qui peut
 résulter de l'utilisation judicieuse de la forme spéciale
 \scheme{call/cc}.
 
-\subsection{Forme d'écriture de code en CPS}
+\subsection{Conclusion}
 
-En Scheme, on distingue deux types d'appels de fonction, les appels
-terminaux et les appels non-terminaux. Un appel terminal est un appel
-dont la continuation est la même que la continuation de la fonction
-dans laquelle il se trouve, sinon, il s'agit d'un appel
-non-terminal. La figure \ref{Scheme:fact} illustre l'implantation
-traditionnelle de la fonction factoriel en Scheme. On constate que
-cette fonction contient un seul appel terminal: l'appel à la fonction
-\scheme{*}. Cet appel possède la même continuation que celle de la
-fonction \scheme{fact} puisque le calcul qui reste après cet appel est
-en fait la suite du calcul à l'appel original de \scheme{fact}.
-
-\begin{figure}[htb!]
-  \begin{schemecode}
-(define (fact n)
-  (if (< n 2)
-      1
-      (* n (fact (- n 1)))))
-(fact 10)
-  \end{schemecode}
-  \schemeresult{3628800}
-  \caption{Exemple de fonction contenant des appels terminaux et
-    non-terminaux.}
-  \label{Scheme:fact}
-\end{figure}
-
-Les appels terminaux sont sujet à une optimisation
-intéressante. L'optimisation d'appels terminaux consiste à changer la
-continuation d'un appel terminal directement par la continuation de la
-fonction dans laquelle se trouve cet appel. Dans le cadre de l'exemple
-de la fonction \scheme{fact} la continuation de l'appel à \scheme{*}
-dans la figure \ref{Scheme:fact} est la même que celle de la fonction
-factoriel. Supposons que nous appelons cette continuation
-\scheme{k}. Ainsi, la continuation de \scheme{*} pourrait être
-représentée par la fonction \scheme{(lambda (r) (k r))}.
-L'optimisation d'appels terminaux revient à utiliser directement
-\scheme{k} comme continuation à la multiplication. Ainsi, le flot de
-contrôle du calcul n'a plus besoin de revenir dans \scheme{fact}
-lorsque la multiplication est terminée, mais peut continuer
-directement le calcul. Cette optimisation est requise pour toute
-implantation de Scheme par la spécification du langage.
-
-Il existe un style d'écriture de code appelé \textit{Continuation
-  Passing Style} ou style en forme CPS qui consiste à expliciter
-toutes les continuations dans un programme. Une propriété intéressante
-de ce style d'écriture est que tous les appels sont des appels
-terminaux. La figure \ref{Scheme:cps-fact} contient la réécriture de
-la fonction factoriel présentée dans la figure \ref{Scheme:fact}. On
-peut constater que cette réécriture a appliqué l'optimisation d'appels
-terminaux.
-
-\begin{figure}[htb!]
-  \begin{schemecode}
-(define (minusk n1 n2 k) (k (- n1 n2)))
-(define (timesk n1 n2 k) (k (* n1 n2)))
-(define (factk n k)
-  (if (< n 2)
-      (k 1)
-      (minusk n 1 (lambda (r)
-                    (factk r (lambda (r2)
-                               (timesk n r2 k)))))))
-(factk 10 (lambda (x) x))
-  \end{schemecode}
-  \schemeresult{3628800}
-  \caption{Forme CPS de la fonction factoriel}
-  \label{Scheme:cps-fact}
-\end{figure}
-
-Cette transformation est souvent utilisée par les implantations de
-Scheme car elle facilite l'implantation de l'optimisation d'appels
-terminaux en rendant tous les appels comme terminaux. Ce style de
-programmation permet aussi d'utiliser de manière élégantes la
-puissance d'abstraction des langages fonctionnels en permettant de
-diviser le calcul en petites parties facilement interchangeable et
-modulaires.
+Ainsi, la réification de continuation implicites ou encore
+l'utilisation d'un style CPS utilisant des continuation explicites
+apporte beaucoup de puissance au langage Scheme. L'utilisation de
+continuation permet la sauvegarde de l'état d'un calcul en cours dans
+une fermeture et permet sa réutilisation ultérieure. On peut ainsi
+créer sans trop d'efforts des systèmes d'exceptions, de retour arrière
+ou même de coroutines, systèmes qui seraient tous pertinent à utiliser
+dans le cadre de la programmation de jeux vidéo.
 
 
 
@@ -1630,55 +1595,64 @@ modulaires.
 
 \section{Gestion mémoire automatique}
 
-L'écriture de code effectuant gestion de la mémoire d'un programme à
-toujours été une partie délicate du développement d'un logiciel. Non
+L'écriture de code effectuant la gestion de la mémoire d'un programme
+a toujours été une partie délicate du développement d'un logiciel. Non
 seulement, il est très facile de faire des erreurs, mais ces erreurs
 sont très difficiles à détecter et à être trouvées. Les problèmes
-reliées à une mauvaise gestion de la mémoire sont classifiées en deux
+reliés à une mauvaise gestion de la mémoire sont classifiés en deux
 catégories: des fuites de mémoire ou des pointeurs fous. Les fuites de
 mémoire sont causées par la rétention de mémoire par des objets qui ne
 sont plus utilisés par le programme et les pointeurs fous sont des
-pointeurs toujours accessible par le programme, mais dont l'espace
-mémoire correspondant a été récupéré par le système d'exploitation.
+pointeurs toujours accessibles par le programme, mais dont l'espace
+mémoire correspondant a été récupéré par le système
+d'exploitation. Ces erreurs sont souvent les conséquence d'un problème
+plus difficile encore, le problème de modularité. En effet, la durée
+de vie d'un objet en mémoire est normalement facile à déterminer à
+petite échelle. Par contre, lorsque le code est écrit de manière
+modulaire, il est difficile de prévoir toutes les utilisations des
+objets et souvent la responsabilité de la désallocation des objets est
+difficile à déterminer.
 
-Dans les deux cas, ces erreurs sont très problématiques. C'est
-probablement pour cette raison que déjà très tôt, cette gestion a été
-automatisée par des systèmes de gestions automatiques de mémoire. Les
-premiers systèmes de gestion de mémoires automatique, appelles aussi
-ramasses miettes, apparurent avec le langages \lisp. Le principe de
-base est simple, il s'agit de parcourir la mémoire utilisée par le
-programme en partant des \emph{racines} de celui-ci. Les racines sont
-tous les points d'accès aux données accessibles, comme par exemple les
-variables globales ou locales d'une fonction en cours
-d'exécution. Lorsque la mémoire est parcourue, on garde trace des
-zones accessibles. Après avoir parcouru toute la mémoire accessible,
-il ne suffit que de récupérer automatiquement les zones qui ne sont
-plus accessibles par le programme.
+Ces erreurs sont très problématiques. C'est sans doute pour cette
+raison que déjà très tôt, cette gestion a été automatisée par des
+systèmes de gestions automatiques de mémoire. Les premiers systèmes de
+gestion de mémoires automatiques, appellés aussi ramasses miettes,
+apparurent avec le langage \lisp. Le principe de base est simple, il
+s'agit de parcourir la mémoire utilisée par le programme en partant
+des \emph{racines} de celui-ci. Les racines sont tous les points
+d'accès aux données accessibles, comme par exemple les variables
+globales ou locales d'une fonction en cours d'exécution. Lorsque la
+mémoire est parcourue, on garde trace des zones accessibles. Après
+avoir parcouru toute la mémoire accessible, il ne suffit que de
+récupérer automatiquement les zones qui ne sont plus accessibles par
+le programme.
 
 Bien sûr, la gestion de mémoire automatique se fait avec un certain
-\emph{coût en temps de calcul}. La répartition de se temps dépend
+\emph{coût en temps de calcul}. La répartition de ce temps dépend
 grandement de la technique de gestion utilisée. Aussi, les algorithmes
-de parcours de mémoire se doivent d'être \emph{conservateurs} afin
-d'assurer de ne pas causer de pointeurs fous. Ainsi, il peut y avoir
-des cas où le système de gestion pense qu'un pointeur est toujours
-accessible, alors qu'en réalité, il ne sera plus jamais utilisé par le
-programme créant ainsi des fuites de mémoires. Ces fuites sont
-toutefois beaucoup plus difficile à créer que des fuites de mémoires
-lorsqu'une gestion manuelle de mémoire est utilisée.
+de gestion de mémoire se doivent d'être \emph{conservateurs} dans la
+désallocation d'objets puisque la détermination de la vivacité d'un
+objet est, dans la généralité du problème, indécidable. Ainsi, il peut
+y avoir des cas où le système de gestion pense qu'un pointeur est
+toujours accessible, alors qu'en réalité, il ne sera plus jamais
+utilisé par le programme créant ainsi des fuites de mémoires. Ces
+fuites sont toutefois beaucoup plus difficile à créer que celles
+obtenues lorsqu'une gestion manuelle de mémoire est utilisée.
 
 
 \subsection{Survol des techniques}
-Plusieurs techniques de gestion de mémoire automatique ont été
+Plusieurs techniques de gestion de mémoire automatiques ont été
 développées au cours des années. Cette section effectue un bref survol
 de ces différentes techniques. Plusieurs articles effectuant une revue
 des techniques sont disponibles pour fournir plus de détails sur ces
 techniques sur le
 sujet~\cite{GC_REVIEW1}~\cite{GC_REVIEW2}~\cite{GC_REVIEW3}. 
 
-Une des techniques les plus simples de gestion de mémoire automatique
-est le \textit{mark and sweep}~\cite{LISP_ORIGINS}. Cette technique
+\subsubsection{\textit{Mark And Sweep}}
+Une des techniques la plus simple de gestion de mémoire automatique
+est le \textit{Mark And Sweep}~\cite{LISP_ORIGINS}. Cette technique
 consiste à traverser la mémoire à partir des racines et à marquer
-chacun des espaces mémoire rencontrés lors du parcours. Ensuite, tous
+chacun des espaces mémoire rencontrés lors du parcours. Ensuite, tout
 les espaces mémoires alloués sont parcourus et tout ceux qui ne sont
 pas marqués sont récupérés. Cette technique est très simple, mais
 telle quelle, peut mener à des problèmes de fragmentations de la
@@ -1686,9 +1660,10 @@ mémoire. De plus, elle requiert de traverser toute la mémoire utilisée
 par deux fois, impliquant donc un certaine pause dans l'exécution du
 programme.
 
+\subsubsection{\textit{Stop And Copy}}
 Une autre technique classique se nomme \textit{Stop And
   Copy}~\cite{STOP_AND_COPY}. De manière similaire au \textit{Mark And
-  Sweep}, cette technique parcours les zones mémoires utilisées à
+  Sweep}, cette technique parcoure les zones mémoires utilisées à
 partir des racines. Par contre, le \textit{Stop And Copy} doit séparer
 la mémoire disponible en deux zones distinctes, l'une dans laquelle
 les allocations sont effectuées et l'autre demeure réservée. Lorsque
@@ -1696,13 +1671,14 @@ le ramasse miettes atteint un objet en mémoire, il le copie vers la
 nouvelle zone réservée et laisse une indication de sa nouvelle
 position dans son ancien emplacement. Toutes les zones mémoires sont
 ainsi copiées et compactées et donc, les allocations subséquentes sont
-par la suite dans la nouvelles zone mémoire, résultant en une
-désallocation implicite des espaces inutilisées dans la zone
+par la suite dans la nouvelle zone mémoire, résultant en une
+désallocation implicite des espaces inutilisés dans la zone
 précédente. Cette technique est légèrement plus efficace que le
 \textit{Mark And Sweep} traditionnel, mais nécessite le double
 d'espace mémoire pour faire la gestion de la mémoire. Cette technique
 est utilisée dans l'implantation Scheme Gambit-C.
 
+\subsubsection{Gestionnaires générationnels}
 Une amélioration notable de la technique du \textit{Mark And Sweep} a
 donné naissance aux ramasses miettes
 générationnels~\cite{GEN_GC}. Sans entrer dans les détails, cette
@@ -1710,40 +1686,51 @@ technique divise la mémoire en plusieurs générations. Les objets
 récemment alloués sont conservés dans la pouponnière puis, lorsque
 ceux-ci sont conservés plus longtemps, sont déplacés vers une
 génération plus ancienne, et ainsi de suite. Seul la pouponnière est
-parcourue lors de chaque récupérations et lorsque celle-ci devient
+parcourue lors de chaque récupération et lorsque celle-ci devient
 remplie, elle déclenche une récupération dans la génération au dessus
-d'elle. Cette algorithme est beaucoup plus efficace, car les objets
-récemment alloués ont une petite durée de vie moyenne, contrairement
-aux objets déjà retenus qui eux ont une meilleur chance d'être
-toujours retenus. Tout comme les deux techniques précédentes, les
-ramasses miettes générationnels nécessitent l'arrêt du programme
-durant l'opération récupération, qui peu, dans le pire cas,
-s'effectuer sur toute la mémoire.
+d'elle. Ainsi, cet algorithme est beaucoup plus mieux adapté aux cas
+d'utilisations les plus fréquents, car les objets récemment alloués
+ont souvent une courte durée de vie moyenne, contrairement aux objets
+déjà retenus qui eux possèdent une meilleur chance d'être
+retenus. Tout comme les deux techniques précédentes, les ramasses
+miettes générationnels nécessitent l'arrêt du programme durant
+l'opération récupération, qui peu, dans le pire cas, s'effectuer sur
+toute la mémoire.
 
+\subsubsection{Gestionnaires incrémentaux}
 Afin de remédier au problème d'arrêt complet de l'exécution du
-programme, deux nouveaux types de ramasses miettes ont été
-développées: les ramasses miettes incrémentaux (ou
-temps-réels)~\cite{INCR_BAKER}. Ceux-ci utilisent un algorithme de
-marquage à trois couleurs de la mémoire afin de permettre de faire
-partiellement le travail de récupération et de poursuivre
-l'application dans le but de continuer plus tard. Il en résulte donc
-que les pauses dues à la récupérations peuvent être contrôlées et de
-temps constant.
+programme, d'un nouveaux types de ramasses miettes a été développé:
+les ramasses miettes incrémentaux ou temps
+réels~\cite{INCR_BAKER}. Ceux-ci peuvent utiliser un algorithme de
+marquage à trois couleurs de la mémoire afin d'effectuer partiellement
+le travail de récupération et de poursuivre l'application dans le but
+de continuer ultérieurement. Il en résulte donc que les pauses dues à
+la récupération peuvent être contrôlées et être de temps constant.
+
+\todo{enumerer les techniques utilisees}
+
+Malgré le fait que ces techniques permettent d'assurer une borne
+supérieure sur le temps de récupération mémoire, elle ajoutent un
+délais sur chaque accès ou sur chaque écritures mémoire. Donc, dans le
+cadre de jeux vidéo ces coûts supplémentaires peuvent être
+indésirables. Toutefois, l'utilisation de ces systèmes de gestion de
+mémoire automatique permettent d'éviter d'avoir de trop lentes pauses
+dues à la récupération mémoire.
 
 \subsection{Conclusion}
 
 Malgré que les techniques de récupération automatique de mémoire
 impliquent des coût supplémentaires en utilisation du processeur et de
 la mémoire, le gain en productivité pour le développement est
-tellement supérieur qu'ils sont devenus adoptés par presque tout les
-nouveaux langages de programmations. 
+tellement supérieur qu'ils sont devenus adoptés par presque tous les
+nouveaux langages de programmations.
 
 Le fait que l'exécution du programme puisse être arrêtée durant le
 moment de la récupération est potentiellement problématique pour
 l'écriture de jeux vidéo, car ceux-ci se doivent d'avoir des bonnes
-performances et ce, de manière continues. Ainsi, une attention
-particulière devra être apportée sur l'utilisation de la mémoire
-d'avoir de trop grandes pauses de récupération.
+performances et ce, de manière continue. Ainsi, une attention
+particulière devra être apportée sur l'utilisation de la mémoire pour
+ne pas avoir de trop grandes pauses de récupération.
 
 
 
@@ -1754,27 +1741,31 @@ contraste aux langages fonctionnels de la famille \textit{ML}. Un
 typage dynamique se distingue par des vérifications de types
 effectuées durant l'exécution d'un programme. Un typage statique,
 quant à lui, effectuera les vérifications de types durant la
-compilation. Ainsi, la principale différence entre les deux approches
-est le moment où les erreurs de programmation apparaissent. 
+compilation. Ainsi, une importante différence entre les deux approches
+est le moment où les erreurs de programmation apparaissent. D'autre
+part, dû à la nature beaucoup plus stricte du typage statique, la
+récupération d'erreurs est beaucoup plus difficile, car elle dépend
+uniquement d'informations connues statiquement.
 
 Un typage statique fournira des erreurs de types beaucoup plus tôt
 dans le processus de développement et permettent de pouvoir exécuter
-un code libre de toutes vérification de types. Une particularité des
+un code libre de toutes vérifications de types. Une particularité des
 systèmes typés statiquement consiste à avoir des structures de code
 plus rigides, demandant possiblement beaucoup d'efforts pour être
-modifié. 
+modifiées. 
 
 Pour un typage dynamique, les erreurs ne surviendront que durant
 l'exécution du programme et, pourraient ne jamais se produire, ou
-difficilement se produire. De plus, un typage dynamique implique de
-légères pertes de performances puisque les vérifications de effectuées
-pendant l'exécution du programme. Par contre, des erreurs apparaissant
-durant l'exécution peuvent être beaucoup plus faciles à corriger, si
-le système est muni de bon système de déboggage. Aussi, un typage
-dynamique permet au langage de pouvoir être interprété en plus de
-pouvoir être compilé. L'interprétation permet un développement rapide
-et facilite le prototypage grâce à la possibilité de faire de la
-programmation en direct (\textit{live coding}). 
+difficilement se produire. De plus, un typage dynamique implique des
+pertes de performances puisque les vérifications de types sont
+effectuées pendant l'exécution du programme. Par contre, des erreurs
+apparaissant durant l'exécution peuvent être beaucoup plus faciles à
+corriger si l'implantation est muni de bon système de
+déboggage. Aussi, un typage dynamique rend plus accessible la
+possibilité d'interpréter le langage en plus de pouvoir le
+compiler. L'interprétation permet un développement rapide et facilite
+le prototypage grâce à la possibilité de faire de la programmation en
+direct (\textit{live coding}).
 
 Les deux systèmes de typages peuvent être comparés à l'aide de
 métaphores simples. Des programmes écrits dans des langages typés

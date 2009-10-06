@@ -1791,20 +1791,21 @@ puisque les types ne doivent pas nécessairement être correct avant
 l'exécution. On peut ainsi évaluer les instruction les unes à la suite
 des autres dans un environnement global d'interprétation
 (\textit{toplevel}). Cette particularité infuse beaucoup de puissance
-au langage. Cela permet de pouvoir tester facilement les modules
-écrits, de manière externe au système dans lequel il se trouve. Les
-cas extrêmes peuvent ainsi facilement être vérifiés et donc donner une
-bonne assurance sur le fonctionnement des algorithmes utilisés.
+au langage. En effet, cela permet de pouvoir tester facilement les
+modules écrits de manière indépendante et interactive. Les cas
+extrêmes peuvent ainsi facilement être vérifiés et donc il est
+possible d'avoir une bonne assurance sur le fonctionnement correct des
+algorithmes utilisés.
 
 En cas d'erreur, le système est conçu afin de permettre de détecter
 les erreurs et de pouvoir les diagnostiquer. Puisque l'environnement
 est dynamique, une grande puissance d'introspection et d'analyse est
 disponible. Le système Gambit-C permet de pouvoir non seulement
 inspecter la pile de continuations courantes lors d'une exception,
-mais permet l'introspection d'environnements de fermetures et la
+mais permet l'introspection d'environnement de fermetures et la
 possibilité de rétablir ces environnement et de pouvoir exécuter du
-code arbitraire dans celui-ci afin de pouvoir trouver la source de
-l'erreur. 
+code arbitraire dans ceux-ci dans le but de pouvoir trouver la source
+de l'erreur.
 
 \todo{Exemple de debuggage??}
 
@@ -1814,16 +1815,16 @@ débuggage de Gambit-C avec un protocole établi sur \textit{TCP-IP}
 permettant de pouvoir faire du dégoggage à distance. On peut ainsi
 analyser une erreur s'étant produite sur un processus distant, qui
 pourrait potentiellement être exécuté sur un système embarqué ou un
-appareil ne disposant pas d'interface permettant le déboggage. Par
-exemple, James Long a utilisé ce système afin de pouvoir débugger des
-processus Scheme exécuté sur un téléphone mobile.
+appareil ne disposant pas d'interface permettant la récupération
+d'erreurs. Par exemple, ce système a été utilisé afin de pouvoir
+débugger des processus Scheme exécutés sur un téléphone mobile.
 
 Il en résulte donc que malgré un faible coût en performance lors de
 l'exécution d'un programme, un système utilisant le typage dynamique
 apporte beaucoup de puissance aux programmeurs et leurs fourni des
 outils efficaces pour le développement de logiciels.
 
-\todo{ajouter ref pour james long et tcpip?}
+\todo{ajouter ref pour tcpip?}
 
 
 \section{Conclusion}
@@ -1831,20 +1832,19 @@ outils efficaces pour le développement de logiciels.
 Cet aperçu des particularités du langage fonctionnel Scheme démontrent
 clairement que le langage répond grandement aux besoins établis par
 les jeux vidéo. Notamment, la puissance d'abstraction provenant de
-l'aspect de programmation fonctionnel du langage et de sont puissant
-système de macro permettrait de faciliter les abstractions nécessaires
-à une bonne modularisation du code source et par la possibilité de
-création de langages spécific au domaines répondant à des problèmes
-précis pour l'écriture de jeux vidéo.Le dynamisme du langage apporte
-des outils de développement puissant, comme un interprète et un
-déboggeur à distance, mais aussi permet de faciliter le développement
-itératif avec un approche par prototypage. La présence d'un ramasse
-miettes évite la présence de beaucoup d'erreurs potentielles de
+l'aspect de programmation fonctionnel du langage permettrait d'obtenir
+une bonne modularisation du code source. Aussi son système de macro
+ajoute la possibilité de créer de langages spécifiques aux domaines
+répondant à des problèmes précis pour l'écriture de jeux vidéo. Le
+dynamisme du langage apporte des outils de développement puissant,
+comme un interprète et un déboggeur à distance, mais aussi permet de
+faciliter le développement itératif avec un approche par
+prototypage. La présence d'un gestionnaire automatique de mémoire
+évite la présence potentielle de beaucoup d'erreurs reliées à la
 gestion de mémoire, mais pourrait causer des problèmes de
-ralentissement lors de l'exécution de tels jeux. Finalement, la
-possibilité de pouvoir réifier les continuations d'un programme en
-cours d'exécution offre beaucoup de puissance expressive au
-programmeur.
+ralentissement lors de l'exécution de jeux. Finalement, la possibilité
+de pouvoir réifier les continuations d'un programme en cours
+d'exécution offre beaucoup de puissance expressive au programmeur.
 
 Le langage Scheme étant très simple à la base, il est essentiel de
 développer des extensions de ce langage afin de pouvoir développer sur

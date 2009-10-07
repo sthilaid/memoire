@@ -39,11 +39,11 @@
 % remplir les champs...
 \Auteur{David}{St-Hilaire}
 
-\President{M.}{Mostapha}{Aboulhamid}{Ph.D.}
+\President{M.}{Stefan}{Monnier}{Ph.D.}
 
 \Directeur{M.}{Marc}{Feeley}{Ph.D.}
 
-\Membres{1}{M.}{Yann-Gaël}{Guéhéneuc}{Ph.D.}
+\Membres{1}{M.}{Pierre}{Poulin}{Ph.D.}
 
 %pour le doctorat seulement
 
@@ -1853,6 +1853,112 @@ outils efficaces pour le développement de logiciels.
 
 \todo{ajouter ref pour tcpip?}
 
+\section{Extension utiles}
+Cette section présente un recueil des extension du langage Scheme qui
+sont utilisées dans les chapitres suivant de ce mémoire. Ces dernière
+ne constituent pas nécessairement un atout précis quand à la
+programmation de jeu vidéo, mais apporteront plutôt une meilleure
+compréhension des exemples de codes fournis dans ce mémoire.
+
+Le système Gambit-C permet la définition de paramètres avec
+l'utilisation de mots clés. La figure \ref{Scheme:fun-key} illustre un
+exemple de définition d'une telle fonction avec quelques appels à
+celle-ci. On constate qu'il est alors possible de définir des valeurs
+optionnelles qui peuvent posséder une valeur par défaut.
+
+\begin{figure}[htb1]
+  \begin{schemecode}
+(define (f x y \#!key z (sum (+ x y)))
+  (list x y z sum))
+(f 1 2)                      => (1 2 \#f 3)
+(f 1 2 z: 'allo)             => (1 2 allo 3)
+(f 1 2 z: 'allo sum: 'salut) => (1 2 allo salut)
+  \end{schemecode}
+  \caption{Utilisation du passage de paramètre par mots clés}
+  \label{Scheme:fun-key}
+\end{figure}
+
+La syntaxe des fonctions a aussi été étendue de manière à permettre la
+spécification d'un nombre de paramètre arbitraire. Pour ce faire, le
+mot clé \scheme{\#!rest} ou encore le point (\scheme{.}) est utilisé
+pour délimiter les paramètres normaux du paramètre reste, qui
+contiendra une liste de tous les paramètres supplémentaires
+utilisés. La figure \ref{Scheme:rest-ex} illustre un exemple
+d'utilisation du paramètre reste.
+
+\begin{figure}[htb1]
+  \begin{schemecode}
+(define (g x y . z) (list x y z))
+(g 1 2)       => (1 2 ())
+(g 1 2 3 4 5) => (1 2 (3 4 5))
+  \end{schemecode}
+  \caption{Exemple d'utilisation du paramètre reste}
+  \label{Scheme:rest-ex}
+\end{figure}
+
+Lorsqu'une fonction prends plusieurs arguments, il est possible
+d'utiliser la procédure \scheme{apply} afin de pouvoir utiliser cette
+fonction avec \emph{une liste} d'arguments. Cette fonction attend une
+fonction comme premier argument et un nombre arbitraire d'arguments
+par la suite. Le dernier argument passé doit être une liste. Le
+contenu de cette liste sera inséré dans un appel à la fonction
+spécifiée. La figure \ref{Scheme:apply} illustre quelques utilisations
+de la procédure \scheme{apply}.
+
+\begin{figure}[htb1]
+  \begin{schemecode}
+(+ 1 2 3 4 5)                           => 15
+(apply + 1 2 '(3 4 5))                  => 15
+(apply + (map (flip + 1) '(1 2 3 4 5))) => 20
+  \end{schemecode}
+  \caption{Exemple d'utilisation de la fonction \scheme{apply}}
+  \label{Scheme:apply}
+\end{figure}
+
+Le système Gambit-C supporte aussi l'utilisation de tables de
+hachages. Ces dernières peuvent être créées par la fonction
+\scheme{make-table} et des valeurs peuvent y être insérées ou
+inspectées avec les fonctions \scheme{(table-set! <table> <key>
+  <value>)} et \scheme{(table-ref <table> <key>
+  [<default-value>])}. Il est aussi possible de spécialiser ces tables
+afin d'être plus efficaces pour des clés étant des symboles ou des
+chaînes de caractères.
+
+L'égalité en Scheme entre deux objets appartenant aux types de base du
+langage peut toujours être vérifiée par la fonction
+\scheme{equal?}. Cette dernière supporte ainsi la vérification
+d'égalité sur plusieurs types d'objets et se trouve ainsi peu
+efficace. La fonction \scheme{eq?} permet la vérification d'égalité
+sur des pointeurs et puisque, en Scheme, un symbole ou un mot clé ne
+possède qu'un instance unique, ce prédicat peut être également utilisé
+pour distinguer ces derniers types.
+
+L'opération conditionnelle de base en Scheme est effectué par la forme
+spéciale \scheme{(if <cond> <true> [<false>])}. Plusieurs formes
+spéciales dérivent de cette dernière afin de pouvoir exprimer plus
+facilement certains cas typiques. Par exemple, lorsque plusieurs
+conditions sont imbriquées les unes dans les autres, la forme spéciale
+\scheme{(cond (<pred> <body>) ... [(else <body>)])} peut être
+utilisée. Cette dernière permet aussi de pouvoir récupérer la valeur
+retournée par un prédicat s'évaluant à vrai en ajoutant \scheme{=>}
+tel qu'illustré dans la figure \ref{Scheme:cond}.
+
+\begin{figure}[htb1]
+  \begin{schemecode}
+(let ((t (make-table test: eq?)))
+  (table-set! t (list 'a) 'a)
+  (table-set! t 'b 'bonjour)
+  (cond ((table-ref t (list 'a) \#f) 'allo)
+        ((table-ref t 'b \#f) => (lambda (msg) msg))
+        (else 'bonsoir)))
+
+=> bonjour
+  \end{schemecode}
+  \caption{Exemple d'utilisation d'une table de hachage spécialisée
+    pour des clés symboliques et d'utilisation de la forme spéciale
+    \scheme{cond}}
+  \label{Scheme:cond}
+\end{figure}
 
 \section{Conclusion}
 
@@ -1887,27 +1993,27 @@ vidéo.
 \label{Chap:OO}
 
 Scheme est un langage offrant aux programmeurs beaucoup de ressources
-à l'état brut et leurs permet de se bâtir des outils personnalisés
-pour mieux répondre leurs besoins.
+à l'état brut et leur permet de se bâtir des outils personnalisés pour
+mieux répondre leurs à besoins.
 
-Un paradigme absent du langage Scheme est celui de la programmation
-orientée objet. Ce paradigme implique l'utilisation de structures de
-données hiérarchiques, les objets, favorisant la modularité et
-l'encapsulation de celles-ci. Cette modularité provient des
-abstractions résultantes de la hiérarchie des méta-objets appelés
+Un paradigme qui n'est pas supporté directement par le langage Scheme
+est celui de la programmation orientée objet. Ce paradigme possède des
+structures de données hiérarchiques, les objets, favorisant la
+modularité et l'encapsulation de celles-ci. Cette modularité provient
+des abstractions résultantes de la hiérarchie des méta-objets appelés
 classes et l'encapsulation permet de pouvoir cacher les données qui
-devraient demeurées internes au module créé.  Le sous-typage résultant
+devraient demeurer internes au module créé.  Le sous-typage résultant
 de la création de classes permet entre autre l'utilisation générique
 de fonctions (souvent appelées méthodes ou fonctions génériques).
 
-Ces objets sont centrés sur la notion d'états qui évoluent au fil de
+Ces objets sont centrés sur la notion d'état qui évolue au fil de
 l'exécution du programme. Malgré le fait que la notion d'état d'un
 programme ne se marie pas bien avec la programmation fonctionnelle,
 l'utilisation d'objets pour représenter les entités dans un jeu est
 très naturelle et appropriée. En effet, ces entités possèdent des
 caractéristiques propres à elles et qui évoluent dans le temps. Par
 exemple, on peut imaginer une balle qui possède une vitesse de
-déplacement et une position. 
+déplacement et une position.
 
 De plus, l'utilisation de méthodes permet, d'une part, de pouvoir
 facilement réutiliser des comportements communs à des objets d'une
@@ -1916,18 +2022,17 @@ choisir un comportement approprié pour un objet donné, via le
 \textit{dispatch} de méthode qui sélectionne automatiquement la
 méthode la plus appropriée disponible pour un objet donné.
 
-Le neuvième SRFI~\cite{SRFI_9} (\textit{Scheme Request For
-  Implementation} suggère un système très rudimentaire d'objets qui
-fut implémenté et étendu par le système Gambit-C~\cite{Gambit4}. Ce
-système permet la construction de manière générique d'objets typés de
-manière hiérarchique simple. L'exemple de la figure
-\ref{OO:gambit-obj} illustre l'étendu de ce qui peut être tiré de ce
-système. On arrive donc à utiliser le polymorphisme pour l'accès aux
-membres des objets issus de la même hiérarchie.
+Le SRFI-9~\cite{SRFI_9} (\textit{Scheme Request For Implementation})
+suggère un système très rudimentaire d'objets qui fut implémenté et
+étendu par le système Gambit-C~\cite{Gambit4}. Ce système permet la
+construction de manière générique d'objets typés avec héritage
+simple. L'exemple de la figure \ref{OO:gambit-obj} illustre un exemple
+d'utilisation de ce système. On constate qu'il est possible d'utiliser
+du polymorphisme pour l'accès aux membres des objets issus de la même
+hiérarchie.
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(define-type point x y)
 (define-type point x y extender: define-point-type)
 (define-point-type circle r)
 (define (add p1 p2) (make-point (+ (point-x p1) (point-x p2))

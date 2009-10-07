@@ -1,0 +1,201 @@
+head	1.1;
+access;
+symbols;
+locks
+	lucier:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2005.02.25.22.19.37;	author lucier;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@;;; $Id: modify.scm,v 3.3 2000/02/11 14:50:51 queinnec Exp $
+;;; Copyright (c) 1990-96 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                    Meroon 
+;;;                              Christian Queinnec  
+;;;                    Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file introduces the 
+;;;       (modify (o Class) parameters-with-keywords) macro. 
+;;; It is superfically similar to duplicate or instantiate except that
+;;; it does not modify an object but modify it. Of course, it is not
+;;; possible to change the sizes of poly-fields nor it is possible to
+;;; mutate immutable fields.
+
+;;; parse the modify form.
+
+(define (process-modify-form desc parms)
+  (unless (and (pair? desc)
+               (pair? (cdr desc))
+               (null? (cddr desc)) )
+    (report-meroon-error
+     'Syntax 'modify "Incorrect specification" desc ) )
+  (process-modification
+   (car desc)
+   (symbol->class (cadr desc)
+                  (lambda (name)
+                    (report-meroon-error
+                     'Syntax 'modify "No such class" name ) ) )
+   parms ) )
+
+;;; The following functions are very close from the ones of clone.scm
+
+(define (process-modification ins-tance class parms)
+  (let* ((fields (careless-Class-fields class))
+         (o      (gensym))
+         (index  (gensym)) )
+    `(let ((,o     ,ins-tance)
+           (,index 0) )
+       (check-class ,o (symbol->class ',(careless-Class-name class)) 'modify)
+       ,@@(generate-whole-modification
+          o index fields
+          (arrange-whole-modification
+           fields (process-initialization fields parms find-modification) ) )
+       ,o ) ) )
+
+;;; These are the methods that parses the modification parameters.
+;;; They return a list (length . values) where length is 1 for a Mono-field
+;;; followed by meroon-unitialized if the field is not specified or by the
+;;; form whose value will be the new content of the Mono-Field. Length may
+;;; be another number (or a form whose value will be a length) followed by
+;;; the forms forming the values of this indexed field. 
+
+(define-generic (find-modification (field Field) parms k))
+
+(define-method (find-modification (f Mono-Field) parms k)
+  (let* ((form (find-option-single-value 
+                (careless-Field-name f) parms option-not-there ))
+         (other-parms (remove-option (careless-Field-name f) parms)) )
+    (if (absent-option? form)
+        ;; means that the real value should be copied from the original.
+        (k (list) other-parms)
+        (k (list 1 form) other-parms) ) ) )
+
+(define-method (find-modification (f Poly-Field) parms k)
+  ;; check if the field is specified by comprehension
+  (let* ((content (find-option-values
+                   (careless-Field-name f) parms option-not-there ))
+         (parms (remove-option (careless-Field-name f) parms)) )
+    (if (absent-option? content)
+        ;; means that the size should be copied from the original instance
+        (let* ((kw (list (careless-Field-name f) '-length))
+               (size (find-option-single-value kw parms option-not-there)) )
+          (if (absent-option? size)
+              ;; means that the real values should be copied from the original.
+              (k (list) parms)
+              (report-meroon-error 
+               'Syntax 'modify
+               "No :kw-length keyword possible in a modify form"
+               (careless-Field-name f) ) ) )
+        ;; Of course, here the length will be checked wrt original.
+        (k (cons (length content) content) parms) ) ) )
+
+;;; Parse the modification parameters and produce a list of values for
+;;; any fields. 
+
+(define (arrange-whole-modification fields contents)
+  (oo-map (lambda (field content)
+            (if (pair? content)
+                ;; a new content is specified, check its validity.
+                (check-modification field content)
+                ;; use the old content.
+                (arrange-modification field content) ) )
+          fields
+          contents ) )
+
+;;; Complements the modification parameters with the default values
+;;; from the original instance. These cases correspond in the
+;;; generate-whole-initialization function to code that will skip the
+;;; corresponding fields in the original instance.
+
+(define-generic (arrange-modification (field Field) content))
+
+(define-method (arrange-modification (field Mono-Field) content)
+  (list 1 'meroon-uninitialized) )
+
+(define-method (arrange-modification (field Poly-Field) content)
+ (list) )
+
+;;; Check if the explicitly given parameters are correct wrt original
+;;; instance. 
+
+(define-generic (check-modification (field Field) content))
+
+(define-method (check-modification (field Mono-Field) content)
+  (if (Field-mutable? field)
+      content
+      (report-meroon-error
+       'Syntax 'modify
+       "Immutable field" (careless-Field-name field) ) ) )
+
+(define-method (check-modification (field Poly-Field) content)
+  (if (Field-mutable? field)
+      content 
+      (report-meroon-error
+       'Syntax 'modify
+       "Immutable field" (careless-Field-name field) ) ) )
+
+;;; Generate the modifications.
+
+(define (generate-whole-modification o index fields contents)
+  (meroon-reduce (lambda (forms field content)
+                   (generate-modification field content o index forms) )
+                 '()
+                 fields
+                 contents ) )
+
+(define-generic (generate-modification (field Field) content o index forms))
+
+(define-method (generate-modification (field Mono-Field) content o index forms)
+  (if (eq? 'meroon-uninitialized (cadr content))
+      ;; position index on the next field
+      (adjust-index `(set! ,index (meroon-plus 1 ,index)) forms)
+      (cons `(instance-set! ,o ,index ,(cadr content))
+            (adjust-index `(set! ,index (meroon-plus 1 ,index))
+                          forms ) ) ) )
+
+(define-method (generate-modification (field Poly-Field) content o index forms)
+  (if (and (pair? content) (integer? (car content)))
+      ;; The content of the poly-field must be modified, check that it keeps
+      ;; the same size. 
+      (cons `(check-same-size ,(car content) ,o ,index)
+            (adjust-index 
+             `(set! ,index (meroon-plus 1 ,index))
+             (let enum ((contents (cdr content)))
+               (if (pair? contents)
+                   (cons `(instance-set! ,o ,index ,(car contents))
+                         (adjust-index `(set! ,index (meroon-plus 1 ,index))
+                                       (enum (cdr contents)) ) )
+                   forms ) ) ) )
+      ;; Attention: three arguments in the next addition (see adjust-index)
+      ;; Just skip the poly-field.
+      (adjust-index `(set! ,index (meroon-plus 1
+                                     (instance-ref ,o ,index)
+                                     ,index ))
+                    forms ) ) )
+
+;;; Check that 
+
+(define (check-same-size size o offset)
+  (if (not (= size (instance-ref o offset)))
+      (report-meroon-error 
+       'Domain 'modify "Lengths may not be modified" o ) ) )
+
+;;; end of modify.scm
+@

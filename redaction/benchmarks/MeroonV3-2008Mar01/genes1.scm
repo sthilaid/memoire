@@ -1,0 +1,334 @@
+;;; $Id: genes1.scm,v 1.1 2005/02/25 22:19:37 lucier Exp $ 
+;;; Copyright (c) 1990-97 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                    Meroon 
+;;;                              Christian Queinnec  
+;;;                    Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file defines the initial net of classes, generics and methods
+;;; that are needed by Meroon to run. It is a delicate piece of
+;;; bootstrap.
+
+;;; Build by hand the initial net of classes with all the relationship
+;;; needed to bootstrap the rest of the file. These are the numbers
+;;; associated to the first classes to be created. The function
+;;; get-new-class-number returns sequential numbers from 0.
+
+(define original-Object-class-number                (get-new-class-number))
+(define original-Pre-Class-class-number             (get-new-class-number))
+(define original-Class-class-number                 (get-new-class-number))
+(define original-Handy-Class-class-number           (get-new-class-number))
+(define original-MeroonV2-Class-class-number        (get-new-class-number))
+(define original-Applyable-Object-class-number      (get-new-class-number))
+(define original-Generic-class-number               (get-new-class-number))
+(define original-Generic-1-class-number             (get-new-class-number))
+(define original-Generic-N-class-number             (get-new-class-number))
+(define original-Pre-Field-class-number             (get-new-class-number))
+(define original-Field-class-number                 (get-new-class-number))
+(define original-Mono-Field-class-number            (get-new-class-number))
+(define original-Poly-Field-class-number            (get-new-class-number))
+(define original-Dispatcher-class-number            (get-new-class-number))
+(define original-Immediate-Dispatcher-class-number  (get-new-class-number))
+(define original-Subclass-Dispatcher-class-number   (get-new-class-number))
+(define original-Indexed-Dispatcher-class-number    (get-new-class-number))
+(define original-Linear-Dispatcher-class-number     (get-new-class-number))
+(define original-Global-Dispatcher-class-number     (get-new-class-number))
+(define original-Tracing-Dispatcher-class-number    (get-new-class-number))
+(define original-Anomaly-class-number               (get-new-class-number))
+(define original-Warning-class-number               (get-new-class-number))
+(define original-View-class-number                  (get-new-class-number))
+(define original-Virtual-Field-class-number         (get-new-class-number))
+
+;;;================================================================ creator
+
+;;; create a Mono-Field (by hand) 
+(define (create-Mono-Field immutable? name cn . path)
+  (create-some-field original-Mono-Field-class-number immutable? name cn path) )
+
+;;; create a Poly-Field (by hand) 
+(define (create-Poly-Field immutable? name cn . path)
+  (create-some-field original-Poly-Field-class-number immutable? name cn path) )
+
+(define (create-some-field tcn immutable? name cn path)
+  (let ((f (allocate-empty-instance tcn (fx+ 5 (fx+ 1 (length path))))))
+    (instance-set! f 0 name)            ; name
+    (instance-set! f 1 immutable?)      ; immutable?
+    (instance-set! f 2 cn)              ; class-number
+    (instance-set! f 3 #f)              ; initialized?
+                                        ; initializer
+    (instance-set! f 5 (length path))   ; path
+    (let stuff ((args path)
+                (i 6) )
+      (if (pair? args)
+          (begin (instance-set! f i (car args))
+                 (stuff (cdr args) (fx+ i 1)) )
+          f ) ) ) )
+
+;;; Concatenate two list of fields. Fields in FIELDS1 are restricted
+;;; to be Mono-Fields with a path-length of 1.
+
+(define (simple-append-fields fields1 fields2)
+  (let ((start (length fields1)))
+    (append (oo-map instance-clone fields1)
+            (oo-map (lambda (field index)
+                      ;; (set-Field-path! field 0 index)
+                      (instance-set! field (fx+ 5 1) index)
+                      field )
+                    fields2
+                    (iota start (fx+ start (length fields2))) ) ) ) )
+
+;;;========================================================= Object
+(define Object-class 
+  (instance
+   original-Class-class-number          ; internal index (Object is a Class)
+   'Object                              ; name
+   original-Object-class-number         ; number
+   (list)                               ; fields
+   0                                    ; depth
+   #f                                   ; super-number
+   (list                                ; subclass-numbers
+    original-Class-class-number
+    original-Applyable-Object-class-number
+    original-Pre-Field-class-number
+    original-Dispatcher-class-number 
+    original-Anomaly-class-number
+    original-View-class-number )
+   (fx+ 1 original-Virtual-Field-class-number)      ; next
+   meroon-uninitialized                 ; allocator
+   #t                                   ; immutable?
+   (list)                               ; views
+   1                                    ; supers and relative numbers
+   original-Object-class-number         ; super[0] = relnum[0]
+   ) )
+
+;;;========================================================= Class
+(define Pre-Class-class
+  (instance
+   original-Class-class-number          ; internal index (Class is a Class)
+   'Pre-Class                           ; name
+   original-Pre-Class-class-number      ; number
+   (list                                ; fields
+    (create-Mono-Field #t 'name             original-Pre-Class-class-number 0)
+    (create-Mono-Field #t 'number           original-Pre-Class-class-number 1)
+    (create-Mono-Field #t 'fields           original-Pre-Class-class-number 2)
+    )
+   1                                    ; depth
+   original-Object-class-number         ; super-number
+   (list                                ; subclasses
+    original-Class-class-number
+    original-View-class-number )
+   5                                    ; next
+   meroon-uninitialized                 ; allocator
+   #f                                   ; immutable?
+   (list)                               ; views
+   3
+   original-Object-class-number         ; super[0]
+   original-Pre-Class-class-number      ; super[1] = relnum[0]
+   0                                    ; relnum[1]
+   ) )
+
+(define Class-class
+  (instance
+   original-Class-class-number          ; internal index (Class is a Class)
+   'Class                               ; name
+   original-Class-class-number          ; number
+   (simple-append-fields                ; fields
+    (careless-Class-fields Pre-Class-class)
+    (list
+     (create-Mono-Field #t 'depth            original-Class-class-number 3)
+     (create-Mono-Field #t 'super-number     original-Class-class-number 4)
+     (create-Mono-Field #f 'subclass-numbers original-Class-class-number 5)
+     (create-Mono-Field #f 'next             original-Class-class-number 6)
+     (create-Mono-Field #t 'allocator        original-Class-class-number 7)
+     (create-Mono-Field #t 'immutable?       original-Class-class-number 8)
+     (create-Mono-Field #t 'views            original-Class-class-number 9)
+     (create-Poly-Field #t 'suprel           original-Class-class-number 10) ) )
+   2                                    ; depth
+   original-Pre-Class-class-number      ; super-number
+   (list                                ; subclasses
+    original-Handy-Class-class-number )
+   3                                    ; next
+   meroon-uninitialized                 ; allocator
+   #f                                   ; immutable?
+   (list)                               ; views
+   5
+   original-Object-class-number         ; super[0]
+   original-Pre-Class-class-number      ; super[1] 
+   original-Class-class-number          ; super[2] = relnum[0]
+   1                                    ; relnum[1]
+   0                                    ; relnum[2]
+   ) )
+
+;;;========================================================= Class
+(define Handy-Class-class
+  (instance
+   original-Class-class-number          ; internal index 
+   'Handy-Class                         ; name
+   original-Handy-Class-class-number    ; number
+   (simple-append-fields                ; fields
+    (careless-Class-fields Class-class)
+    (list) )
+   3                                    ; depth
+   original-Class-class-number          ; super-number
+   (list                                ; subclasses
+    original-MeroonV2-Class-class-number )
+   2                                    ; next
+   meroon-uninitialized                 ; allocator
+   #f                                   ; immutable?
+   (list)                               ; views
+   7
+   original-Object-class-number         ; super[0]
+   original-Pre-Class-class-number      ; super[1]
+   original-Class-class-number          ; super[2]
+   original-Handy-Class-class-number    ; super[3] = relnum[0]
+   2                                    ; relnum[1]
+   1                                    ; relnum[2]
+   0                                    ; relnum[3]
+   ) )
+
+;;;========================================================= Meroon V2 Class
+(define MeroonV2-Class-class
+  (instance
+   original-Class-class-number          ; internal index 
+   'MeroonV2-Class                      ; name
+   original-MeroonV2-Class-class-number ; number
+   (simple-append-fields                ; fields
+    (careless-Class-fields Class-class)
+    (list) )
+   4                                    ; depth
+   original-Handy-Class-class-number    ; super-number
+   (list)                               ; subclasses
+   1                                    ; next
+   meroon-uninitialized                 ; allocator
+   #f                                   ; immutable?
+   (list)                               ; views
+   9
+   original-Object-class-number         ; super[0]
+   original-Pre-Class-class-number      ; super[1]
+   original-Class-class-number          ; super[2]
+   original-Handy-Class-class-number    ; super[3]
+   original-MeroonV2-Class-class-number ; super[4] = relnum[0]
+   3                                    ; relnum[1]
+   2                                    ; relnum[2]
+   1                                    ; relnum[3]
+   0                                    ; relnum[4]
+   ) )
+
+;;;========================================================= Applyable-Object
+;;; This is the Class intended for objects that can act simultaneously
+;;; as an object and a function. This is not possible in portable Scheme.
+;;; This class defines pseudo-fields just to skip over the header of
+;;; functional objects.
+
+(define Applyable-Object-class
+  (instance
+   original-Class-class-number          ; internal index 
+   'Applyable-Object                    ; name
+   original-Applyable-Object-class-number ; number
+   (if-meroon-feature applyable-object  ; fields
+     (list    )
+     (list) )
+   1                                    ; depth
+   original-Object-class-number         ; super-number
+   (list                                ; subclasses
+    original-Generic-class-number)
+   4                                    ; next
+   meroon-uninitialized                 ; allocator
+   #t                                   ; immutable?
+   (list)                               ; views
+   3
+   original-Object-class-number         ; super[0]
+   original-Applyable-Object-class-number ; super[1] = relnum[0]
+   0                                    ; relnum[1]
+   ) )
+
+;;;========================================================= Generic
+;;; Since Generic inherits from Applyable-Object, the offsets for fields
+;;; that appear in this definition may be translated by a fix offset.
+
+(define Generic-class
+  (instance
+   original-Class-class-number          ; internal index 
+   'Generic                             ; name
+   original-Generic-class-number        ; number
+   (simple-append-fields                ; fields
+    (careless-Class-fields Applyable-Object-class)
+    (list
+     (create-Mono-Field #t 'name         original-Generic-class-number 0)
+     (create-Mono-Field #f 'default      original-Generic-class-number 1)
+     (create-Mono-Field #t 'variables    original-Generic-class-number 2)
+     (create-Mono-Field #f 'dispatcher   original-Generic-class-number 3)
+     (create-Mono-Field #t 'top-classes  original-Generic-class-number 4) ) )
+   2                                    ; depth
+   original-Applyable-Object-class-number ; super-number
+   (list                                ; subclasses
+    original-Generic-1-class-number
+    original-Generic-N-class-number )
+   3                                    ; next
+   meroon-uninitialized                 ; allocator
+   #f                                   ; immutable?
+   (list)                               ; views
+   5
+   original-Object-class-number         ; super[0]
+   original-Applyable-Object-class-number ; super[1]
+   original-Generic-class-number        ; super[2] = relnum[0]
+   1                                    ; relnum[1]
+   0                                    ; relnum[2]
+   ) )
+
+;;;========================================================= Generic-1
+(define Generic-1-class
+  (instance
+   original-Class-class-number          ; internal index 
+   'Generic-1                           ; name
+   original-Generic-1-class-number      ; number
+   (simple-append-fields                ; fields
+    (careless-Class-fields Generic-class)
+    (list) )
+   3                                    ; depth
+   original-Generic-class-number        ; super-number
+   (list)                               ; subclasses
+   1                                    ; next
+   meroon-uninitialized                 ; allocator
+   #f                                   ; immutable?
+   (list)                               ; views
+   7
+   original-Object-class-number         ; super[0]
+   original-Applyable-Object-class-number ; super[1]
+   original-Generic-class-number        ; super[2]
+   original-Generic-1-class-number      ; super[3] = relnum[0]
+   2                                    ; relnum[1]
+   1                                    ; relnum[2]
+   0                                    ; relnum[3]
+   ) )
+
+;;;========================================================= Generic-N
+(define Generic-N-class
+  (instance
+   original-Class-class-number          ; internal index 
+   'Generic-N                           ; name
+   original-Generic-N-class-number      ; number
+   (simple-append-fields                ; fields
+    (careless-Class-fields Generic-class)
+    (list) )
+   3                                    ; depth
+   original-Generic-class-number        ; super-number
+   (list)                               ; subclasses
+   1                                    ; next
+   meroon-uninitialized                 ; allocator
+   #f                                   ; immutable?
+   (list)                               ; views
+   7
+   original-Object-class-number         ; super[0]
+   original-Applyable-Object-class-number ; super[1]
+   original-Generic-class-number        ; super[2]
+   original-Generic-N-class-number      ; super[3] = relnum[0]
+   3                                    ; relnum[1]
+   2                                    ; relnum[2]
+   0                                    ; relnum[3]
+   ) )
+
+;;; end of genes1.scm

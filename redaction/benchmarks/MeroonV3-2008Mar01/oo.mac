@@ -1,0 +1,37 @@
+;;; test MeroonV3 with MacScheme 1.5
+
+;;; This is the directory where Meroon sources are:
+
+(define meroon-path "Cirrus 105-Q:papa:queinnec:dea:MEROON:")
+
+(define (meroon-load name)
+  (load (string-append meroon-path name))
+  (display `(,name loaded))
+  (newline) )
+
+;;; Since I move files to Mac through a DOS floppy, filenames are 
+;;; truncated so meroon.MacScheme is renamed into meroon.MAC.
+
+(meroon-load "meroon.MAC")
+
+(meroon-load "meroon.scm")
+
+;;; since now the when macro is present:
+
+(meroon-load "tester.scm")
+
+(define (test-oo file)
+  (suite-test 
+   file "?? " "== " #t
+   (lambda (read check report-anomaly)
+     (set! oo-error (lambda args
+                      (report-anomaly args) ))
+     (lambda ()
+       (check (eval (read))) ) )
+   (lambda (x y) (equal? x y)) ) )
+
+;;; Test the whole stuff...
+
+(test-oo (string-append meroon-path "oo3.tst"))
+
+;;; end of oo.MacScheme

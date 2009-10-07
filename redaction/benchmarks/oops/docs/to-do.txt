@@ -1,0 +1,22 @@
+;; To do before Oops sees the light of day...
+;;=^^=^^=====================================
+
+;; "shape" patmatch tester (shape form '(lambda ( ?* ) ?+) ) -> <boolean>
+
+;; convert CALL-ERROR to proper condition usage w restarts
+;; integrate restarts w debugger
+
+;; thread-safe collections [see "ts-table.scm"]
+;; iteration safe update of collections
+
+;; change class, gf  [transform rather than replace]
+
+;; complete Gambit type inclusion, including structures & ffi types
+
+;; optimize dispatch [measure & tune]
+
+;; complete documentation [User & Implementation]
+
+;; substantive example(s) [e.g. MG-alike]
+
+;; a source-forge project

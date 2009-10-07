@@ -1,0 +1,316 @@
+head	1.1;
+access;
+symbols;
+locks
+	lucier:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2005.02.25.22.19.37;	author lucier;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@;;; $Id: macros.scm,v 3.28 2001/04/12 19:14:42 queinnec Exp $
+;;; Copyright (c) 1990-97 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                    Meroon 
+;;;                              Christian Queinnec  
+;;;                    Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file contains macros (and only macros) used in the sources of
+;;; Meroon. Since prologues define how macros can be defined, new
+;;; macros can be shared here. However they are conditionalized since
+;;; some of them do already appear in some implementations. The first
+;;; macro is therefore the if-meroon-feature conditionalizer.
+
+;;; Conditional compilation: The variable *meroon-features* defines
+;;; the features of Meroon to be taken into account when loading (or
+;;; compiling Meroon). Possible features are:
+;;;    bootstrap:                 when bootstrapping
+;;;    scheme version:            to identify the Scheme system
+;;; With that macro, we can conditionalize definitions with boolean expressions
+;;; like (or elk (and (not bigloo) Scheme->C)).
+
+(define-internal-meroon-macro (if-meroon-feature condition th-en . el-se)
+  ((lambda ()
+     (define (feature-present? condition)
+       (if (pair? condition) 
+           (case (car condition)
+             ((and) 
+              (if (pair? (cdr condition))
+                  (if (pair? (cddr condition))
+                      (and (feature-present? (cadr condition))
+                           (feature-present? (cons 'and (cddr condition))) )
+                      (feature-present? (cadr condition)) )
+                  #f ) )
+             ((or) 
+              (if (pair? (cdr condition))
+                  (if (pair? (cddr condition))
+                      (or (feature-present? (cadr condition))
+                          (feature-present? (cons 'or (cddr condition))) )
+                      (feature-present? (cadr condition)) )
+                  #t ) )
+             ((not) (not (feature-present? (cadr condition))))
+             (else (member condition *meroon-features*)) )
+           (member condition *meroon-features*) ) )
+     (if (feature-present? condition) 
+         th-en 
+         `(begin #t . ,el-se) ) ) ) )
+;;; Test: (if-meroon-feature (or) 1 2)
+
+;;; MacScheme 1.5 does not like define forms inside toplevel begin forms
+;;; but supports set! to undefined global variables.
+
+(if-meroon-feature (and MacScheme 1.5)
+  (define-meroon-macro (meroon-define call . body)
+    (if (pair? call) 
+        `(meroon-define ,(car call) 
+            (lambda ,(cdr call) . ,body) )
+        `(set! ,call . ,body) ) )
+  (define-meroon-macro (meroon-define call . body)
+    `(define ,call . ,body) ) )
+
+;;; This macro defines a function that will be redefined as a generic
+;;; function later in the sources so users can customize it.  As
+;;; confirmed by vscmV0r4 and M. Blume, (begin (define a 1) a) is not
+;;; regular Scheme since this begin form mixes a definition and an
+;;; expression.  So changed the expansion of define-temporary to avoid
+;;; that.
+
+(if-meroon-feature (or vscm)
+  (define-internal-meroon-macro (define-temporary call . body)
+    `(meroon-define ,call ,@@body) )
+  (define-internal-meroon-macro (define-temporary call . body)
+    (let ((name (if (symbol? call) call (car call))))
+      `(begin (meroon-define ,call ,@@body)
+              (set! ,name ,name)
+              ',name ) ) ) )
+
+;;; Inline accessors for better performance. 
+
+(define-internal-meroon-macro (define-inline call . body)
+  (if (pair? call)
+      (let ((name (car call))
+            (variables (cdr call)) )
+        `(define-internal-meroon-macro (,name . arguments)
+           (cons (cons 'lambda (cons ',variables ',body))
+                 arguments ) ) )
+      (let* ((name call)
+             (other-name (if (and (pair? body)(null? (cdr body)))
+                             (car body)
+                             (error 'define-inline
+                                    "Incorrect syntax: ~A"
+                                    `(define-inline ,call ,@@body) ) )) )
+        `(define-internal-meroon-macro (,name . arguments)
+           (cons ',other-name arguments) ) ) ))
+
+;;; PC-Scheme 3.03 only accepts binary apply and so is MacScheme 1.5 and Fools.
+;;; Test that feature with:
+;;;    (apply list 1 2 '(3))
+
+(if-meroon-feature (or (and PC-scheme 3.03) (and MacScheme 1.5) fools)
+    (define-internal-meroon-macro (oo-apply fn . args)
+      (define (consify args)
+        (if (pair? (cdr args))
+            `(cons ,(car args) ,(consify (cdr args)))
+            (car args) ) )
+      `(apply ,fn ,(if (pair? args) (consify args) '())) )
+    (define-internal-meroon-macro (oo-apply fn . args) 
+      `(apply ,fn ,@@args) ) )
+
+;;; as well as only binary map.
+;;; Test that feature with:
+;;;     (map list '(1 2) '(3 4))
+
+(if-meroon-feature (and PC-scheme 3.03)
+  ;; map2 is defined in utils.scm
+  (define-internal-meroon-macro (oo-map fn . args)
+    (case (length args)
+      ((1) `(map ,fn ,(car args)))
+      ((2) `(map2 ,fn ,(car args) ,(cadr args)))
+      (else (oo-error 'oo-map "with more than 2 lists" fn args)) ) )
+  (define-internal-meroon-macro (oo-map fn . args)
+    `(map ,fn ,@@args) ) )
+
+;;; The traditional when and unless. 
+;;; Test that feature with:
+;;;     (when 1 2 3)
+
+(if-meroon-feature (or bigloo slib gambit (and PC-Scheme 3.03) 
+                       MacScheme vscm MIT vanilla guile )
+    (define-internal-meroon-macro (when condition . body)
+      `(if ,condition (begin ,@@body)) )
+    #t )
+
+;;; PC-Scheme/Geneva has when but not unless.
+;;; Test that feature with:
+;;;     (unless 1 2 3)
+
+(if-meroon-feature (or bigloo slib gambit PC-Scheme MacScheme
+                       MIT vscm vanilla guile )
+    (define-internal-meroon-macro (unless condition . body)
+      `(if ,condition #f (begin ,@@body)) )
+    #t )
+
+;;;ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+;;; For weird compilation reasons all pervasive macros appear here,
+;;; they are just mapped over a library function that will do the real
+;;; work.
+
+;;; appeared in definers.scm
+
+;;; The macro to define a class. The definition is first syntactically
+;;; checked then a class object is created and is asked to parse its
+;;; definition in order to generate the appropriate code to load.
+
+(define-meroon-macro (define-class . definition)
+  (check-and-process-class-definition definition) )
+
+(define-meroon-macro (define-generic call . body)
+  (process-define-generic-form call body) )
+
+(define-meroon-macro (define-method call . body)
+  (process-define-method-form call body) )
+
+(define-meroon-macro (define-handy-method call . body)
+  (process-define-handy-method call body) )
+
+;;; appeared in clone.scm
+
+(define-meroon-macro (duplicate desc . parms)
+  (process-duplicate-form desc parms)  )
+
+(define-meroon-macro (instantiate-from desc . parms)
+  (process-instantiation-from-form desc parms)  )
+
+;;; appeared in modify.scm
+
+(define-meroon-macro (modify desc . parms)
+  (process-modify-form desc parms)  )
+
+;;; appeared in alloc.scm
+
+(define-internal-meroon-macro (generate-bunch-of-zero-poly-makers max class)
+  `(case (length (careless-Class-fields ,class))
+     ,@@(oo-map (lambda (i) 
+                 (define (generate-zero-poly-maker class-variable field-names)
+                   `(lambda ,field-names
+                      (initialize! (instance (careless-Class-number
+                                              ,class-variable)
+                                             ,@@field-names )) ) )
+                 `((,i) ,(generate-zero-poly-maker 
+                          class
+                          (oo-map (lambda (i) (symbol-concatenate 'a i))
+                                  (iota 0 i) ) )) )
+               (iota 0 max) )
+     (else (lambda args (general-make ,class args))) ) )
+
+(define-internal-meroon-macro (generate-bunch-of-one-final-poly-makers 
+                               max class )
+  `(case (length (careless-Class-fields ,class))
+     ,@@(oo-map (lambda (i)
+                 (define (generate-one-final-poly-maker 
+                          class-variable field-names )
+                   (let* ((temp (reverse field-names))
+                          (poly (car temp))
+                          (regular (reverse! (cdr temp)))
+                          (regular-length (length regular))
+                          (g (gensym))
+                          (l (gensym)) )
+                     `(lambda ,(let hook ((items regular))
+                                 (if (pair? items)
+                                     (cons (car items) (hook (cdr items)))
+                                     (cons l poly) ) )
+                        (initialize!
+                         (let* ((,g (length ,poly))
+                                (v (allocate-empty-instance 
+                                    (careless-Class-number ,class-variable)
+                                    (meroon-plus ,regular-length 1 ,g) )) )
+                           (check-appropriate-size ,g ,l v)
+                           ,@@(oo-map (lambda (fn i) `(instance-set! v ,i ,fn))
+                                     regular
+                                     (iota 0 regular-length) )
+                           (instance-set! v ,regular-length ,l)
+                           (fill-instance! 
+                            v ,(+ regular-length 1) ,poly ) ) ) ) ) )
+                 `((,i) ,(generate-one-final-poly-maker 
+                          class
+                          (oo-map (lambda (i) (symbol-concatenate 'a i))
+                                  (iota 0 i) ) )) )
+               (iota 1 max) )
+     (else (lambda args (general-make ,class args))) ) )
+
+;;; appeared in fill.scm
+
+(define-meroon-macro (instantiate class-name . parms)
+  (process-instantiate-form class-name parms) )
+
+(define-meroon-macro (co-instantiate . definitions)
+  (process-co-instantiate-form definitions 'set!) )
+
+(define-meroon-macro (with-co-instantiation definitions . body)
+  (process-with-co-instantiation-form definitions body) )
+
+;;; appeared in libgen.scm
+
+;;; Make generic some of the previous functions so they can be
+;;; customized on new types of Class or Field.
+
+(define-internal-meroon-macro (define-retrofitted-generic call clauses . body)
+  (let* ((name (car call))
+         ;; UMB Scheme does not accept symbols starting with a minus sign.
+         (other-name (symbol-concatenate 'meroon- name '- 'internal-generic)) )
+    `(begin
+       (define-generic ,(cons other-name (cdr call)) ,@@body)
+       (let ((g (symbol->generic ',other-name)))
+         (careless-initialize-Generic-name g ',name)
+         ,@@(oo-map (lambda (class+method)
+                     `(add-1-method! g ,@@class+method) )
+                   clauses ) )
+       (set! ,name ,other-name)
+       ',name ) ) )
+
+;;; appeared in walker.scm
+;;; MacScheme and PC-Scheme are touchy wrt to local variables that
+;;; cannot have the name of a macro. So rename instance into
+;;; ins-tance.
+
+(define-meroon-macro (with-access ins-tance specs . body)
+  (process-with-access-form ins-tance specs body) )
+
+;;; These macros can appear in the expansion of the previous macros so
+;;; they must be pervasive (rather than being define-inline as in the
+;;; careless.scm file).
+
+(define-meroon-macro (careless-Generic-dispatcher g)
+  `(instance-ref ,g 3) )
+
+(define-meroon-macro (careless-Class-number class)
+  `(instance-ref ,class 1) )
+(define-meroon-macro (careless-Class-allocator class)
+  `(instance-ref ,class 7) )
+
+(define-meroon-macro (careless-Dispatcher-method-finder d)
+  `(instance-ref ,d 0) )
+
+;;; Define a View.
+
+(define-meroon-macro (define-view . definition)
+  (check-and-process-view-definition definition) )
+
+;;; end of macros.scm
+@

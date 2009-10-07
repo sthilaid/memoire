@@ -1,0 +1,362 @@
+head	1.1;
+access;
+symbols;
+locks
+	lucier:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2005.02.25.22.19.37;	author lucier;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@;;; $Id: fill.scm,v 3.20 2000/02/11 15:56:02 queinnec Exp $
+;;; Copyright (c) 1990-96 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                    Meroon 
+;;;                              Christian Queinnec  
+;;;                    Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file defines the instantiate special form which is the general
+;;; form to instantiate instances. The major feature is that the class
+;;; must be statically known ie cannot be computed. The instantiate
+;;; form is analyzed and converted into a direct allocation if
+;;; possible otherwise to an allocation followed by various
+;;; initializations. For example suppose that we have a class defined as:
+;;;    (define-class ColoredPoint Object 
+;;;          ((= x :maybe-uninitialized :initializer (lambda () 0))
+;;;           (= y :initializer (lambda () 100))
+;;;           (= color) ) )
+;;; The form (instantiate ColoredPoint :y 33 :color 'pink :x 44) will
+;;; generate the equivalent of: (make-ColoredPoint 44 33 'pink).
+;;; The form (instantiate ColoredPoint :y 33 :color 'pink) will
+;;; generate the equivalent of: 
+;;;   (fill-other-fields! (make-ColoredPoint meroon-uninitialized 33 'pink)).
+
+;;; This file is the first to be loaded after genesis.scm, so we must
+;;; finish the bootstrap and setup a default allocator for al
+;;; predefined classes.
+
+(sequence-map (lambda (class)
+                (when class
+                  (careless-initialize-Class-allocator
+                   class (create-allocator class) ) ) )
+              *classes* )
+
+;;; The initialize! generic function is invoked on any freshly created
+;;; instance. This function can be customized by the user to count
+;;; instances, memoize them etc. The function fill-other-fields! is invoked
+;;; on every fresh instance that is statically known to contain at
+;;; least one uninitialized field.
+
+(define (process-instantiate-form class-name parms)
+  (process-instantiation 
+   (symbol->class class-name
+                  (lambda (name) 
+                    (report-meroon-error 
+                     'Syntax 'instantiate "Unknown class" name ) ) )
+   parms ) )
+
+;;; If it is possible to allocate the instance in one functional call,
+;;; do it but only if the number of arguments does not exceed this
+;;; number (check it with your native Scheme). For instance, if you
+;;; have a class C with more than *maximal-explicit-allocation-size*
+;;; Mono-fields then a totally explicit form as (instance C :f1 v1 :f2
+;;; v2 ...  ... :fn vn) will not be turned into (make-C v1 v2 ... vn)
+;;; but into (let ((i (allocate-C))) (instance-set! i 0 v1) ... i)
+
+(define *maximal-explicit-allocation-size* 25)
+
+;;; This function generates an allocation form. Two main cases are
+;;; recognized whether it is possible to create directly the instance
+;;; with a single call to vector or if it has to be allocated then
+;;; patched for every specified field.
+;;; A bug was discovered by <riverola@@iese.es>: instances were not
+;;; initialized with default-initializer when their length was specified
+;;; if that indexed field was the only one to be mentioned in an instantiate
+;;; form.
+
+(define (process-instantiation class parms)
+  (let* ((fields (careless-Class-fields class))
+         (class-name (symbol-concatenate (careless-Class-name class) '-class))
+         ;; content is a list of couples (field-size . field-content),
+         ;; the process-initialization function just splits the parameters 
+         ;; for each field:
+         (contents (process-initialization 
+                    fields parms find-initialization )) )  
+    (if (and (every? (lambda (content) (integer? (car content)))
+                     contents )
+             (<= (meroon-reduce (lambda (sum content) (meroon-plus sum (car content)))
+                                0
+                                contents )
+                 *maximal-explicit-allocation-size* ) )
+        ;; The total size of the instance to allocate is known
+        (let ((filling (generate-whole-content fields contents)))
+          ;; Check statically if all fields that should be initialized
+          ;; really are.
+          (if (memq 'meroon-uninitialized filling)
+              ;; some fields are not yet initialized, so generate a call
+              ;; to fill-other-fields!.
+              `(initialize!
+                (fill-other-fields!
+                 (instance (careless-Class-number ,class-name)
+                           ,@@filling ) ) )
+              ;; all fields are known
+              `(initialize!
+                (instance (careless-Class-number ,class-name)
+                          ,@@filling ) ) ) )
+        ;; the total size is unknown (or too big): allocate then patch fields
+        (let ((g (gensym))
+              (index (gensym)) )
+          `(let ((,index 0)
+                 (,g ((careless-Class-allocator ,class-name)
+                      ,@@(generate-whole-size fields contents) )))
+             ,@@(generate-whole-initialization g index fields contents)
+             (initialize! (fill-other-fields! ,g)) ) ) ) ) )
+
+;;; Take all fields and contents and generate code for various purposes.
+
+(define (generate-whole-content fields contents)
+  (meroon-reduce (lambda (forms field content)
+                   (generate-content field content forms) )
+                 '()
+                 fields
+                 contents ) )
+
+(define (generate-whole-size fields contents)
+  (meroon-reduce (lambda (forms field content)
+                   (generate-size field content forms) )
+                 '()
+                 fields
+                 contents ) )
+
+(define (generate-whole-initialization ovar index fields contents)
+  (meroon-reduce (lambda (forms field content)
+                   (generate-initialization field content ovar index forms) )
+                 '()
+                 fields
+                 contents ) )
+
+;;; This function processes all initializations to find these that are 
+;;; related to each field, it also checks that there is no superfluous
+;;; initialization. It returns a list:
+;;;     ( (size init-form ...) ...)
+;;; where size is an integer or a form followed by the forms that initialize
+;;; the field (a Mono- or a Poly-Field). A field specified as
+;;;    :field form1 form2        yields (2 form1 form2)
+;;;    :field-length form        yields (form)
+
+(define (process-initialization fields parms finder)
+  (let iterate ((fields fields)(parms parms))
+    (if (pair? fields)
+        (finder 
+         (car fields) 
+         parms
+         (lambda (init other-parms)
+           ;; other-parms are the parms not taken into account by (car fields)
+           (cons init (iterate (cdr fields) other-parms)) ) )
+        (begin 
+          ;; If there remain parms then they are superfluous
+          (when (pair? parms)
+            (report-meroon-error 'Syntax 'instantiate
+                                 "Unused options" parms ) )             
+          '() ) ) ) )
+
+;;; This function looks in the given parameters PARMS for the size
+;;; needed by each field. It returns the list of the forms that will
+;;; be used to initialize the fields prefixed by their size. If the
+;;; first term is not an integer then the total size of the instance
+;;; to be allocated is not static. It also checks if a field that must
+;;; be initialized really is.
+
+(define-generic (find-initialization (f Field) parms k))
+
+(define-method (find-initialization (f Mono-Field) parms k)
+  (let* ((form (find-option-single-value 
+                (careless-Field-name f) parms option-not-there ))
+         (other-parms (remove-option (careless-Field-name f) parms)) )
+    (if (absent-option? form)
+        (if (and (careless-Field-initialized? f) ; means "must be initialized"
+                 (not (field-defined? f 'initializer)) )
+            (report-meroon-error
+             'Syntax 'instantiate
+             "This field should be initialized" f )             
+            (k (list 1 'meroon-uninitialized) other-parms) )
+        (k (list 1 form) other-parms) ) ) )
+
+(define-method (find-initialization (f Poly-Field) parms k)
+  ;; check if the field is specified by comprehension
+  (let* ((content (find-option-values
+                   (careless-Field-name f) parms option-not-there ))
+         (parms (remove-option (careless-Field-name f) parms))
+         (kw (list (careless-Field-name f) '-length)) )
+    (if (absent-option? content)
+        ;; check if the length of the field is specified.
+        (let* ((size (find-option-single-value kw parms option-not-there))
+               (parms (remove-option kw parms)) )
+          (if (absent-option? size)
+              (report-meroon-error
+               'Syntax 'instantiate
+               "This field has no size specified" f )
+              (k (list size) parms) ) )
+        (begin 
+          (unless (absent-option?
+                   (find-option-single-value kw parms option-not-there) )
+            (report-meroon-error
+             'Syntax 'instantiate
+             "Simultaneously incompatible options" 
+             (careless-Field-name f) kw ) )
+          (k (cons (length content) content) parms) ) ) ) )
+
+;;; This function returns the exact content of an initialization into
+;;; a vector form. The content variable already contains what was
+;;; parsed from the initial parameters.
+
+(define-generic (generate-content (field Field) content forms))
+
+(define-method (generate-content (field Mono-Field) content forms)
+  (cons (cadr content) forms) )
+
+(define-method (generate-content (field Poly-Field) content forms)
+  (let ((size       (car content))
+        (init-forms (cdr content)) )
+    (if (= size (length init-forms))
+        (append content forms)
+        (cons size
+              (let make-list ((size size))
+                (if (> size 0)
+                    (cons `meroon-uninitialized (make-list (meroon-minus size 1)))
+                    forms ) ) ) ) ) )
+
+;;; Extract from contents the sizes that are necessary to allocate the
+;;; instance.
+
+(define-generic (generate-size (field Field) content forms))
+
+(define-method (generate-size (field Mono-Field) content forms)
+  forms )
+
+(define-method (generate-size (field Poly-Field) content forms)
+  (cons (car content) forms) )
+
+;;; Generate explicit initializations. OVAR is the name of the variable
+;;; that holds the instance, INDEXVAR is the name of the variable that
+;;; contains the current offset. Every initialization leaves the
+;;; offset correctly positioned on the next field.
+
+(define-generic (generate-initialization (field Field) 
+                                         content ovar indexvar forms))
+
+(define-method (generate-initialization (field Mono-Field) 
+                                        content ovar indexvar forms )
+  (if (eq? 'meroon-uninitialized (cadr content))
+      ;; position indexvar on the next field
+      (adjust-index `(set! ,indexvar (meroon-plus 1 ,indexvar)) forms)
+      (cons `(instance-set! ,ovar ,indexvar ,(cadr content))
+            (adjust-index `(set! ,indexvar (meroon-plus 1 ,indexvar))
+                          forms ) ) ) )
+
+(define-method (generate-initialization (field Poly-Field) 
+                                        content ovar indexvar forms )
+  (if (null? (cdr content))
+      (if (integer? (car content))
+          (adjust-index `(set! ,indexvar (meroon-plus ,(meroon-plus 1 (car content)) ,indexvar))
+                        forms )
+          ;; Attention: three arguments in the next addition (see adjust-index)
+          (adjust-index `(set! ,indexvar (meroon-plus 1 
+                                            (instance-ref ,ovar ,indexvar)
+                                            ,indexvar ))
+                        forms ) )
+      (cons `(instance-set! ,ovar ,indexvar ,(length (cdr content)))
+            (adjust-index 
+             `(set! ,indexvar (meroon-plus 1 ,indexvar))
+             (let enum ((contents (cdr content)))
+               (if (pair? contents)
+                   (cons `(instance-set! ,ovar ,indexvar ,(car contents))
+                         (adjust-index `(set! ,indexvar (meroon-plus 1 ,indexvar))
+                                       (enum (cdr contents)) ) )
+                   forms ) ) ) ) ) )
+
+;;; It is not necessary to ajust the index if no one uses it.
+;;; For interpreters speed, coalesce incrementations.
+
+(define (adjust-index expression forms)
+  (if (null? forms)
+      forms
+      ;; assume expression == (set! ,indexvar (+ ,n ... ,indexvar))
+      ;; but coalesce only when expression is (set! ,indexvar (+ ,n ,indexvar))
+      ;; and if the first form of forms has the same shape.
+      (if (and (pair? (car forms))
+               (eq? (car (car forms)) 'set!)
+               (eq? (car (caddr (car forms))) '+)
+               (= (length (caddr (car forms))) 3)
+               (= (length (caddr expression)) 3) )
+          (let ((n1 (cadr (caddr (car forms))))
+                (n2 (cadr (caddr expression))) )
+            (cons `(set! ,(cadr expression)
+                         (meroon-plus ,(meroon-plus n1 n2) 
+                            ,(caddr (caddr (car forms))) ) )
+                  (cdr forms) ) )
+          (cons expression forms) ) ) )
+
+;;; This function finishes the initialization of a freshly
+;;; created instance. It successively check all the fields and for
+;;; each field of the fresh instance which is not initialized, it
+;;; tries to find the associate initializer and uses it.
+;;; NOTE: fill-other-fields! is not the default method of initialize!
+;;; so that the implementation can ensure that it will always be
+;;; called. So, all fields that must be initialized (whether
+;;; explicitely or by default) really are.
+
+(define-generic (fill-uninitialized-field! o (field Field)))
+
+(define-method (fill-uninitialized-field! o (field Mono-Field))
+  (unless (field-defined? o field)
+    (if (field-defined? field 'initializer)
+        (initialize-field-value!
+         o ((careless-Field-initializer field)) field )
+        (when (careless-Field-initialized? field)
+          ;; this field should be initialized but there is no initializer
+          (report-meroon-error
+           'Access 'fill-uninitialized-field!
+           "No initializer" field ) ) ) ) )
+
+(define-method (fill-uninitialized-field! o (field Poly-Field))
+  (let ((len (field-length o field)))
+    (unless (and (> len 0)
+                 (field-defined? o field 0) )
+      (if (field-defined? field 'initializer)
+          (do ((i 0 (meroon-plus 1 i)))
+              ((>= i len))
+            (initialize-field-value!
+             o ((careless-Field-initializer field) i) field i ) )
+          (when (careless-Field-initialized? field)
+            ;; this field should be initialized but there is no initializer
+            (report-meroon-error
+             'Access 'fill-uninitialized-field!
+             "No initializer" field ) ) ) ) ) )
+
+;;; Definite definition of fill-other-fields!
+
+(set! fill-other-fields! 
+      (lambda (o)
+        (for-each (lambda (field) (fill-uninitialized-field! o field))
+                  (careless-Class-fields (object->class o)) )
+        o ) )
+
+;;; end of fill.scm
+@

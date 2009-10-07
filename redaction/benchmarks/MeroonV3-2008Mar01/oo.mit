@@ -1,0 +1,36 @@
+;;; $Id: oo.mit,v 3.1 1994/10/07 08:58:37 queinnec Exp $
+;;; Copyright (c) 1990-94 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                  Meroon V3
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file allows to test Meroon under MIT Scheme
+;;; Load this file, then execute:
+;;;                                  (test-oo "oo-tests.scm")
+
+(load "../tester.scm")
+
+;;; Define a testing toplevel
+
+(define (test-oo file)
+  (suite-test 
+   file "?? " "== " #t
+   (lambda (read check report-anomaly)
+     (set! oo-error (lambda args (report-anomaly args)))
+     (lambda ()
+       (check (eval (read) user-initial-environment)) ) )
+   equal? ) )
+
+;;; NOTE: actually errs while loading genes1.scm saying:
+;Aborting!: maximum recursion depth exceeded
+;;; this is independent of the size of the stack.
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; end of oo.mit

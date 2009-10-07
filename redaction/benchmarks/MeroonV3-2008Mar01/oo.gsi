@@ -1,0 +1,36 @@
+;;; $Id: oo.gsi,v 3.10 1994/02/26 14:28:19 queinnec Exp $
+;;; Copyright (c) 1990-94 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                   Meroon 
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file allows you to load (and test) meroon on Gambit (gsi)
+
+(load "../tester.scm")
+
+;;; Testing Meroon.
+;;; The difficulty is to catch all errors of the underlying Scheme.
+
+(define (test-oo file)
+  (suite-test 
+   file "?? " "== " #t
+   (lambda (read check err)
+     (set! oo-error (lambda args
+                      (##runtime-error "error" 'Meroon-V3 args) ))
+     (lambda ()
+       (##catch-all (lambda (s args)
+                      ;; args contain cyclic values: don't try to print them!
+                      (define (simplify args)
+                        (map ##decomp args) )
+                      (err (cons s (simplify args))) )
+                    (lambda () (check (eval (read)))) ) ) )
+   (lambda (x y) (equal? x y)) ) )
+
+;;; Run tests.
+;;;        (test-oo "oo3.tst")
+
+;;; end of oo.gsi

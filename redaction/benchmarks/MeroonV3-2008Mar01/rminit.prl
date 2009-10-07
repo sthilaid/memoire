@@ -1,0 +1,67 @@
+#! /usr/local/bin/perl
+#  $Id: rminit.prl,v 3.8 1993/11/03 13:54:41 queinnec Exp $
+
+# There is a problem of initialization order with Scheme->C, this script
+# hacks the resulting C code to suppress out of order initializations.
+# Any file.sc module indicates the exact dependency in its (with ..) clause,
+# delete any file__init(); line in the C code that corresponds to a module
+# which is not in the (with ..) clause.
+
+#  syntax: rminit.prl o/${HOSTTYPE}/SCC/basefilename
+
+($file) = @ARGV if @ARGV == 1 ;
+die if @ARGV > 1 ;
+
+$verbose = 0 ;
+
+$cfile = "$file.c" ;
+$scfile = "$file.sc" ;
+$tmpfile = "$file.org.c" ;
+
+# Get the preceding modules from the (with ..) clause of the module.
+
+open(SCFILE,"< $scfile") || die "Cannot open $scfile" ;
+while ( <SCFILE> ) {
+    next unless /\(module .* \(with ([ \w]*)\)\)/ ;
+    $preceding = $1 ;
+    print "Preceding modules:", $preceding, "\n" if $verbose ;
+    last ;
+}
+close(SCFILE) ;
+
+# Build a pattern with the only accepted modules names. ALso accepts modules
+# of the predefined library of Scheme->C, the name of which is scrt*.
+
+$modules = join("|",split(/ /,$preceding)) ;
+$modules = "|$modules" if ( $modules ) ;
+$modules = "scrt\\d$modules" ;
+print "modules to keep: ",$modules,"\n" if $verbose ;
+
+# filters the C file to remove initialization of unknown modules. Use a
+# temporary file to hold the former content of the initial C file.
+
+open(CFILE,"< $tmpfile") || die "Cannot read $tmpfile" ;
+unlink($cfile) ;
+open(RESULT,"> $cfile") || die "Cannot write to $cfile" ;
+
+# Any line that mentions a file which is not a standard one or one that must
+# precede the current module is wrapped into comments. Search must be made
+# case insensitively since modulenames are converted to lowercase by Scheme->C.
+
+while ( <CFILE> ) {
+    $line = $_ ;
+    if ( / (\w+)__init\(\);/ ) {
+        if ( /($modules)__init\(\);/oi ) {
+            print RESULT $line ;
+        } else {
+            chop $line ;
+            print RESULT "/* ", $line, " \tREMOVED FOR MEROON */\n" ;
+        }
+    } else { 
+        print RESULT $line ;
+    }
+}
+close(CFILE) ;
+close(RESULT) ;
+
+# end of rminit.prl

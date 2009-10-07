@@ -1,0 +1,135 @@
+;;; $Id: meroon.gambc24,v 3.5 2001/04/22 15:51:19 queinnec Exp $ 
+;;; Copyright (c) 1990-97 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                    Meroon 
+;;;                              Christian Queinnec  
+;;;                    Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+;;; Additional documentation can be found in the README, meroon.ps or
+;;; meroon.dvi files that are packaged with this file. Users may also
+;;; get some information on Meroon with the following mailing list:
+;;;	meroon-info@cornas.inria.fr
+;;; or subscribe to the previous one using:
+;;;	meroon-request@cornas.inria.fr
+
+;;;==================================================== Legalistic introduction
+;;; This program is distributed in the hope that it will be useful.
+;;; Use and copying of this software and preparation of derivative works
+;;; based upon this software are permitted, so long as the following
+;;; conditions are met:
+;;;      o credit to the authors is acknowledged following current
+;;;        academic behaviour
+;;;      o no fees or compensation are charged for use, copies, or
+;;;        access to this software
+;;;      o this copyright notice is included intact.
+;;; This software is made available AS IS, and no warranty is made about 
+;;; the software or its performance. 
+
+;;; Bug descriptions, use reports, comments or suggestions are welcome.
+;;; Send them to:
+;;;       Christian Queinnec
+;;;       <Christian.Queinnec@inria.fr>
+;;;       INRIA -- Rocquencourt
+;;;       Domaine de Voluceau, BP 105
+;;;       78153 Le Chesnay Cedex
+;;;       France
+
+;;; Load the appropriate prologue (uncomment the appropriate include form
+;;; if you want to only include one file). This prologue defines how to
+;;; define macros as well as those features that will conditionalize
+;;; the including of the other files.
+
+;;; Possible features are:
+;;;    bootstrap           for bootstrapping. Do not use it !!!!
+;;;    <scheme> <version>  to identify the Scheme system. Used to 
+;;;                        conditionalize macros.gambc24 and utils.scm.
+;;;    enough-library      Do not include the additional libraries that are
+;;;                        not needed to expand modules using Meroon.
+
+;(include "meroon.bigloo")
+;(include "meroon.elk")
+;(include "meroon.slib")
+;(include "meroon.s2c")
+;(include "meroon.gam")
+;(include "meroon.mac")
+;(include "meroon.pcs")
+;(include "meroon.pcg")
+;(include "meroon.mit")
+;;; and others, see README file.
+
+;;; Then include, in order, these files:
+
+(include "macros.scm")
+(if-meroon-feature DSSSL
+  (include "dsssl.scm")
+  (include "nodsssl.scm") )
+(if-meroon-feature bigloo
+  (include "macinst.bigloo")
+  (if-meroon-feature (and gambit C)
+    (include "macinst.gsc")
+    (include "macinst.scm") ) )
+;;; Altering exodus.gambc24 (the predefined classes of Meroon) implies to
+;;; adjust careless.gambc24 since it contains the hand-made (direct,
+;;; unsafe) field accessors.
+(include "careless.scm")
+;;; Normally there are no more macros from here.
+(include "utils.scm")
+(if-meroon-feature bigloo
+  (include "instance.bigloo")
+  (if-meroon-feature (and gambit C)
+    (include "instance.gsc")
+    (include "instance.scm") ) )
+(include "revision.scm")
+(declare (safe))
+(include "walker.scm")
+(declare (not safe))
+(include "runtime.scm")
+(include "option.scm")
+(include "access.scm")
+(include "dispatch.scm")
+(include "handy.scm")
+(include "definers.scm")
+(include "alloc.scm")
+;;; These are hand-made classes corresponding to exodus.scm.
+(include "genes1.scm")
+(include "genes2.scm")
+(if-meroon-feature bootstrap
+  (include "interm.scm")
+  (include "Basics.scm") )
+(include "fill.scm")
+(include "coinst.scm")
+(include "maker.scm")
+(if-meroon-feature bootstrap
+  ;; regenerate the Basics.gambc24 and Coercers.gambc24 files.
+  (begin (include "exodus.scm")
+         (include "filer.scm")
+         (generate-all-files) 
+         "Bootstrap files regenerated." )
+  ;; Finish including the libraries.
+  (begin (include "view.scm")
+         (include "libgen.scm")
+         (include "Coercers.scm")
+         (declare (not inline))
+         (include "anomaly.scm")
+         (declare (inline))
+         (include "multi.scm")
+         ;; The above set of files is sufficient to expand Meroon sources.
+         ;; The following form a library of convenient forms or functions.
+         (if-meroon-feature (not enough-libraries)
+           (begin (include "show.scm")
+                  (include "trace.scm")
+                  (include "size.scm")
+                  (include "unveil.scm")
+                  (include "egal.scm")
+                  (include "modify.scm")
+                  (include "clone.scm")
+                  ;; Load some MOP modifications for Brad Lucier:
+                  (if-meroon-feature (lucier)
+                    (include "postset.scm")
+                    #f )
+                  "Meroon V3 included." )
+           "bare Meroon V3 included." ) ) )
+
+;;; end of meroon.gambc24 

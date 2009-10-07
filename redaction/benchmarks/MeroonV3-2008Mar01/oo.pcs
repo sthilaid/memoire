@@ -1,0 +1,47 @@
+;;; 
+;;; Copyright (c) 1990-93 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                  Meroon V3
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file allows to test Meroon under PC-Scheme 3.03
+
+(define native-load load)
+
+(set! load (lambda (file)
+             (display `(loading ,file))(newline)
+             (native-load file)
+             (display  `(,file loaded))(newline) ))
+
+(load "../tester.scm")
+(begin 
+  (display "Load Meroon V3 (y,n) ? ")
+  (if (memq (read) '(y yes))
+      (begin (load "meroon.pcs")
+             (load "meroon.scm") ) ) )
+
+;;; Define a testing toplevel
+
+(define (test-oo file)
+  (suite-test 
+   file "?? " "== " #t
+   (lambda (read check report-anomaly)
+     (set! oo-error (lambda args (report-anomaly args)))
+     (lambda ()
+       (check (eval (read))) ) )
+   equal? ) )
+
+(begin
+  (display "Test with (test-oo \"oo3.tst\") (y,n) ? ")
+  (if (memq (read) '(y yes))
+      (test-oo "oo3.tst") ) )
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; end of oo.pcs

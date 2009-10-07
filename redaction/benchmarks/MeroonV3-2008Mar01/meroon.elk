@@ -1,0 +1,64 @@
+;;; $Id: meroon.elk,v 3.11 1996/04/10 16:20:01 queinnec Exp $
+;;; Copyright (c) 1990-94 by Christian Queinnec. All rights reserved.
+
+;;;                            *******************************
+;;;                            ELK Adaptation for Meroon
+;;;                            *******************************
+
+;;; This file contains the necessary adaptation for ELK. You must load
+;;; it in the global-environment as in:
+;;;      (load "meroon.elk")
+;;;      (load "meroon.scm")
+
+;;; This program is distributed in the hope that it will be useful.
+;;; Use and copying of this software and preparation of derivative works
+;;; based upon this software are permitted, so long as the following
+;;; conditions are met:
+;;;      o credit to the authors is acknowledged following current
+;;;        academic behaviour
+;;;      o no fees or compensation are charged for use, copies, or
+;;;        access to this software
+;;;      o this copyright notice is included intact.
+;;; This software is made available AS IS, and no warranty is made about 
+;;; the software or its performance. 
+
+;;; Bug descriptions, use reports, comments or suggestions are welcome.
+;;; Send them to    
+;;;   <queinnec@polytechnique.fr>   or to:   <Christian.Queinnec@inria.fr>
+;;;                                 or to:
+;;;   Christian Queinnec                     Christian Queinnec
+;;;   Laboratoire d'Informatique de l'X      INRIA -- Rocquencourt
+;;;   Ecole Polytechnique                    Domaine de Voluceau, BP 105
+;;;   91128 Palaiseau                        78153 Le Chesnay Cedex
+;;;   France                                 France
+
+;;;************************************************
+;;;    Small, Efficient and Innovative Class System
+;;;       Christian Queinnec  
+;;;   \'Ecole Polytechnique & INRIA-Rocquencourt
+;;;************************************************
+
+;;; These two macros define how to define macros. The second defines a macro
+;;; that is reserved to Meroon sources while the first defines a macro for
+;;; the user.
+
+(define-macro (define-meroon-macro call . body)
+  `(define-macro ,call . ,body) )
+
+(define-macro (define-internal-meroon-macro call . body)
+  `(define-macro ,call . ,body) )
+
+;;; Conditional compilation: The variable *meroon-features* defines
+;;; the features of Meroon to be taken into account when loading (or
+;;; compiling Meroon). 
+
+(define *meroon-features* 
+  '( elk 2.2
+     safer-object
+     ) )
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; End of adaptation of Meroon for ELK.

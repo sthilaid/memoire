@@ -1,0 +1,44 @@
+head	1.1;
+access;
+symbols;
+locks
+	lucier:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2005.02.25.22.19.37;	author lucier;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@;;; $Id: nodsssl.scm,v 3.1 1997/12/29 09:31:12 queinnec Exp $
+;;; Copyright (c) 1990-97 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                    Meroon 
+;;;                              Christian Queinnec  
+;;;                    Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file is loaded by Scheme implementations that do not know how to
+;;; read DSSSL keywords.
+
+(define (dsssl-optional? thing) #f)
+
+(define (dsssl-rest? thing) #f)
+
+(define (dsssl-key? thing) #f)
+
+;;; end of nodsssl.scm
+@

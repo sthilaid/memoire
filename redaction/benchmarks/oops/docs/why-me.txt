@@ -1,0 +1,84 @@
+FILE: "why-me.txt"
+IMPLEMENTS: Design discussion of object oriented programming system for Gambit Scheme.
+AUTHOR: Ken Dickey
+DATE: 2005 March 21
+
+COPYRIGHT: (c) 2005 by Kenneth A Dickey, All Rights Reserved
+
+========================================
+Oops: Object Oriented Programming System
+========================================
+
+The Goal of Oops: To understand _why_ various CLOS/Dylan/MOP features exist.
+
+How: By building useful artifacts & adding features as required.
+
+
+Why? [My reasons]
+  - To build a flexible GUI
+  - Have fun!
+
+Desired Properties: 
+  - As simple as possible [no extranious features]
+  - multiple inheritance
+  - multi-methods
+  - call-next-method
+  - change-class/class update
+  - intern/extern (reify external representations to/from files)
+  - efficient (push processing to compile time; good algorithms)
+  - struct->class (unify structures & classes)
+  - [Meta Property:] Apache style Licence (Open Source)
+
+Basic Concepts:
+  - Type
+    + types used for dispatch
+    + class, sigleton, type-union
+  - Class
+    + Makes Instances
+    + Defines Type for dispatch
+    + Creation sets up Instance slot initialization, setters & getters
+  - Instance
+    + Slots, Setters & Getters
+    + Typed: knows class
+    + Can have unnamed slots
+    + Can have constant/immutable slots
+    + Can have typed slots (slot-set! w type, e.g.: <integer>, <function>, <point>)
+  - Setters & Getters
+    + Specialized (generic) dispatch w no next-method
+  - Generic/multi-methods
+    + Dispatches to most specific method
+    + next-method
+  - Methods (specific methods)
+    + lambda/closure plus agrument type signature
+  - [Call] Signatures
+
+How Different than CLOS?
+  - Gambit (v4) specific -- uses internals knowledge
+  - No MOP
+  - Callables have structure/data
+    + classes _are_ instance constructors + class info
+      E.g. (<point> x: 1 y: 2) rather than (make <point> x: 1 y: 2)
+    + generics & methods are (also) procedures w associated info
+  - Classes are _not_ required to be instances
+    + Value = any scheme data object
+    + Instance = funky things created by classes (structure + hidden fields)
+    + Generics, Methods are distinct from Class, Instance
+    + Virtual-Classes for native Gambit/Scheme objects
+
+How similar to CLOS?
+  - multiple inheritance
+  - multi-methods
+  - call-next-method
+  - class precedence list
+
+Questions & Design Problems
+  - Fast getters & setters; fast gf dispatch
+  - Intern/Extern [Object Serialization] integrated w Gambit
+  - Use Gambits internal type mechanics? 
+	+ Struct w/o struct->class ?
+	+ ffi types
+  - Change Class -> update instances? [become]
+  - Thread Safety, Mutation safe iteration over collections
+  - Print Repersentations [integrate w pp, ##wr]
+
+

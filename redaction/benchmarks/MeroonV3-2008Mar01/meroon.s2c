@@ -1,0 +1,139 @@
+;;; $Id: meroon.s2c,v 3.9 1996/06/03 06:43:14 queinnec Exp $
+;;; Copyright (c) 1990-93 by Christian Queinnec. All rights reserved.
+
+;;;                            *******************************
+;;;                            Scheme->C Adaptation for Meroon
+;;;                            *******************************
+
+;;; This file contains the necessary adaptation for Scheme->C
+;;; Meroon can be interpreted or compiled.
+;;; To interpret Meroon, just load this file then the meroon file
+;;;     (loadq "meroon.s2c")
+;;;     (loadq "meroon.scm")
+;;; To compile it, you must load these two files under the compiler
+;;; while compiling meroon.scm. Yes, this is tricky but feasible.
+;;; Look at the Imakefile file for further details.
+
+;;; This program is distributed in the hope that it will be useful.
+;;; Use and copying of this software and preparation of derivative works
+;;; based upon this software are permitted, so long as the following
+;;; conditions are met:
+;;;      o credit to the authors is acknowledged following current
+;;;        academic behaviour
+;;;      o no fees or compensation are charged for use, copies, or
+;;;        access to this software
+;;;      o this copyright notice is included intact.
+;;; This software is made available AS IS, and no warranty is made about 
+;;; the software or its performance. 
+
+;;; Bug descriptions, use reports, comments or suggestions are welcome.
+;;; Send them to    
+;;;   <queinnec@polytechnique.fr>   or to:   <Christian.Queinnec@inria.fr>
+;;;                                 or to:
+;;;   Christian Queinnec                     Christian Queinnec
+;;;   Laboratoire d'Informatique de l'X      INRIA -- Rocquencourt
+;;;   Ecole Polytechnique                    Domaine de Voluceau, BP 105
+;;;   91128 Palaiseau                        78153 Le Chesnay Cedex
+;;;   France                                 France
+
+;;;************************************************
+;;;    Small, Efficient and Innovative Class System
+;;;       Christian Queinnec  
+;;;   \'Ecole Polytechnique & INRIA-Rocquencourt
+;;;************************************************
+
+;;; The first macro is a macro definer that allows these macros to
+;;; remain in the compiled image. The second just defines a macro
+;;; local to the sources but normally not visible from the user.
+
+(define-macro define-meroon-macro
+  (let ((expander
+         (lambda (e m)
+           (let* ((call (cadr e))
+                  (body (cddr e))
+                  (s2c-expander
+                   `(lambda (e m)
+                      (m (apply (lambda ,(cdr call) . ,body) 
+                                (cdr e) ) m) ) )
+                  (s2c-installer
+                   `(let ((expander ,s2c-expander))
+                      (putprop ',(car call) '*expander* expander)
+                      (putprop ',(car call) 'scc
+                               (cons (cons 'macro expander)
+                                     (or (getprop ',(car call) 'scc)
+                                         '() ) ) )
+                      (putprop ',(car call) 'initial-scc
+                               (cons (cons 'macro expander)
+                                     (or (getprop ',(car call) 'initial-scc)
+                                         '() ) ) )
+                      ',(car call) ) ) )
+             (eval s2c-installer)
+             (m s2c-installer m) ) ) ))
+    ;; install itself for later:
+    (putprop 'define-meroon-macro
+             'scc
+             (cons (cons 'macro expander)
+                   (or (getprop 'define-meroon-macro
+                                'scc )
+                       '() ) ) )
+    (putprop 'define-meroon-macro
+             'initial-scc
+             (cons (cons 'macro expander)
+                   (or (getprop 'define-meroon-macro
+                                'initial-scc )
+                       '() ) ) )
+    expander ) )
+
+(define-macro define-internal-meroon-macro
+  (let ((expander
+         (lambda (e m)
+           (let* ((call (cadr e))
+                  (body (cddr e))
+                  (s2c-expander
+                   `(lambda (e m)
+                      ;;(display (list 'expand e))(newline)
+                      (m (apply (lambda ,(cdr call) . ,body) 
+                                (cdr e) ) m) ) )
+                  (s2c-installer
+                   `(let ((expander ,s2c-expander))
+                      (putprop ',(car call) '*expander* expander)
+                      (putprop ',(car call) 'scc
+                               (cons (cons 'macro expander)
+                                     (or (getprop ',(car call) 'scc)
+                                         '() ) ) )
+                      (putprop ',(car call) 'initial-scc
+                               (cons (cons 'macro expander)
+                                     (or (getprop ',(car call) 'initial-scc)
+                                         '() ) ) )
+                      ',(car call) ) ) )
+             ;;(display (list 'install e))(newline)
+             (eval s2c-installer)
+             (m #t m) ) ) ))
+    ;; install itself for later:
+    (putprop 'define-internal-meroon-macro
+             'scc
+             (cons (cons 'macro expander)
+                   (or (getprop 'define-internal-meroon-macro
+                                'scc )
+                       '() ) ) )
+    (putprop 'define-internal-meroon-macro
+             'initial-scc
+             (cons (cons 'macro expander)
+                   (or (getprop 'define-internal-meroon-macro
+                                'initial-scc )
+                       '() ) ) )
+    expander ) )
+
+;;; Conditional compilation: The variable *meroon-features* defines
+;;; the features of Meroon to be taken into account when loading (or
+;;; compiling Meroon). 
+
+(define *meroon-features* 
+  '( Scheme->C "01nov91jfb+MCC01"
+     ) )
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; End of adaptation of Meroon for Scheme->C.

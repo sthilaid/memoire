@@ -1,0 +1,125 @@
+head	1.1;
+access;
+symbols;
+locks
+	lucier:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2001.08.07.19.38.12;	author lucier;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@#! /bin/sh
+# $Id: make_meroon,v 3.6 2001/04/24 08:49:38 queinnec Exp $
+# Generate the entire file holding MeroonV3 sources completely.
+
+# This is the file to be generated:
+
+TARGET=_meroon.scm
+
+# These are the sources to concatenate. This should be the same as in
+# meroon.scm (or meroon.gambc24) for the Gambit customization.
+# FUTURE: automatize that variable.
+
+SOURCES="meroon.gsc \
+        macros.scm \
+        dsssl.scm \
+        macinst.gsc \
+        careless.scm \
+        utils.scm \
+        instance.gsc \
+        revision.scm \
+        gsc-declare-safe.scm \
+        walker.scm \
+        gsc-declare-not-safe.scm \
+        runtime.scm \
+        option.scm \
+        access.scm \
+        dispatch.scm \
+        handy.scm \
+        definers.scm \
+        alloc.scm \
+        genes1.scm \
+        genes2.scm \
+        Basics.scm \
+        fill.scm \
+        coinst.scm \
+        maker.scm \
+        view.scm \
+        libgen.scm \
+        Coercers.scm \
+        gsc-declare-not-inline.scm \
+        anomaly.scm \
+        gsc-declare-inline.scm \
+        multi.scm \
+        show.scm \
+        trace.scm \
+        size.scm \
+        unveil.scm \
+        egal.scm \
+        modify.scm \
+        clone.scm"
+
+# Generate TARGET
+
+{
+  # First: incorporate that prologue:
+  cat <<EOF
+;;; Automatically generated (dont touch)
+
+(declare (block) (standard-bindings) (extended-bindings) (fixnum) (not safe))
+(declare (inline) (inlining-limit 1000) (not interrupts-enabled))
+
+EOF
+
+  #Second: concatenate all these files:
+  for f in ${SOURCES} postset.scm
+  do
+        cat $f
+  done
+} > ${TARGET}
+
+# Generate preTARGET
+
+{
+  # First: incorporate that prologue:
+  cat <<EOF
+;;; Automatically generated (dont touch)
+
+(declare (block) (standard-bindings) (extended-bindings) (fixnum) (not safe))
+(declare (inline) (inlining-limit 1000) (not interrupts-enabled))
+
+EOF
+
+  #Second: concatenate all these files:
+  for f in ${SOURCES}
+  do
+        cat $f
+  done
+} > pre${TARGET}
+
+#  Compile TARGET
+
+( cat old-load.scm ;
+  cat <<EOF
+(old-load "pre${TARGET}") 
+(compile-file "${TARGET}")
+EOF
+) | gsc
+
+### Local Variables:
+### mode: sh
+### End:
+@

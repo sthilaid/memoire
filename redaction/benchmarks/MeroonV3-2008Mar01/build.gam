@@ -1,0 +1,75 @@
+;;; $Id$
+;;; Copyright (c) 1990-96 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                   Meroon 
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; Rebuild and test Meroon with MacGambit
+;;; Just load this file and answers to the questions.
+;;; If you want to compile Meroon, then answers y n y n.
+
+(define (yes-or-no? msg)
+  (display msg)
+  (display " [y,n](n)? ")
+  (newline)
+  (memq (read) '(y yes)) )
+
+;;; Check whether the current directory is correct.
+
+(call-with-input-file "meroon.gam"
+  (lambda (in)
+    (close-input-port in)
+    #t ) )
+
+;;; Propose to load an interpreted Meroon (cannot compile otherwise).
+
+(if (yes-or-no? "Load Meroon V3")
+  (begin 
+   (display "Loading Meroon ...")
+   (newline)
+   (load "compile.gam")
+
+   ;; propose to test Meroon interpreted (this is lengthy).
+
+   (if (yes-or-no? "Test interpreted Meroon")
+     (begin (load "tester.scm")
+            (load "oo.gam")
+            (test-oo "oo3.tst") ) )
+   
+   ;; propose to compile Meroon (this is also very lengthy).
+   
+   (if (yes-or-no? "Compile Meroon")
+     (begin (generate-all-gambit-bodies "")
+            (compile-all-gambit-modules "")
+
+            ;; propose to test these compiled files
+
+            (if (yes-or-no? "Dynamically load Meroon and test it")
+              (begin (load-compiled-gambit-modules "")
+                     (load "tester.scm")
+                     (load "oo.gam")
+                     (test-oo "oo3.tst") ) )
+
+            (display "Now exit from Gambit and click on the linking files.")
+            (newline) ) ) )
+   
+  ;; If you don't want to load Meroon, assume it is present and compiled.
+   
+  (begin
+   (if (yes-or-no? "Test compiled Meroon")
+     (begin (load "tester.scm")
+            (load "oo.gam")
+            (test-oo "oo3.tst") ) )
+     
+   (display "End of Meroon rebuilding and testing script.")
+   (newline) ) )
+
+;;; end of MeroonV3 rebuilding or testing.
+
+  
+  
+  

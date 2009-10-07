@@ -1,0 +1,1 @@
+(declare (not inline))

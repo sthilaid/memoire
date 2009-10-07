@@ -1,0 +1,10 @@
+#! /bin/csh
+set files = `ls `
+foreach file ( $files )
+  if ( -f $1/$file ) then
+    echo "$file":
+    diff -U 5 $file $1
+  else
+    echo "$file" not in $1
+  endif
+end

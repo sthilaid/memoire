@@ -1,0 +1,137 @@
+;;; $Id: oo.pcg,v 3.1 1994/03/16 17:04:58 queinnec Exp $
+;;; Copyright (c) 1990-94 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                  Meroon V3
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file allows to load, compile and test Meroon 
+;;; under PC-Scheme/Geneva 4.02PL1 
+;;;           Just run    pcs oo.pcg
+;;; This file asks you some questions:
+;;;  answer Yes, No, No, No  if you just want to load interpreted Meroon;
+;;;  answer Yes, Yes, No, No if you want to compile Meroon;
+;;;  answer No, No, Yes, No  if you want to load compiled Meroon;
+;;;  answer No, No, No, No   if you just want to play with this file.
+
+(define native-load load)
+
+(define (internal-meroon-load file)
+  (display `(loading ,file))
+  (native-load file)
+  (newline) )
+
+;;; (load-meroon)      loads all *.scm files
+;;; (load-meroon 'fsl) loads as much as possible equivalent fasl files.
+;;; (load-meroon 'so)  loads as much as possible equivalent so files.
+;;; When a so or fsl file is lacking, then load the scm file.
+;;; Normally fsl is the best.
+
+(define (load-meroon . bool)
+  (set! load (lambda (file)
+               (let* ((bf  (basename file ".scm"))
+                      (fsl (string-append bf ".fsl"))
+                      (so  (string-append bf ".so")) )
+                 (cond ((and (pair? bool)
+                             (eq? (car bool) 'fsl)
+                             (file-exists? fsl) )
+                        (display `(loading ,fsl))
+                        (native-load fsl) )
+                       ((and (pair? bool)
+                             (eq? (car bool) 'so)
+                             (file-exists? so) )
+                        (display `(loading ,so))
+                        (native-load so) )
+                       (else 
+                        (display file)
+                        (native-load file) ) )
+                 (newline) ) ))
+  (native-load "meroon.pcg")
+  (native-load "meroon.scm")
+  (set! load native-load)
+  'done )
+
+;;; Load some files to be able to call meroon-files.
+
+(internal-meroon-load "meroon.pcg")
+(internal-meroon-load "macros.scm")
+(internal-meroon-load "computl.scm")
+(define *meroon-files* (meroon-files))
+
+;;; Compile all Meroon source files and creates a galley file to load
+;;; them all. Finally you only have to load "meroon.fsl" to get the rest.
+;;; (compile-meroon)     compiles all files
+;;; (compile-meroon #t)  compiles not yet compiled files.
+
+;;; For now and since I want to inquire fsl and so files, I compile them 
+;;; into the to different forms.
+
+(define (compile-meroon . bool)
+  (for-each (lambda (file)
+              (let ((scm (string-append file ".scm"))
+                    (fsl (string-append file ".fsl"))
+                    (so  (string-append file ".so")) )
+                (if (and (pair? bool)
+                         (car bool)
+                         (file-exists? fsl)
+                         (file-exists? so) )
+                    (display `(skipping ,file))
+                    (begin
+                      (display `(compiling ,file))
+                      (compile-file scm so)
+                      (fast-save-file scm) ) )
+                (newline) ) )
+            *meroon-files* )
+  (compile-galley-meroon) )
+
+(define (compile-galley-meroon)
+  (call-with-output-file "meroon.fsl"
+    (lambda (out)
+      (fast-save
+       (compile
+        `(begin
+           (load "meroon.pcg")
+           ,@(map (lambda (file) 
+                    `(if (file-exists? ,(string-append file ".fsl"))
+                         (load ,(string-append file ".fsl"))
+                         (load ,(string-append file ".scm")) ) )
+                  *meroon-files* )
+           "Meroon V3 ready!" ) )
+       out ) ) ) )
+
+;;; Define a testing toplevel
+
+(define (test-oo file)
+  (suite-test 
+   file "?? " "== " #t
+   (lambda (read check report-anomaly)
+     (set! oo-error (lambda args (report-anomaly args)))
+     (lambda ()
+       (check (eval (read))) ) )
+   equal? ) )
+
+;;; To ease all these things
+
+(begin
+  (display "Load Meroon sources (y,n) ? ")
+  (if (memq (read) '(y yes))
+      (load-meroon) )
+  (display "Compile Meroon sources (y,n) ? ")
+  (if (memq (read) '(y yes))
+      (compile-meroon) )
+  (display "Load compiled  Meroon (y,n) ? ")
+  (if (memq (read) '(y yes))
+      (load-meroon 'fsl) )
+  (display "Test with (test-oo \"oo3.tst\") (y,n) ? ")
+  (if (memq (read) '(y yes))
+      (begin (internal-meroon-load "tester.scm")
+             (test-oo "oo3.tst") ) ) )
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; end of oo.pcs

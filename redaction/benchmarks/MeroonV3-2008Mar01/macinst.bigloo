@@ -1,0 +1,145 @@
+;;; $Id: macinst.bigloo,v 3.7 2000/02/11 15:56:02 queinnec Exp $
+;;; Copyright (c) 1990-93 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                    Meroon V3
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;;                 Bigloo adaptation of instance.scm
+;;; Notes: Bigloo also has these undocumented functions:
+;;;        (make-struct symbol size initial)
+;;;        (struct-ref struct offset)
+;;;        (struct-set! struct offset value)
+;;;        (struct? object)
+;;;        (struct-key struct)
+;;; but alsot (peek o offset) and (poke! o offset value)
+;;;  (define-struct ...) defines as well accessors etc.
+;;;        missing make-closure ....
+
+;;; This file defines the representation of instances. They are
+;;; implemented as vectors with a first slot holding the instantiation
+;;; link. The words offset and indexare distinguished; the former
+;;; denotes offsets within the instance representation while the
+;;; latter denotes natural numbers used with indexed fields.
+
+;;; This file only contains macros, the associated functions are in the 
+;;; instance.bigloo file.
+
+;;; Most of these functions are implemented as macros for speed. They
+;;; can use the already present struct-ref or struct-set! of Bigloo
+;;; but we can speed up this using direct peek and poke! (with an
+;;; additional offset 3). The scope of these two macros is only this file.
+;;; As shown by the following tests, integer arithmetic is paramount.
+
+;;; Test duration with Bigloo interpreter with them:
+;;; 91.54user 5.82system 1:37.41elapsed 99%CPU (0text+10913data 5896max)k
+;;; still under Bigloo interpreter without them:
+;;; 93.47user 8.87system 1:50.32elapsed 92%CPU (0text+10807data 5896max)k
+
+;(define-internal-meroon-macro (struct-ref o i)
+;  `(peek ,o (+fx 2 (starting-offset) ,i))  )
+
+;(define-internal-meroon-macro (struct-set! o i v)
+;  `(poke! ,o (+fx 2 (starting-offset) ,i) ,v) )
+
+;;; This variable designatest the first offset in a vector to hold a slot.
+;;; It usually is 1 (since 0 is reserved to the instantiation link).
+
+(define-meroon-macro (starting-offset)
+  1 )
+
+;;; Test if a Scheme object is a Meroon object. 
+;;; Access to instances. Since all accesses are checked, these
+;;; functions would better avoid to check that o is a struct, that the
+;;; offset is a natural and that the offset lies within the struct.
+
+(define-meroon-macro (instance-ref o offset)
+  (if (integer? offset)
+      `(struct-ref ,o ,(+fx (starting-offset) offset))
+      `(struct-ref ,o (+fx (starting-offset) ,offset)) ) )
+
+(define-meroon-macro (instance-set! o offset value)
+  (if (integer? offset)
+      `(struct-set! ,o ,(+fx (starting-offset) offset) ,value)
+      `(struct-set! ,o (+fx (starting-offset) ,offset) ,value) ) )
+
+;;; Builds an instance with CN as instantiation link and ARGS as content.
+;;; ARGS are values for mono- or poly- fields as well as their size.
+;;; Since vectors are initialized with the undefined value, it is
+;;; needless to reinitialize them with this undefined value.
+
+(define-meroon-macro (instance cn . args)
+  (let ((g (gensym)))
+    `(let ((,g (make-struct 'meroon (+fx (starting-offset) ,(length args))
+                            meroon-uninitialized )))
+       (struct-set! ,g 0 ,cn)
+       ,@(meroon-reduce 
+          (lambda (code i arg)
+            (if (eq? arg 'meroon-uninitialized)
+                code
+                (cons `(struct-set! ,g (+fx (starting-offset) ,i) ,arg)
+                      code ) ) )
+                 '()
+                 (iota 0 (length args))
+                 args )
+       ,g ) ) )
+
+;;; Allocate an empty instance with CN as instantation link. Caution,
+;;; the result is not necessarily a well formed instance. It might
+;;; need to be skeletized if containing poly-fields.
+
+(define-internal-meroon-macro (allocate-empty-instance cn size)
+  (let ((g (gensym)))
+    `(let ((,g (make-struct 'meroon (+fx (starting-offset) ,size) 
+                            meroon-uninitialized )))
+       (struct-set! ,g 0 ,cn)
+       ,g ) ) )
+
+;;; Allocate an instance with a given CONTENT. Similar to instance,
+;;; except that CONTENT is given as a list. 
+
+(define-internal-meroon-macro (allocate-full-instance cn content)
+  (let ((g (gensym))
+        (c (gensym)) )
+    `(let* ((,c ,content)
+            (,g (allocate-empty-instance ,cn (length ,c))) )
+       (fill-instance! ,g 0 ,c) ) ) )
+
+;;; This one is actually needed but curious. It is actually needed by
+;;; maker.scm to check a posteriori the allocation of an instance. It
+;;; is also used by size.scm to know the size of Meroon. It returns
+;;; the number of values contained in an instance (instantiation link
+;;; not comprised).
+
+(define-internal-meroon-macro (instance-length o)
+  `(-fx (struct-length ,o) (starting-offset)) )
+
+;;; Fast arithmetic for small integers:
+
+(define-internal-meroon-macro (meroon-plus . args)
+  (case (length args)
+    ((0) 0)
+    ((1) (car args))
+    ((2) `(+fx ,(car args) ,(cadr args)))
+    (else `(+fx ,(car args) (meroon-plus . ,(cdr args)))) ) )
+
+(define-internal-meroon-macro (meroon-minus . args)
+  (case (length args)
+    ((0) 0)
+    ((1) (car args))
+    ((2) `(-fx ,(car args) ,(cadr args)))
+    (else `(-fx ,(car args) (meroon-minus . ,(cdr args)))) ) )
+
+;;; Emit a declaration that inlining here is worthless.
+
+(define-internal-meroon-macro (meroon-declare-not-inlinable)
+  '(quote *nothing-at-all*) )
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; end of macinst.bigloo

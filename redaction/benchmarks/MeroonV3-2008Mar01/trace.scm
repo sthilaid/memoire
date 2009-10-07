@@ -1,0 +1,156 @@
+;;; $Id: trace.scm,v 1.1 2005/02/25 22:19:37 lucier Exp lucier $ 
+;;; Copyright (c) 1990-96 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                    Meroon 
+;;;                              Christian Queinnec  
+;;;                    Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file defines the tracing facility. Two levels are provided: a
+;;; low level one which installs hook-functions to be called before
+;;; and after a generic call and a high level one which by default
+;;; shows the arguments and the result of a generic call. The high
+;;; level just uses the low level one.
+
+;;; The list of traced generic functions paired with their original
+;;; default behaviour (which must be restored after untracing).
+
+(define *traced-generics* (list))
+
+;;;============================================================== Low level
+;;; This function installs two functions named BEFORE and AFTER
+;;; that are called on the arguments and the result of a generic call.
+;;; It is a sort of old-style advise feature. 
+
+(define (generic-trace generic before after)
+  (let ((generic (->Generic generic)))
+    (unless (procedure? before)
+      (report-meroon-error 
+       'Domain 'generic-trace "Not a procedure" before ) )
+    (unless (procedure? after)
+      (report-meroon-error 
+       'Domain 'generic-trace "Not a procedure" after ) )
+    (unless (assq generic *traced-generics*)
+      (let ((default (Generic-default generic)))
+        (set! *traced-generics* 
+              (cons (cons generic default) *traced-generics*) )
+        (set-Generic-default!
+         generic
+         (lambda all-arguments
+           ;; the BEFORE function is only is only called for side-effects.
+           (oo-apply before all-arguments)
+           ;; the AFTER function can modify the result.
+           (after (oo-apply default all-arguments)) ) )
+        (set-Generic-dispatcher!
+         generic
+         (make-Tracing-Dispatcher
+          (build-Tracing-Dispatcher-find-method before after)
+          (Generic-dispatcher generic)
+          default ) ) ) )
+    generic ) )
+
+(define (build-Tracing-Dispatcher-find-method before after)
+  ;; args can be cn for mono-method or classes for poly-method but in
+  ;; any case, it is the same arity for method-finder.
+  (lambda (d args)
+    (lambda all-arguments
+      (let* ((nextd (Tracing-Dispatcher-dispatcher d))
+             (method ((careless-Dispatcher-method-finder nextd)
+                      nextd args )) )
+        ;; the BEFORE function is only is only called for side-effects.
+        (oo-apply before all-arguments)
+        ;; the AFTER function can modify the result.
+        (after (oo-apply (or method (Tracing-Dispatcher-default d))
+                         all-arguments )) ) ) ) )
+
+;;; remove the tracing dispatchers associated to a generic instance.
+
+(define (generic-untrace generic)
+  (let* ((generic (->Generic generic))
+         (name (Generic-name generic))
+         (p (assq generic *traced-generics*)) )
+    (when (pair? p)
+      (set! *traced-generics*
+            (let remq ((g* *traced-generics*))
+              (if (pair? g*)
+                  (if (eq? (car g*) p)
+                      (cdr g*)
+                      (cons (car g*) (remq (cdr g*))) )
+                  g* ) ) )
+      ;; this works till default of generic functions are immutable.
+      (set-Generic-default! generic (cdr p))
+      (set-Generic-dispatcher!
+       generic (remove-Tracing-Dispatcher! 
+                (Generic-dispatcher generic) ) )
+      generic ) ) )
+
+(define-generic (remove-Tracing-Dispatcher! (d Dispatcher)))
+
+(define-method (remove-Tracing-Dispatcher! (d Immediate-Dispatcher))
+  d )
+
+(define-method (remove-Tracing-Dispatcher! (d Indexed-Dispatcher))
+  (set-Indexed-Dispatcher-no!
+   d (remove-Tracing-Dispatcher! (Indexed-Dispatcher-no d)) )
+  d )
+
+(define-method (remove-Tracing-Dispatcher! (d Global-Dispatcher))
+  d )
+
+(define-method (remove-Tracing-Dispatcher! (d Subclass-Dispatcher))
+  (set-Subclass-Dispatcher-no! 
+   d (remove-Tracing-Dispatcher! (Subclass-Dispatcher-no d)) )
+  (set-Subclass-Dispatcher-yes! 
+   d (remove-Tracing-Dispatcher! (Subclass-Dispatcher-yes d)) )
+  d )
+
+(define-method (remove-Tracing-Dispatcher! (d Linear-Dispatcher))
+  (set-Linear-Dispatcher-no!
+   d (remove-Tracing-Dispatcher! (Linear-Dispatcher-no d)) )
+  d )
+
+(define-method (remove-Tracing-Dispatcher! (d Tracing-Dispatcher))
+  (remove-Tracing-Dispatcher! (Tracing-Dispatcher-dispatcher d)) )  
+
+;;; Other methods.
+
+(define-method (enlarge-dispatcher! (d Tracing-Dispatcher))
+  (set-Tracing-Dispatcher-dispatcher! 
+   d (enlarge-dispatcher! (Tracing-Dispatcher-dispatcher d)) )
+  d )
+
+;;;========================================================== Enhanced tracing
+;;; A better tracing facility with meaningful defaults. Arguments are
+;;; displayed with the generic function show. It is actually coded with
+;;; generic-trace which is the lower level instrumenting facility.
+
+(define (show-generic-trace . names)
+  (for-each (lambda (name)
+              (generic-trace 
+               (->Generic name)
+               (lambda args
+                 (show name)
+                 (display "<<")
+                 (for-each (lambda (arg) 
+                             (display " ")
+                             (show arg) )
+                           args )
+                 (newline) )
+               (lambda (result)
+                 (show name)
+                 (display ">> ")
+                 (show result)
+                 (newline)
+                 result ) ) )
+            names ) )
+
+;;; (show-generic-untrace) untraces all traced generic.
+
+(define (show-generic-untrace . names)
+  (for-each (lambda (o) (generic-untrace (->Generic o)))
+            (if (pair? names) names
+                (oo-map car *traced-generics*) ) ) )
+
+;;; end of trace.scm

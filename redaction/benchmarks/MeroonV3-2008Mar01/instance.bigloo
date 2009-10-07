@@ -1,0 +1,75 @@
+;;; $Id: instance.bigloo,v 3.11 1996/03/31 12:31:04 queinnec Exp $
+;;; Copyright (c) 1990-93 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                    Meroon V3
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;;                 Bigloo adaptation of instance.scm
+;;; Notes: Bigloo also has these undocumented functions:
+;;;        (make-struct symbol size initial)
+;;;        (struct-ref struct offset)
+;;;        (struct-set! struct offset value)
+;;;        (struct? object)
+;;;        (struct-key struct)
+;;; but alsot (peek o offset) and (poke! o offset value)
+;;;  (define-struct ...) defines as well accessors etc.
+;;;        missing make-closure ....
+
+;;; This file defines the representation of instances. They are
+;;; implemented as vectors with a first slot holding the instantiation
+;;; link. The words offset and indexare distinguished; the former
+;;; denotes offsets within the instance representation while the
+;;; latter denotes natural numbers used with indexed fields.
+
+;;; Most of these functions are implemented as macros for speed. They
+;;; can use the already present struct-ref or struct-set! of Bigloo
+;;; but we can speed up this using direct peek and poke! (with an
+;;; additional offset 3). The scope of these two macros is only this file.
+;;; As shown by the following tests, integer arithmetic is paramount.
+
+;;; This file only contains functions. Associated macros are in the 
+;;; macinst.bigloo file.
+
+;;; Test if a Scheme object is a Meroon object. 
+;;; Rather weak ! Could be improved when Scheme can create new types.
+;;; Note that native Scheme objects are not Meroon objects and no attempt 
+;;; is done to handle that since this would pose many problems if the user
+;;; wants, for example, to subclass vectors or functions.
+;;; Increased the robustness of Object? for Meroon: test that the structure 
+;;; name is Meroon [Comment from Thierry Saura].
+
+(define (Object? o)
+  (and (struct? o)
+       (eq? 'meroon (peek o 1))
+       (number? (object->class-number o)) ) )
+
+;;; Extracts the internal number of a class from within an instance.
+
+(define (object->class-number o)
+  (struct-ref o 0) )
+
+;;; Shallow copy of an instance.
+
+(define (instance-clone o)
+  (let* ((n (struct-length o))
+         (r (make-struct 'meroon n meroon-uninitialized)) )
+    (copy-instance-slice! o r 0 n)
+    r ) )
+
+;;; Copy instance old[start..end[ into instance new[start..end[
+
+(define (copy-instance-slice! old new start end)
+  (let copy ((i start))
+    (when (<fx i end)
+      (struct-set! new i (struct-ref old i))
+      (copy (+fx i 1)) ) ) )
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; end of instance.bigloo

@@ -1,0 +1,173 @@
+head	1.1;
+access;
+symbols;
+locks
+	lucier:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2008.03.02.03.11.27;	author lucier;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@;;; $Id: interm.scm,v 1.1 2005/02/25 22:19:37 lucier Exp $ 
+;;; Copyright (c) 1990-97 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                    Meroon 
+;;;                              Christian Queinnec  
+;;;                    Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; These functions are needed for the bootstrap.They will be
+;;; superseded by Basics.scm and Coercers.scm files.
+
+;;;=========================================================== predicates
+
+(define (Class? o) 
+  (and (Object? o) (Class-is-a? o Class-class)) )
+
+(define (Handy-Class? o)
+  (and (Object? o) (Class-is-a? o Handy-Class-class)) )
+
+(define (MeroonV2-Class? o)
+  (and (Object? o) (Class-is-a? o MeroonV2-Class-class)) )
+
+(define (Generic? o)
+  (and (Object? o) (Class-is-a? o Generic-class)) )
+
+(define (Field? o)
+  (and (Object? o) (Class-is-a? o Field-class)) )
+
+(define (Mono-Field? o)
+  (and (Object? o) (Class-is-a? o Mono-Field-class)) )
+
+(define (Poly-Field? o)
+  (and (Object? o) (Class-is-a? o Poly-Field-class)) )
+
+(define (Dispatcher? o)
+  (and (Object? o) (Class-is-a? o Dispatcher-class)) )
+
+(define (Immediate-Dispatcher? o)
+  (and (Object? o) (Class-is-a? o Immediate-Dispatcher-class)) )
+
+(define (Subclass-Dispatcher? o)
+  (and (Object? o) (Class-is-a? o Subclass-Dispatcher-class)) )
+
+(define (Indexed-Dispatcher? o)
+  (and (Object? o) (Class-is-a? o Indexed-Dispatcher-class)) )
+
+(define (Global-Dispatcher? o)
+  (and (Object? o) (Class-is-a? o Global-Dispatcher-class)) )
+
+(define (Virtual-Field? o)
+  (and (Object? o) (Class-is-a? o Virtual-Field-class)) )
+
+;;;======================================================= temporary accessors:
+
+(define (Field-name f)
+  (instance-ref f 0) )
+(define (Field-initialized? f)
+  (instance-ref f 3) )
+(define (Field-path-length f)
+  (instance-ref f 5) )
+(define (Field-path f i)
+  (instance-ref f (fx+ 5 1 i)) )
+(define (make-Mono-Field . content)
+  (allocate-full-instance (Class-number Mono-Field-class) content) )
+(define (Field-immutable? f)
+  (instance-ref f 0) )
+(define (make-Poly-Field . content)
+  (allocate-full-instance (Class-number Poly-Field-class) content) )
+
+(define (Class-name c)
+  (instance-ref c 0) )
+(define (Class-number c)
+  (instance-ref c 1) )
+(define (set-Class-number! c cn)
+  (instance-set! c 1 cn) )
+(define (Class-fields c)
+  (instance-ref c 2) )
+(define (Class-super-number c)
+  (instance-ref c 4) )
+(define (set-Class-super-number! c cn)
+  (instance-set! c 4 cn) )
+(define (Class-subclass-numbers c)
+  (instance-ref c 5) )
+(define (set-Class-subclass-numbers! c cns)
+  (instance-set! c 5 cns) )
+(define (Class-allocator c)
+  (instance-ref c 7) )
+
+(define (Generic-name g)
+  (instance-ref g 0) )
+(define (Generic-variables g)
+  (instance-ref g 2) )
+(define (Generic-dispatcher g)
+  (instance-ref g 3) )
+(define (set-Generic-dispatcher! g d)
+  (instance-set! g 3 d) )
+(define (Generic-top-classes g)
+  (instance-ref g 4) )
+
+(define (Immediate-Dispatcher-method d)
+  (instance-ref d 1) )
+
+(define (Indexed-Dispatcher-class-number o)
+  (instance-ref o 1) )
+(define (Indexed-Dispatcher-class-depth o)
+  (instance-ref o 2) )
+(define (set-Indexed-Dispatcher-no! d no)
+  (instance-set! d 3 no) )
+(define (Indexed-Dispatcher-method-length o)
+  (instance-ref o 4) )
+(define (set-Indexed-Dispatcher-method! o i v)
+  (instance-set! o (fx+ 5 i) v) )
+
+(define (Subclass-Dispatcher-class-number d)
+  (instance-ref d 1) )
+(define (Subclass-Dispatcher-class-depth d)
+  (instance-ref d 2) )
+(define (Subclass-Dispatcher-no d)
+  (instance-ref d 3) )
+(define (set-Subclass-Dispatcher-no! d v)
+  (instance-set! d 3 v) )
+(define (Subclass-Dispatcher-yes d)
+  (instance-ref d 4) )
+(define (set-Subclass-Dispatcher-yes! d v)
+  (instance-set! d 4 v) )
+
+;;;======================================================== Makers
+
+(define (make-Generic-1 name default variables dispatcher top-classes)
+  (instance
+   original-Generic-1-class-number
+   name default variables dispatcher top-classes ) )
+
+(define (make-Immediate-Dispatcher method-finder method)
+  (instance
+   original-Immediate-Dispatcher-class-number
+   method-finder method ) )
+
+(define (make-Subclass-Dispatcher method-finder class-number class-depth no yes)
+  (instance
+   original-Subclass-Dispatcher-class-number
+   method-finder class-number class-depth no yes) )
+
+(define (make-Object)
+  (instance original-Object-class-number) )
+
+;;; end of interm.scm
+@

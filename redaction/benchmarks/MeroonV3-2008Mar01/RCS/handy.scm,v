@@ -1,0 +1,241 @@
+head	1.1;
+access;
+symbols;
+locks
+	lucier:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2005.02.25.22.19.37;	author lucier;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@;;; $Id: handy.scm,v 3.14 2000/02/07 17:17:16 queinnec Exp $
+;;; Copyright (c) 1990-2000 Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                    Meroon 
+;;;                              Christian Queinnec  
+;;;                    Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file defines how the accompanying functions of a handy class are
+;;; generated. Handy-Class is a subclass of Class, the difference is
+;;; that when a Handy-Class is created a lot of accompanying functions
+;;; are also created. All the generating functions are generic, are
+;;; specialized on Handy-Class and can be further specialized as shown
+;;; in the MeroonV2 compatibility metaclass.  The
+;;; generate-accompanying-functions is itself generic.
+
+(define (Handy-Class-generate-accompanying-functions class class-options)
+  `(begin 
+     ,(generate-accessors class class-options)
+     ,(generate-predicate class class-options)
+     ,(generate-maker class class-options)
+     ,(generate-allocator class class-options)
+     ,(generate-coercer class class-options) ) )
+
+;;;oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+;;; Handy classes methods
+
+;;; Generates the standard predicate.
+
+(define (Handy-Class-generate-predicate class class-options)
+  (let* ((classname (careless-Class-name class))
+         ;; UMB Scheme does not accept symbols starting with a minus sign.
+         (class-variable (symbol-concatenate classname '- 'class)) )
+    `(meroon-define ,(symbol-concatenate classname "?") 
+       (create-predicate ,class-variable) ) ) )
+
+(define-temporary generate-predicate Handy-Class-generate-predicate)
+
+;;; Generate coercer except if the class is virtual in which case it
+;;; is meaningless.
+
+(define (Handy-Class-generate-coercer class class-options)
+  (let* ((name (careless-Class-name class))
+         ;; UMB Scheme does not accept symbols starting with a minus sign.
+         (coercer-name (symbol-concatenate '- '> name)) )
+    (if (find-option-present? 'virtual class-options)
+        `'**no-coercer**
+        `(begin (define-generic (,coercer-name (o)))
+                (define-method (,coercer-name (o ,name)) o) ) ) ) )
+
+(define-temporary generate-coercer Handy-Class-generate-coercer)
+
+;;; Generate the allocator unless the class is virtual.
+
+(define (Handy-Class-generate-allocator class class-options)
+  (let* ((name (careless-Class-name class))
+         ;; UMB Scheme does not accept symbols starting with a minus sign.
+         (class-variable (symbol-concatenate name '- 'class)) )
+    (if (find-option-present? 'virtual class-options)
+        `'**no-allocator**
+        `(meroon-define ,(symbol-concatenate 'allocate- name)
+           (Class-allocator ,class-variable) ) ) ) )
+
+(define-temporary (generate-allocator class class-options)
+  (cond ((Handy-Class? class) 
+         (Handy-Class-generate-allocator class class-options) )
+        ((Class? class) `#t) ) )
+
+;;; Generate the maker unless the class is virtual.
+
+(define (Handy-Class-generate-maker class class-options)
+  (let* ((classname (Class-name class))
+         ;; UMB Scheme does not accept symbols starting with a minus sign.
+         (class-variable (symbol-concatenate classname '- 'class)) )
+    (if (find-option-present? 'virtual class-options)
+        `'**no-maker**
+        `(meroon-define ,(symbol-concatenate 'make- classname)
+           (make-maker ,class-variable) ) ) ) )
+
+(define-temporary generate-maker Handy-Class-generate-maker)
+
+;;; Generate the accessors. With the new scheme to name accessors,
+;;; they only need to be introduced by defining classes. But care is
+;;; required for homonymic fieldnames.
+
+(define (Handy-Class-generate-accessors class class-options)
+  `(begin 
+     #t                                 ; so the body is never empty
+     ,@@(meroon-reduce
+        (lambda (code field)
+          (if (= (Field-class-number field) (Class-number class))
+              (cons (Field-generate-Handy-accessors field class) code)
+              code ) )
+        `()
+        (Class-fields class) ) ) )
+
+;;;oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+;;; Generates the names for the accessors to a field. They are formed
+;;; from the name of the field only. get-<field> and set-<field>!
+;;; functions are special generic accessing functions that are hidden.
+
+(define-temporary (Field-generate-Handy-accessors field class)
+  ((cond ((Mono-Field? field) Mono-Field-generate-Handy-accessors)
+         ((Poly-Field? field) Poly-Field-generate-Handy-accessors)
+         (else default-Field-generate-Handy-accessors) )
+   field class ) )
+
+;;; should never be called.
+(define default-Field-generate-Handy-accessors internal-meroon-error)
+
+(define (Mono-Field-generate-Handy-accessors field class)
+  (let* ((classname (careless-Class-name class))
+         ;; UMB Scheme does not accept symbols starting with a minus sign.
+         (class-variable (symbol-concatenate classname '- 'class))
+         (fieldname (careless-Field-name field)) )
+    `(begin
+       (meroon-define ,(symbol-concatenate 'get- fieldname)
+         (Mono-Field-create-careful-reader ,class-variable ',fieldname) )
+       ,@@(if (Field-immutable? field)
+             `()
+             `((meroon-define ,(symbol-concatenate 'set- fieldname "!")
+                 (Mono-Field-create-careful-writer 
+                  ,class-variable ',fieldname ) )) ) ) ) )
+
+(define (Poly-Field-generate-Handy-accessors field class)
+  (let* ((classname (careless-Class-name class))
+         ;; UMB Scheme does not accept symbols starting with a minus sign.
+         (class-variable (symbol-concatenate classname '- 'class))
+         (fieldname (careless-Field-name field)) )
+    `(begin 
+       ;; UMB Scheme does not accept symbols starting with a minus sign.
+       (meroon-define ,(symbol-concatenate 'get- fieldname '- 'length)
+         (Poly-Field-create-careful-lengther ,class-variable ',fieldname) )
+       (meroon-define ,(symbol-concatenate 'get- fieldname)
+         (Poly-Field-create-careful-reader ,class-variable ',fieldname) )
+       ,@@(if (Field-immutable? field)
+             `()
+             `((meroon-define ,(symbol-concatenate 'set- fieldname "!")
+                 (Poly-Field-create-careful-writer 
+                  ,class-variable ',fieldname ) )) ) ) ) )
+
+;;;ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+;;; Meroon V2 classes
+;;; Accessors in Meroon are named as <class>-<field> whereas they are
+;;; named get-<field> in Handy classes.
+
+(define (MeroonV2-Class-generate-accessors class class-options)
+  `(begin 
+     #t                                 ; so the body is never empty
+     ,@@(oo-map (lambda (field)
+                 (Field-generate-MeroonV2-accessors field class) )
+               (Class-fields class) ) ) )
+
+(define-temporary (generate-accessors class class-options)
+  (cond ((MeroonV2-Class? class) 
+         (MeroonV2-Class-generate-accessors class class-options) )
+        ((Handy-Class? class) 
+         (Handy-Class-generate-accessors class class-options) )
+        ((Class? class)
+         (Class-generate-accessors class class-options) )
+        (else (report-meroon-error 'internal 'generate-accessors
+               "Unknown metaclass" class class-options )) ) )
+
+(define (Class-generate-accessors class class-options)
+  `'**no-accessors** )
+
+;;;oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+;;; Generates the names for the accessors to a field. They are all formed
+;;; from the name of the field and the class. They supersede the
+;;; corresponding methods on Handy-Class but they only differ in the
+;;; way accessors are named.
+
+(define-temporary (Field-generate-MeroonV2-accessors field class)
+  ((cond ((Mono-Field? field) Mono-Field-generate-MeroonV2-accessors)
+         ((Poly-Field? field) Poly-Field-generate-MeroonV2-accessors)
+         (else default-Field-generate-MeroonV2-accessors) )
+   field class ) )
+
+;;; should never be called.
+(define default-Field-generate-MeroonV2-accessors internal-meroon-error)
+
+(define (Mono-Field-generate-MeroonV2-accessors field class)
+  (let* ((classname (careless-Class-name class))
+         ;; UMB Scheme does not accept symbols starting with a minus sign.
+         (class-variable (symbol-concatenate classname '- 'class))
+         (fieldname (careless-Field-name field)) )
+    `(begin
+       (meroon-define ,(symbol-concatenate classname '- fieldname)
+         (Mono-Field-create-careful-reader ,class-variable ',fieldname) )
+       ,@@(if (Field-immutable? field)
+             `()
+             `((meroon-define
+                ,(symbol-concatenate 'set- classname '- fieldname "!")
+                (Mono-Field-create-careful-writer 
+                 ,class-variable ',fieldname ) )) ) ) ) )
+
+(define (Poly-Field-generate-MeroonV2-accessors field class)
+  (let* ((classname (careless-Class-name class))
+         ;; UMB Scheme does not accept symbols starting with a minus sign.
+         (class-variable (symbol-concatenate classname '- 'class))
+         (fieldname (careless-Field-name field)) )
+    `(begin 
+       ;; UMB Scheme does not accept symbols starting with a minus sign.
+       (meroon-define ,(symbol-concatenate classname '- fieldname '- 'length)
+         (Poly-Field-create-careful-lengther ,class-variable ',fieldname) )
+       (meroon-define ,(symbol-concatenate classname '- fieldname)
+         (Poly-Field-create-careful-reader ,class-variable ',fieldname) )
+       ,@@(if (Field-immutable? field)
+             `()
+             `((meroon-define
+                ,(symbol-concatenate 'set- classname '- fieldname "!")
+                 (Poly-Field-create-careful-writer 
+                  ,class-variable ',fieldname ) )) ) ) ) )
+
+;;; end of handy.scm
+@

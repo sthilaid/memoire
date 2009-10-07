@@ -1,0 +1,39 @@
+head	1.1;
+access;
+symbols;
+locks
+	lucier:1.1; strict;
+comment	@# @;
+
+
+1.1
+date	2005.02.25.22.19.37;	author lucier;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@;;; $Id: old-load.scm,v 3.1 2000/02/11 22:04:45 queinnec Exp $
+
+;;; This is useful to compile Meroon with Gambit:
+
+(define (old-load filename)
+  (call-with-input-file
+    filename
+    (lambda (port)
+      (let loop ((exp (read port)))
+        (if (not (eof-object? exp))
+            (begin
+              (eval exp)
+              (loop (read port))))))))
+
+;;; end of old-load.scm
+@

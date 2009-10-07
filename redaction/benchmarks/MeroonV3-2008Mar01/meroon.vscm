@@ -1,0 +1,122 @@
+;;; $Id: meroon.vscm,v 3.2 1996/06/03 06:43:18 queinnec Exp $
+;;; Copyright (c) 1990-94 by Christian Queinnec. All rights reserved.
+
+;;;                            *******************************
+;;;                            Scheme->C Adaptation for VSCM
+;;;                            *******************************
+
+;;; This file contains the necessary adaptation for VSCM. 
+;;; Since vscm do not have any macro, you have to have slib before.
+
+;;; This program is distributed in the hope that it will be useful.
+;;; Use and copying of this software and preparation of derivative works
+;;; based upon this software are permitted, so long as the following
+;;; conditions are met:
+;;;      o credit to the authors is acknowledged following current
+;;;        academic behaviour
+;;;      o no fees or compensation are charged for use, copies, or
+;;;        access to this software
+;;;      o this copyright notice is included intact.
+;;; This software is made available AS IS, and no warranty is made about 
+;;; the software or its performance. 
+
+;;; Bug descriptions, use reports, comments or suggestions are welcome.
+;;; Send them to    
+;;;   <queinnec@polytechnique.fr>   or to:   <Christian.Queinnec@inria.fr>
+;;;                                 or to:
+;;;   Christian Queinnec                     Christian Queinnec
+;;;   Laboratoire d'Informatique de l'X      INRIA -- Rocquencourt
+;;;   Ecole Polytechnique                    Domaine de Voluceau, BP 105
+;;;   91128 Palaiseau                        78153 Le Chesnay Cedex
+;;;   France                                 France
+
+;;;************************************************
+;;;    Small, Efficient and Innovative Class System
+;;;       Christian Queinnec  
+;;;   \'Ecole Polytechnique & INRIA-Rocquencourt
+;;;************************************************
+
+;;; No macro in vscm so use these of slib.
+;;; Check whether your SCM_INIT_PATH and SCHEME_LIBRARY_PATH are correct.
+;;; Also check that your SLIB library is up to date. Finally check that
+;;; the following path is correct.
+
+(load "/usr/local/lib/slib/vscm.init")
+
+;;; This one was left undefined in the previous file.
+(define (scheme-implementation-version) "V0r4")
+
+;;; When meroon.vscm, the following expressions are read and expanded
+;;; but they need to be expanded with slib expander so wrap them in an
+;;; eval form to delay macroexpansion.
+
+(require 'defmacro)
+
+;;; Define Meroon macro definers.
+(eval 
+ (defmacro:expand*
+  '(begin
+     (defmacro define-meroon-macro (call . body)
+       `(defmacro ,(car call) ,(cdr call) . ,body) )
+     (defmacro define-internal-meroon-macro (call . body)
+       `(defmacro ,(car call) ,(cdr call) . ,body) ) ) ) )
+;;; Test: 
+;;; (eval '(begin (define (bar . x) (list x  x)) (bar (+ 1 1) 3)))
+;;; (defmacro:expand* '(define-meroon-macro (foo . x) `(quote (,x ,x foo))))
+
+(define (meroon-macroexpand e)
+  (let ((e (defmacro:expand* e)))
+    (define (simplify e*)
+      (if (pair? e*)
+          (if (pair? (car e*))
+              (case (caar e*)
+                ((quote) (simplify (cdr e*)))
+                ((begin) (append (simplify (cdar e*)) (simplify (cdr e*))))
+                (else (cons (car e*) (simplify (cdr e*)))) )
+              (simplify (cdr e*)) )
+          e* ) )
+    (if (pair? e)
+        (case (car e)
+          ((define) e)
+          ((begin) `(begin . ,(simplify (cdr e))))
+          (else e) )
+        e ) ) )
+
+(define meroon-eval
+  (let ((native-eval eval))
+    (lambda (exp)
+      (let ((e (meroon-macroexpand exp)))
+        (if (and (pair? e) (eq? (car e) 'begin))
+            (for-each native-eval (cdr e))
+            (native-eval e) ) ) ) ) )
+
+(define (meroon-load filename)
+  (display "Loading ")(display filename)
+  (call-with-input-file filename
+    (lambda (in)
+      (let loop ((e (read in)))
+        (display ".")
+        (if (eof-object? e) 
+            (close-input-port in)
+            (begin (eval e)
+                   (loop (read in)) ) ) ) ) )
+  (newline)(display filename)(display " loaded.")(newline) )
+
+;;;  patch these to install the macroexpansion mechanism
+
+(set! eval meroon-eval)
+(set! load meroon-load)
+
+;;; Conditional compilation: The variable *meroon-features* defines
+;;; the features of Meroon to be taken into account when loading (or
+;;; compiling Meroon). 
+
+(define *meroon-features* 
+  '( vscm V0r4
+     ) )
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; End of adaptation of Meroon for VSCM.

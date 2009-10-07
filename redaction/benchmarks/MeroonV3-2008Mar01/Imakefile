@@ -1,0 +1,2152 @@
+# $Id: Imakefile,v 1.112 2001/04/24 08:49:37 queinnec Exp $
+### Copyright (c) 1990-94 by Christian Queinnec. All rights reserved.
+
+###                ***********************************************
+###                    Small, Efficient and Innovative Class System
+###                                    Meroon V3
+###                              Christian Queinnec
+###                   \'Ecole Polytechnique & INRIA--Rocquencourt
+###                ************************************************
+
+### This program is distributed in the hope that it will be useful.
+### Use and copying of this software and preparation of derivative works
+### based upon this software are permitted, so long as the following
+### conditions are met:
+###      o credit to the authors is acknowledged following current
+###        academic behaviour
+###      o no fees or compensation are charged for use, copies, or
+###        access to this software
+###      o this copyright notice is included intact.
+### This software is made available AS IS, and no warranty is made about
+### the software or its performance.
+
+### This is the Imakefile of the Meroon V3 system. It is a very large
+### Imakefile!  Please set up the following variables so you can
+### rebuild Meroon V3 with your preferred Scheme compiler.
+### For that, run `make' which will compile Meroon and try to install
+### the resulting files. If the installation does not succeed
+### (generally because you cannot install the resulting files), become
+### super-user and run `make install'. For these two make invocations,
+### you must at least indicate which compiler you are building (the
+### SCHEME variable) and which type of machine you choose (the
+### HOSTTYPE variable is often set up by tcsh and other shells).
+
+work : qnc.hack build.meroon
+
+################################################################################
+#                    	Public variables
+################################################################################
+
+# Define here your own maker. The preferred one is imake (that's why this
+# file is an Imakefile) but make (or Gnu make) should also be correct on
+# the Makefile that appears in the distribution. There is no need to use
+# xmkmf but just imake with your personal configuration if you have one.
+
+MAKE    =       make
+#MAKE   =       imake -I$$HOME/config -e
+
+# Choose the compiler you want to use. Some values are possible for
+# now: It can be SCC for Scheme->C, BGL for Bigloo or GSC for
+# Gambit-C. You can either change this variable or just say `make
+# SCHEME=BGL' in the command line.
+
+#SCHEME	= SCC
+#SCHEME	= BGL
+#SCHEME	= GSC
+
+# This variable tells which type of computer you are using. It is
+# usually setup by tcsh and then automatically imported here. I use
+# sun4, news_mips, vax etc. It is only used to name the subdirectory
+# of o/ where all compilation products will go. This allows to compile
+# Meroon concurrently for multiple architectures without messing files.
+
+#HOSTTYPE	= 	MyComputer
+#HOSTTYPE       =       sun4
+#HOSTTYPE       =       news_mips
+
+# The C compiler to use (gcc works for Scheme->C and Bigloo) and additional
+# flags for this compiler.
+
+CC		= 	gcc 
+CFLAGS          = 	-O3
+
+# These variables drive the installation process. They are usual so I
+# do not spend time to comment them. Since installation is done by
+# copying files, you may consider running make clean to recover disk
+# place. 
+
+MANEXTENSION    = 1
+MANDIR          = /usr/man/man${MANEXTENSION}
+BINDIR          = /usr/local/bin
+
+# Documentation will be installed in this directory.
+
+DOCDIR          = /usr/local/lib/Meroon-V3
+
+# To use the install program is known to be not portable (see
+# autoconf documentation) so I use cp instead.
+
+#INSTALL	= install -c 
+INSTALL		= cp
+
+# To update an archive file. Ranlib does not exist on some machine where it
+# conveniently replaced with touch or echo or whatever neutral command.
+
+#RANLIB		= touch
+RANLIB		= ranlib
+
+# It is often useful to specify this variable to avoid problems.
+
+SHELL	=	/bin/sh
+
+############ If you use Scheme->C then you must set up the following
+# variables: SCC defines the name of the Scheme->C compiler to
+# use.  Additional flags for Scheme->C compilation for your machine
+# can be specified with SCCFLAGS.  SCCDIR is the directory where is
+# the object.h file of Scheme->C [You can find what this place is
+# after reading the scc shell-script under flag LIBDIR].
+
+SCC		= scc
+SCCFLAGS	= 
+SCCDIR		= /usr/local/lib/schemetoc
+
+# These are the additional flags used by the C compiler when invoked by scc.
+# The extended interpreter/compiler sci+ or scc++ will be installed
+# in the BINDIR directory specified above.
+
+SCC_CFLAGS	= ${CFLAGS} -I${SCCDIR}
+
+# This is the path to where are the compiled files of Scheme->C, we need
+# them to build a new compiler with Meroon in it. In this directory can 
+# be found the scsc subdirectory (which is needed) and some other
+# directories such as scrt, test, xlib ...
+
+#ifdef SITE_is_blaye
+SCC_SRC_DIR	= /usr/local/src/15mar93/SONYMIPS
+#else
+#ifdef SITE_is_cornas
+SCC_SRC_DIR	= /usr/local/src/15mar93/SUN4
+#else
+SCC_SRC_DIR	= /your/path/leading/to/scheme2c/compiled/sources
+#endif /* SITE_cornas */
+#endif /* SITE_blaye  */
+
+############  If you use Bigloo then you must set up the following variables:
+# BIGLOO defines the compiler to use, BIGLOOFLAGS the additional
+# flags. All numbers in Meroon V3 are fixnums so use -farithmetic.
+# The extended compiler will be installed in BINDIR as specified above.
+
+BIGLOO		= bigloo
+BIGLOOFLAGS	= -q -O3 -farithmetic -v -eval "(set! *indent* (not 1))"
+
+# Indicate the version of Bigloo you want to use. This is needed to compute
+# some paths.
+
+BIGLOOVERSION	= 2.1a
+
+# This is the absolute path to the compiled files of the Bigloo compiler.
+# We need them to build the extended compiler: bigloo++. Pay attention
+# this path leads to the comptime subdirectory of the Bigloo distribution.
+
+#if defined(SITE_is_youpou) || defined(SITE_is_merou) || defined(SITE_is_lispou) || defined(SITE_is_perou)
+BIGLOO_SRC_DIR	= /usr/local/src/bigloo${BIGLOOVERSION}/comptime
+#else
+BIGLOO_SRC_DIR	= /path/leading/to/bigloo/comptime${BIGLOOVERSION}
+#endif /* SITE_is_*ou  */
+
+# Bigloo uses Gnu make for its generation. Often make is sufficient to
+# handle Bigloo's makefile but sometimes you may find an old old make
+# in which case, you have to use the real Gnu make.
+
+#if defined(SITE_is_merou) || defined(SITE_is_lispou)
+BIGLOO_MAKER	= make
+#else
+BIGLOO_MAKER	= gmake
+#endif
+
+# This directory is where Bigloo stores its necessary files. Usually
+# it is something like /usr/local/lib/bigloo/<version#>/. You probably
+# need to be root to write in those directories. In this directory will
+# be installed the libmeroonV3.a library, the *.bgl modules for MeroonV3
+# and the module of modules meroonV3.bgl that is needed to compile files
+# using Meroon. There will be also a file called meroon that defines how
+# files with the .oon extension should be compiled. If you ignore what this
+# directory is, run `bigloo -query' to see where is its lib-dir.
+
+#BIGLOO_LIB_DIR	=	/usr/local/lib/bigloo/${BIGLOOVERSION}
+
+# Starting with 1.9, bigloo libdir changed. Archives, shared libraries
+# are now stored in this directory with a name containing the
+# biglooversion.
+
+BIGLOO_LIB_DIR	=	/usr/local/lib/bigloo
+
+# To link bigloo++ with Bigloo <=1.6b you need to be able to recompile
+# BIGLOO_SRC_DIR/Tools/date.o, if you may change these rights just run
+# chmod -R a+w BIGLOO_SRC_DIR/ otherwise, remove the line that
+# recompiles Tools/date.o from BIGLOO_SRC_DIR/Makefile.
+
+# To install bigloo++ and besides being able to install it in BINDIR,
+# to install its documentation in MANDIR, you'll also need to be able
+# to write in BIGLOO_LIB_DIR, just run chmod -R a+w BIGLOO_LIB_DIR. 
+
+############  If you use Gambit-C then you must set up the following variables:
+# GAMBIT_COMPILER is the name of the Gambit-C compiler.
+
+GAMBIT_COMPILER	= 	gsc
+
+# GAMBIT_DIR is the directory where the real sources of Gambit are. 
+
+GAMBIT_DIR	= 	/usr/local/src/gambc30
+
+# Tells the name of the gambit library
+
+GAMBIT_LIBRARY	=	${GAMBIT_DIR}/lib/libgambc.a
+
+# These are the flags used to compile Meroon sources with Gambit.
+# The gambit.h file should be reachable from it.
+
+GAMBIT_CFLAGS	=	${CFLAGS} -D___SINGLE_HOST -I${GAMBIT_DIR}/lib
+
+# Tells in which directory the gsi.scm file is:
+
+GAMBIT_GSI_DIR	=	${GAMBIT_DIR}/gsi
+
+# Tells in which directory the gsc.scm file is:
+
+GAMBIT_GSC_DIR	=	${GAMBIT_DIR}/gsc
+
+# You must also copy from ${GAMBIT_GSC_DIR}/makefile the definitions
+# of MODULES and MODULES_O and paste it into GSC_MODULES and
+# GSC_MODULES_O. Remove the final 'gsc' name from them and surround
+# any names of GSC_MODULES within "".
+
+GSC_MODULES = "_host" "_utils" "_source" "_parms" \
+	"_env" "_ptree1" "_ptree2" "_gvm" "_back" \
+	"_front" "_prims" "_t-c-1" "_t-c-2" "_t-c-3"
+GSC_MODULES_O = _host.o _utils.o _source.o _parms.o \
+	_env.o _ptree1.o _ptree2.o _gvm.o _back.o \
+	_front.o _prims.o _t-c-1.o _t-c-2.o _t-c-3.o 
+
+############ If you care to send me a mail after installing Meroon
+# then use that address. If you remove the definition nothing will be
+# sent. You may alternatively say 'no' when asked to send the message.
+# Look below at the propose-sending-mail entry.
+
+MEROON_MAIL	=	mail
+MEROON_ADDRESS	=	Christian.Queinnec@lip6.fr
+
+########################################################### End of public part.
+# This is normally the script that will be run if you invoke make
+# without any arguments. 
+
+# A useful abbreviation for the next entries.
+OPT	= "HOSTTYPE=${HOSTTYPE}" "SCHEME=${SCHEME}"
+
+build.meroon : check-shell-variables
+	@echo
+	@echo
+	@echo "	Compiling Meroon V3..."
+	@echo
+	@echo All compilation product will go into o/${HOSTTYPE}/${SCHEME}
+	@echo
+	${MAKE} ${OPT} sch.bgl.cp
+	@echo
+	@echo 
+	@echo Compiling modules into the libmeroonV3.a library...
+	@echo
+	${MAKE} ${OPT} o/${HOSTTYPE}/${SCHEME}/libmeroonV3.a
+	@echo
+	@echo
+	@echo Generating a compiler/interpreter for Meroon V3...
+	@echo
+	${MAKE} ${OPT} o/${HOSTTYPE}/${SCHEME}/${SCHEME}++
+	@echo
+	@echo
+	@echo "Trying to install ${SCHEME}++ (you may have to be su)..."
+	@echo
+	${MAKE} ${OPT} install
+	@echo
+	@echo
+	@echo "Meroon V3 is ready."	
+
+# Install SCHEME++, libraries and other files. You probably have to be su.
+
+install : check-shell-variables
+	${MAKE} ${OPT} ${SCHEME}.install
+	@[ -n "${MEROON_MAIL}" ] && [ -n "${MEROON_ADDRESS}" ] \
+		&& ${MAKE} ${OPT} propose-sending-mail
+
+# Propose to send a mail. You then help me to justify (with respect to
+# my employers) the time I spend on Meroon. This is not mandatory and 
+# you may still use Meroon-V3 without reporting it!
+
+propose-sending-mail :
+	@echo 
+	@echo 
+	@echo "Do you want to send me a mail (yes,no)[y] ? "
+	-read ans ; case $$ans in [nN]*) exit 0 ;; *) \
+	   ( date ; uname -a ; hostname ; domainname ;\
+	     sed -n -e "/define meroon-distribution-name/p" <revision.scm ;\
+	     echo $$USER installed Meroon for ${SCHEME}. ;\
+	   ) | ( ${MEROON_MAIL} ${MEROON_ADDRESS} ; echo "Thanks!" ) & ;; \
+	esac
+
+# Check that shell variables HOSTTYPE and SCHEME are correctly set. 
+
+check-shell-variables : 
+	@[ -n "${SCHEME}" ] || (echo "Missing variable SCHEME !!!" ; exit 1)
+	@[ -n "${HOSTTYPE}" ] || (echo "Missing variable HOSTTYPE !!!" ; exit 1)
+
+clean.install : SCC.clean.install BGL.clean.install
+
+###############################################################################
+# My personal entries so I can just type make and do what I want. 
+
+qnc.hack : 
+	-@[ X$$USER = Xqueinnec ] && ${MAKE} do.qnc
+
+do.qnc :
+	@echo -n "Build Meroon for (install,scc,sci,bigloo,distrib,gsi,gsc,all) [nothing] ? "
+	@read ans ; case $$ans in 				\
+		[sS][cC][cC]*) 	make do.qnc.scc ;;		\
+		[sS][cC][iI]*) 	make do.qnc.sci ;;		\
+		[sS]*) 		make do.qnc.s2c ;;		\
+		[bB]*) 		make do.qnc.bigloo ;;		\
+		[gG][sS][iI]*)	make do.qnc.gsi ;;		\
+		[gG][sS][cC]*)	make do.qnc.gsc ;;		\
+		[dD]*)		make do.qnc.distribution ;; 	\
+		[aA]*)		make do.qnc.all ;;		\
+		[iI]*)		make install ;; 		\
+		*) : ;; esac
+	make do.qnc.clean
+	echo "QNC's hack finished, stop here." ; exit 1
+
+do.qnc.s2c : do.qnc.sci do.qnc.scc
+do.qnc.all : do.qnc.s2c do.qnc.bigloo
+
+do.qnc.sci :
+	${MAKE} mkdir
+	@echo -n "	Rebuild sci+ entirely (y,n)[n] ? "
+	@read ans; case $$ans in \
+		[yY]*) rm -rf o/${HOSTTYPE}/SCC/?* ; \
+		${MAKE} all.SCC "BOOT_SCM=${BOOT_SCM}" ;; \
+		*) : ;; esac
+	${MAKE} test.sci+ ${BINDIR}/sci+ SCHEME=SCC "BOOT_SCM=${BOOT_SCM}"
+	@echo -n "	Rebuild my own sci (y,n)[y] ? "
+	@read ans; case $$ans in [yY]*) cd ${HOME}/s2c ; m ;; *) : ;; esac
+do.qnc.scc :
+	${MAKE} mkdir
+	@echo -n "	Rebuild scc++ entirely (y,n)[n] ? "
+	@read ans; case $$ans in \
+		[yY]*) rm -rf o/${HOSTTYPE}/SCC/?* ; \
+		${MAKE} all.SCC "BOOT_SCM=${BOOT_SCM}" ;; \
+		*) : ;; esac
+	${MAKE} test.scc++ ${BINDIR}/scc++ SCHEME=SCC "BOOT_SCM=${BOOT_SCM}"
+do.qnc.bigloo :
+	${MAKE} mkdir HOSTTYPE="$$HOSTTYPE"
+	@echo -n "	Rebuild bigloo++ entirely (y,n)[n] ? "
+	@read ans; case $$ans in \
+		[yY]*) rm -rf o/${HOSTTYPE}/BGL/?* ;; \
+		*) : ;; esac; 
+	-cd o/${HOSTTYPE}/BGL/ ; ln -s macinst.scm macinst.bigloo.bgl
+	-cd o/${HOSTTYPE}/BGL/ ; ln -s instance.scm instance.bigloo.bgl
+	${MAKE} all.BGL SCHEME=BGL "BOOT_SCM=${BOOT_SCM}"
+	${MAKE} BGL.install SCHEME=BGL "BOOT_SCM=${BOOT_SCM}"
+	${MAKE} test.bigloo++ SCHEME=BGL "BOOT_SCM=${BOOT_SCM}"
+do.qnc.gsi :
+	${MAKE} mkdir
+	@echo -n "	Rebuild gsi+ entirely (y,n)[n] ? "
+	@read ans; case $$ans in \
+		[yY]*) rm -rf o/${HOSTTYPE}/GSC/?* ;; \
+		*) : ;; esac
+	${MAKE} GSI.install SCHEME=GSC "BOOT_SCM=${BOOT_SCM}"
+	${MAKE} test.gsi+ SCHEME=GSC "BOOT_SCM=${BOOT_SCM}"
+do.qnc.gsc :
+	${MAKE} mkdir
+	@echo -n "	Rebuild gsc++ entirely (y,n)[n] ? "
+	@read ans; case $$ans in \
+		[yY]*) rm -rf o/${HOSTTYPE}/GSC/?* ;; \
+		*) : ;; esac
+	${MAKE} GSC.install SCHEME=GSC "BOOT_SCM=${BOOT_SCM}"
+	${MAKE} test.gsc++ SCHEME=GSC "BOOT_SCM=${BOOT_SCM}"
+
+do.qnc.distribution :
+	@echo -n "Give a value to DISTRIBUTION_NAME ? "
+	@read DISTRIBUTION_NAME ; export DISTRIBUTION_NAME ; \
+		${MAKE} distribution "BOOT_SCM=${BOOT_SCM}"
+
+# Try to install as if being a regular user.
+TmpOpt	= HOSTTYPE=bar SCHEME=BGL
+do.notqnc.install :
+	cp `ls -t Meroon*.tar.gz | head -1` /tmp
+	gunzip /tmp/Meroon*.tar.gz
+	cd /tmp ; tar -xvf Meroon*.tar && rm Meroon*.tar
+	cd /tmp/MeroonV3-* ; USER=foo make ${TmpOpt} 
+
+# These are big executables and anything to regenerate them easily is still
+# present (the library and the redundant .o files) so remove them.
+do.qnc.clean :
+	-cd o/${HOSTTYPE}/SCC ; rm thinman* sci+ scc++ sccomp++
+	-cd o/${HOSTTYPE}/BGL ; rm bigloo++ test
+	-cd ${BINDIR} ; rm sci+ 
+
+###############################################################################
+#			Sources						      #
+###############################################################################
+# These are all the sources of Meroon. Some are only needed while
+# bootstrapping Meroon.  
+
+SOURCES = 	access.scm 		\
+		alloc.scm		\
+		anomaly.scm 		\
+		Basics.scm		\
+		careless.scm		\
+		clone.scm		\
+		coinst.scm		\
+		Coercers.scm		\
+		computl.scm		\
+		definers.scm 		\
+		dsssl.scm		\
+		dispatch.scm		\
+		egal.scm 		\
+		exodus.scm 		\
+		extract.scm		\
+		filer.scm		\
+		fill.scm 		\
+		genes1.scm 		\
+		genes2.scm 		\
+		handy.scm		\
+		instance.scm		\
+		interm.scm		\
+		libgen.scm 		\
+		macinst.scm		\
+		macros.scm		\
+		maker.scm		\
+		meroon.scm 		\
+		modify.scm		\
+		multi.scm 		\
+		nodsssl.scm		\
+		option.scm		\
+		postset.scm		\
+		revision.scm 		\
+		runtime.scm 		\
+		show.scm 		\
+		size.scm 		\
+		trace.scm 		\
+		unveil.scm		\
+		utils.scm		\
+		view.scm		\
+		walker.scm
+#Note: files Basics.scm and Coercers.scm are generated by the bootstrap.
+
+# These are the customization files.
+
+CUSTOM	=	meroon.bigloo	\
+		instance.bigloo	\
+		macinst.bigloo	\
+		oo.bigloo	\
+		meroon.elk	\
+		oo.elk		\
+		meroon.gam	\
+		oo.gam		\
+		compile.gam	\
+		icoon.hqx	\
+		lncoon.hqx	\
+		lnioon.hqx	\
+		build.gam	\
+		meroon.guile	\
+		meroon.guile-ii	\
+		meroon.gsc	\
+		instance.gsc	\
+		macinst.gsc	\
+		compile.gsc	\
+		oo.gsi		\
+		meroon.gambc24	\
+		meroon.mac	\
+		oo.mac		\
+		meroon.mit	\
+		oo.mit		\
+		meroon.mzscheme	\
+		oo.mzscheme	\
+		meroon.osc	\
+		oo.osc		\
+		meroon.pcg	\
+		oo.pcg		\
+		meroon.pcs	\
+		oo.pcs		\
+		meroon.slib	\
+		oo.slib		\
+		meroon.s2c	\
+		oo.s2c		\
+		meroon.vscm	\
+		oo.vscm
+# Note: missing .fools .siod .s48 .umb
+
+OTHER_FILES =	FUTURE		\
+		Imakefile	\
+		Makefile	\
+		meroonV3.interface	\
+		Timings.blaye	\
+		rminit.prl	\
+		expand.bgl	\
+		tester.scm	\
+		oo3.tst		\
+		oo3dsssl.tst	\
+		postset.tst	\
+		clexpand.scm	\
+		xpnd.scm	\
+		bl.scm
+
+# Documentations
+
+DOC_FILES =	ChangeLog		\
+		README			\
+		HINTS			\
+		Doc/oopil.dvi		\
+		Doc/oopil.ps		\
+		Doc/meroon.1		\
+		Doc/MeroonV3.dvi	\
+		Doc/MeroonV3.ps		\
+		Doc/dispatch.dvi	\
+		Doc/dispatch.ps
+
+
+###############################################################################
+#			Tests						      #
+###############################################################################
+
+test :	test.elk 		\
+	test.sci 		\
+	test.bigloo 		\
+	test.slib		\
+	test.oscheme		\
+	test.guile		\
+	test.mit		\
+	test.mzscheme		\
+	test.gambit		\
+	test.vscm
+
+# Timing interpreters (see raw results below)
+# Caution: these interpreters are benched over the tests suite which displays
+# a lot of things so printing time is not negligible.
+
+#SEE	=
+SEE	= 1> /dev/null
+
+timings : 
+	@echo "Caution this will last nearly 20 minutes!!!"
+	${TIME} ${MAKE} do.timings
+do.timings :
+	@echo tests done on `hostname` on `date` | tee /dev/tty	> /tmp/timings
+	true @echo "	Timing sci..." | tee /dev/tty	>> /tmp/timings
+	true ${MAKE} test.sci	< /dev/null	${SEE}	2> /tmp/tt
+	true tail -2 /tmp/tt 			>> /tmp/timings
+	@echo "	Timing bigloo..." | tee /dev/tty	>> /tmp/timings
+	${MAKE} test.bigloo	< /dev/null	${SEE}	2> /tmp/tt
+	tail -2 /tmp/tt 			>> /tmp/timings
+	@echo "	Timing slib..." | tee /dev/tty	>> /tmp/timings
+	${MAKE} test.slib		< /dev/null	${SEE}	2> /tmp/tt
+	tail -2 /tmp/tt 			>> /tmp/timings
+	true @echo "	Timing elk..." | tee /dev/tty 	>> /tmp/timings
+	true ${MAKE} test.elk		</dev/null 	${SEE}	2> /tmp/tt
+	true tail -2 /tmp/tt 			>> /tmp/timings
+	@echo ; echo Final results are:
+	@cat /tmp/timings ; echo ; rm /tmp/tt
+
+#tests done on blaye on Tue Oct 12 GMT+0200 1993
+# Don't try to reproduce them, Meroon changed as well as the test suite.
+# Final results are:
+#        Timing sci...
+#216.92user 2.29system 3:40.27elapsed 99%CPU (615text+23924data 13140max)k
+#0inputs+1outputs (10major+64minor)pagefaults 0swaps
+#        Timing bigloo...
+#111.70user 1.78system 1:54.99elapsed 98%CPU (1698text+8684data 5604max)k
+#0inputs+10outputs (48major+181minor)pagefaults 0swaps
+#        Timing slib...
+#119.52user 0.95system 2:01.57elapsed 99%CPU (351text+1558data 980max)k
+#0inputs+5outputs (6major+33minor)pagefaults 0swaps
+#        Timing elk...
+#574.10user 1.69system 9:37.11elapsed 99%CPU (295text+15868data 8340max)k
+#15inputs+3outputs (9major+28minor)pagefaults 0swaps
+
+###################################################Testing with MzScheme
+# Testing with mzscheme
+MZSCHEME	= mzscheme
+
+# Ok with MzScheme 100.
+test.mzscheme : 
+	echo "					\
+(set! read-case-sensitive #t)			\
+(load \"meroon.mzscheme\")			\
+(load \"meroon.scm\")				\
+(define *meroon-debug* #t)			\
+(load \"oo.mzscheme\")				\
+(and (test-oo \"oo3.tst\")			\
+     (begin (load \"postset.scm\")		\
+            (test-oo \"postset.tst\") ) )" 	| ${TIME} ${MZSCHEME}
+
+# Does not work yet.
+compile.for.mzscheme :
+	mzc -z -p meroon.mzscheme macros.scm macinst.scm careless.scm \
+	    utils.scm instance.scm revision.scm walker.scm runtime.scm \
+	    option.scm access.scm dispatch.scm handy.scm definers.scm \
+	    alloc.scm genes1.scm genes2.scm Basics.scm fill.scm coinst.scm \
+	    maker.scm view.scm libgen.scm Coercers.scm anomaly.scm multi.scm \
+	    show.scm trace.scm size.scm unveil.scm egal.scm clone.scm 
+clean ::
+	-rm *.zo
+
+###################################################Testing with Scheme->C
+# Testing with sci 15mar93.
+SCI	= /usr/local/bin/sci -sch 12
+
+### My sci already contains Meroon now (see ~/s2c/Imakefile)
+MY_SCI	= $$HOME/bin/$${HOSTTYPE}/sci
+test.qnc.sci :
+	echo "			\
+(load \"oo.s2c\")		\
+(test-oo \"oo3.tst\")"			| ${TIME} ${MY_SCI}
+
+# Also test the Scheme->C prologue with a bare sci
+test.sci :
+	echo "			\
+(load \"meroon.s2c\")		\
+(load \"meroon.scm\")		\
+(define *meroon-debug* #t)	\
+(load \"oo.s2c\")		\
+(test-oo \"oo3.tst\")" 			| ${TIME} ${SCI}
+
+####################################################Testing with Elk
+# Elk 2.2 is case-sensitive by default. [No dsssl support here]
+ELK	= elk -h 20000
+ELKDIR	= /usr/local/elk
+
+test.elk :
+	@echo "						\
+(load \"${ELKDIR}/runtime/scm/debug.scm\")		\
+(load \"${ELKDIR}/runtime/scm/trace.scm\")		\
+(load \"meroon.elk\")					\
+(load \"meroon.scm\")					\
+(define *meroon-debug* #t)				\
+(load \"oo.elk\")					\
+(and (test-oo \"oo3.tst\")				\
+     ''(test-oo \"oo3dsssl.tst\")			\
+     (begin (load \"postset.scm\")			\
+            (test-oo \"postset.tst\") ) )"		| ${TIME} ${ELK}
+
+####################################################Testing with SIOD
+# SIOD is not a complete Scheme implementation, tests cannot be carried.
+SIOD	= siod -h20000
+
+test.siod :
+	@echo "						\
+(load \"meroon.siod\")					\
+(load \"meroon.scm\")					\
+(define *meroon-debug* #t)				\
+(load \"oo.siod\")					\
+(test-oo \"oo3.tst\")"			| ${TIME} ${SIOD}
+
+####################################################Testing with Bigloo
+# Test with interpreted bigloo, mine already contains Meroon.
+MY_BIGLOO = $$HOME/bin/$$HOSTTYPE/bigloo+
+# Can also test with bigloo -nil to test a little eq-ness of #f and ().
+
+test.my.bigloo :
+	echo "					\
+(define *meroon-debug* #t)			\
+(load \"oo.bigloo\")				\
+(test-oo \"oo3.tst\")"			| ${TIME} ${MY_BIGLOO} -i
+
+# OK now for bigloo 2.1a (No dsssl support here)
+test.bigloo :
+	echo "					\
+(load \"meroon.bigloo\")			\
+(load \"meroon.scm\")				\
+(define *meroon-debug* #t)			\
+(load \"oo.bigloo\")				\
+(and (test-oo \"oo3.tst\")			\
+     ''(test-oo \"oo3dsssl.tst\")		\
+     (begin (load \"postset.scm\")		\
+            (test-oo \"postset.tst\") ) )"	| ${TIME} ${BIGLOO} -i
+
+# Test on blaye for test.bigloo (11 feb 97, Audrey+3)
+# 193.48user 11.48system 5:49.69elapsed 58%CPU
+# Test on lispou pc-linux 133MHz (Noel+1 9 feb 98)
+# 24.94user 1.10system 0:49.13elapsed 52%CPU
+
+####################################################Testing with SCM
+# Test with interpreted SCM+SLIB (scm4e1, slib2a1)
+SLIB 		= scm 
+SLIB_DIR	= /usr/local/src/slib
+SLIB_INIT_SCM	= /usr/local/src/scm/Init5c2.scm
+
+test.slib :
+	export SCM_INIT_PATH=${SLIB_INIT_SCM} ; echo "		\
+(load \"meroon.slib\")				\
+(load \"meroon.scm\")				\
+(define *meroon-debug* #t)			\
+(load \"oo.slib\")				\
+(and (test-oo \"oo3.tst\")			\
+     (begin (load \"postset.scm\")		\
+            (test-oo \"postset.tst\") ) )"	| ${TIME} ${SLIB}
+
+# Time on cornas for test.slib (18 Oct 94, Wenceslas+1)
+# 75.43user 19.58system 1:45.20elapsed 90%CPU
+
+####################################################Testing with Guile
+# Test with interpreted guile-iii
+GUILE	 = guile
+
+test.guile :
+	echo "					\
+(load \"meroon.guile\")				\
+(load \"meroon.scm\")				\
+(define *meroon-debug* #t)			\
+(load \"oo.slib\")				\
+(test-oo \"oo3.tst\")"			| ${TIME} ${GUILE}
+
+# on my pc-linux 166MHz: Noel+1
+#  42.51user 0.63system 0:57.09elapsed 75%CPU
+
+####################################################Testing with OScheme
+# Test with interpreted OScheme 1 (14 Feb 1995)
+OSCHEME	= oscheme
+
+test.oscheme :
+	echo "					\
+(load \"meroon.osc\")				\
+(load \"meroon.scm\")				\
+(define *meroon-debug* #t)			\
+(load \"oo.osc\")				\
+(test-oo \"oo3.tst\")				\
+(exit 0)"			| ${TIME} ${OSCHEME}
+
+# Compute profiling information with OScheme
+# Takes roughly 2641.560u 9.130s 44:28.20 99.3% on blaye.
+#((dispatch index= 77758 
+#        subclass= 815590 
+#       immediate= 491882 
+#     global= 0 else= 0) 
+# (generic-calls= 569565))
+
+profile.with.oscheme :
+	${MAKE} profile.bench1.with.oscheme \
+		profile.bench2.with.oscheme 2>&1 | tee Examples/oscheme.profile
+
+# Takes roughly 964.26user 3.33system 16:16.71elapsed 99%CPU on blaye.
+# Results: ((dispatch index=      72540 
+#                     subclass=  815240 
+#                     immediate= 491470 
+#                     global=         0 
+#                     else=           0) 
+#           (generic-calls=      563839))
+
+profile.bench1.with.oscheme :
+	echo "					\
+(load \"meroon.osc\")				\
+(set! *meroon-features* (cons 'profile *meroon-features*))	\
+(load \"meroon.scm\")				\
+(define *meroon-debug* #t)			\
+(load \"Examples/pinterp.scm\")			\
+(set! *generic-call-counter* 0)			\
+(set! *indexed-dispatch* 0)			\
+(set! *subclass-dispatch* 0)			\
+(set! *immediate-dispatch* 0)			\
+(set! *global-dispatch* 0)			\
+(set! *else-dispatch* 0)			\
+(start-bench)					\
+(display \`((dispatch index= ,*indexed-dispatch* \
+	     subclass= ,*subclass-dispatch*	\
+	     immediate= ,*immediate-dispatch*	\
+	     global= ,*global-dispatch*		\
+	     else= ,*else-dispatch* )		\
+	    (generic-calls= ,*generic-call-counter*)))	\
+(newline)					\
+(show-dispatcher)				\
+"			| ${TIME} ${OSCHEME}
+
+# Takes roughly 1675.46user 4.65system 28:08.21elapsed 99%CPU on blaye.
+# Results: ((dispatch index=     243130 
+#                     subclass=       0 
+#                     immediate= 483552 
+#                     global=         0 
+#                     else=           0) 
+#           (generic-calls=      726523))
+
+profile.bench2.with.oscheme :
+	echo "					\
+(load \"meroon.osc\")				\
+(set! *meroon-features* (cons 'profile *meroon-features*))	\
+(load \"meroon.scm\")				\
+(define *meroon-debug* #t)			\
+(load \"Examples/vsg.scm\")			\
+(load \"Examples/vsg-bench.scm\")		\
+(set! *generic-call-counter* 0)			\
+(set! *indexed-dispatch* 0)			\
+(set! *subclass-dispatch* 0)			\
+(set! *immediate-dispatch* 0)			\
+(set! *global-dispatch* 0)			\
+(set! *else-dispatch* 0)			\
+(start-bench)					\
+(display \`((dispatch index= ,*indexed-dispatch* \
+	     subclass= ,*subclass-dispatch*	\
+	     immediate= ,*immediate-dispatch*	\
+	     global= ,*global-dispatch*		\
+	     else= ,*else-dispatch* )		\
+	    (generic-calls= ,*generic-call-counter*)))	\
+(newline)					\
+(show-dispatcher)				\
+"			| ${TIME} ${OSCHEME}
+
+
+####################################################Testing with MIT Scheme
+# Test with interpreted MIT Scheme 7.2.0
+MIT	= mit-scheme -large
+
+test.mit :
+	echo "					\
+(load \"meroon.mit\")				\
+(define *meroon-debug* #t)			\
+(load \"meroon.scm\")				\
+(load \"oo.mit\")				\
+(test-oo \"oo3.tst\")"			| ${TIME} ${MIT}
+
+# Time on cornas for test.mit (18 Oct 94, Wenceslas+1)
+# 174.96user 24.14system 3:26.30elapsed 96%CPU
+
+####################################################Testing with Gambit
+# Test with interpreted Gambit (C-version) 2.2b
+GAMBIT	= gsi
+
+# Test with interpreted Gambit-C version 2.4, still correct with 3.0
+
+test.gambit : meroon.gambc24
+	(  cat meroon.gsc meroon.gambc24 ; \
+	  echo "				\
+(define *meroon-debug* #t)			\
+(load \"oo.gsi\")				\
+(and (test-oo \"oo3.tst\")			\
+     (test-oo \"oo3dsssl.tst\")			\
+     (begin (load \"postset.scm\")		\
+            (test-oo \"postset.tst\") ) )	\
+	" ;  )			| ${TIME} ${GAMBIT}
+
+# Time on lispou (pc-linux 133Mhz) (Noel+1, 9 feb 98)
+# 43.31user 2.40system 1:15.97elapsed 60%CP
+# Time on perou (pc-linux 450Mhz) (Paques2001, 16 avril 2001)
+# 14.46user 1.06system 0:33.87elapsed 45%CPU
+
+####################################################Testing with Scheme48
+# Test with Scheme48                            UNFINISHED
+SCHEME48_LIBDIR	= /usr/local/lib/scheme48
+SCHEME48 =	scheme48 
+
+meroon.image :
+	( echo ",open signals handle environments"	;\
+	  echo ",build meroon.image"			;\
+	  echo ",exit"					;\
+	  : ) | ${SCHEME48}
+
+test.s48 : 
+	( echo ",open signals handle environments"	;\
+	  echo ",load meroon.s48"			;\
+	  echo ",load meroon.scm"			;\
+	  echo "(define *meroon-debug* #t)"		;\
+	  echo ",load oo.s48"				;\
+	  echo "(test-oo \"oo3.tst\")"			;\
+	  : ) | ${TIME} ${SCHEME48} 
+
+####################################################Testing with UMB Scheme
+# Test with UMB Scheme                     GIVEN UP
+UMB =	umbscheme
+
+test.umb :
+	echo "				\
+(load \"meroon.umb\")			\
+(load \"meroon.scm\")			\
+(define *meroon-debug* #t)		\
+(load \"oo.umb\")			\
+(test-oo \"oo3.tst\")"			| ${TIME} ${UMB}
+
+####################################################Testing with fools
+# Test with fools                          GIVEN UP
+FOOLS_DIR =	/usr/local/lib/fools
+FOOLS = fools ${FOOLS_DIR}/init.scm ${FOOLS_DIR}/extra.scm \
+		${FOOLS_DIR}/macros.scm
+
+test.fools :
+	echo "				\
+(load \"meroon.fools\")			\
+(load \"meroon.scm\")			\
+(define *meroon-debug* #t)		\
+(load \"oo.fools\")			\
+(test-oo \"oo3.tst\")"			| ${TIME} ${FOOLS}
+
+####################################################Testing with vscm
+# Test with vscm			UNFINISHED
+VSCM		= vscm
+VSCM_SRC_DIR	= /usr/local/src/vscmV0r4
+VSCM_LIB_DIR	= /usr/local/lib/vscm
+
+test.vscm : 
+	echo "				\
+(load \"meroon.vscm\")			\
+(load \"meroon.scm\")			\
+(define *meroon-debug* #t)		\
+(load \"oo.vscm\")			\
+(test-oo \"oo3.tst\")"			| ${TIME} ${VSCM}
+
+# Build a new core image with slib and Meroon in it. 
+# We have to modify vscm.init to contain the appropriate path to the
+# slib directory (actually it contains /u/blume/Research/Scheme/slib).
+# Actually (11 X 94) vscm.init from the vscm distribution is incorrect and
+# lacks some functions, take the one that comes from SLIB_DIR.
+# Also fixed some bugs in slib, you should have slib > 2a1.
+
+build.vscm+ : 
+	if [ -f ${SLIB_DIR}/vscm.init ] ; then : ; \
+	else echo "Cannot find the slib directory!?" ; exit 1 ; fi
+	echo "					\
+(load \"meroon.vscm\")				\
+(load \"meroon.scm\")				\
+(slib:dump \"o/${HOSTTYPE}/vscm4meroon\")	\
+(load \"oo.vscm\")				\
+(test-oo \"oo3.tst\")				\
+"						| ${TIME} ${VSCM}
+	mv o/${HOSTTYPE}/vscm4meroon ${VSCM_LIB_DIR}
+
+test.vscm+ :
+	echo "						\
+(load \"oo.vscm\")					\
+(test-oo \"oo3.tst\")" 	| ${TIME} ${VSCM} -b ${VSCM_LIB_DIR}/vscm4meroon
+
+###############################################################################
+#  		Compiling Meroon					      #
+###############################################################################
+# This is difficult due to the bootstrap of Meroon. The basic idea is that
+# you must have a working Meroon in your compiler to compile Meroon. So 
+# you must load Meroon so it can expand itself in order to be compiled.
+# Only Bigloo and Scheme->C are handled here.
+# Before anything run:					make mkdir
+# then for Scheme->C:			make all.SCC
+# 	   followed by:			make o/${HOSTTYPE}/SCC/libmeroonV3.a
+# for Bigloo			make all.BGL
+#     followed by:		make o/${HOSTTYPE}/BGL/libmeroonV3.a
+#          and by:		make o/${HOSTTYPE}/BGL/bigloo++
+
+################################################## Compiling Meroon
+# Prepare Scheme->C and Bigloo modules and interfaces for compilation. 
+# Use Elk for that task to preserve case sensitivity. Make sure also 
+# that the bootstrap (building Basics.scm and Coercers.scm) is already 
+# done and correct. You can also use Scheme->C for that task (but without
+# preserving case sensitivity).
+#BOOT_SCM	= ${SCI}
+BOOT_SCM	= ${ELK}
+##BOOT_SCM	= ${MZSCHEME}
+
+# This directory is used to build scc++
+WORK_SCCplus_DIR	= o/${HOSTTYPE}/SCC/schemetoc+meroon
+
+# Prepare the directories where to store the modules.
+
+mkdir :
+	-[ -d o ] 			|| mkdir o 
+	-[ -d o/${HOSTTYPE} ] 		|| mkdir o/${HOSTTYPE} 
+	-[ -d o/${HOSTTYPE}/SCC ] 	|| mkdir o/${HOSTTYPE}/SCC 
+	-[ -d ${WORK_SCCplus_DIR} ] 	|| mkdir ${WORK_SCCplus_DIR}
+	-[ -d o/${HOSTTYPE}/BGL ]  	|| mkdir o/${HOSTTYPE}/BGL
+	-[ -d o/${HOSTTYPE}/GSC ]	|| mkdir o/${HOSTTYPE}/GSC
+
+# Prepare all modules and interfaces in one go. Generate them into 
+# the DEST_DIR directory. BOOT_SCM will generate Bigloo and Scheme->C modules.
+
+DEST_DIR	= o/${HOSTTYPE}
+all.sch all.scc all.SCC : Basics.scm Coercers.scm 
+	@[ -n "${BOOT_SCM}" ] || (echo "Missing variable BOOT_SCM." ; exit 1)
+	@echo "(begin						\
+  (define boot-scm \"${BOOT_SCM}\")				\
+  (load \"extract.scm\")					\
+  (generate-all-sch-interfaces \"${DEST_DIR}/SCC/\")		\
+  (generate-all-scc-modules \"${DEST_DIR}/SCC/\")		\
+  \"All modules and interfaces regenerated.\"			\
+		)" | ${BOOT_SCM}
+
+${DEST_DIR}/SCC/all-o : 
+	-rm -f ${DEST_DIR}/SCC/all-o
+	${MAKE} ${OPT} ${DEST_DIR}/SCC/do.all-o DEST_DIR=${DEST_DIR}
+	chmod a=r ${DEST_DIR}/SCC/all-o
+
+all.bgl : Basics.scm Coercers.scm
+	@echo "(begin						\
+  (define boot-scm \"${BOOT_SCM}\")				\
+  (load \"extract.scm\")					\
+  (generate-all-bgl-modules \"${DEST_DIR}/BGL/\")		\
+  \"All modules and interfaces regenerated.\"			\
+		)" | ${BOOT_SCM}
+
+# To simplify the boot, the body of the Bigloo modules is expanded by Bigloo.
+
+all.BGL : ${DEST_DIR}/BGL/all-o
+	@echo "(begin 					\
+(load \"expand.bgl\")					\
+(generate-all-bgl-bodies \"${DEST_DIR}/BGL/\")		\
+\"All module bodies regenerated.\" )"	| ${BIGLOO}
+
+${DEST_DIR}/BGL/all-o : 
+	-rm -f ${DEST_DIR}/BGL/all-o
+	${MAKE} ${OPT} ${DEST_DIR}/BGL/do.all-o DEST_DIR=${DEST_DIR}
+	chmod a=r ${DEST_DIR}/BGL/all-o
+
+# In the distribution, where we are not sure of the presence of Elk or
+# Scheme->C, the modules to compile are taken from the distribution.
+
+sch.bgl.cp : 
+	if [ -d o/HOSTTYPE ] ; \
+	then mv o/HOSTTYPE o/${HOSTTYPE} ;\
+	     [ -d ${WORK_SCCplus_DIR} ] || mkdir ${WORK_SCCplus_DIR} ;\
+	else exit 0 ; fi
+
+# To rebuild Basics.scm and Coercers.scm, you must have interm.scm
+# which is a fragment of Basics.scm written by hand. They are built
+# using Elk which is case-sensitive.
+# Whenever exodus.scm is changed, you must rebuild Basics.scm and 
+# Coercers.scm must be rebuilt. Then remove these files and run this
+# entry. Don't forget also to update genes*.scm that build classes by hand.
+
+Basics.scm Coercers.scm : genes1.scm genes2.scm
+Basics.scm Coercers.scm : meroon.elk interm.scm exodus.scm filer.scm
+	@[ -f Basics.scm -a -f Coercers.scm ] || echo "	\
+(begin (load \"meroon.elk\" (global-environment))	\
+       (set! *meroon-features* 				\
+         (cons (quote bootstrap) *meroon-features*) )	\
+       \"Half a minute (or so) please...\" )		\
+(begin (load \"meroon.scm\" (global-environment))	\
+       \"Basics.scm and Coercers.scm rebuilt.\" )" 	| ${BOOT_SCM}
+	@grep "nd of Basics.scm"   Basics.scm
+	@grep "nd of Coercers.scm" Coercers.scm
+	chmod a=r Basics.scm Coercers.scm
+
+# For all files that belong to the runtime of Meroon, builds the 
+# appropriate Makefile entries to rebuild it and compile it.
+# You need the imake command to use that macro. You also need perl to patch
+# Scheme->C generated C files (to impose a correct initialization order).
+# My usual machine has a small virtual memory so if I cannot compile with cc -O
+# I retry without the -O option (this was necessary for genesis and schfrm).
+
+#define ExpandSource(file)						@@\
+o/${HOSTTYPE}/SCC/file.sch : file.scm 					@@\
+	@echo "(begin							\@@\
+  (define boot-scm \"${BOOT_SCM}\")					\@@\
+  (load \"extract.scm\")						\@@\
+  (generate-sch-interface \"file.scm\" \"o/${HOSTTYPE}/SCC/file.sch\")	\@@\
+		)" | ${BOOT_SCM}					@@\
+	@grep "^;;; end of interface" o/${HOSTTYPE}/SCC/file.sch	@@\
+o/${HOSTTYPE}/SCC/file.sc : file.scm					@@\
+	@echo "(begin							\@@\
+  (define boot-scm \"${BOOT_SCM}\")					\@@\
+  (load \"extract.scm\")						\@@\
+  (generate-scc-module \"file.scm\" \"o/${HOSTTYPE}/SCC/file.sc\")	\@@\
+		)" | ${BOOT_SCM}					@@\
+	@grep "^;;; end of module" o/${HOSTTYPE}/SCC/file.sc		@@\
+o/${HOSTTYPE}/BGL/file.bgl : file.scm					@@\
+	@echo "(begin							\@@\
+  (define boot-scm \"${BOOT_SCM}\")					\@@\
+  (load \"extract.scm\")						\@@\
+  (generate-bgl-module \"file.scm\" \"o/${HOSTTYPE}/BGL/file.bgl\")	\@@\
+		)" | ${BOOT_SCM}					@@\
+	@grep "^;;; end of module" o/${HOSTTYPE}/BGL/file.bgl		@@\
+o/${HOSTTYPE}/BGL/libmeroonV3.a : o/${HOSTTYPE}/BGL/file.o 		@@\
+${DEST_DIR}/BGL/all-o : ${DEST_DIR}/BGL/file.bgl			@@\
+${DEST_DIR}/BGL/do.all-o ::						@@\
+	echo file.o >> ${DEST_DIR}/BGL/all-o				@@\
+o/${HOSTTYPE}/BGL/file.o : o/${HOSTTYPE}/BGL/file.bgl			@@\
+	cd o/${HOSTTYPE}/BGL ; ${BIGLOO} -c ${BIGLOOFLAGS} file.bgl	@@\
+${BIGLOO_LIB_DIR}/file.bgl : o/${HOSTTYPE}/BGL/file.bgl			@@\
+	sed -e /include/d < o/${HOSTTYPE}/BGL/file.bgl 			\@@\
+		> ${BIGLOO_LIB_DIR}/file.bgl				@@\
+${BIGLOO_LIB_DIR}/install-bgl : ${BIGLOO_LIB_DIR}/file.bgl 		@@\
+o/${HOSTTYPE}/SCC/libmeroonV3.a : o/${HOSTTYPE}/SCC/file.o 		@@\
+${DEST_DIR}/SCC/all-o : o/${HOSTTYPE}/SCC/file.sch			@@\
+${DEST_DIR}/SCC/do.all-o :: 						@@\
+	echo file.o >> ${DEST_DIR}/SCC/all-o				@@\
+o/${HOSTTYPE}/SCC/file.o : o/${HOSTTYPE}/SCC/file.c			@@\
+	cd o/${HOSTTYPE}/SCC ; ${CC} ${SCC_CFLAGS} -c file.c ||		\@@\
+		${CC} ${SCC_CFLAGS} -O0 -c file.c			@@\
+o/${HOSTTYPE}/SCC/file.c : o/${HOSTTYPE}/SCC/file.sch			@@\
+o/${HOSTTYPE}/SCC/file.c : o/${HOSTTYPE}/SCC/file.sc meroon.s2c		@@\
+	cd o/${HOSTTYPE}/SCC; ${SCC} -C -I ../../.. ${SCCFLAGS} file.sc	@@\
+	-rm o/${HOSTTYPE}/SCC/file.org.c				@@\
+	mv o/${HOSTTYPE}/SCC/file.c o/${HOSTTYPE}/SCC/file.org.c 	@@\
+	perl rminit.prl o/${HOSTTYPE}/SCC/file				@@\
+	rm o/${HOSTTYPE}/SCC/file.org.c
+
+# They are cited as they are loaded in meroon.scm. It is important that the
+# same files appear here and in meroon.scm.
+
+ExpandSource(macros)
+ExpandSource(dsssl)
+ExpandSource(nodsssl)
+ExpandSource(macinst)
+ExpandSource(careless)
+ExpandSource(utils)
+ExpandSource(instance)
+ExpandSource(revision)
+ExpandSource(walker)
+ExpandSource(runtime)
+ExpandSource(option)
+ExpandSource(access)
+ExpandSource(dispatch)
+ExpandSource(handy)
+ExpandSource(definers)
+ExpandSource(alloc)
+ExpandSource(genes1)
+ExpandSource(genes2)
+#do not Expand Source(interm)
+ExpandSource(Basics)
+ExpandSource(fill)
+ExpandSource(coinst)
+ExpandSource(maker)
+#do not Expand Source(exodus)
+#do not Expand Source(filer)
+ExpandSource(view)
+ExpandSource(libgen)
+ExpandSource(Coercers)
+ExpandSource(anomaly)
+ExpandSource(multi)
+ExpandSource(show)
+ExpandSource(trace)
+ExpandSource(size)
+ExpandSource(unveil)
+ExpandSource(egal)
+ExpandSource(modify)
+ExpandSource(clone)
+
+######################################################### Expansion
+# Expand all source files to remove all macros. Macro definitions, such
+# as define-class, that must appear in the resulting code are converted
+# into a dynamic call to eval. Generated files will appear in a
+# sub-directory.
+
+clexpand.scm : ../../icslas/Macros/clexpand.scm
+	-ln -s ../../icslas/Macros/clexpand.scm .
+
+expand.all.sources.with.bigloo : clexpand.scm
+	-mkdir o o/${HOSTTYPE} o/${HOSTTYPE}/bgl
+	echo "\
+(load \"meroon.bigloo\") \
+(load \"xpnd.scm\") \
+(expand-all-sources \"o/${HOSTTYPE}/bgl/\") \
+" | ${BIGLOO}
+
+test.expanded.sources.with.bigloo : expand.all.sources.with.bigloo
+	echo "\
+(define native-load load) \
+(native-load \"meroon.bigloo\") \
+(define (load file) \
+  (native-load (string-append \"o/${HOSTTYPE}/bgl/\" file)) ) \
+(load \"meroon.scm\") \
+(set! load native-load) \
+(load \"oo.bigloo\") \
+(test-oo \"oo3.tst\") " | ${TIME} ${BIGLOO}
+
+expand.all.sources.with.gambit23 : clexpand.scm
+	-mkdir o o/${HOSTTYPE} o/${HOSTTYPE}/GSC
+	echo "\
+(load \"meroon.gsc\") \
+(load \"xpnd.scm\") \
+(expand-all-sources \"o/${HOSTTYPE}/GSC/\") \
+" | ${GAMBIT}
+
+test.expanded.sources.with.gambit23 : expand.all.sources.with.gambit23
+	echo "\
+(define native-load load) \
+(native-load \"meroon.gsc\") \
+(define (load file) \
+  (native-load (string-append \"o/${HOSTTYPE}/GSC/\" file)) ) \
+(load \"meroon.scm\") \
+(set! load native-load) \
+(load \"oo.gsi\") \
+(and (test-oo \"oo3.tst\")			\
+     (test-oo \"oo3dsssl.tst\")			\
+     (begin (native-load \"postset.scm\")	\
+            (test-oo \"postset.tst\") ) )	\
+	 " | ${TIME} ${GAMBIT}
+
+meroon.gambc24 : meroon.scm
+	-rm -f meroon.gambc24
+	sed -e s/load/include/g -e 's/\.scm,/\.gambc24,/g' \
+	    -e 's/\.scm /\.gambc24 /g' \
+	    -e 's/includee/include/g' -e 's/includei/includi/g' \
+		 < meroon.scm > meroon.gambc24
+
+_meroon.scm : make_meroon
+	./make_meroon
+clean ::
+	-rm _meroon.* pre_meroon.scm
+
+##############################################################################
+#                         Meroon with Scheme->C                              #
+##############################################################################
+# Entries for that are already generated by the Expand Source macro above.
+# You need roughly 9 megs for o/${HOSTTYPE}/SCC.
+
+# Regenerate the union of all interfaces. 
+# Set the path variable to designate the directory where the sources of
+# MeroonV3 are (normally the one in which this Imakefile is). Insert an
+# absolute path not to be bothered.
+
+o/${HOSTTYPE}/SCC/meroonV3.sch :
+	-rm -f o/${HOSTTYPE}/SCC/meroonV3.sch
+	( echo "						\
+(define-macro hack-to-load-meroon				\
+    (begin							\
+      (define path \"../../../\")				\
+      \"Load files as specified in meroon.scm\"			\
+      (define native-load load)					\
+      (define (specload file)					\
+         (loadq (string-append path file)) )			\
+      (set! load specload)					\
+      (specload \"meroon.s2c\")					\
+      (set! *meroon-features*  					\
+        (cons 'enough-libraries *meroon-features*) )		\
+      (specload \"meroon.scm\") 				\
+      (set! load native-load)					\
+      (lambda (e m) e) ) )"					;\
+	   cd o/${HOSTTYPE}/SCC ; cat *.sch ) > o/${HOSTTYPE}/SCC/.meroonV3.sch
+	cd o/${HOSTTYPE}/SCC ; mv .meroonV3.sch meroonV3.sch
+	chmod a=r o/${HOSTTYPE}/SCC/meroonV3.sch
+
+# The main module of Meroon. clone is the final module composing Meroon,
+# it will load (in correct order) all the others.
+
+o/${HOSTTYPE}/SCC/meroonV3.sc : o/${HOSTTYPE}/SCC/meroonV3.sch	
+	@echo "			\
+(module meroonV3 (with clone))	\
+(include \"meroonV3.sch\")"		> o/${HOSTTYPE}/SCC/meroonV3.sc
+o/${HOSTTYPE}/SCC/meroonV3.c : o/${HOSTTYPE}/SCC/meroonV3.sc
+	cd o/${HOSTTYPE}/SCC ; ${SCC} -C ${SCCFLAGS} meroonV3.sc
+o/${HOSTTYPE}/SCC/meroonV3.o : o/${HOSTTYPE}/SCC/meroonV3.c
+	cd o/${HOSTTYPE}/SCC ; ${CC} ${SCC_CFLAGS} -c meroonV3.c
+
+# Since all SCC/?*.o are now regenerated, rebuild the library.
+
+o/${HOSTTYPE}/SCC/libmeroonV3.a : o/${HOSTTYPE}/SCC/all-o
+o/${HOSTTYPE}/SCC/libmeroonV3.a : o/${HOSTTYPE}/SCC/meroonV3.o
+	-rm -f o/${HOSTTYPE}/SCC/libmeroonV3.a
+	cd o/${HOSTTYPE}/SCC ; ar cvr libmeroonV3.a meroonV3.o `cat all-o`
+	${RANLIB} o/${HOSTTYPE}/SCC/libmeroonV3.a
+
+# Pack things to save space: less than 1 meg.
+
+SCC.tar.gz : 
+	csh -c "tar -cvf - o/${HOSTTYPE}/SCC/?*.{c,o,sc,sch} | gzip >SCC.tar.gz"
+	@echo "Dont forget to recover space: rm -rf o/${HOSTTYPE}/SCC"
+	@echo "Restore with	" gunzip -c SCC.tar.gz | tar -xvf - 
+	@echo "followed by	" m o/${HOSTTYPE}/SCC/all-o
+	@echo "followed by	" m o/${HOSTTYPE}/SCC/libmeroonV3.a
+
+# To use Meroon, you must compile your files with a line like:
+#		(include "meroonV3.sch")
+# Dont forget to add the (with meroonV3) directive into your module declaration,
+# then you must add the o/${HOSTTYPE}/SCC/libmeroonV3.a library at link time.
+# Note: You will have to provide appropriate paths for all these files.
+# See for example below the o/${HOSTTYPE}/SCC/schfrm.sc entry.
+
+# Build an interpreter with a compiled Meroon in it.
+# meroonv3 should not be written meroonV3 here due to the mangling of names
+# towards C.
+
+o/${HOSTTYPE}/SCC/SCC++ : o/${HOSTTYPE}/SCC/sci+
+o/${HOSTTYPE}/SCC/sci+ : o/${HOSTTYPE}/SCC/libmeroonV3.a
+	cd o/${HOSTTYPE}/SCC ; ${SCC} -i -o sci+ -m meroonv3 \
+		libmeroonV3.a
+
+# and test it
+
+test.sci+ : o/${HOSTTYPE}/SCC/sci+
+	-${MAKE} ${OPT} test.qnc.sci MY_SCI=o/${HOSTTYPE}/SCC/sci+ \
+		| tee /tmp/meroon.sci.log
+	grep "All tests successfully run!" /tmp/meroon.sci.log
+	${MAKE} ${OPT} test.sci.thinman
+
+####################################################### Scheme->C installation
+# The interpreter sci+ and the compiler scc++ will be installed in BINDIR.
+
+SCC.install : ${BINDIR}/sci+ ${BINDIR}/scc++
+
+${BINDIR}/sci+ : o/${HOSTTYPE}/SCC/sci+
+	${INSTALL} o/${HOSTTYPE}/SCC/sci+ 	${BINDIR}
+${BINDIR}/scc++ : ${WORK_SCCplus_DIR}/scc++
+	${INSTALL} ${WORK_SCCplus_DIR}/scc++ 	${BINDIR}
+	${INSTALL} ${WORK_SCCplus_DIR}/sccomp++ 	${BINDIR}
+
+SCC.clean.install :
+	-rm ${BINDIR}/sc[ic]++
+
+####################################################### scc++ construction
+# This assumes that you have the compiled sources of scc somewhere.
+# The scc++ compiler is built in WORK_SCCplus_DIR.
+
+${WORK_SCCplus_DIR}/libscsc.a : 
+	HERE=`pwd` ; export HERE ; cd ${SCC_SRC_DIR}/scsc ; \
+		ar cvr $${HERE}/${WORK_SCCplus_DIR}/libscsc.a *.o 
+	ar d ${WORK_SCCplus_DIR}/libscsc.a main.o
+	${RANLIB} ${WORK_SCCplus_DIR}/libscsc.a
+
+${WORK_SCCplus_DIR}/sccomp++.sc : ${SCC_SRC_DIR}/scsc/main.sc
+	sed -e "s/transform))/transform meroonV3))/" \
+	    -e "s/libsc.a/libsc++.a/" \
+		< ${SCC_SRC_DIR}/scsc/main.sc > ${WORK_SCCplus_DIR}/sccomp++.sc	
+
+${WORK_SCCplus_DIR}/sccomp++.c : ${WORK_SCCplus_DIR}/sccomp++.sc
+	cd ${WORK_SCCplus_DIR} ; ${SCC} -C ${SCCFLAGS} sccomp++.sc 
+
+${WORK_SCCplus_DIR}/objects.h : ${SCCDIR}/objects.h
+	cp ${SCCDIR}/objects.h ${WORK_SCCplus_DIR}/
+${WORK_SCCplus_DIR}/options.h : ${SCCDIR}/options.h
+	cp ${SCCDIR}/options.h ${WORK_SCCplus_DIR}/
+${WORK_SCCplus_DIR}/predef.sc : ${SCCDIR}/predef.sc
+	cp ${SCCDIR}/predef.sc ${WORK_SCCplus_DIR}/
+
+${WORK_SCCplus_DIR}/libsc++.a : ${SCCDIR}/libsc.a 
+	-rm ${WORK_SCCplus_DIR}/libsc++.a 
+	-rm o/${HOSTTYPE}/SCC/libsc++.a
+	cp ${SCCDIR}/libsc.a o/${HOSTTYPE}/SCC/libsc++.a
+	cd o/${HOSTTYPE}/SCC ; ar cvr libsc++.a meroonV3.o `cat all-o`
+	${RANLIB} o/${HOSTTYPE}/SCC/libsc++.a
+	mv o/${HOSTTYPE}/SCC/libsc++.a ${WORK_SCCplus_DIR}/libsc++.a 
+
+${WORK_SCCplus_DIR}/sccomp++ : ${WORK_SCCplus_DIR}/libscsc.a
+${WORK_SCCplus_DIR}/sccomp++ : ${WORK_SCCplus_DIR}/libsc++.a
+${WORK_SCCplus_DIR}/sccomp++ : ${WORK_SCCplus_DIR}/objects.h
+${WORK_SCCplus_DIR}/sccomp++ : ${WORK_SCCplus_DIR}/options.h
+${WORK_SCCplus_DIR}/sccomp++ : ${WORK_SCCplus_DIR}/predef.sc
+${WORK_SCCplus_DIR}/sccomp++ : o/${HOSTTYPE}/SCC/libmeroonV3.a
+${WORK_SCCplus_DIR}/sccomp++ : ${WORK_SCCplus_DIR}/sccomp++.c
+	cd ${WORK_SCCplus_DIR} ; ${CC} -o sccomp++ ${SCC_CFLAGS} \
+		sccomp++.c libscsc.a libsc++.a -lm
+
+${WORK_SCCplus_DIR}/scc++ : ${WORK_SCCplus_DIR}/sccomp++
+	cd ${WORK_SCCplus_DIR} ; HERE=`pwd` ; export HERE ; \
+		echo "#! /bin/csh -f" 				>  scc++ ; \
+		echo "sccomp++ -LIBDIR $$HERE \$$argv " 	>> scc++ ; \
+		chmod a+x scc++
+
+test.scc++ : ${BINDIR}/scc++
+
+####################################################### 
+# FAUDRAIT AJOUTER MEROONV3.SCH A PREDEF.SC ET -M CLONE.
+
+test.compile.with.scc++ : ${WORK_SCCplus_DIR}/scc++
+	echo "						\
+(module test (main start)(with clone))			\
+(define-macro hack 					\
+  (begin (loadq \"../../../meroon.s2c\")		\
+         (loadq \"../../../macros.scm\")		\
+	 (loadq \"../../../macinst.scm\")		\
+	 (loadq \"../../../careless.scm\")		\
+	 (lambda (e m) #f) ) ) 				\
+(define-class Point Object (x y))			\
+(display (make-Point 22 33))(newline)			\
+(show (make-Point 44 55))(newline)			\
+(define-method (show (o Point) . stream)		\
+  (let ((stream (if (pair? stream) (car stream) 	\
+                    (current-output-port) ))) 		\
+    (display (cons (Point-x o)(Point-y o)) stream)	\
+    (newline stream) ) )				\
+(define-generic (manhattan (o Point)) (show o) 42)	\
+(define (start args)					\
+  (show (manhattan (make-Point 11 22)))			\
+  (newline) ) "	>o/${HOSTTYPE}/SCC/test.sc
+	PATH=`pwd`/${WORK_SCCplus_DIR}:$$PATH cd o/${HOSTTYPE}/SCC ; \
+		scc++ -cc ${CC} test.sc -o test 
+	o/${HOSTTYPE}/SCC/test
+
+# This test was suggested by <thinman@netcom.com>
+test.sci.thinman : 
+	echo "					\
+(module thinman (main start)(with clone))	\
+(include \"meroonV3.sch\")			\
+(display '(attention))(newline)			\
+(define-class x object () :prototype)		\
+(display '(prototype done))(newline)		\
+(define-class x object () ) 			\
+(display '(class done))(newline)		\
+(define (start args) (display 'OK)		\
+                     (newline)	)		\
+"			> o/${HOSTTYPE}/SCC/thinman.sc
+	cd o/${HOSTTYPE}/SCC ; \
+		${SCC} -o thinman ${SCCFLAGS} thinman.sc libmeroonV3.a
+	o/${HOSTTYPE}/SCC/thinman
+
+
+##############################################################################
+#			 Compiling Meroon with bigloo                        #
+##############################################################################
+# o/${HOSTTYPE}/BGL requires roughly 25 megs for the compilation and tests.
+
+# The EXTEND_DIR directory specifies where must be stored bigloo files
+# and compilation products.
+
+EXTEND_DIR		= o/${HOSTTYPE}/BGL
+
+# This module describes all the exportation of Meroon. It will be installed
+# in the final library directory ie in BIGLOO_LIB_DIR.
+
+${EXTEND_DIR}/meroonV3.bgl :
+	@echo "                                                         \
+(directives                                                             \
+  (import 								\
+    (macros \"${MEROON_BIGLOO_DIR}/macros.bgl\")                  	\
+    (macinst \"${MEROON_BIGLOO_DIR}/macinst.bgl\")                  	\
+    (utils \"${MEROON_BIGLOO_DIR}/utils.bgl\")                          \
+    (revision \"${MEROON_BIGLOO_DIR}/revision.bgl\")                    \
+    (dsssl \"${MEROON_BIGLOO_DIR}/dsssl.bgl\")                  	\
+    (instance \"${MEROON_BIGLOO_DIR}/instance.bgl\")                    \
+    (careless \"${MEROON_BIGLOO_DIR}/careless.bgl\")                    \
+    (walker \"${MEROON_BIGLOO_DIR}/walker.bgl\")                        \
+    (runtime \"${MEROON_BIGLOO_DIR}/runtime.bgl\")                      \
+    (option \"${MEROON_BIGLOO_DIR}/option.bgl\")                        \
+    (access \"${MEROON_BIGLOO_DIR}/access.bgl\")                        \
+    (dispatch \"${MEROON_BIGLOO_DIR}/dispatch.bgl\")                    \
+    (handy \"${MEROON_BIGLOO_DIR}/handy.bgl\")                          \
+    (definers \"${MEROON_BIGLOO_DIR}/definers.bgl\")                    \
+    (alloc \"${MEROON_BIGLOO_DIR}/alloc.bgl\")                          \
+    (genes1 \"${MEROON_BIGLOO_DIR}/genes1.bgl\")                        \
+    (genes2 \"${MEROON_BIGLOO_DIR}/genes2.bgl\")                        \
+    (Basics \"${MEROON_BIGLOO_DIR}/Basics.bgl\")                        \
+    (fill \"${MEROON_BIGLOO_DIR}/fill.bgl\")                            \
+    (coinst \"${MEROON_BIGLOO_DIR}/coinst.bgl\")                        \
+    (maker \"${MEROON_BIGLOO_DIR}/maker.bgl\")                          \
+    (view \"${MEROON_BIGLOO_DIR}/view.bgl\")                        	\
+    (libgen \"${MEROON_BIGLOO_DIR}/libgen.bgl\")                        \
+    (Coercers \"${MEROON_BIGLOO_DIR}/Coercers.bgl\")                    \
+    (anomaly \"${MEROON_BIGLOO_DIR}/anomaly.bgl\")                      \
+    (multi \"${MEROON_BIGLOO_DIR}/multi.bgl\")                          \
+    (show \"${MEROON_BIGLOO_DIR}/show.bgl\")                            \
+    (trace \"${MEROON_BIGLOO_DIR}/trace.bgl\")                          \
+    (size \"${MEROON_BIGLOO_DIR}/size.bgl\")                            \
+    (unveil \"${MEROON_BIGLOO_DIR}/unveil.bgl\")                        \
+    (egal \"${MEROON_BIGLOO_DIR}/egal.bgl\")                            \
+    (modify \"${MEROON_BIGLOO_DIR}/modify.bgl\")                        \
+    (clone \"${MEROON_BIGLOO_DIR}/clone.bgl\") ) )                      \
+"               > ${EXTEND_DIR}/meroonV3.bgl
+
+o/${HOSTTYPE}/BGL/meroon-v3.bgl : 
+	-rm -f o/${HOSTTYPE}/BGL/meroonV3.bgl
+	MEROON_BIGLOO_DIR=`pwd`/o/${HOSTTYPE}/BGL ; \
+	${MAKE} ${OPT} o/${HOSTTYPE}/BGL/meroonV3.bgl \
+		MEROON_BIGLOO_DIR=$$MEROON_BIGLOO_DIR
+	@echo "							\
+(module meroonv3 (include \"meroonV3.bgl\")(eval (export-all)))	\
+"	> o/${HOSTTYPE}/BGL/meroon-v3.bgl
+
+o/${HOSTTYPE}/BGL/meroon-v3.o : o/${HOSTTYPE}/BGL/meroon-v3.bgl
+	cd o/${HOSTTYPE}/BGL ; ${BIGLOO} -c ${BIGLOOFLAGS} meroon-v3.bgl
+
+o/${HOSTTYPE}/BGL/libmeroonV3.a : o/${HOSTTYPE}/BGL/all-o
+o/${HOSTTYPE}/BGL/libmeroonV3.a : o/${HOSTTYPE}/BGL/meroon-v3.o
+	-rm -f o/${HOSTTYPE}/BGL/libmeroonV3.a
+	cd o/${HOSTTYPE}/BGL ; ar cvr libmeroonV3.a `cat all-o` meroon-v3.o
+	${RANLIB} o/${HOSTTYPE}/BGL/libmeroonV3.a
+
+ADDITIONAL_LIBRARIES	= -ldopt $${HERE}/o/${HOSTTYPE}/BGL/libmeroonV3.a 
+INIT_MAIN_SCM		= $${HERE}/o/${HOSTTYPE}/BGL/bigloo++.bgl
+
+o/${HOSTTYPE}/BGL/BGL++ : o/${HOSTTYPE}/BGL/bigloo++
+o/${HOSTTYPE}/BGL/bigloo++ : o/${HOSTTYPE}/BGL/libmeroonV3.a
+	MEROON_BIGLOO_DIR=`pwd`/o/${HOSTTYPE}/BGL ; \
+	${MAKE} ${OPT} o/${HOSTTYPE}/BGL/meroonV3.bgl \
+		o/${HOSTTYPE}/BGL/bigloo++.bgl \
+		MEROON_BIGLOO_DIR=$$MEROON_BIGLOO_DIR
+	@echo
+	@echo compiling bigloo++, hope you have the correct rights...
+	@echo 
+	HERE=`pwd` ; export HERE ; \
+	   cd ${BIGLOO_SRC_DIR} ; ${BIGLOO_MAKER} mainnewo	\
+		BIGLOO_DEST=$${HERE}/o/${HOSTTYPE}/BGL/bigloo++		\
+  ADDITIONAL_BFLAGS="-q -v2 -eval \"(set! *indent* #f)\" -I $$HERE/o/${HOSTTYPE}/BGL"	\
+		INIT_MAIN_SCM="${INIT_MAIN_SCM}"			\
+		ADDITIONAL_LIBRARIES="${ADDITIONAL_LIBRARIES}"		
+
+# This file is similar to BIGLOO_SRC_DIR/Init/main.scm except that it
+# imports all of Meroon V3. It is used to generate a stand-alone interpreter.
+# The following warning is normal and harmless.
+#*** WARNING:bigloo:initialize-eval-primop!
+#This variable could be used before initialized -- *exit-bigloo*
+
+${EXTEND_DIR}/bigloo++.bgl : 
+	echo "						\
+(module main						\
+   (main main)						\
+   (import init_setrc					\
+	   init_parse-args				\
+	   engine_engine 				\
+           tools_trace					\
+           (meroonv3 \"${MEROON_BIGLOO_DIR}/meroon-v3.bgl\") 	\
+           (display-meroon-banner revision 		\
+             \"${MEROON_BIGLOO_DIR}/revision.bgl\" ) )	\
+	(export (exit-bigloo value))			\
+	) 						\
+(define *exit-bigloo* (lambda (x) (exit x)))		\
+(define (main argv)					\
+  (if (not (member \"-q\" argv))			\
+      (setup-default-values) )				\
+  (bind-exit (exit)					\
+   (set! *exit-bigloo* exit)				\
+   (display-meroon-banner (current-output-port))	\
+   (unwind-protect					\
+      (if (parse-args argv)				\
+         (bigloo)					\
+         -1 )						\
+      (stop-trace) ) ) )				\
+(define (exit-bigloo value)				\
+   (*exit-bigloo* value))"	> ${EXTEND_DIR}/bigloo++.bgl
+
+# Bigloo++ works as a compiler as well as an interpreter. Test it with
+# both functions. First try to use the -help option, then runs bigloo
+# as an interpreter on the test suite, then compile a file with the oon
+# file extension, then the same file without the oon extension. These tests
+# are run in /tmp to avoid the current directories.
+
+test.bigloo++ :: o/${HOSTTYPE}/BGL/bigloo++ 
+	o/${HOSTTYPE}/BGL/bigloo++ -help
+	${MAKE} ${OPT} test.my.bigloo MY_BIGLOO=o/${HOSTTYPE}/BGL/bigloo++ \
+		| tee /tmp/meroon.bgl.log
+	grep "All tests successfully run!" /tmp/meroon.bgl.log
+
+test.bigloo++ :: test.compile.with.bigloo++
+
+test.compile.with.bigloo++ :: o/${HOSTTYPE}/BGL/test.oon
+	cp o/${HOSTTYPE}/BGL/test.oon /tmp/test.oon
+	( HERE=`pwd` ; cd /tmp ;\
+	  $$HERE/o/${HOSTTYPE}/BGL/bigloo++ -v test.oon -o test )
+	/tmp/test
+
+test.compile.with.bigloo++ :: o/${HOSTTYPE}/BGL/test.oon
+	cp o/${HOSTTYPE}/BGL/test.oon /tmp/test.scm
+	( HERE=`pwd` ; cd /tmp ;\
+	  $$HERE/o/${HOSTTYPE}/BGL/bigloo++ test.scm -o test -extend meroon )
+	/tmp/test
+
+# This is a small example of a Bigloo module. Its extension is oon so Bigloo
+# automatically knows that it uses MeroonV3, all the other details of 
+# compilation and linking are taken into account automatically.
+
+o/${HOSTTYPE}/BGL/test.oon :
+	echo "						\
+(module test (main start))				\
+(define-class Point Object (x y))			\
+(display (make-Point 22 33))(newline)			\
+(show (make-Point 44 55))(newline)			\
+(define-method (show (o Point) . stream)		\
+  (display (cons (Point-x o)(Point-y o)) stream)	\
+  (newline stream) )					\
+(define-generic (manhattan (o Point)) 42)		\
+(define (start args)					\
+  (show (manhattan (make-Point 11 22)))			\
+  (newline) )						\
+"			> o/${HOSTTYPE}/BGL/test.oon
+
+# This is the same file. It is used to show that you can use Meroon without
+# the oon extension. Just use the -extend option of Bigloo.
+
+o/${HOSTTYPE}/BGL/test.scm : o/${HOSTTYPE}/BGL/test.oon
+	cp o/${HOSTTYPE}/BGL/test.oon o/${HOSTTYPE}/BGL/test.scm
+
+# Use the extend mechanism of Bigloo. This file will be generated into
+# BIGLOO_LIB_DIR. Whenever you compile with the `-extend meroon' option
+# internal details of compilation (library, interfaces) are dealt invisibly
+# so just use the .oon extension.
+
+${EXTEND_DIR}/meroon : o/${HOSTTYPE}/BGL/bigloo++
+	@echo "							\
+(quote (Automatically generated do not touch))			\
+(eval '(set! *bigloo-name* 					\
+        (string-append *bigloo-name* \" Meroon V3\")))		\
+(set! *bigloo-user-includes* 					\
+      (cons \"${MEROON_BIGLOO_DIR}/meroonV3.bgl\"	 	\
+            *bigloo-user-includes* ) )				\
+(set! *bigloo-user-lib* 					\
+      (cons \"${MEROON_BIGLOO_DIR}/libmeroonV3.a\"		\
+            *bigloo-user-lib* ) )				\
+"		> ${EXTEND_DIR}/meroon
+
+######Try to make a single file containing all of meroon
+o/${HOSTTYPE}/BGL/meroon.bgl :
+	( echo ";;; Automatically generated (don't touch)" ;\
+	  echo "(module meroon)" ;\
+	  echo "(define-macro (HACK) " ;\
+	  echo "  (eval '(define *meroon-features* '( bigloo 2.1 DSSSL " ;\
+	  echo "          pervasive-meroon-macros )))  " ;\
+	  echo "  42 ) (HACK) " ;\
+	  cat meroon.bigloo \
+	    macros.scm dsssl.scm macinst.bigloo careless.scm utils.scm \
+	    instance.bigloo revision.scm walker.scm runtime.scm option.scm \
+	    access.scm dispatch.scm handy.scm definers.scm alloc.scm \
+	    genes1.scm genes2.scm Basics.scm fill.scm coinst.scm \
+	    maker.scm view.scm libgen.scm Coercers.scm anomaly.scm \
+	    multi.scm show.scm trace.scm size.scm unveil.scm egal.scm \
+	    modify.scm clone.scm ) > ${EXTEND_DIR}/meroon.bgl
+o/${HOSTTYPE}/BGL/meroon.o : o/${HOSTTYPE}/BGL/meroon.bgl
+	cd o/${HOSTTYPE}/BGL ; ${BIGLOO} ${BIGLOOFLAGS} meroon.bgl
+
+######################################################### Bigloo installation
+
+BGL.install : ${BIGLOO_LIB_DIR}/libmeroonV3.a
+BGL.install : ${BINDIR}/bigloo++
+
+${BIGLOO_LIB_DIR}/libmeroonV3.a : o/${HOSTTYPE}/BGL/libmeroonV3.a
+	${INSTALL} o/${HOSTTYPE}/BGL/libmeroonV3.a 	${BIGLOO_LIB_DIR}
+	${RANLIB} ${BIGLOO_LIB_DIR}/libmeroonV3.a
+
+${BINDIR}/bigloo++ : o/${HOSTTYPE}/BGL/bigloo++
+	${INSTALL} o/${HOSTTYPE}/BGL/bigloo++ 		${BINDIR}
+
+# Remove {meroonV3,bigloo++}.bgl from ${BIGLOO_LIB_DIR} to regenerate them 
+# with the appropriate path towards ${BIGLOO_LIB_DIR} <johnm@vlibs.com>
+BGL.install :
+	${MAKE} ${OPT} EXTEND_DIR=${BIGLOO_LIB_DIR} \
+		MEROON_BIGLOO_DIR=${BIGLOO_LIB_DIR} \
+		${BIGLOO_LIB_DIR}/meroon	\
+		${BIGLOO_LIB_DIR}/install-bgl
+	-rm ${BIGLOO_LIB_DIR}/meroonV3.bgl ${BIGLOO_LIB_DIR}/bigloo++.bgl
+	${MAKE} ${OPT} EXTEND_DIR=${BIGLOO_LIB_DIR} \
+		MEROON_BIGLOO_DIR=${BIGLOO_LIB_DIR} \
+			${BIGLOO_LIB_DIR}/meroonV3.bgl	\
+			${BIGLOO_LIB_DIR}/bigloo++.bgl
+
+# Remove all the installed stuff.
+BGL.clean.install :
+	-rm ${BIGLOO_LIB_DIR}/libmeroonV3.a
+	-rm ${BINDIR}/bigloo++
+	-rm ${BIGLOO_LIB_DIR}/meroon
+	-for f in o/${HOSTTYPE}/BGL/?*.bgl ;\
+	  do rm ${BIGLOO_LIB_DIR}/`basename $$f` ; done
+	-rm ${BIGLOO_LIB_DIR}/meroonV3.bgl
+
+# Test if the installed bigloo still works in extended mode ie when compiling
+# files with the .oon extension.
+
+test.BGL.after.install : BGL.install
+	${BINDIR}/bigloo++ o/${HOSTTYPE}/BGL/test.oon -o /tmp/test
+	/tmp/test
+
+######################################## Only build a Bigloo+meroon interpreter
+# This interpreter will be called bigloo+. It contains a compiled Meroon
+# in it so it is quite fast. The interpreter is lighter than bigloo++
+# (roughly, 1 meg instead of 3). It is not automatically built so if you
+# need it, just say:	make o/${HOSTTYPE}/BGL/bigloo+
+
+# This is a header file for Bigloo, not a module.
+
+o/${HOSTTYPE}/BGL/meroonV3.bgh : 
+	echo "							\
+(directives							\
+  (import (macros \"macros.bgl\")(utils \"utils.bgl\")		\
+     (revision \"revision.bgl\")(instance \"instance.bgl\")	\
+     (macinst \"macinst.bgl\")(dsssl \"dsssl.bgl\")		\
+     (careless \"careless.bgl\")(walker \"walker.bgl\")		\
+     (runtime \"runtime.bgl\")(option \"option.bgl\")		\
+     (access \"access.bgl\")(dispatch \"dispatch.bgl\")		\
+     (handy \"handy.bgl\")(definers \"definers.bgl\")		\
+     (alloc \"alloc.bgl\")					\
+     (genes1 \"genes1.bgl\")(genes2 \"genes2.bgl\")		\
+     (Basics \"Basics.bgl\")(fill \"fill.bgl\")			\
+     (coinst \"coinst.bgl\")(maker \"maker.bgl\")		\
+     (view \"view.bgl\")(libgen \"libgen.bgl\")			\
+     (Coercers \"Coercers.bgl\")(anomaly \"anomaly.bgl\")	\
+     (multi \"multi.bgl\")					\
+     (show \"show.bgl\")(trace \"trace.bgl\")			\
+     (size \"size.bgl\")(unveil \"unveil.bgl\")			\
+     (egal \"egal.bgl\")(modify \"modify.bgl\")			\
+     (clone \"clone.bgl\") ) )  				\
+(define-expander hack-to-load-meroon				\
+    (begin							\
+      (define path \"./\")					\
+      \"Load files as specified in meroon.scm\"			\
+      (define (spload f) (load (string-append path f)))		\
+      (spload \"macros.bgl\")					\
+      (spload \"utils.bgl\")					\
+      (spload \"dsssl.bgl\")					\
+      (spload \"revision.bgl\")					\
+      (spload \"instance.bgl\")					\
+      (spload \"macinst.bgl\")					\
+      (spload \"careless.bgl\")					\
+      (spload \"walker.bgl\")					\
+      (spload \"runtime.bgl\")					\
+      (spload \"option.bgl\")					\
+      (spload \"access.bgl\")					\
+      (spload \"dispatch.bgl\")					\
+      (spload \"handy.bgl\")					\
+      (spload \"definers.bgl\")					\
+      (spload \"alloc.bgl\")					\
+      (spload \"genes1.bgl\")					\
+      (spload \"genes2.bgl\")					\
+      (spload \"Basics.bgl\")					\
+      (spload \"fill.bgl\")					\
+      (spload \"coinst.bgl\")					\
+      (spload \"maker.bgl\")					\
+      (spload \"view.bgl\")					\
+      (spload \"libgen.bgl\")					\
+      (spload \"Coercers.bgl\")					\
+      (spload \"anomaly.bgl\")					\
+      (spload \"multi.bgl\")					\
+      \"Dont need the other modules\"				\
+      (lambda (e m) e) ) )					\
+"			> o/${HOSTTYPE}/BGL/meroonV3.bgh
+
+# This is the main module, it just starts a very dumb interaction loop.
+# You can of course use an improved interaction loop.
+
+o/${HOSTTYPE}/BGL/bigloo+.bgl : o/${HOSTTYPE}/BGL/meroonV3.bgh
+	echo "						\
+(module bigloo+	(main start) 				\
+  (include \"meroonV3.bgh\") )				\
+(define (start argv)					\
+  (try (repl) list) ) "			> o/${HOSTTYPE}/BGL/bigloo+.bgl
+
+# Build an interpreter with a compiled Meroon in it.
+
+o/${HOSTTYPE}/BGL/bigloo+ : o/${HOSTTYPE}/BGL/libmeroonV3.a
+o/${HOSTTYPE}/BGL/bigloo+ : o/${HOSTTYPE}/BGL/bigloo+.bgl
+	cd o/${HOSTTYPE}/BGL ; ${BIGLOO} ${BIGLOOFLAGS} bigloo+.bgl \
+                -o bigloo+ -ld libmeroonV3.a 
+
+# and test this interpreter.
+
+test.bigloo+ : o/${HOSTTYPE}/BGL/bigloo+
+	${MAKE} ${OPT} test.my.bigloo MY_BIGLOO=o/${HOSTTYPE}/BGL/bigloo+
+
+##############################################################################
+#			 Compiling Meroon with Gambit                        #
+##############################################################################
+# gsi+ is a Gambit interpreter augmented with a compiled Meroon.
+# gsc++ is a Gambit interpreter+compiler augmented with a compiled Meroon.
+# By default, build the two. There are two methods that are detailed
+# below. There is a third method contributed by Brad Lucier, see next section.
+
+# Meroon modules should be in the right order
+C_MODULES	=	macros macinst careless utils instance \
+			dsssl revision walker runtime option access \
+			dispatch handy definers alloc genes1 \
+			genes2 Basics fill coinst maker libgen \
+			Coercers anomaly multi show trace size \
+			unveil egal modify clone
+
+# Compile all Meroon modules into C code.
+
+o/${HOSTTYPE}/GSC/all-c : compile.gsc
+	echo "\
+(include \"meroon.gsc\")				\
+(include \"meroon.gambc24\")				\
+(define compiled-meroon-subpath \"o/${HOSTTYPE}/GSC/\")	\
+(load \"compile.gsc\")					\
+'done "		| ${TIME} ${GAMBIT_COMPILER}
+
+# Compile all C modules into .o files.
+
+o/${HOSTTYPE}/GSC/all-o : o/${HOSTTYPE}/GSC/all-c
+	cd o/${HOSTTYPE}/GSC/ ; for f in ${C_MODULES} ; do \
+		make -f ${GAMBIT_GSC_DIR}/makefile \
+			srcdir=${GAMBIT_GSC_DIR}/ \
+			srcdirpfx=${GAMBIT_GSC_DIR}/ \
+			$$f.o ; done
+
+# Gather all .o files into a library.
+
+o/${HOSTTYPE}/GSC/libmeroonV3.a : o/${HOSTTYPE}/GSC/all-o
+	-cd o/${HOSTTYPE}/GSC ; rm libmeroonV3.a
+	cd o/${HOSTTYPE}/GSC ; ar cvr libmeroonV3.a \
+		`for f in ${C_MODULES} ; do echo $$f.o ; done`
+	-ranlib o/${HOSTTYPE}/GSC/libmeroonV3.a
+
+# Copy the original gsi.scm (change a relative pathname into an absolute one).
+
+o/${HOSTTYPE}/GSC/gsi+.scm : 
+	sed -e "/include/s;../lib;${GAMBIT_DIR}/lib;" \
+		< ${GAMBIT_GSI_DIR}/gsi.scm \
+		> o/${HOSTTYPE}/GSC/gsi+.scm
+
+# Build the link file gsi+_.c
+
+o/${HOSTTYPE}/GSC/gsi+_.c : o/${HOSTTYPE}/GSC/gsi+.scm
+	cd o/${HOSTTYPE}/GSC ; ${GAMBIT_COMPILER} \
+		-f `for f in ${C_MODULES} ; do echo $$f.c ; done` gsi+.scm
+
+# Build gsi+ now.
+
+o/${HOSTTYPE}/GSC/gsi+ : o/${HOSTTYPE}/GSC/libmeroonV3.a
+o/${HOSTTYPE}/GSC/gsi+ : o/${HOSTTYPE}/GSC/gsi+_.c
+	cd o/${HOSTTYPE}/GSC ; \
+		${CC} ${GAMBIT_CFLAGS} -o gsi+ gsi+_.c gsi+.c \
+			libmeroonV3.a ${GAMBIT_LIBRARY} -lm
+
+# Install the gsi+ binary.
+
+GSI.install : o/${HOSTTYPE}/GSC/gsi+
+	${INSTALL} o/${HOSTTYPE}/GSC/gsi+ ${BINDIR}
+
+###########################################
+# Building gsc++ [UNTESTED for gsc2.4 as of Feb 12. 1997]
+
+GSC.install : o/${HOSTTYPE}/GSC/gsc++
+	${INSTALL} o/${HOSTTYPE}/GSC/gsc++ ${BINDIR}
+
+# The first method is to compile every Meroon module separately and
+# then to link them all. The second method is to concatenate all the
+# sources of Meroon before compiling them in a single module. This was
+# suggested by Brad Lucier. Choose your way with the
+# GSC_SINGLE_MERON_MODULE macro but if you define it to 1 then you must
+# have a *very* large virtual memory for the C compilation. Try 1 and
+# then revert to 0 if problems.
+
+#define GSC_SINGLE_MERON_MODULE 0
+
+# Copy from Gambit source directory, the modules composing gsc.
+
+o/${HOSTTYPE}/GSC/gsc++.scm : 
+	-for f in ${GSC_MODULES} ; do \
+		if [ -f o/${HOSTTYPE}/GSC/$$f.c ] ; then true ; else \
+		gzip -d < ${GAMBIT_GSC_DIR}/$$f.cgz \
+			> o/${HOSTTYPE}/GSC/$$f.c ; fi \
+	done
+	-cp ${GAMBIT_GSC_DIR}/gsc.scm o/${HOSTTYPE}/GSC/gsc++.scm
+
+o/${HOSTTYPE}/GSC/gsc++.c : o/${HOSTTYPE}/GSC/gsc++.scm
+	cd o/${HOSTTYPE}/GSC ; ${GAMBIT_COMPILER} gsc++.scm
+
+o/${HOSTTYPE}/GSC/gsc++.o : o/${HOSTTYPE}/GSC/gsc++.c
+	-for f in ${GSC_MODULES} ; do \
+		if [ -f o/${HOSTTYPE}/GSC/$$f.o ] ; then true ; else \
+		ln -s ${GAMBIT_GSC_DIR}/$$f.o o/${HOSTTYPE}/GSC ; fi \
+	done
+	cd o/${HOSTTYPE}/GSC ; ${CC} ${GAMBIT_CFLAGS} -c gsc++.c
+
+o/${HOSTTYPE}/GSC/gsc++ : o/${HOSTTYPE}/GSC/libmeroonV3.a
+o/${HOSTTYPE}/GSC/gsc++ : o/${HOSTTYPE}/GSC/gsc++.o
+o/${HOSTTYPE}/GSC/gsc++ : o/${HOSTTYPE}/GSC/gsc++_.c
+	cd o/${HOSTTYPE}/GSC ; \
+	${CC} ${GAMBIT_CFLAGS} -o gsc++ gsc++_.c   \
+		${GSC_MODULES_O} gsc++.o libmeroonV3.a ${GAMBIT_LIBRARY} -lm
+
+### This the conditional part: 
+
+#if GSC_SINGLE_MERON_MODULE
+
+# Make a single module of all Meroon files.
+
+o/${HOSTTYPE}/GSC/allmeroon.scm : expand.all.sources.with.gambit
+	echo "							\
+(declare (block) (standard-bindings) (extended-bindings))	\
+(declare (fixnum) (inline) (inlining-limit 300) (not safe))	\
+(include \"../gsc/macros.scm\")	\
+(include \"../gsc/macinst.gsc\")	\
+(include \"../gsc/utils.scm\")	\
+(include \"../gsc/dsssl.scm\")	\
+(include \"../gsc/revision.scm\")	\
+(include \"../gsc/instance.gsc\")	\
+(include \"../gsc/careless.scm\")	\
+(include \"../gsc/walker.scm\")	\
+(include \"../gsc/runtime.scm\")	\
+(include \"../gsc/option.scm\")	\
+(include \"../gsc/access.scm\")	\
+(include \"../gsc/dispatch.scm\")	\
+(include \"../gsc/handy.scm\")	\
+(include \"../gsc/definers.scm\")	\
+(include \"../gsc/alloc.scm\")	\
+(include \"../gsc/genes1.scm\")	\
+(include \"../gsc/genes2.scm\")	\
+(include \"../gsc/Basics.scm\")	\
+(include \"../gsc/fill.scm\")		\
+(include \"../gsc/coinst.scm\")	\
+(include \"../gsc/maker.scm\")	\
+(include \"../gsc/view.scm\")	\
+(include \"../gsc/libgen.scm\")	\
+(include \"../gsc/Coercers.scm\")	\
+(include \"../gsc/anomaly.scm\")	\
+(include \"../gsc/multi.scm\")	\
+(include \"../gsc/show.scm\")		\
+(include \"../gsc/trace.scm\")	\
+(include \"../gsc/size.scm\")		\
+(include \"../gsc/unveil.scm\")	\
+(include \"../gsc/egal.scm\")		\
+(include \"../gsc/modify.scm\")	\
+(include \"../gsc/clone.scm\")	\
+"			> o/${HOSTTYPE}/GSC/allmeroon.scm
+
+# Create allmeroon.c (a huge file, wc yields
+#   61277   71969 2432361 o/news_mips/GSC/allmeroon.c)
+# Takes roughly 970.87user 59.60system 27:33.45elapsed 62%CPU on blaye.
+
+o/${HOSTTYPE}/GSC/allmeroon.c : o/${HOSTTYPE}/GSC/allmeroon.scm
+	cd o/${HOSTTYPE}/GSC ; echo "(begin				\
+  (let ((l load)) 							\
+    (set! load (lambda (f) 						\
+                 (l (string-append \"../gsc/\" f)) )) ) 		\
+  (load \"meroon.gsc\")							\
+  (set! *meroon-features* (cons (quote enough-libraries) 		\
+                                *meroon-features* ))			\
+  (load \"meroon.scm\")							\
+  (COMPILE-FILE \"allmeroon.scm\" 'verbose)				\
+  (exit) )" 	| ${TIME} ${GAMBIT_COMPILER}
+
+# Compile allmeroon.c
+# Brad Lucier <lucier@MATH.Purdue.EDU> says that this consumes 300 Mb
+# of swap.  He also adds -O1 -mv8 -D___DYNAMIC_LINK to these options.
+
+o/${HOSTTYPE}/GSC/allmeroon.o : o/${HOSTTYPE}/GSC/allmeroon.c
+	cd o/${HOSTTYPE}/GSC ; ${CC} ${GAMBIT_CFLAGS} -c allmeroon.c
+
+# Rebuild libmeroonV3.a with the sole allmeroon.o file.
+
+o/${HOSTTYPE}/GSC/libmeroonV3.a : o/${HOSTTYPE}/GSC/allmeroon.o
+	-rm o/${HOSTTYPE}/GSC/libmeroonV3.a
+	cd o/${HOSTTYPE}/GSC ; ar cvr libmeroonV3.a allmeroon.o
+	-ranlib o/${HOSTTYPE}/GSC/libmeroonV3.a
+
+o/${HOSTTYPE}/GSC/gsc++_.c : o/${HOSTTYPE}/GSC/gsc++.c
+o/${HOSTTYPE}/GSC/gsc++_.c : o/${HOSTTYPE}/GSC/allmeroon.c
+	cd o/${HOSTTYPE}/GSC ; ${GAMBIT_COMPILER} -link \
+		allmeroon.c `for f in ${GSC_MODULES} "gsc++" ; do \
+			echo $f.c ; done`
+
+#endif /* GSC_SINGLE_MERON_MODULE */
+
+# Test the obtained gsi+ or gsc++ executables. They must interpret the 
+# test suite as gsi or gsc did. I also check that define-meroon-macro
+# is really present (ie had been made pervasive). Don't use foo as the
+# name of the macro since some generic functions in oo3.tst use 'foo'
+# as name and this clashes.
+
+test.gsi+ : 
+	${MAKE} test.gs+ GS=o/${HOSTTYPE}/GSC/gsi+
+
+test.gsc++ : 
+	${MAKE} test.gs+ GS=o/${HOSTTYPE}/GSC/gsc++
+	${MAKE} test.compile.with.gsc++ 
+
+test.gs+ :
+	if [ -z "${GS}" ] ; then echo "Unknown GS" ; exit 1 ; else exit 0 ; fi
+	echo "						\
+(load \"oo.gsi\")					\
+(define-meroon-macro (footruc x) \`(quote (,x ,x)))	\
+(and (equal? (footruc 33) '(33 33))			\
+     (test-oo \"oo3.tst\")				\
+     (exit) )						\
+"		| ${TIME} ${GS}
+
+# These are the files that must be included in the collection.
+
+GSCPLUS_FLAGS = \
+	"macros" "macinst" "utils" "revision" "dsssl" "instance" "careless" \
+	"walker" "runtime" "option" "access" "dispatch" "handy" "definers" \
+	"alloc" "genes1" "genes2" "Basics" "fill" "coinst" "maker" "libgen" \
+	"Coercers" "anomaly" "multi" "show" "trace" "size" \
+	"unveil" "egal" "modify" "clone"
+
+test.compile.with.gsc++ : o/${HOSTTYPE}/GSC/test
+	o/${HOSTTYPE}/GSC/test
+o/${HOSTTYPE}/GSC/test_.c : o/${HOSTTYPE}/GSC/test.scm
+	cd o/${HOSTTYPE}/GSC ; gsc++ -link \
+		`for w in ${GSCPLUS_FLAGS} ; do echo $$w.c ; done` test.scm
+o/${HOSTTYPE}/GSC/test : o/${HOSTTYPE}/GSC/test_.c
+	cd o/${HOSTTYPE}/GSC ; ${CC} ${GAMBIT_CFLAGS} \
+		-o test test.c test_.c \
+		libmeroonV3.a /usr/local/lib/libgambc.a -lm
+
+# NOTE: When a filename is indicated on the command line of gsc, the
+# filename must end with the .scm extension, this is not necessary
+# when calling directly the compile-file function.
+
+o/${HOSTTYPE}/GSC/test.scm :
+	echo "						\
+(define-class Point Object (x y))			\
+(display (make-Point 22 33))(newline)			\
+(show (make-Point 44 55))(newline)			\
+(define-method (show (o Point) . stream)		\
+  (display (cons (Point-x o)(Point-y o)) stream)	\
+  (newline stream) )					\
+(define-generic (manhattan (o Point)) 42)		\
+(show (manhattan (make-Point 11 22)))			\
+(newline)						\
+"			> o/${HOSTTYPE}/GSC/test.scm
+
+
+##############################################################################
+#		Brad Lucier's compilation of Meroon with Gambit              #
+##############################################################################
+# Here is another method described in README.GSC
+
+safe-meroon-for-gambit : meroon-all-gsc.scm 
+	( echo '(declare (block) (standard-bindings) ' 		;\
+	  echo '(extended-bindings) (fixnum))' 			;\
+	  echo ';(declare (inline) (inlining-limit 500))' 	;\
+	  cat meroon-all-gsc.scm 				;\
+	) > safe_meroon.scm
+
+meroon-all-gsc.scm : 
+	cat meroon.gsc macros.scm dsssl.scm macinst.scm careless.scm \
+	    utils.scm instance.scm revision.scm walker.scm runtime.scm \
+	    option.gsc access.scm dispatch.scm handy.scm definers.gsc \
+	    alloc.scm genes1.scm genes2.scm Basics.scm fill.scm coinst.scm \
+	    maker.scm view.scm libgen.scm Coercers.scm anomaly.scm multi.scm \
+	    show.scm trace.scm size.scm unveil.scm egal.scm clone.scm \
+	> meroon-all-gsc.scm
+
+###############################################################################
+#		Distribution						      #
+###############################################################################
+
+#################################################### To floppy
+# copy to a PC floppy (converting NL to CR-LF) all the files.
+
+FLOPPYDIR	= /fd
+
+TODIR	= ${FLOPPYDIR}/dea/meroon
+
+to.pc :
+	if [ "$$SITE" = blaye ] ; then exit 0 ; else exit 1 ; fi
+	@echo -n "Insert PC 720K floppy. Continue (yes,no)[n]? "
+	@read ans ; case X$$ans in X[yY]*) exit 0 ;; *) exit 1 ;; esac
+	mountu -t pcfs /dev/fd0 ${FLOPPYDIR}
+	grep " ${FLOPPYDIR}" /etc/mtab
+	-mkdir ${FLOPPYDIR} ${FLOPPYDIR}/dea ${FLOPPYDIR}/dea/meroon
+	@for f in oo3.tst tester.scm ${SOURCES} ${CUSTOM} README	;\
+	do 	echo Copying $$f					;\
+		nl2crlf.prl $$f > ${TODIR}/`file2pc.prl -lr $$f` 	;\
+		done
+	-@echo ; ls -lg ${TODIR} ; echo "Floppy written." 
+	umountfd
+	eject
+
+to.sunpc :
+	if [ -d ${HOME}/pc ] ; then ${MAKE} FLOPPYDIR=${HOME}/pc to.pc ;\
+	else echo No sunpc here ; exit 1 ; fi
+
+#################################################### Distribution
+# Don't forget to increment revision.scm.
+# To make a distribution: just paste something like:
+#	( setenv DISTRIBUTION_NAME Noel+4 ; m distribution )
+
+DIST_DIR	= MeroonV3
+
+ADDITIONAL_FILES =	Imakefile	\
+			Makefile	\
+			rminit.prl	\
+			expand.bgl	\
+			ChangeLog	\
+			Examples/README		\
+			Examples/vsg.scm	\
+			Examples/vsg-bench.scm	\
+			Examples/vsg.tst	\
+			Examples/interp.scm	\
+			Examples/pinterp.scm	\
+			Examples/Bench.mkf	\
+			Examples/Imakefile	\
+			Examples/?*.gsc		\
+			tester.scm		\
+			oo3.tst			\
+			make_meroon		\
+			old-load.scm
+
+DISTRIBUTION_DIRS = 	${DIST_DIR}		\
+			${DIST_DIR}/Doc 	\
+			${DIST_DIR}/Examples 	\
+			${DIST_DIR}/o 		\
+			${DIST_DIR}/o/HOSTTYPE	 \
+			${DIST_DIR}/o/HOSTTYPE/SCC \
+			${DIST_DIR}/o/HOSTTYPE/GSC \
+			${DIST_DIR}/o/HOSTTYPE/BGL
+
+distribution : meroon.gambc24
+distribution : Doc/oopil.dvi Doc/oopil.ps
+distribution : Doc/MeroonV3.dvi Doc/MeroonV3.ps
+distribution : Doc/dispatch.dvi Doc/dispatch.ps
+	@echo Build distribution with name $${DISTRIBUTION_NAME?}
+	sed -e "/define meroon-distribution-name/s/\".*\"/\"$${DISTRIBUTION_NAME}\"/" \
+		< revision.scm > /tmp/revision.scm
+	rm -f revision.scm && cp /tmp/revision.scm revision.scm
+	cvs update .
+	@echo -n "Do you want to commit everything (y,n) [n] ? " 
+	@read ans ; case $$ans in 				\
+		[yY]*)	cvs commit -m "$${DISTRIBUTION_NAME}" ;;	\
+		*) : ;; esac
+	cvs rtag $${DISTRIBUTION_NAME} meroon
+	${MAKE} do.distribution DIST_DIR=`date +MeroonV3-%y%h%d`
+	${MAKE} update.all
+
+do.distribution :
+	-[ -d ${DIST_DIR} ] 		&& rm -rf ${DIST_DIR}
+	-[ -f ${DIST_DIR}.tar ] 	&& rm -f ${DIST_DIR}.tar
+	-[ -f ${DIST_DIR}.tar.gz ] 	&& rm -f ${DIST_DIR}.tar.gz
+	mkdir ${DISTRIBUTION_DIRS}
+	cd Examples ; m Bench.mkf
+	for f in ${DOC_FILES} ${SOURCES} ${CUSTOM} ${ADDITIONAL_FILES} ;\
+	do cp $$f ${DIST_DIR}/$$f ; done
+	${MAKE} all.scc DEST_DIR=${DIST_DIR}/o/HOSTTYPE "BOOT_SCM=${BOOT_SCM}"
+	${MAKE} all.bgl DEST_DIR=${DIST_DIR}/o/HOSTTYPE "BOOT_SCM=${BOOT_SCM}"
+	${MAKE} all.BGL DEST_DIR=${DIST_DIR}/o/HOSTTYPE "BOOT_SCM=${BOOT_SCM}"
+	-rm -f ${DIST_DIR}/Makefile
+	${MAKE} DIST_DIR=${DIST_DIR} ${DIST_DIR}/Makefile
+	tar -cvf ${DIST_DIR}.tar ${DIST_DIR}
+	gzip ${DIST_DIR}.tar && ls -l ${DIST_DIR}.tar.gz
+	rm -rf ${DIST_DIR}
+
+${DIST_DIR}/Makefile : Imakefile
+	@echo "#include INCLUDE_IMAKEFILE" >/tmp/Imake.tmpl
+	@imake -v -T/tmp/Imake.tmpl -s ${DIST_DIR}/Makefile
+
+update.all : 
+	${MAKE} update.file FILE=${HOME}/WWW/Meroon.html \
+		STAMP=MeroonV3 DATE=`date +-%Y%h%d`
+	${MAKE} update.file FILE=${HOME}/bib/qnc.bib \
+		STAMP=MeroonV3 DATE=`date +-%Y%h%d`
+	${MAKE} update.file FILE=${HOME}/admin/Exportations \
+		STAMP=MeroonV3 DATE=`date +-%Y%h%d`
+
+# Instantaneous tarball.
+instantaneous.tarball :
+	m do.instantaneous.tarball DIST_DIR=`date +MeroonV3-%Y%h%d`
+do.instantaneous.tarball :
+	-[ -d ${DIST_DIR} ] 		&& rm -rf ${DIST_DIR}
+	-[ -f ${DIST_DIR}.tar ] 	&& rm -f ${DIST_DIR}.tar
+	-[ -f ${DIST_DIR}.tar.gz ] 	&& rm -f ${DIST_DIR}.tar.gz
+	mkdir ${DISTRIBUTION_DIRS}
+	cd Examples ; m Bench.mkf
+	for f in ${DOC_FILES} ${SOURCES} ${CUSTOM} ${ADDITIONAL_FILES} ;\
+	do cp $$f ${DIST_DIR}/$$f ; done
+	${MAKE} DIST_DIR=${DIST_DIR} ${DIST_DIR}/Makefile
+	tar -czvf ${DIST_DIR}.tgz ${DIST_DIR}
+	rm -rf ${DIST_DIR}
+	ls -l ${DIST_DIR}.tgz
+
+# update.file is inherited from Imake.tmpl
+
+show.man :
+	nroff -man Doc/meroon.1 | more
+print.man :
+	ptroff -man Doc/meroon.1
+
+# Copy this paper and regenerate their .ps versions.
+
+Doc/dispatch.dvi :
+	-cd Doc; ln -s ../../../themes/DISPATCH/dispatch.dvi .
+Doc/dispatch.ps  : Doc/dispatch.dvi
+
+Doc/oopil.ps : Doc/oopil.dvi
+Doc/oopil.dvi :
+	cd Doc ; ${MAKE} -f ../Makefile oopil.dvi
+
+Doc/MeroonV3.ps : Doc/MeroonV3.dvi
+Doc/MeroonV3.dvi :
+	cd Doc ; ${MAKE} -f ../Makefile MeroonV3.dvi
+
+######################################################## Miscellaneous entries.
+
+tags : ;	etags *.scm *.s2c *.bigloo *.elk *.slib 
+clean :: ;	-rm TAGS o/${HOSTTYPE}/SCC/SC*
+print : ;	${PRINT} ChangeLog FUTURE Imakefile README ${SOURCES}
+
+### end of Imakefile

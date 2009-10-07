@@ -1,0 +1,463 @@
+# $Id: Imakefile,v 1.9 1996/06/19 17:15:52 queinnec Exp $
+
+#              Benchmarking interpreted or compiled Meroon.
+#
+# Usage: for interpreters (run them in Examples)
+#	       m Bench.mkf
+#              time make -f Bench.mkf meroon.ALL
+#              time make -f Bench.mkf meroon.osc
+#              time make -f Bench.mkf meroon.scm
+#              time make -f Bench.mkf meroon.sci
+#              time make -f Bench.mkf meroon.bgl
+#              time make -f Bench.mkf meroon.gsi
+#
+# for compilation (run them from the Meroon-V3 directory)
+#	( cd Examples ; m Bench.mkf )
+#	time make -f Examples/Bench.mkf run.bgl.bench
+#	time make -f Examples/Bench.mkf run.gsc.bench
+
+# The times obtained after compilation strongly depend on the compilation
+# options. Better ones may probably be conceived. Recall that the speed
+# of these benchmarks also depend on how the compilation of Meroon was
+# done.
+
+### Some common variables
+
+MAKE	= make -f Bench.mkf
+TIME	= /usr/local/bin/time
+CC	= gcc
+
+CFLAGS	= -O3
+
+###############################################################################
+#                       Administration 
+###############################################################################
+# Regenerate a special Makefile for benchmarks.
+
+Bench.mkf : Imakefile
+	echo "#include INCLUDE_IMAKEFILE" >/tmp/Imake.tmpl
+	imake -T/tmp/Imake.tmpl -s Bench.mkf
+
+###############################################################################
+#			Testing interpreted Meroon.
+# Try to estimate the time taken to load Meroon (these are the 
+# launch.* entries) then measure the total time (bench*.* entries).
+###############################################################################
+
+# The first bench is a little Scheme interpreter written in OO style.
+# This interpreter is run on the usual fib and fact. 
+# The second bench is a package to generate expressions according to the
+# Scheme grammar. Terms are enumerated by increasing complexity order then
+# they are counted. 
+
+meroon.ALL : Bench.mkf
+	time ${MAKE} meroon.all.implementations
+
+meroon.all.implementations : meroon.osc
+meroon.all.implementations : meroon.scm
+meroon.all.implementations : meroon.sci
+meroon.all.implementations : meroon.bgl
+
+# All tests have a common pattern.
+#define Test(prefix,command,nickname) 			@@\
+meroon.nickname : Bench.mkf				@@\
+	-rm nickname.results				@@\
+	( echo ;					\@@\
+	  echo Bench measured for command ;		\@@\
+	  echo on `hostname`: `uname -a` ;		\@@\
+	  date ) >> nickname.results			@@\
+	${MAKE} launch.nickname				@@\
+	${MAKE} launch.nickname				@@\
+	${MAKE} bench1.nickname				@@\
+	${MAKE} bench2.nickname				@@\
+launch.nickname : Bench.mkf				@@\
+	echo "						\@@\
+(load \"meroon.prefix\")				\@@\
+(load \"meroon.scm\")" 					\@@\
+| (cd .. ; ${TIME} command)	2>> nickname.results	@@\
+bench1.nickname : Bench.mkf				@@\
+	echo "						\@@\
+(load \"meroon.prefix\")				\@@\
+(load \"meroon.scm\")					\@@\
+(load \"Examples/interp.scm\")				\@@\
+(start-bench)"						\@@\
+| (cd .. ; ${TIME} command)	2>> nickname.results	@@\
+bench2.nickname : Bench.mkf				@@\
+	echo "						\@@\
+(load \"meroon.prefix\")				\@@\
+(load \"meroon.scm\")					\@@\
+(load \"Examples/vsg.scm\")				\@@\
+(load \"Examples/vsg-bench.scm\")			\@@\
+(start-bench)"						\@@\
+| (cd .. ; ${TIME} command)	2>> nickname.results
+
+clean ::
+	-rm *.results
+	-rm Bench.mkf
+
+###################################################Testing with Scheme->C
+# Testing with a bare sci 15mar93.
+SCI	= /usr/local/bin/sci -sch 12
+Test(s2c,${SCI},sci)
+
+#launch.sci :
+# 44.88user 3.43system 1:10.51elapsed 68%CPU
+# 45.25user 2.64system 1:09.38elapsed 69%CPU
+
+#bench1.sci :
+# 2332.97user 3.45system 39:27.15elapsed 98%CPU
+
+#bench2.sci :
+# 5675.27user 3.95system 1:35:18elapsed 99%CPU
+
+###################################################Testing with Bigloo
+# Testing with a bare Bigloo 1.8
+
+BIGLOO	= /usr/local/bin/bigloo
+Test(bigloo,${BIGLOO},bgl)
+
+#launch.bgl :
+# 28.71user 2.51system 0:47.20elapsed 66%CPU
+# 28.79user 2.67system 0:46.59elapsed 67%CPU
+
+#bench1.bgl :
+# stack overflow at fourth iteration.
+
+#bench2.bgl :
+# 5002.720u 6.730s 1:24:23.19 98.9%
+
+###################################################Testing with SCM
+# Testing with SCM 4e1
+SCM	= scm
+Test(slib,${SCM},scm)
+
+#launch.scm :
+# 15.48user 0.44system 0:17.49elapsed 91%CPU
+# 15.49user 0.31system 0:16.05elapsed 98%CPU
+
+#bench1.scm :
+# 1483.80user 1.29system 24:48.75elapsed 99%CPU
+
+#bench2.scm :
+# 2619.27user 2.27system 44:00.03elapsed 99%CPU
+
+###################################################Testing with OScheme
+# Testing with OScheme
+OSCHEME	= oscheme
+Test(osc,${OSCHEME},osc)
+
+#launch.scm :
+# 99.77user 2.19system 1:46.47elapsed 95%CPU
+# 99.45user 2.22system 1:42.32elapsed 99%CPU
+
+#bench1.scm :
+# 920.41user 2.58system 15:26.23elapsed 99%CPU
+
+#bench2.scm :
+# 1617.14user 4.21system 27:06.06elapsed 99%CPU
+
+###################################################Testing with Gambit-C
+# Testing with Gambit-C
+GAMBIT	=	gsi
+Test(gsc,${GAMBIT},gsi)
+
+#launch.scm :
+# 79.34user 5.71system 1:40.42elapsed 84%CPU
+# 78.53user 4.42system 1:23.91elapsed 98%CPU
+
+#bench1.scm :
+# 6000?
+
+#bench2.scm :
+# 
+
+
+###############################################################################
+#          Comparing with other object systems                                #
+###############################################################################
+# Yasos is based on Adams and Rees paper.
+
+# SOS
+
+# BOS
+
+# TinyCLOS
+test.tinyclos :
+	echo "\
+(load \"\")\
+(load \"../../tester.scm\")\
+(load \"+tiny-clos.scm\")\
+(load \"test.scm\")\
+(test \"port.tst\")" | ${SCM}
+
+
+
+
+###############################################################################
+#			Testing compiled Meroon 			      #
+###############################################################################
+
+################################################## Benchmark with scc
+# Take the new benchmark ~/DEA/schfrm.scm and ~/DEA/bench.scm
+
+SCC	= scc
+SCCFLAGS	= -cc gcc -Ob -Og -On -Ot
+
+build.scc.bench : o/${HOSTTYPE}/SCC/bench1
+build.scc.bench : o/${HOSTTYPE}/SCC/bench2
+
+# This module uses the show-meroon function so it imports meroonV3.sch
+o/${HOSTTYPE}/SCC/bench1.sc : Examples/pinterp.scm 
+	echo "						\
+(module interp (with meroonV3)(main start))		\
+(include \"meroonV3.sch\")				\
+(define (wrong . ignore) \"ShouldNotBeCalled\")		\
+(define (start options) (start-bench))			\
+(include \"../../../Examples/pinterp.scm\")		\
+"					> o/${HOSTTYPE}/SCC/bench1.sc
+
+# Compilation takes 219.24user 11.32system 3:58.80elapsed 96%CPU
+
+o/${HOSTTYPE}/SCC/bench1 : o/${HOSTTYPE}/SCC/bench1.sc
+	cd o/${HOSTTYPE}/SCC ; \
+	${TIME} scc ${SCCFLAGS} -o bench1 bench1.sc libmeroonV3.a
+
+# Another benchmark based on Examples/vsg.
+# This one cannot be compiled with scc, it requires scc++.
+
+o/${HOSTTYPE}/SCC/bench2.sc : Examples/vsg.scm Examples/vsg-bench.scm
+	echo "							\
+(module vsg (with meroonV3)(main start))			\
+(define (suite-test . a) 'useless)				\
+(define (naive-match . a) 'useless)				\
+(define-macro hack						\
+  (begin 							\
+    (loadq \"../../../meroon.s2c\")				\
+    (loadq \"../../../macros.scm\")				\
+    (loadq \"../../../macinst.scm\")				\
+    (loadq \"../../../careless.scm\")				\
+    (load \"../../../Examples/vsg.scm\")			\
+    (lambda (e m) #f) ) )					\
+(include \"../../../Examples/vsg.scm\")				\
+(include \"../../../Examples/vsg-bench.scm\")			\
+(define (start options) (start-bench))				\
+"				> o/${HOSTTYPE}/SCC/bench2.sc
+
+# Takes roughly 223.58user 14.24system 4:41.22elapsed 84%CPU on blaye
+# to compile this file.
+
+o/${HOSTTYPE}/SCC/bench2 : o/${HOSTTYPE}/SCC/bench2.sc
+	cd o/${HOSTTYPE}/SCC ; \
+		${TIME} scc++ ${SCCFLAGS} -o bench2 bench2.sc libmeroonV3.a
+
+# Takes roughly 
+# for bench1: 109.10user 2.23system 1:53.41elapsed 98%CPU
+# for bench2: 215.72user 0.87system 3:38.68elapsed 99%CPU
+
+run.scc.bench : build.scc.bench
+	${TIME} o/${HOSTTYPE}/SCC/bench1
+	${TIME} o/${HOSTTYPE}/SCC/bench2
+	@echo "This was Meroon on `date`"
+	@echo "with SCCFLAGS=${SCCFLAGS}"
+
+###############################################################################
+# Same bench with Bigloo. bigloo++ is supposed to be available.
+
+BIGLOOFLAGS	= -q -O3 -farithmetic -v -eval "(set! *indent* (not 1))"
+BIGLOO_BENCH_FLAGS	= ${BIGLOOFLAGS} -unsafe
+
+build.bgl.bench : 	o/${HOSTTYPE}/BGL/bench1	\
+			o/${HOSTTYPE}/BGL/bench2
+
+# pinterp is an expanded version of interp.scm copied from ~/DEA/Meroon4/tst
+# Don't pay attention to the definition of wrong, this function is not
+# invoked during the benchmark.
+
+o/${HOSTTYPE}/BGL/bench1.oon : Examples/pinterp.scm 
+	echo "							\
+(module pinterp 						\
+ (main start)							\
+ (include \"../../../Examples/pinterp.scm\") )			\
+(define (wrong . ignore) \"ShouldNotBeCalled\" (exit 11))	\
+(define (start options) (start-bench))				\
+"					> o/${HOSTTYPE}/BGL/bench1.oon
+
+# Takes roughly 185.27user 14.16system 4:30.85elapsed 73%CPU on blaye
+# to compile this file.
+
+o/${HOSTTYPE}/BGL/bench1 : o/${HOSTTYPE}/BGL/bench1.oon
+	cd o/${HOSTTYPE}/BGL ; \
+		${TIME} bigloo++ ${BIGLOO_BENCH_FLAGS} -o bench1 bench1.oon
+
+# Another benchmark based on Examples/vsg
+
+o/${HOSTTYPE}/BGL/bench2.oon : Examples/vsg.scm Examples/vsg-bench.scm
+	( echo "						\
+(module vsg (main start)) 					\
+(define-macro (call/cc f) 					\
+  \`(bind-exit (k) (,f k)) )					\
+(define (suite-test . a) 'useless)				\
+(define (naive-match . a) 'useless)				\
+(define-macro (define-internal-meroon-macro c . b)		\
+  \`(define-macro ,c . ,b) )					\
+(define-macro (define-meroon-macro c . b)			\
+  \`(define-macro ,c . ,b) )					\
+(define-macro (hack)						\
+  (eval '(define-macro (define-internal-meroon-macro c . b)	\
+           \`(define-macro ,c . ,b) ) )				\
+  (eval '(define-macro (define-meroon-macro c . b)		\
+           \`(define-macro ,c . ,b) ) )				\
+  (load \"../../../Examples/vsg.scm\")				\
+  123 )								\
+(hack)								\
+"								;\
+	  cat "Examples/vsg.scm"				;\
+	  cat "Examples/vsg-bench.scm"				;\
+	  echo "(define (start options) (start-bench))"		;\
+	  true ) 			> o/${HOSTTYPE}/BGL/bench2.oon
+
+# Takes roughly 170.08user 11.49system 3:33.41elapsed 85%CPU on blaye 
+# to compile this file.  The compilation by Bigloo of the vsg-error
+# function will create a lot of "type error" warnings. This is normal.
+
+o/${HOSTTYPE}/BGL/bench2 : o/${HOSTTYPE}/BGL/bench2.oon
+	cd o/${HOSTTYPE}/BGL ; \
+		${TIME} bigloo++ ${BIGLOO_BENCH_FLAGS} -o bench2 bench2.oon
+
+# Some times are gathered in Timing.blaye: with Bigloo1.8 and Ida+4:
+# for bench1: 61.24user 1.26system 1:04.97elapsed 96%CPU
+# for bench2: 105.07user 0.93system 1:48.50elapsed 97%CPU
+
+run.bgl.bench : build.bgl.bench
+	@echo "Now running benchmarks with Bigloo ..."
+	${TIME} o/${HOSTTYPE}/BGL/bench1
+	${TIME} o/${HOSTTYPE}/BGL/bench2
+	@echo "This was Meroon on `hostname` at `date`"
+	@echo with BIGLOOFLAGS=${BIGLOO_BENCH_FLAGS}
+	@echo and  CFLAGS=${CFLAGS}
+
+###############################################################################
+# Same bench with Gambit-C. We assume gsc++ to be available.
+# There is definitely something wrong in these figures.
+
+GSCPLUS_FLAGS = \
+	"macros" "macinst" "utils" "revision" "instance" "careless" \
+	"walker" "runtime" "option" "access" "dispatch" "handy" "definers" \
+	"alloc" "genes1" "genes2" "Basics" "fill" "coinst" "maker" "libgen" \
+	"Coercers" "anomaly" "multi" "show" "trace" "size" \
+	"unveil" "egal" "modify" "clone"
+
+GAMBIT_FLAGS	= `for w in ${GSCPLUS_FLAGS} ; do echo $$w.c ; done` 
+
+GAMBIT_CFLAGS	= ${CFLAGS} -D___SINGLE_HOST
+
+build.gsc.bench : 	o/${HOSTTYPE}/GSC/bench1	\
+			o/${HOSTTYPE}/GSC/bench2
+
+# pinterp is an expanded version of interp.scm copied from ~/DEA/Meroon4/tst
+# Don't pay attention to the definition of wrong, this function is not
+# invoked during the benchmark.
+
+o/${HOSTTYPE}/GSC/bench1.scm : Examples/pinterp.scm 
+	echo "							\
+(declare (block) (standard-bindings) (extended-bindings))	\
+(declare (fixnum) (inline) (inlining-limit 300) (not safe))	\
+(include \"../../../Examples/pinterp.scm\")			\
+(define (wrong . ignore) \"ShouldNotBeCalled\" (exit 11))	\
+(start-bench)							\
+"				> o/${HOSTTYPE}/GSC/bench1.scm
+
+# Takes roughly 242.95user 8.19system 5:33.13elapsed 75%CPU and
+# 1267.06user 30.70system 23:39.73elapsed 91%CPU on blaye to compile
+# this file.
+
+o/${HOSTTYPE}/GSC/bench1 : o/${HOSTTYPE}/GSC/bench1.scm
+	cd o/${HOSTTYPE}/GSC ; \
+		${TIME} gsc++ -verbose -link ${GAMBIT_FLAGS} bench1.scm
+	cd o/${HOSTTYPE}/GSC ; \
+		${TIME} ${CC} ${GAMBIT_CFLAGS} -o bench1 bench1.c bench1_.c \
+		libmeroonV3.a /usr/local/lib/libgambc.a -lm		
+
+# Another benchmark based on Examples/vsg. Brad Lucier
+# <lucier@MATH.Purdue.EDU> suggested another way to compile this
+# bench.
+
+#define LUCIER_PREFERRED_WAY 1
+
+#if ! LUCIER_PREFERRED_WAY
+
+o/${HOSTTYPE}/GSC/bench2.scm : Examples/vsg.scm Examples/vsg-bench.scm
+	echo "							\
+(declare (block) (standard-bindings) (extended-bindings))	\
+(declare (fixnum) (not safe))					\
+(define (suite-test . a) 'useless)				\
+(define (naive-match . a) 'useless)				\
+(define-macro (hack)						\
+  (load \"../../../Examples/vsg.scm\")				\
+  #t ) (hack)							\
+(include \"../../../Examples/vsg.scm\")				\
+(include \"../../../Examples/vsg-bench.scm\")			\
+(start-bench)							\
+"				> o/${HOSTTYPE}/GSC/bench2.scm
+
+# Takes roughly 282.54user 4.51system 5:09.08elapsed 92%CPU and
+# 1889.62user 35.39system 34:59.55elapsed 91%CPU on blaye to compile
+# this file.
+
+o/${HOSTTYPE}/GSC/bench2 : o/${HOSTTYPE}/GSC/bench2.scm
+	cd o/${HOSTTYPE}/GSC ; \
+		${TIME} gsc++ -verbose -link ${GAMBIT_FLAGS} bench2.scm
+	cd o/${HOSTTYPE}/GSC ; \
+		${TIME} ${CC} ${GAMBIT_CFLAGS} -o bench2 bench2.c bench2_.c \
+		libmeroonV3.a /usr/local/lib/libgambc.a -lm	
+
+# Rough results [There is definitely something wrong with these figures]
+# 828.94user 0.47system 13:54.16elapsed 99%CPU
+# 1434.23user 0.99system 24:03.58elapsed 99%CPU
+
+#else /* LUCIER_PREFERRED_WAY */
+
+o/${HOSTTYPE}/GSC/bench2a.scm : Examples/vsg.scm 
+	echo "							\
+(declare (block) (standard-bindings) (extended-bindings) 	\
+(declare (fixnum) (not safe))					\
+(define (suite-test . a) 'useless)				\
+(define (naive-match . a) 'useless)				\
+(include \"../../../Examples/vsg.scm\")				\
+"				> o/${HOSTTYPE}/GSC/bench2a.scm
+
+o/${HOSTTYPE}/GSC/bench2b.scm : 	Examples/vsg-bench.scm
+	echo "							\
+(declare (block) (standard-bindings) (extended-bindings) 	\
+(declare (fixnum) (not safe))					\
+(include \"../../../Examples/vsg-bench.scm\")			\
+"				> o/${HOSTTYPE}/GSC/bench2b.scm
+
+o/${HOSTTYPE}/GSC/bench2a.c : o/${HOSTTYPE}/GSC/bench2a.scm
+	echo '(compile-file "bench2a.scm")' | gsc++
+
+o/${HOSTTYPE}/GSC/bench2b.c : o/${HOSTTYPE}/GSC/bench2b.scm
+	echo '(load "bench2a.scm") (compile-file "bench2b.scm")' | gsc++
+
+o/${HOSTTYPE}/GSC/bench2b_.c : o/${HOSTTYPE}/GSC/bench2a.c
+o/${HOSTTYPE}/GSC/bench2b_.c : o/${HOSTTYPE}/GSC/bench2b.c
+	cd o/${HOSTTYPE}/GSC ; \
+		${TIME} gsc++ -verbose -link ${GAMBIT_FLAGS} \
+			bench2a.c bench2b.c
+
+o/${HOSTTYPE}/GSC/bench2 : o/${HOSTTYPE}/GSC/bench2b_.c
+	cd o/${HOSTTYPE}/GSC ; \
+		${TIME} ${CC} ${GAMBIT_CFLAGS} -o bench2 \
+			bench2a.c bench2b.c bench2b_.c \
+			libmeroonV3.a /usr/local/lib/libgambc.a -lm	
+
+#endif /* LUCIER_PREFERRED_WAY */
+
+run.gsc.bench : build.gsc.bench
+	@echo "Now running benchmarks with Gambit-C ..."
+	${TIME} o/${HOSTTYPE}/GSC/bench1
+	${TIME} o/${HOSTTYPE}/GSC/bench2
+	@echo "This was Meroon on `hostname` at `date`"
+	@echo with CFLAGS=${CFLAGS}
+
+### end of Bench.mkf

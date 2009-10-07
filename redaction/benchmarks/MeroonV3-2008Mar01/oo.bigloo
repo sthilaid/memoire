@@ -1,0 +1,39 @@
+;;; Copyright (c) 1990-93 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                  Meroon V3
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file allows to test Meroon under Bigloo 1.5
+;;; Load this file, then execute:
+;;;                                  (test-oo "oo3.tst")
+
+(load "../tester.scm")
+;;; The new version of tester.scm is more customizable:
+(set! tester-call/cc
+      (lambda (f) 
+        (bind-exit (k) (f k)) ) )
+
+;;; Define a testing toplevel
+
+(define (test-oo file)
+  (suite-test
+   file "?? " "== " #t
+   (lambda (read check err)
+     (lambda ()
+       (try (let ((e (read)))
+              (check (eval e)) )
+            (lambda (k a b c) 
+              ;;(dump-lambda-stack) ;; no longer in Bigloo 1.8
+              (notify-error a b c)
+              (err a b c) ) ) ) )
+   equal? ) )
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; end of oo.bigloo

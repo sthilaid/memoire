@@ -1,0 +1,128 @@
+To build Meroon for Gambit 4.*.*, just give the command
+
+make_meroon
+
+If you want to make a safer version of Meroon (which you may want to do now
+that Gambit has much faster safe compiled code), change the line
+
+(declare (standard-bindings)(extended-bindings)(fixnum)(not safe))
+
+to
+
+(declare (standard-bindings)(extended-bindings)(mostly-fixnum))
+
+in make_meroon, and change
+
+(define-meroon-macro (meroon-safer-object) #f)
+
+to
+
+(define-meroon-macro (meroon-safer-object) #t)
+
+in macinst.gsc.
+
+To test Meroon, go to the Examples directory and build the examples as such:
+
+peano-49% gsc
+loading /pkgs/Gambit-C/gambcext.scm
+Gambit Version 4.0 beta 12
+
+> (load "../_meroon")
+[ Meroon V3 Paques2001+1 $Revision: 1.1 $ ]
+"/export/users/lucier/programs/MeroonV3-2001Apr24/Examples/../_meroon.o1"
+> (compile-file "interp.gsc")
+#t
+> (load "interp")
+*** WARNING -- Variable "wrong" used in module "interp.o26" is undefined
+"/export/users/lucier/programs/MeroonV3-2001Apr24/Examples/interp.o26"
+> (time (start-bench))
+(*** Meroon benchmark *iterations* = 10)
+
+Meroon V3Paques2001+1$Revision: 1.1 $
+Total number of classes: 43
+Total number of generic functions: 97
+(estimated) internal size of Meroon: 3744 pointers
+23571113171923293137
+23571113171923293137
+23571113171923293137
+23571113171923293137
+23571113171923293137
+23571113171923293137
+23571113171923293137
+23571113171923293137
+23571113171923293137
+23571113171923293137
+(time (start-bench))
+    172 ms real time
+    172 ms cpu time (164 user, 8 system)
+    1 collection accounting for 17 ms real time (11 user, 6 system)
+    7205632 bytes allocated
+    2798 minor faults
+    no major faults
+done
+> (compile-file "vsg.gsc")
+#t
+> (load "vsg")
+*** WARNING -- Variable "naive-match" used in module "vsg.o5" is undefined
+*** WARNING -- Variable "suite-test" used in module "vsg.o5" is undefined
+"/export/users/lucier/programs/MeroonV3-2001Apr24/Examples/vsg.o5"
+> (compile-file "vsg-bench.gsc")
+#t
+> (load "vsg-bench")
+"/export/users/lucier/programs/MeroonV3-2001Apr24/Examples/vsg-bench.o4"
+> (time (start-bench))
+
+Meroon V3Paques2001+1$Revision: 1.1 $
+Total number of classes: 55
+Total number of generic functions: 114
+(estimated) internal size of Meroon: 4716 pointers
+0termsofcost0
+5termsofcost1
+17termsofcost2
+89termsofcost3
+665termsofcost4
+4805termsofcost5
+0termsofcost0
+5termsofcost1
+17termsofcost2
+89termsofcost3
+665termsofcost4
+4805termsofcost5
+(time (start-bench))
+    434 ms real time
+    431 ms cpu time (424 user, 7 system)
+    10 collections accounting for 52 ms real time (51 user, 4 system)
+    39771472 bytes allocated
+    2994 minor faults
+    no major faults
+done
+> 
+*** EOF again to exit
+
+
+After building _meroon.o1 I build gsc++ and gsi++ as follows.
+
+I copy the generated _meroon.o1 to the gambit install directory, in this case
+
+/pkgs/Gambit-C/current/
+
+In
+
+/pkgs/Gambit-C/bin
+
+link gsi++ to gsi and gsc++ to gsc and put into
+
+/pkgs/Gambit-C/gambext
+
+the following startup code
+
+euler-321% cat /pkgs/Gambit-C/current/gambcext 
+(case (string->symbol (car (##command-line)))
+  ((gsi++ gsc++) (load "~~/_meroon.o1"))
+  (else #f))
+
+I can then start gsc with pre-loaded Meroon by gsc++ and gsi
+with pre-loaded Meroon by gsi++.
+
+Brad Lucier
+lucier@math.purdue.edu

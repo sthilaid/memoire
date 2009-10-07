@@ -1,0 +1,31 @@
+$Id: README,v 1.5 1995/02/12 14:19:25 queinnec Exp $
+
+This directory contains various programs that may serve as examples of
+use of the Meroon system.
+
+interp.scm 
+        is a little Scheme interpreter written in Object-Oriented style. It
+        is not very efficient but will not change since I use it as a 
+        benchmark to appreciate the speed of the dispatch mechanism.
+        This file originally contains two internal macros that is why there
+        exists the equivalent pinterp.scm file.
+
+pinterp.scm
+        This is the same file as the previous one without internal macros.
+        But Meroon macros are still there (to test the compiler).
+
+vsg.scm
+        This is the code associated to a paper describing a validation
+        suite generator. The paper can be taken with
+        file://ftp.inria.fr/INRIA/Project/icsla/Papers/vsg.ps.gz
+        Some tests appear in vsg.tst and a short documentation in vsg.scm.
+        This code is also used for benchmarking in conjunction with the
+        vsg-bench.scm file.
+
+This directory also contains a Bench.mkf file that allows to measure
+the performance of various Scheme interpreters wrt Meroon or others
+object systems. For that you only need to edit this Bench.mkf file to
+update the variables telling where are Scheme interpreters. Caution,
+these benchmarks run for nearly one hour on my workstation!
+
+end of README.

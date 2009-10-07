@@ -1,0 +1,225 @@
+;;; $Id: compile.gam,v 3.11 1996/04/30 11:56:09 queinnec Exp $
+;;; Copyright (c) 1990-94 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                   Meroon 
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file explains how to compile Meroon for Gambit 2.0. 
+
+;;; (A) Start a Gambit interpreter including a compiler [Check you have
+;;;          a regular "compile..." item in the last menu.]
+;;; (B) Evaluate or Load the build.gam file. 
+;;;          Answers yes, no, yes, no to the questions. You must load Meroon
+;;;          in order to compile it. You are also proposed to test Meroon
+;;;          interpreted or compiled (dynamically loaded or statically linked).
+;;;          There is no problem with the standard partitioning of the memory.
+;;;          I tested it with a heap of 6 Mbytes.
+;;; (C) Exit from Gambit and return to the finder.
+
+;;; First choice: build a Meroon+interpreter application:
+
+;;; (1) Decode with BinHex the two files lnioon.hqx and icoon.hqx.
+;;;     This must produce the Link 'MacIntMeroon' and Gambit+Meroon.icon
+;;;     files. 
+;;; (2) Copy (don't alias) the interpreter(.O) folder, the Runtime file,
+;;;     the OnlineHelp file from the Gambit folder into the current directory 
+;;;     ie the Meroon sources directory.
+;;; (3) Double click on Link 'MacIntMeroon' to build the 
+;;;     'Gambit+Meroon Interpreter' application. Don't forget to move 
+;;;     with ResEdit the necessary resources,
+;;;     There is a special icon in Gambit+Meroon.icon. Set the 
+;;;     size of the application to what you wish. The compiler is 
+;;;     not included (see below).
+;;; (4) Double-click on 'Gambit+Meroon Interpreter' to start it.
+;;;          The size of the application is around 1Mb.
+;;;     You may test it by loading the build.gam file and answering
+;;;     no then yes.
+
+;;; Second choice: dynamically load compiled Meroon under the compiler:
+
+;;; (1) Not a good choice. If you really care, Start a Gambit interpreter,
+;;;     open the compile.gam file and evaluate load-ompiled-gambit-module.
+
+;;; Third choice: build a Meroon+interpreter+compiler application:
+
+;;; (1) Decode with BinHex the two files lncoon.hqx and icoon.hqx.
+;;;     This must produce the Link 'MacCompMeroon' and Gambit+Meroon.icon
+;;;     files. 
+;;; (2) Copy (don't alias) the interpreter(.O) folder, the Runtime file,
+;;;     the OnlineHelp file and the Compiler(.O) folder from the Gambit 
+;;;     folder into the current directory ie the Meroon sources directory.
+;;; (3) Double click on Link 'MacCompMeroon' to build the 
+;;;     'Gambit+Meroon Compiler' application. Don't forget to move with 
+;;;     ResEdit the necessary resources,
+;;;     There is a special icon in Gambit+Meroon.icon. Set the 
+;;;     size of the application to what you wish. 
+;;; (4) Double-click on 'Gambit+Meroon Compiler' to start it.
+;;;          The size of the application is around 1.5Mb.
+;;;     You may test it by loading the build.gam file and answering
+;;;     no then yes.
+
+;;;ooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo
+;;;                       End of Public part.
+
+(load "meroon.gam")
+(load "meroon.scm")
+
+;;; Load some common utilities needed for compilation.
+
+(load "computl.scm")
+
+;;; These are the files to process. 
+
+(define *files* (meroon-files))
+
+;;; Gambit severely limits the number of files that can be linked together
+;;; so Meroon files are gathered n by n. Thanks to Josep Riverola for that
+;;; idea.
+
+(define (gather n files)
+  (define (take n files)
+    (if (and (> n 0) (pair? files))
+      (cons (car files) (take (- n 1) (cdr files)))
+      '() ) )
+  (define (leave n files)
+    (if (and (> n 0) (pair? files))
+      (leave (- n 1) (cdr files))
+      files ) )
+  (if (pair? files)
+    (cons (take n files)
+          (gather n (leave n files)) ) 
+    '() ) )
+;;; For now (gather 2 *files*) yields:
+;;; (("macros" "macinst") ("careless" "utils") ("instance" "revision") 
+;;;  ("walker" "runtime") ("option" "access") ("dispatch" "handy") 
+;;;  ("definers" "alloc") ("genes1" "genes2") ("Basics" "fill") 
+;;;  ("coinst" "maker") ("libgen" "Coercers") ("anomaly" "multi")
+;;;  ("show" "trace") ("size" "unveil") ("egal" "modify") ("clone"))
+;;; So regroup all macros together, these are the first three files.
+;;; Another constraint is that dispatch.scm does no longer compiles if
+;;; accompanied with handy.scm. So I gather the files by hand.
+
+(define (gather-meroon-files)
+  '(("macros" "macinst" "careless" "utils") 
+    ("instance" "revision") 
+    ("walker" "runtime")
+    ("option" "access") 
+    ("dispatch") 
+    ("handy")
+    ("definers" "alloc") 
+    ("genes1" "genes2") 
+    ("Basics" "fill" "coinst" "maker") 
+    ("libgen" "Coercers")
+    ("anomaly" "multi")
+    ("show" "trace" "size" "unveil") 
+    ("egal" "modify" "clone") ) )
+
+;;; sanity check that no files are missed after gathering.
+
+(if (not (equal? *files* (flat (gather-meroon-files))))
+  (error "Files mismatch in compile.gam") )
+
+;;; Generate all files.
+;;; Indexes prefix filenames so the Mac OpenFileBox shows them in the 
+;;; correct order. This is convenient.
+
+(define (generate-all-gambit-bodies dir)
+  (let ((fs    (gather-meroon-files))
+        (index 10) )
+    (generate-gambit-body dir (car fs) index #t)
+    (for-each (lambda (files) 
+                (set! index (+ index 1))
+                (generate-gambit-body dir files index #f) )
+              (cdr fs) )
+    ) )
+
+(define (generate-gambit-body dir files index macromodule?)
+  (let* ((file    (car files))
+         (newname (string-append dir
+                                (number->string index)
+                                "_"
+                                file
+                                ".gam" )))
+    (display `(producing ,file "..."))
+    (call-with-output-file newname
+      (lambda (out)
+        (define (write-out e)
+          (write e out)
+          (newline out) )
+        (define (write-include file)
+          (write-out `(##include ,(string-append file ".scm"))) )
+        (display ";;; Automatically generated, don't touch!" out)
+        (newline out)
+        (write-out `(##include "meroon.gam"))
+        (if macromodule?
+          (write-out `(meroon-compile-pervasive-macros)) )
+        (if (not macromodule?)
+          (for-each write-include '("macros" "macinst" "careless")) )
+        (for-each write-include files)
+        (newline out) ) )
+    (newline) ) )
+
+;;; See now rebuild_MeroonnV3 script file:
+
+;(generate-all-gambit-bodies meroon-path)
+
+;;; Compile all these generated modules.
+
+(define (compile-all-gambit-modules dir)
+  (for-each (let ((index 9))
+              (lambda (files)
+                (define file (car files))
+                (set! index (+ index 1))
+                (display `(compiling ,file "..."))
+                (compile-file
+                 (string-append dir
+                                (number->string index)
+                                "_"
+                                file
+                                ".gam" ) )
+                (newline) ) )
+            (gather-meroon-files) ) )
+
+;;; See now rebuild_MeroonnV3 script file:
+
+;(compile-all-gambit-modules meroon-path)
+
+;;; (compile (string-append meroon-path "11_utils.gam"))
+
+;;; This part explains how to dynamically load the compiled modules of
+;;; Meroon. It is an alternative to the static link editor. You can thus
+;;; starts Gambit+compiler and loads Meroon modules. For this you
+;;; just need to evaluate: (load-compiled-gambit-modules meroon-path)
+;;; Pay attention, you should have a big local memory otherwise you may
+;;; get a message "*** ERROR -- Can't load file Local memory overflow!".
+
+;;; This is where compiled modules are. Remember that you moved by
+;;; hand .O and .gam files to this subfolder.
+
+(define compiled-meroon-subpath "Meroon (.gam and .o):")
+
+;;; Force the GC to report.
+
+(set-gc-report #t)
+
+;;; Load compiled Meroon.
+
+(define (load-compiled-gambit-modules dir)
+  (for-each (let ((index 9))
+              (lambda (files) 
+                (define file (car files))
+                (set! index (+ index 1))
+                (display `(loading ,file "..."))
+                (load (string-append dir
+                                     (number->string index)
+                                     "_"
+                                     file
+                                     ".O" ))
+                (newline) ) )
+            (gather-meroon-files) ) )
+
+;;; end of compile.gam

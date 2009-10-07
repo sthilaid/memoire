@@ -1,0 +1,35 @@
+;;; $Id: oo.vscm,v 3.1 1995/09/22 17:13:35 queinnec Exp $
+;;; Copyright (c) 1990-93 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                  Meroon V3
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file allows to test Meroon under VSCM.
+;;; Load this file, then execute:
+;;;                                  (test-oo "oo3.tst")
+
+(load "../tester.scm")
+
+;;; Define a testing toplevel
+
+(define (test-oo file)
+  (suite-test
+   file "?? " "== " #t
+   (lambda (read check err)
+     (lambda ()
+       (with-error-handler
+        (lambda (msg k) (err msg))
+        (lambda () 
+          (let ((e (read)))
+            (check (eval e)) ) ) ) ) )
+   equal? ) )
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; end of oo.vscm

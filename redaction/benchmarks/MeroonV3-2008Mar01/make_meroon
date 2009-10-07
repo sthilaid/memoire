@@ -1,0 +1,92 @@
+#! /bin/sh
+# $Id: make_meroon,v 1.1 2001/08/07 19:38:12 lucier Exp lucier $
+# Generate the entire file holding MeroonV3 sources completely.
+
+# This is the file to be generated:
+
+TARGET=_meroon.scm
+
+# These are the sources to concatenate. This should be the same as in
+# meroon.scm (or meroon.gambc24) for the Gambit customization.
+# FUTURE: automatize that variable.
+
+SOURCES="meroon.gsc \
+        macros.scm \
+        dsssl.scm \
+        macinst.gsc \
+        careless.scm \
+        utils.scm \
+        instance.gsc \
+        revision.scm \
+        gsc-declare-safe.scm \
+        walker.scm \
+        gsc-declare-not-safe.scm \
+        runtime.gsc \
+        option.scm \
+        access.scm \
+        dispatch.scm \
+        handy.scm \
+        definers.gsc \
+        alloc.scm \
+        genes1.scm \
+        genes2.scm \
+        Basics.scm \
+        fill.scm \
+        coinst.scm \
+        maker.scm \
+        view.scm \
+        libgen.scm \
+        Coercers.scm \
+        gsc-declare-not-inline.scm \
+        anomaly.scm \
+        gsc-declare-inline.scm \
+        multi.scm \
+        show.scm \
+        trace.scm \
+        size.scm \
+        unveil.scm \
+        egal.scm \
+        modify.scm \
+        clone.scm"
+
+# Generate TARGET
+
+{
+  # First: incorporate that prologue:
+  cat <<EOF
+;;; Automatically generated (dont touch)
+
+(declare (standard-bindings)(extended-bindings)(not safe)(block))
+;;(declare (not inline)(inlining-limit 0)(not inline-primitives)(not run-time-bindings)(not standard-bindings)(not extended-bindings))
+;;(declare (inline) (inlining-limit 1000))
+
+EOF
+
+  #Second: concatenate all these files:
+  for f in ${SOURCES} postset.gsc
+  do
+        cat $f
+  done
+} > ${TARGET}
+
+# Generate preTARGET
+
+{
+  #Concatenate all these files:
+  for f in ${SOURCES}
+  do
+        cat $f
+  done
+} > pre${TARGET}
+
+#  Compile TARGET
+
+gsc -:d- << EOF
+(load "old-load.scm")
+(old-load "pre_meroon.scm")
+(compile-file "_meroon.scm")
+EOF
+
+### Local Variables:
+### mode: sh
+### End:

@@ -1,0 +1,56 @@
+;;; $Id: expand.bgl,v 3.10 1994/02/19 19:47:12 queinnec Exp $
+;;; Copyright (c) 1990-94 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                   Meroon 
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; Expand Bigloo files with Bigloo. This file requires computl.scm.
+;;; To simplify (and accelerate) the compilation of Meroon sources
+;;; with Bigloo, every source file is expanded and stored in the
+;;; o/HOSTTYPE/BGL directory.
+
+;;; Find the exact order of the files to be loaded. For that, intercept all
+;;; load forms from meroon.scm file. But before that load meroon.bigloo
+;;; and macros.scm to understand meroon.scm
+
+(load "meroon.bigloo")
+(load "macros.scm")
+(load "computl.scm")
+
+(define *files* (meroon-files))
+
+;;; Generate all bodies. There is a special case for instance.bigloo
+;;; which must not be expanded at all, it is simply renamed into
+;;; instance.scm. 
+
+(define *bigloo-files* '("instance.bigloo"
+                         "macinst.bigloo" ))
+
+(define (generate-all-bgl-bodies dir)
+  (for-each (lambda (file)
+              (display `(producing ,file))(newline)
+              (expand-file 
+               (if (member file *bigloo-files*)
+                   file
+                   (string-append file ".scm") )
+               (if (member file *bigloo-files*)
+                   (string-append dir (basename file ".bigloo") ".scm")
+                   (string-append dir file ".scm") ) ) )
+            *files* ) )
+
+;;; Load Meroon to be able to expand every source files but only the
+;;; part which is necessary to expand the sources. That's why we give
+;;; the `enough-libraries' feature to specify the relevant libraries.
+
+(set! *meroon-features*
+      (cons 'enough-libraries *meroon-features*) )
+(load "meroon.scm")
+
+;;; Now everything is ready to evaluate (see Imakefile)
+;;;   (generate-all-bgl-bodies "dir/ect/ory")
+
+;;; end of expand.bgl

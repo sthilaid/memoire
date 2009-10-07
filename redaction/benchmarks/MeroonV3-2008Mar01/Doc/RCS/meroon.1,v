@@ -1,0 +1,474 @@
+head	1.2;
+access;
+symbols;
+locks
+	lucier:1.2; strict;
+comment	@# @;
+
+
+1.2
+date	2008.01.10.18.19.08;	author lucier;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2008.01.10.18.09.28;	author lucier;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@Change the name of field setters to end in -set!.
+@
+text
+@.\" $Id: meroon.1,v 1.1 2008/01/10 18:09:28 lucier Exp lucier $
+.TH Meroon 1 "$Date: 2008/01/10 18:09:28 $"
+
+.SH NAME
+
+\fBMeroonV3\fP \- an object system written in Scheme.
+
+.SH DESCRIPTION
+
+\fBMeroonV3\fP is an object system written in Scheme that works under
+Bigloo, Elk, Gambit, Guile, MacScheme, MIT-Scheme, OScheme, PC Scheme,
+PCS/geneva, Scheme->C, SCM and vscm interpreters. It also runs faster
+when compiled with Bigloo, Gambit and Scheme->C, see below.
+
+The \fBMeroonV3\fP object system was originally invented for a book
+(in French (InterEditions) and English (Cambridge U. Press)) to
+describe implementations of Lisp and Scheme. It was designed to have a
+pedagogical, portable but efficient implementation, to support
+separate compilation yet to be powerful enough to unify all the data
+types of Scheme even vectors and strings without restriction of
+inheritance. It thus offers the concept of classes with regular or
+indexed fields, a somewhat static initialization protocol, metaclasses
+with code-generation capabilities, generic functions with multimethods
+among other features.
+
+The latest version of \fBMeroonV3\fP can be retrieved by anonymous
+ftp from ftp.inria.fr (IP number 192.93.2.54) under subdirectory
+INRIA/Projects/icsla/Programs. Questions about \fBMeroonV3\fP (or older
+versions: MeroonV2 and Meroonet) should be directed towards the mailing
+list:
+.RS 5
+<meroon-info@@cornas.inria.fr>
+.RE
+Ask to be enlisted in that mailing list by sending a message to:
+.RS 5
+<meroon-request@@cornas.inria.fr>
+.RE
+
+.SH "QUICK REFERENCE CARD"
+
+\fBMeroonV3\fP basically offers three macros to define classes,
+generic functions and methods for them, it also offers one form to
+create instances. Generic functions support multimethods.  By
+default, many accompanying functions are created when definining a
+class. To not bother those who know what objects mean, the next section
+tells how to use Meroon by example.
+
+.SH "MEROON BY EXAMPLE"
+
+.nf
+;;; Define class Point with fields x and y, Object is the root class.
+(define-class Point Object (x y))
+
+;;; recognizer and maker at work.
+(Point? (make-Point 33 22))  ; -> #t
+
+;;; Define an heir to Point with an additional indexed field.
+(define-class NamedPoint Point
+   ((* name :immutable)) )
+
+;;; selector and handy instantiation (with keywords) at work.
+(Point-x (instantiate NamedPoint 
+          :name 'joe 'jill 
+          :y 33 :x 222 ))    ; -> 222
+
+;;; Define another class with an explicit field initializer (a thunk).
+(define-class ColoredNamedPoint NamedPoint 
+  ((= color :initializer (lambda () 'pink))) )
+
+(ColoredNamedPoint-color 
+ (instantiate ColoredNamedPoint :name 'joe 'jill :y 33 :x 222) )  ; -> pink
+
+;;; maker also exist for indexed fields as well as modifiers. Field x can
+;;; be retrieved as Point-x or ColoredNamedPoint-x.
+(let ((pt (make-ColoredNamedPoint 11 22    2 'joe 'jack   'red)))
+  (NamedPoint-x-set! pt '555)
+  (ColoredNamedPoint-x pt) )         ; -> 555
+
+;;; Define a generic function with a dotted variable.
+(define-generic (foo a (b) . stream)
+  (apply display "default" stream) )
+
+;;; Add a (congruent) method. It is possible to inquire the length of the
+;;; indexed field. It is also possible to call the next method.
+(define-method (foo x (np NamedPoint) . str)
+  (apply display (NamedPoint-name-length np) str)
+  (call-next-method) )
+
+(foo (make-ColoredNamedPoint 11 22    2 'joe 'jack   'red)
+     (instantiate Point :y 2 :x 3) )      ; prints "default"
+
+;;; Use of the predefined generic function clone.
+(foo (clone (make-Point 3 2))
+     (instantiate ColoredNamedPoint
+       :color 'red :name 'joe 'jack :x 11 :y 22 ) )  ; prints "2" then "default"
+
+;;; Define a generic function with multimethods and restricts methods to 
+;;; be added to subclasses of Point * Point.
+(define-generic (dist (o1 Point) (o2 Point))) 
+
+(define-method (dist (o1 NamedPoint) (o2 ColoredNamedPoint))
+   (eq? (ColoredPoint-color o1) (ColoredPoint-color o2)) )
+.fi
+
+.SH "DEFINING CLASSES"
+
+The define-class macro defines a new class named
+\fI<name-of-the-class>\fP, subclass of
+\fI<name-of-the-super-class>\fP. Instances of this new class will
+contain all the fields specified by the super-class
+\fI<name-of-the-super-class>\fP plus the proper fields, those that
+appear in the define-class form. A field specified as
+\fI<name-of-a-Mono-Field>\fP can be equivalently specified as \fI(=
+<name-of-a-Mono-Field>)\fP.  A Mono-Field is qualified with an equal
+sign and only holds a single value.  A Poly-Field (or indexed field)
+is qualified by a leading star and holds as many values as specified
+when allocating instances. Different instances can have a different
+number of values in their Poly-Fields.  Fields can be mutable or
+immutable (no modifiers are then created for them); initializers can
+be specified.  It is also possible to mention that the field may be
+uninitialized: every allocation will therefore be checked to
+initialize this field. The metaclass can be imposed, by default it is
+the MeroonV2-Class.
+
+.nf
+(define-class <name-of-the-class> <name-of-the-super-class>
+       ( <name-of-a-Mono-Field>                        |
+         (= <name-of-a-Mono-Field> 
+            [ :immutable | :mutable ] [ :maybe-uninitialized ]
+            [ :initializer (lambda () value) ] )       |
+         (* <name-of-a-Poly-Field>
+            [ :immutable | :mutable ] [ :maybe-uninitialized ]
+            [ :initializer (lambda (index) value) ] )
+         ... )
+    [ :metaclass <name-of-the-meta-class> ] 
+    [ :immutable ] )
+.fi
+
+When a class is defined and if it has the default metaclass then many
+accompanying functions are also defined: a predicate, field readers, field
+writers, indexed field length readers as well as a general maker. The
+signatures of these functions follow:
+
+.nf
+(<class-name>? value)
+
+(make-<class-name> <value-for-a-mono-field>
+                 | <length> <<length>-values-for-a-poly-field> 
+                 ... )
+
+(<class-name>-<mono-field-name> object)
+
+(<class-name>-<poly-field-name> object index)
+
+(<class-name>-<mono-field-name>-set! object value)
+
+(<class-name>-<poly-field-name>-set! object index value)
+
+(<class-name>-<poly-field-name>-length object)
+.fi
+
+The class object is itself an indirect instance of the Class metaclass. It
+can be obtained via the global variable \fI<class-name>-class\fP.
+
+A generic function, named \fI-><class-name>\fP, is also defined to hold
+coercion methods converting values to instances of \fI<class-name>\fP.
+
+.SH "DEFINING GENERIC FUNCTIONS"
+
+The define-generic form defines a generic function named
+\fI<name-of-the-generic-function>\fP, with a list of variables defined
+by \fI<description-of-the-variables>\fP.  If no appropriate method is
+found when the generic function is invoked, the
+\fI<optional-default-method>\fP is invoked or an anomaly is provoked.
+The \fI<description-of-the-variables>\fP is similar to the list of
+variables of regular lambda forms except that discriminating variables
+appear surrounded by parentheses. There can be more than one
+discriminating variable.
+
+.nf
+(define-generic ( <name-of-the-generic-function> 
+                  . <description-of-the-variables> )
+      [ <optional-default-method> ]   )
+
+<description-of-the-variables> 
+    ::= ( <variable-name>                               
+          . <description-of-the-variables> )
+     |  ( ( <variable-name> [<maximal-class-allowed>] ) 
+          . <description-of-the-variables> )
+     |  <variable-name>
+.fi
+
+The define-method form defines a method on an already existing generic
+function. The \fI<description-of-the-variables>\fP must be congruent
+to that of the generic function and any discriminating variable must
+specify a \fI<class-name>\fP compatible with the
+\fI<maximal-class-allowed>\fP if present in the generic function. The
+\fI<body-of-the-method>\fP may use the \fI(call-next-method)\fP form
+to invoke the method that should have been invoked if the present one
+was not there. It is also possible to use the \fI(next-method?)\fP
+predicative form to determine if there is a method that can be invoked
+by \fI(call-next-method)\fP.
+
+.nf
+(define-method ( <name-of-the-generic-function> 
+                 . <description-of-the-variables> )
+      <body-of-the-method> )
+
+<description-of-the-variables> 
+    ::= ( <variable-name>                  
+          . <description-of-the-variables> )
+     |  ( ( <variable-name> <class-name> ) 
+          . <description-of-the-variables> )
+     |  <variable-name>
+.fi
+
+A restriction on multimethods is that it is forbidden to define a method
+that would bring ambiguity. This may only occur when defining a multimethod
+on classes A' x B when a multimethod is already defined on A x B' and A' is 
+a subclass of A while B' is a subclass of B. The method to apply on A' x B'
+would be ambiguous.
+
+.SH "ALLOCATING OBJECTS"
+
+To ease the allocation of objects, a macro exists that provides
+keywords to define fields in whatever order is felt convenient. Any
+unspecified field gets its initial value from its corresponding
+initializer if mentioned in the class definition otherwise the field
+is left uninitialized (that is only possible if the
+:maybe-uninitialized field option is specified for that field in the
+class definition) and the associated reader will provoke an anomaly if
+trying to read such an uninitialized field. The \fIinitialize!\fP
+function is eventually invoked on the resulting object.
+
+.nf
+(instantiate <class-name>
+    :<mono-field-name>        value
+    :<poly-field-name>        values ...
+    :<poly-field-name>-length natural
+    ... )
+.fi
+
+Some other macros exist to ease the creation of instances. The
+\fIduplicate\fP macro allows you to create a new object based on the
+differences to bring to an original object. The \fIco-instantiate\fP
+macro allows you to instantiate multiple objects at the same time,
+these objects may contain mutual (or recursive, or cyclic) references.
+
+
+.SH "PREDEFINED GENERIC FUNCTIONS"
+
+The following general utility functions exist to access fields.  A
+field can be read if it has a value.  A field can be initialized if it
+has no value.  A field can be inspected to know if it is initialized.
+A field can be modified if associated to the \fI:mutable\fP
+field option or, not associated to the \fI:immutable\fP field option
+(by default, any field is mutable). In any other cases, an anomaly is
+signalled.
+
+.nf
+(field-value object mono-field)              -> value
+(field-value object poly-field index)        -> value
+
+(set-field-value! object value mono-field)
+(set-field-value! object value poly-field index)
+
+(initialize-field-value! object value mono-field)
+(initialize-field-value! object value poly-field index)
+
+(field-length object poly-field)             -> length
+
+(field-defined? object mono-field)           -> boolean
+(field-defined? object poly-field index)     -> boolean
+.fi
+
+The generic function \fIclone\fP returns a shallow copy of any object.
+The generic function \fIinitialize!\fP is invoked on every freshly built 
+instance. The generic function \fIshow\fP displays objects. These functions
+are there to be customized.
+
+.nf 
+(clone object)          -> object
+(initialize! object)    -> object
+(show object [stream])
+.fi
+
+There exist also some predefined coercers like \fI->Class\fP that converts
+names (symbols) into classes, \fI->Generic\fP that converts names into
+generic instances.
+
+.SH "PREDEFINED CLASSES"
+
+These are some of the predefined classes with their fields. The
+accompanying functions exist. You can read all these fields but it
+is dangerous to modify them even if they are mutable!
+
+.nf
+(define-class Object #f ())
+(define-class Class Object 
+  (name number fields super-number subclass-numbers 
+        allocator immutable? min-son max-son (* super) ) )
+(define-class Handy-Class Class ())
+(define-class MeroonV2-Class Handy-Class ())
+(define-class Generic Object
+  (behavior name default variables dispatcher top-classes) )
+(define-class Generic-1 Generic ())
+(define-class Generic-N Generic ())
+(define-class Field Object 
+  (immutable? name class-number initialized? initializer (* path)) )
+(define-class Mono-Field Field ())
+(define-class Poly-Field Field ())
+(define-class Anomaly Object (category operator message (* hint)))
+.fi
+
+.SH "LIBRARY"
+
+The class of any object can be retrieved using \fIobject->class\fP.
+An object can be tested for class-membership with \fIis-a?\fP. Classes
+can be related through \fIsubclass?\fP. A generic comparator named
+\fIegal\fP allows to compare any two objects (even circular) to determine
+if they are equivalent.
+
+.nf
+(object->class object)     -> class
+(is-a? value class)        -> boolean
+(subclass? class class  )  -> boolean
+(egal object object)       -> boolean
+.fi
+
+.SH "DEBUGGING"
+
+You can trace generic functions or inquire your state or any object with
+the following functions:
+
+.nf
+(show-generic-trace <generic-name> ...)
+;;; without arguments untrace all traced generic functions
+(show-generic-untrace [<generic-name> ...])
+
+(show-meroon)                  ; display which Meroon you are using
+(show-hierarchy [class])       ; show [part of] the tree of classes
+(show-generic [generic])       ; show methods on [some] generic functions
+
+(unveil object [stream])    ; show all the details of an object (even circular)
+.fi
+
+.SH COMPILING WITH BIGLOO
+
+You can compile modules using \fBMeroonV3\fP features under Bigloo
+(1.6 and above) very conveniently. The installation of \fBMeroonV3\fP
+creates a new compiler called \fIbigloo++\fP. When this compiler
+compiles a module whose name ends by the \fIoon\fP extension then
+\fIbigloo++\fP automatically sets up the relevant details to compile
+it. Suppose you have the following module:
+
+.nf
+(module test (main start))
+(define-class Point Object (x y))
+(define-generic (magnitude (o)))
+(define-method (magnitude (o Point))
+  (+ (Point-x o) (Point-y o)) )
+(define (start args)
+  (show (magnitude (make-Point 11 22)))
+  (newline) )
+.fi
+
+Then you can simply compile it with:
+
+.nf
+bigloo++ file.oon ...
+.fi
+
+But if you prefer another name for your files you have to say
+explicitly that you want to use \fBMeroonV3\fP. In this case, just
+say:
+
+.nf
+bigloo++ -extend meroon file.scm ...
+.fi
+
+The \fIbigloo++\fP compiler can also be called with the -i option as a 
+regular interpreter, it then offers you all features of \fBMeroonV3\fP.
+
+.SH INTERPRETING WITH SCI
+
+You can interpret programs containing \fBMeroonV3\fP features under
+\fIsci\fP very conveniently.  The installation of \fBMeroonV3\fP creates a
+new interpreter called \fIsci++\fP that contains a fully compiled 
+\fBMeroonV3\fP in it.
+
+
+.SH FILES
+
+Additional documentation, examples and tricks can be found in files:
+
+.I Doc/MeroonV3.{dvi,ps}
+- The reference manual,
+.br
+.I Doc/oopil.{dvi,ps}
+- A sort of rationale for \fBMeroonV3\fP.
+.br
+.I Doc/dispatch.{dvi,ps}
+- A description of the new dispatching scheme of \fBMeroonV3\fP.
+.br
+
+
+.SH BUGS
+
+Find them, fix them, mail them!
+
+.SH FEATURES
+
+\fBMeroonV3\fP still refuses to provide multiple inheritance.
+
+.SH AUTHOR
+
+.RS 5
+Christian Queinnec 
+.RS 5
+<Christian.Queinnec@@lip6.fr>
+.RE
+.RE
+
+.\" end of meroon.1
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 2
+a2 2
+.\" $Id: meroon.1,v 1.6 1999/11/27 17:45:14 queinnec Exp $
+.TH Meroon 1 "$Date: 1999/11/27 17:45:14 $"
+d76 1
+a76 1
+  (set-NamedPoint-x! pt '555)
+d155 1
+a155 1
+(set-<class-name>-<mono-field-name>! object value)
+d157 1
+a157 1
+(set-<class-name>-<poly-field-name>! object index value)
+@

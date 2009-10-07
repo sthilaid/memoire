@@ -1,0 +1,341 @@
+head	1.3;
+access;
+symbols;
+locks
+	lucier:1.3; strict;
+comment	@# @;
+
+
+1.3
+date	2005.05.04.02.44.43;	author lucier;	state Exp;
+branches;
+next	1.2;
+
+1.2
+date	2005.03.01.20.16.44;	author lucier;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.02.25.22.20.16;	author lucier;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.3
+log
+@*** empty log message ***
+@
+text
+@;;; $Id: macinst.gsc,v 1.2 2005/03/01 20:16:44 lucier Exp lucier $
+;;; Copyright (c) 1990-96 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                    Meroon V3
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;;                 Gambit-C adaptation of macinst.scm
+
+;;; Use a special subtype for Meroon objects. This allows the Object?
+;;; predicate to be safe (so the safer-object feature is just a waste
+;;; of room that should be avoided). Thanks to Brad Lucier
+;;; <lucier@@MATH.Purdue.EDU> for these files.
+
+(define-meroon-macro (subtype-meroon) 6)
+(define-meroon-macro (starting-offset)  1 )
+
+(define-meroon-macro (meroon-safer-object) #f)
+
+(define-internal-meroon-macro (setup-accessors)
+  (if (meroon-safer-object)
+      '(begin
+	 
+	 (define (instance-ref o offset)
+	   (declare (inlining-limit 10000) (standard-bindings) (extended-bindings))
+	   (let ((real-offset (+ (starting-offset) offset)))
+	     (if (and (Object? o)
+		      (##fixnum? real-offset)
+		      (##fixnum.< 0 real-offset (##vector-length o)))
+		 (##vector-ref o real-offset)
+		 (report-meroon-error 'Access instance-ref "Either not an object or invalid offset---Shouldn't happen---Please investigate and report this error" o offset))))
+	 
+	 (define (instance-set! o offset value)
+	   (declare (inlining-limit 10000) (standard-bindings) (extended-bindings))
+	   (let ((real-offset (+ (starting-offset) offset)))
+	     (if (and (Object? o)
+		      (##fixnum? real-offset)
+		      (##fixnum.< 0 real-offset (##vector-length o)))
+		 (##vector-set! o real-offset value)
+		 (report-meroon-error 'Access instance-set! "Either not an object or invalid offset---Shouldn't happen---Please investigate and report this error" o offset))))
+	 
+	 (define (instance-length o)
+	   (declare (inlining-limit 10000) (standard-bindings) (extended-bindings))
+	   (if (Object? o)
+	       (##fixnum.- (##vector-length o) (starting-offset))
+	       (report-meroon-error 'Access instance-length "Not an object---Shouldn't happen---Please investigate and report this error" o)))
+	 )
+      '(begin
+
+	 (define-meroon-macro (instance-ref o offset)
+	   `(##vector-ref ,o (+ (starting-offset) ,offset)))
+
+	 (define-meroon-macro (instance-set! o offset value)
+	   `(##vector-set! ,o (+ (starting-offset) ,offset) ,value))
+	 
+	 (define-internal-meroon-macro (instance-length o)
+	   `(##fixnum.- (##vector-length ,o) (starting-offset)) )
+
+	 )))
+
+(setup-accessors)
+
+;;; Builds an instance with CN as instantiation link and ARGS as content.
+;;; ARGS are values for mono- or poly- fields as well as their size.
+;;; Since vectors are initialized with the undefined value, it is
+;;; needless to reinitialize them with this undefined value.
+
+
+(define-meroon-macro (instance cn . args)
+  `(let ()
+     (declare (extended-bindings))
+     (##subtype-set! (##vector ,cn ,@@args) (subtype-meroon))))
+
+;;; Allocate an empty instance with CN as instantation link. Caution,
+;;; the result is not necessarily a well formed instance. It might
+;;; need to be skeletized if containing poly-fields.
+
+
+(define-internal-meroon-macro (allocate-empty-instance cn size)
+`(let ((cn ,cn)
+       (size ,size))
+   (declare  (standard-bindings) (extended-bindings))
+   (let ((result (##make-vector (+ (starting-offset) size) 
+				meroon-uninitialized )))
+     (##subtype-set! result (subtype-meroon))
+     (##vector-set! result 0 cn)
+     result)))
+
+;;; Allocate an instance with a given CONTENT. Similar to instance,
+;;; except that CONTENT is given as a list. 
+
+(define-internal-meroon-macro (allocate-full-instance cn content)
+  `(let ((cn ,cn)
+	 (content ,content))
+     (declare  (standard-bindings) (extended-bindings))
+     (##subtype-set! (apply ##vector cn content) (subtype-meroon))))
+
+
+;;; Emit a declaration that inlining here is worthless.
+
+(define-internal-meroon-macro (meroon-declare-not-inlinable)
+  '(declare (not inline) (inlining-limit 0)) )
+
+(define-meroon-macro (meroon-plus . args)
+  `(+ ,@@args))
+
+(define-meroon-macro (meroon-minus . args)
+  `(- ,@@args))
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; end of macinst.gsc
+@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@d1 1
+a1 1
+;;; $Id: macinst.gsc,v 1.1 2005/02/25 22:20:16 lucier Exp lucier $
+d18 2
+a19 2
+;;(define-meroon-macro (subtype-meroon) 6)
+(define subtype-meroon 6)
+d21 44
+a64 45
+;;(if-meroon-feature safer-object
+;;  (/ "The safer-object feature must not be used with Gambit-C" 0)
+;;  #f )
+
+(define meroon-safer-object #t)
+
+;;; This variable designatest the first offset in a vector to hold a slot.
+;;; It usually is 1 (since 0 is reserved to the instantiation link).
+
+;;(define-meroon-macro (starting-offset)
+;;  1 )
+
+(define meroon-starting-offset 1 )
+
+;;; Test if a Scheme object is a Meroon object. 
+;;; Access to instances. Since all accesses are checked, these
+;;; functions would better avoid to check that o is a struct, that the
+;;; offset is a natural and that the offset lies within the struct.
+
+;;(define-meroon-macro (instance-ref o offset)
+;;  `(##vector-ref ,o (+ (starting-offset) ,offset)))
+
+(define (instance-ref o offset)
+  (declare (inlining-limit 10000) (standard-bindings) (extended-bindings))
+  (let ((real-offset (+ meroon-starting-offset offset)))
+    (if (or (not meroon-safer-object)
+	    (and (Object? o)
+		 (##fixnum? real-offset)
+		 (##fixnum.< 0 real-offset (##vector-length o))))
+	(##vector-ref o real-offset)
+	(report-meroon-error 'Access instance-ref "Either not an object or invalid offset---Shouldn't happen---Please investigate and report this error" o offset))))
+
+
+;;(define-meroon-macro (instance-set! o offset value)
+ ;; `(##vector-set! ,o (+ (starting-offset) ,offset) ,value)) )
+
+(define (instance-set! o offset value)
+  (declare (inlining-limit 10000) (standard-bindings) (extended-bindings))
+  (let ((real-offset (+ meroon-starting-offset offset)))
+    (if (or (not meroon-safer-object)
+	    (and (Object? o)
+		 (##fixnum? real-offset)
+		 (##fixnum.< 0 real-offset (##vector-length o))))
+	(##vector-set! o real-offset value)
+	(report-meroon-error 'Access instance-set! "Either not an object or invalid offset---Shouldn't happen---Please investigate and report this error" o offset))))
+a70 2
+;;(define-meroon-macro (instance cn . args)
+;;  `(##subtype-set! (##vector ,cn ,@@args) (subtype-meroon)) )
+d72 4
+a75 3
+(define (instance cn . args)
+  (declare (inlining-limit 10000) (standard-bindings) (extended-bindings))
+  (##subtype-set! (apply ##vector cn args) subtype-meroon))
+d81 10
+a90 15
+;;(define-internal-meroon-macro (allocate-empty-instance cn size)
+;;  (let ((g (gensym)))
+;;    `(let ((,g (##make-vector (+ (starting-offset) ,size) 
+;;                              meroon-uninitialized )))
+;;       (##subtype-set! ,g (subtype-meroon))
+;;       (##vector-set! ,g 0 ,cn)
+;;       ,g ) ) )
+
+(define (allocate-empty-instance cn size)
+  (declare (inlining-limit 10000) (standard-bindings) (extended-bindings))
+  (let ((result (##make-vector (+ meroon-starting-offset size) 
+			       meroon-uninitialized )))
+    (##subtype-set! result subtype-meroon)
+    (##vector-set! result 0 cn)
+    result))
+d95 5
+a99 2
+;;(define-internal-meroon-macro (allocate-full-instance cn content)
+;;  `(##subtype-set! (apply ##vector ,cn ,content) (subtype-meroon)))
+a100 19
+(define (allocate-full-instance cn content)
+  (declare (inlining-limit 10000) (standard-bindings) (extended-bindings))
+  (##subtype-set! (apply ##vector cn content) subtype-meroon))
+
+;;; This one is actually needed but curious. It is actually needed by
+;;; maker.scm to check a posteriori the allocation of an instance. It
+;;; is also used by size.scm to know the size of Meroon. It returns
+;;; the number of values contained in an instance (instantiation link
+;;; not comprised).
+
+;;(define-internal-meroon-macro (instance-length o)
+;;  `(##fixnum.- (##vector-length ,o) (starting-offset)) )
+
+(define (instance-length o)
+  (declare (inlining-limit 10000) (standard-bindings) (extended-bindings))
+  (if (or (not meroon-safer-object)
+	  (Object? o))
+      (##fixnum.- (##vector-length o) meroon-starting-offset)
+      (report-meroon-error 'Access instance-length "Not an object---Shouldn't happen---Please investigate and report this error" o)))
+d107 6
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 1
+a1 1
+;;; $Id: macinst.gsc,v 3.8 2000/02/14 08:50:00 queinnec Exp $
+d18 8
+a25 7
+(if-meroon-feature (and gambit C (or 2.7))
+  (define-meroon-macro (subtype-meroon) 6)
+  (define-meroon-macro (subtype-meroon) 12) )
+
+(if-meroon-feature safer-object
+  (/ "The safer-object feature must not be used with Gambit-C" 0)
+  #f )
+d30 4
+a33 2
+(define-meroon-macro (starting-offset)
+  1 )
+d40 26
+a65 9
+(define-meroon-macro (instance-ref o offset)
+  (if (integer? offset)
+      `(##vector-ref ,o ,(+ (starting-offset) offset))
+      `(##vector-ref ,o (##fixnum.+ (starting-offset) ,offset))) )
+
+(define-meroon-macro (instance-set! o offset value)
+  (if (integer? offset)
+      `(##vector-set! ,o ,(+ (starting-offset) offset) ,value)
+      `(##vector-set! ,o (##fixnum.+ (starting-offset) ,offset) ,value)) )
+d72 6
+a77 2
+(define-meroon-macro (instance cn . args)
+  `(##subtype-set! (##vector ,cn ,@@args) (subtype-meroon)) )
+d83 15
+a97 7
+(define-internal-meroon-macro (allocate-empty-instance cn size)
+  (let ((g (gensym)))
+    `(let ((,g (##make-vector (##fixnum.+ (starting-offset) ,size) 
+                              meroon-uninitialized )))
+       (##subtype-set! ,g (subtype-meroon))
+       (##vector-set! ,g 0 ,cn)
+       ,g ) ) )
+d102 6
+a107 6
+(define-internal-meroon-macro (allocate-full-instance cn content)
+  (let ((g (gensym))
+        (c (gensym)) )
+    `(let* ((,c ,content)
+            (,g (allocate-empty-instance ,cn (##length ,c))) )
+       (fill-instance! ,g 0 ,c) ) ) )
+d115 2
+a116 4
+(define-internal-meroon-macro (instance-length o)
+  `(##fixnum.- (##vector-length ,o) (starting-offset)) )
+
+;;; Fast arithmetic for small integers:
+d118 6
+a123 14
+(define (all-fixnum? args)
+  (or (null? args)
+      (and (##fixnum? (car args))
+           (all-fixnum? (cdr args)))))
+
+(define-meroon-macro (meroon-plus . args)
+  (if (all-fixnum? args)
+      (apply + args)
+      `(##fixnum.+ ,@@args)))
+
+(define-meroon-macro (meroon-minus . args)
+  (if (all-fixnum? args)
+      (apply - args)
+      `(##fixnum.- ,@@args)))
+@

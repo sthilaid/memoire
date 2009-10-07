@@ -1,0 +1,33 @@
+;;; $Id: oo.gam,v 3.13 1996/04/30 11:56:21 queinnec Exp $
+;;; Copyright (c) 1990-94 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                   Meroon 
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file allows you to load (and test) meroon on Gambit for Mac.
+
+;;; On Mac, tester.scm is there:
+
+(load "tester.scm")
+
+;;; Testing Meroon with tester.scm
+
+(define (test-oo file)
+  (suite-test 
+   file "?? " "== " #t
+   (lambda (read check report-anomaly)
+     (set! oo-error (lambda args
+                      (report-anomaly args) ))
+     (lambda ()
+       (check (eval (read))) ) )
+   (lambda (x y) (equal? x y)) ) )
+
+;;; Run tests.
+;;; Don't forget to load the tester.scm file before evaluating:
+;;;        (test-oo "oo3.tst")
+
+;;; end of oo.gambit

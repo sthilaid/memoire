@@ -1,0 +1,317 @@
+$Id: README,v 3.39 1999/11/27 17:45:14 queinnec Exp $
+Copyright (c) 1990-98 by Christian Queinnec. All rights reserved.
+
+               ***********************************************
+                   Small, Efficient and Innovative Class System
+                                 Meroon V3
+                              Christian Queinnec  
+                          LIP6 & INRIA-Rocquencourt
+               ************************************************
+
+
+This is the new enhanced release of Meroon, an object oriented system
+written in Scheme and running on a large number of Scheme
+implementations. It adds new features to Meroon ie multimethods, a
+still better instantiation protocol, coercers as well ... and an even
+faster implementation.
+
+The distinctive features of Meroon were:
+
+        All objects of Scheme can be seen as Meroon objects (even
+        vectors) without restriction on inheritance.
+
+        CLOS-like generic functions. New generic functions and methods
+        can be added on previousy defined classes. Generic functions can
+        have a multiple arity.
+
+        Self-description features: classes are Meroon objects and can be
+        inspected. It is also possible to design new metaclasses.
+
+The distinctive features of Meroon V3 (the current release) are:
+
+        Class renumbering was abandoned in favor of a new
+        implementation scheme (see paper in documentation). 
+
+        Enhanced instantiation, co-instantiation and modification forms.
+
+        Generic functions now support multimethods. (call-next-method) 
+        is cleanly defined for multimethods. For instance, suppose A' is
+        a subclass of A and B' a subclass of B. Suppose also a multimethod
+        to exist on A' x B then it is not possible to define a method on
+        A x B' since this would be ambiguous on A' x B'. It is nevertheless
+        still possible to define a method on A' x B'. 
+
+        Generic functions can specify the top-classes they accept to be
+        specialized on. For instance, (define-generic (blah-blah (o Point)))
+        can only support methods on Point and its subclasses.
+
+        is-a? is done in constant time as well as subclass?.  There is
+        a feature to adopt the same organization as Meroon V2, look in 
+        the meroon.scm file.
+
+        Generic functions need less room and are faster unfortunately,
+        definition of classes is slower. There is a feature in case
+        you prefer the old mode of Meroon V2.
+
+        Metaclasses can be used at compile-time to generate code of the  
+        accompanying functions. MeroonV2-Class ensures Meroon V2
+        compatibility.
+
+        The :eponymous keyword no longer exists. All classes can be obtained
+        as the value of the global variable <class-name>-class.
+
+        Fields can be defined with default initializers. The initializer of a
+        Mono-Field is a thunk, the initializer of a Poly-Field has a
+        signature of (lambda (index) ...).
+
+        A new instantiation protocol that preserves mutability and
+        initialized-ness of fields. The instantiate macro allows to 
+        specify the allocation of an instance with keywords mentioning the
+        explicit initializations. The default initializers are invoked for
+        all non-explicit fields. The initialize! function is applied
+        on all freshly allocated objects.
+
+        No longer automatically generated allocate-<class-name> functions.
+        Use the safer instantiate form instead.
+
+        Automatic coercer generation. These are named -><class-name>,
+        they are there to be specialized on your objects. Predefined
+        coercers are ->Class and ->Generic. 
+
+        A generic comparator, inspired from Henry G Baker: egal that
+        compares any two objects even circular. Two immutables objects
+        are egal if they have egal fields. Two mutable objects are egal 
+        if they are eqv?. (An object is mutable as soon as it has at least
+        one mutable field). 
+
+  NEW   DSSSL features are used that is, DSSSL keywords (colon-suffixed)
+        are supported within Meroon special forms and lambda-list keywords
+        (#!optional, #!rest, #!key) are allowed in generic functions and
+        methods.
+
+******************************************************* Documents and Mail
+
+This page contains up to date information:
+
+        http://www-spi.lip6.fr/~queinnec/WWW/Meroon.html
+
+A reference manual appears in Doc/MeroonV3.{dvi,ps} files. There is
+also a related paper in Doc/oopil.{dvi,ps} which discusses various
+problems of Meroon V2 and their solution in Meroon V3.  The new
+implementation scheme is described in dispatch.{dvi,ps}. Finally a man
+page meroon.1 may serve as a (long) quick reference card. A real
+(short) quick reference card appears at the end of the reference
+manual.
+
+These papers may also be read from the following URL:
+
+   http://www-spi.lip6.fr/~queinnec/Papers/index.html
+
+Be sure to take the latest version of Meroon-V3 on (where * stands for
+the date of the latest release):
+
+   http://www-spi.lip6.fr/~queinnec/Programs/Meroon-V3*.tar.gz
+
+Questions, bugs, remarks, stories can sent to the author:
+
+        <Christian.Queinnec@lip6.fr> 
+
+I will forward interesting questions as well as answers to the mailing-list:
+
+        <meroon-info@spi.lip6.fr>
+
+You may subscribe to this (low-volume) mailing list if you request it to :
+
+        <meroon-request@spi.lip6.fr>.  
+
+
+ 
+     Happy Meroon-ing (but look at the `Current state' section below :)
+
+******************************************************* Content
+
+The current directory contains the sources of Meroon:
+
+        README, this file.
+
+        meroon.* files are prologues defining the implementation dependent
+                features of Meroon (see later for a description of these
+                prologues). Prologues just define a set of macro features
+                that conditionalize the next files (and mainly the macros.scm
+                and utils.scm files).
+
+        oo.* files contain functions to test Meroon for specific
+                implementations (particularly how to call eval and catch
+                errors).
+
+        *.scm files contain portable Scheme programs defining the Meroon
+                Object System. The main file that loads the others is 
+                the meroon.scm file.
+
+        Imakefile contains all the entries necessary to rebuild, compile
+                and test Meroon.
+        Makefile the expanded version of the previous Imakefile, the file
+                you have to customize in order to regenerate Meroon V3.
+
+        ChangeLog to give more information.
+
+        Doc/meroon.1 a man page describing Meroon V3.
+
+        Doc/oopil.{dvi,ps} a sort-of rationale for Meroon V3.   
+
+        Doc/MeroonV3.{dvi.ps} a reference manual for Meroon V3.
+
+        Doc/dispatch.{dvi,ps} describes the dispatching implementation.
+
+Current extensions for prologues are:
+
+        .bigloo         Bigloo 1.8
+        .elk            Elk 2.2
+        .edscheme       EdScheme V5
+        .fools          Fools (given up)
+        .gam            Mac-Gambit
+        .gsi            Gambit-C 2.7
+        .guile          Guile-ii, -iii, 1.2
+        .mac            Mac Scheme 1.5
+        .mit            MIT-Scheme 7.2.0
+        .mzscheme       MzScheme 50
+        .osc            OScheme
+        .pcg            PC Scheme/Geneva 4.02PL1
+        .pcs            PC Scheme 3.03
+        .siod           2.9 (given up)
+        .slib           Scm4e1 and slib2a1
+        .s2c            Scheme->C -- 15mar93jfb
+        .s48            Scheme 48 (in progress)
+        .umb            UMB-Scheme (given up)
+        .vscm           Vscm V0r4
+
+The fastest interpreters are, on my machine: OScheme, then SCM and
+Bigloo.  Extensions marked with (given up) are not finished due to
+various problems, see ChangeLog. Extensions marked with (in progress)
+are not finished but will probably be.
+
+******************************************************* Interpreting Meroon
+
+If you want to use Meroon, you can load it into your preferred Scheme
+interpreter. Load first the appropriate prologue file, a file named
+meroon.{something} where {something} is the appropriate extension as
+recorded above. Then load the meroon.scm file that will load in turn
+all the needed files in the right order. Meroon is now complete and
+should work. To sum up, just do that:
+        
+        (load "meroon.yourScheme")
+        (load "meroon.scm")
+
+If you define another prologue (for instance for Chez Scheme to which I have
+no access), mail it to me so I can include it in the next release. To write
+a prologue, look at the others and parameterize the macros.scm and utils.scm
+files that should be the <<only ones>> to change.
+
+NOTE for Gambit-C 2.7 or EdScheme users: To use Meroon under these
+interpreters, you must rather feed the toplevel with the two following
+forms separately (that is, not gathered in a begin form):
+
+        (include "meroon.gsc")
+        (include "meroon.gambc24")
+
+******************************************************* Compiling Meroon
+
+If you want better performances, then try to compile Meroon. The
+Makefile defines how to compile for Bigloo, Gambit and
+Scheme->C. This is rather complex due to the bootstrap of Meroon since
+Meroon uses itself for the definition of its predefined classes and
+generic functions.
+
+The trick is that you need Meroon to expand its own sources so you
+must find a way to load an interpreted Meroon into your compiler to be
+able to expand the sources of Meroon to compile. After that there
+might be a problem of initialization order (a Perl script is used to
+patch the C generated files for Scheme->C, neither Bigloo nor Gambit-C
+need that). Once you have built libmeroonV3.a, you can easily create an
+interpreter with a compiled built-in Meroon. Depending on the Scheme
+compiler you use, you can regenerate an interpreter with a built-in
+compiled Meroon running:
+        make o/${HOSTTYPE}/SCC/sci+
+        make o/${HOSTTYPE}/BGL/bigloo+
+        make o/${HOSTTYPE}/GSC/gsi+ 
+
+For Gambit-C, read also Brad Lucier's mail in the HINTS file.
+
+In fact, bigloo+ is not really useful, build bigloo++ instead.
+
+For MacGambit, follow the instructions of the compile.gam file.
+When you want to compile with MacGambit a file containing
+Meroon parts, you must insert in the first lines, the following
+inclusions:
+        (##include "meroon.gam")
+        (##include "macros.scm")
+        (##include "macinst.scm")
+        (##include "careless.scm")
+[IS IT STILL TRUE ?]
+
+*************************************************** Building a Meroon compiler
+
+The final problem is to setup a protocol to compile modules that uses
+Meroon ie imports its functions or uses its exported define-class and
+other macros. To compile these modules (same problem as for compiling
+the own sources of Meroon V3) you need again a working Meroon to
+expand the definitions of classes, generic functions etc. For that you
+only need to add (include "meroonV3.sch") in the module you want to
+compile with Scheme->C and (import meroonV3) in the module directive
+of Bigloo.
+
+The best is to add Meroon V3 directly to the compiler. This is done
+for Bigloo, for which the Makefile creates a bigloo++ compiler (that
+can also be run as an interpreter with the usual -i option). To
+compile a Meroon module with bigloo++, just name it with the <.oon>
+extension, bigloo++ will notice it and will make visible the necessary
+macros and will add the additional libraries (otherwise you should use
+the -extend meroon options when calling the bigloo++ compiler). For an
+example, see make test.compile.with.bigloo++.
+
+You may also obtain a gsc++ compiler for Gambit-C and Meroon. To
+compile a file with gsc++, you do not need to prefix it with any
+inclusion but you need to mention the modules of Meroon (when calling
+gsc++ -link) and to add the libMeroonV3.a library when linking with ld
+(for an example, see make test.compile.with.gsc++). TO BE REVISED FOR
+GAMBIT 2.4... See Brad Lucier's mail in the HINTS file.
+
+To sum up, to compile Meroon, setup the SCHEME and other variables in the
+Makefile as well as the HOSTTYPE variable that will qualify your computer
+and just run:
+                        make 
+
+Or you can directly say:
+                        make SCHEME=BGL
+or                      make SCHEME=SCC
+or                      make SCHEME=GSC
+
+It normally reconstructs the libmeroonV3.a library then an interpreter
+with a compiled built-in Meroon V3 (sci+) for Scheme->C, a
+compiler/interpreter (bigloo++) for Bigloo and an interpreter (gsi+)
+and a compiler (gsc++) for Gambit-C. [NOT YET THE CASE FOR GSC2.4]
+
+To cope with multiple architectures and Scheme implementations,
+compilation products are confined in a subdirectory named o/ with
+subdirectories named ${HOSTTYPE} (setup automatically by tcsh) and
+with final subsubdirectories SCC (for Scheme->C), BGL for Bigloo, GSC
+for Gambit-c. This explains that the final library and interpreter
+will normally appear in the directory o/${HOSTTYPE}/${SCHEME}.
+
+******************************************************* Thanks
+
+I'm very indebted to all Meroon users whose remarks and/or suggestions
+during all these years were supremely helpful, thoughtful and
+incentive. I am specially thanking Josep Riverola (whose system,
+Simmer, is available in the Scheme repository) and Brad Lucier.
+
+******************************************************* Current state
+
+Prologues that work for interpreted Meroon V3 are: Bigloo, EdScheme,
+Elk, Gambit, Guile, MacScheme 1.5, MIT-Scheme, MzScheme, OScheme, PC
+Scheme, PCS geneva, scm4e1/slib2a1, Scheme->C and vscm. To build an
+interpreter with a compiled Meroon is possible for Bigloo, Gambit and
+Scheme->C, to build a compiler with a compiled Meroon is possible for
+Bigloo and Gambit. Enjoy...
+
+*** end of README

@@ -1,0 +1,32 @@
+;;; Oct 11, 1993, Version 1.1
+;;; Copyright (c) 1990-93 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                  Meroon V3
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file allows to test Meroon under SLIB
+;;; Load this file, then execute:
+;;;                                  (test-oo "oo3.tst")
+
+(load "../tester.scm")
+
+;;; Define a testing toplevel
+
+(define (test-oo file)
+  (suite-test 
+   file "?? " "== " #t
+   (lambda (read check report-anomaly)
+     (set! oo-error (lambda args (report-anomaly args)))
+     (lambda ()
+       (check (eval (read))) ) )
+   equal? ) )
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; end of oo.slib

@@ -1,0 +1,32 @@
+Cool/Wierd:
+
+- Classes are functions which make instances
+
+- Class bootstrap code: [See "Src/class.scm"]
+  (set! <class> (<class> name: '<class> procedure: <class>))
+
+- No MOP
+  Classes, Generic Functions, Methods are NOT instances.
+  Types are not Classes, but instances of subtypes of <type>.
+  <class>'s superclasses are <function> and <type>.
+
+- Abstract Classes are just regular Classes who's init-function
+  throws an error rather than returning something.
+
+- Virtual Classes represent native Scheme objects; 
+  Native Scheme objects are NOT instances.
+  Virtual classes can have Class slots.
+  Virtual classes -- when they return something -- do not return instances
+  but do use shorted-lived instances in init-function to transmit values.
+E.g.:
+  (define-virtual-class <string> <indexed>
+	((element-type type: <type>
+          init-value: <character> ;; override
+          allocation: each-subclass:)
+ 	(fill         type: <character>
+         init-value: #\space
+         allocation: override:)
+   )
+  ;; replace inst w string
+  (lambda (inst) (make-string (size inst) (fill inst)))
+

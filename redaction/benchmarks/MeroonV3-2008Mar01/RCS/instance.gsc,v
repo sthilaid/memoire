@@ -1,0 +1,124 @@
+head	1.2;
+access;
+symbols;
+locks
+	lucier:1.2; strict;
+comment	@# @;
+
+
+1.2
+date	2005.05.04.02.44.43;	author lucier;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2005.02.25.22.20.16;	author lucier;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@;;; $Id: instance.gsc,v 1.1 2005/02/25 22:20:16 lucier Exp lucier $
+;;; Copyright (c) 1990-96 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                    Meroon V3
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;;                 Gambit-C adaptation of instance.scm
+
+;;; Use a special subtype for Meroon objects. This allows the Object?
+;;; predicate to be safe (so the safer-object feature is just a waste
+;;; of room that should be avoided). Thanks to Brad Lucier
+;;; <lucier@@MATH.Purdue.EDU> for these files.
+
+;;; This file only contains functions. Associated macros are in the 
+;;; macinst.gsc file.
+
+;;; Test if a Scheme object is a Meroon object. 
+
+(define (Object? o)
+  (declare (standard-bindings) (extended-bindings) (not safe))
+  (and (##subtyped? o)
+       (##eq? (##subtype o) (subtype-meroon)) ) )
+
+;;; Extracts the internal number of a class from within an instance.
+
+(define (object->class-number o)
+  (declare (inlining-limit 10000) (standard-bindings) (extended-bindings))
+  (if (or (not (meroon-safer-object))
+	  (Object? o))
+      (##vector-ref o 0)
+      (report-meroon-error 'Access object->class-number "Not an object---Shouldn't happen---Please investigate and report this error" o)))
+
+;;; Shallow copy of an instance.
+
+(define (instance-clone o)
+  (declare  (standard-bindings) (extended-bindings))
+  ;; Copy instance old[start..end[ into instance new[start..end[
+  
+  (define (copy-instance-slice! old new start end)
+    (declare (fixnum))
+    (let copy ((i start))
+      (when (##fixnum.< i end)
+	    (##vector-set! new i (##vector-ref old i))
+	    (copy (##fixnum.+ i 1)) ) ) )
+  
+  (if (or (not (meroon-safer-object))
+	  (Object? o))
+      (let* ((n (##vector-length o))
+	     (r (##make-vector n meroon-uninitialized)) )
+	(##subtype-set! r (subtype-meroon))
+	(copy-instance-slice! o r 0 n)
+	r )
+      (report-meroon-error 'Access instance-clone "Not an object---Shouldn't happen---Please investigate and report this error" o)))
+  
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; end of instance.gsc
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 1
+a1 1
+;;; $Id: instance.gsc,v 3.2 2000/02/11 15:56:02 queinnec Exp $
+d24 1
+d31 5
+a35 1
+  (##vector-ref o 0) )
+d40 19
+a58 15
+  (let* ((n (##vector-length o))
+         (r (##make-vector n meroon-uninitialized)) )
+    (##subtype-set! r (subtype-meroon))
+    (copy-instance-slice! o r 0 n)
+    r ) )
+
+;;; Copy instance old[start..end[ into instance new[start..end[
+
+(define (copy-instance-slice! old new start end)
+  (declare (fixnum))
+  (let copy ((i start))
+    (when (##fixnum.< i end)
+      (##vector-set! new i (##vector-ref old i))
+      (copy (##fixnum.+ i 1)) ) ) )
+
+@

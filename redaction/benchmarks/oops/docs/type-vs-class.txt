@@ -1,0 +1,59 @@
+FILE: "why-me.txt"
+IMPLEMENTS: Design discussion of types (vs classes)
+AUTHOR: Ken Dickey
+Date: 2005 August 22
+
+Why Classes?
+ - Slots
+ - Dispatch [abstract common patterns]
+
+Why Types?
+  - Foreign memory (structs, etc.)
+  - Dispatch specializations
+     [Gambit] Strucutures
+     Singletons, Limited Types, Subtype, ..
+
+Classes ARE Types.
+
+<class> is-a <type> and is-a <function> but types are
+instances of subclasses of <type>.
+
+Type instances are NOT classes and used only for method dispatch.
+
+Why?
+  - Singleton: dispatch on an arbitrary value 
+    e.g. 
+   (define-method (as (result-class <subclass-of-string>)
+                      (from (<singleton> '()))) ...)
+  - One-of: dispatch on enum; 
+    e.g. (define <vowels> (apply <one-of> (string->list "aeiouAEIOU")))
+  - Subclass: dispatch on argument which must be a particular class
+    [see AS above] Otherwise, the class of all classes is CLASS.
+  - Limited Range: allows arg checking (e.g. unsigned bytes for byte-vectors).
+
+===============
+<type-union> back off:
+  - Originally, there was (<type-union class-or-type.. )
+But
+  - Dispatch semantics were messy & testing expensive
+
+Motivating examples were handled via 
+ [A] creating a (sub)class for a union of classes. 
+ [B] re-factoring classes 
+  (e.g. <pair> and <null> now inherit from <list> rather than the converse)
+or
+ [C] using <one-of>
+e.g.
+ (define <vowels>
+    (apply <type-union> 
+	 (map <singleton> (string->list "aeiouAEIOU")))).
+-->
+ (define <vowels>
+    (apply <one-of> (string->list "aeiouAEIOU")))
+
+This could get re-introduced if required.. but can do without it for now.
+
+
+
+			---  E O F  ---
+

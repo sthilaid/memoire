@@ -1,0 +1,76 @@
+;;; $Id: meroon.gam,v 3.14 1996/06/03 06:43:06 queinnec Exp $
+;;; Copyright (c) 1990-94 by Christian Queinnec. All rights reserved.
+
+;;;                            *******************************
+;;;                            Gambit Adaptation for Meroon
+;;;                            *******************************
+
+;;; This file contains the necessary adaptation to be interpreted by Gambit.
+;;;  (load "meroon.gam")
+;;;  (load "meroon.scm")
+
+;;; This program is distributed in the hope that it will be useful.
+;;; Use and copying of this software and preparation of derivative works
+;;; based upon this software are permitted, so long as the following
+;;; conditions are met:
+;;;      o credit to the authors is acknowledged following current
+;;;        academic behaviour
+;;;      o no fees or compensation are charged for use, copies, or
+;;;        access to this software
+;;;      o this copyright notice is included intact.
+;;; This software is made available AS IS, and no warranty is made about 
+;;; the software or its performance. 
+
+;;; Bug descriptions, use reports, comments or suggestions are welcome.
+;;; Send them to    
+;;;   <queinnec@polytechnique.fr>   or to:   <Christian.Queinnec@inria.fr>
+;;;                                 or to:
+;;;   Christian Queinnec                     Christian Queinnec
+;;;   Laboratoire d'Informatique de l'X      INRIA -- Rocquencourt
+;;;   Ecole Polytechnique                    Domaine de Voluceau, BP 105
+;;;   91128 Palaiseau                        78153 Le Chesnay Cedex
+;;;   France                                 France
+
+;;;************************************************
+;;;    Small, Efficient and Innovative Class System
+;;;       Christian Queinnec  
+;;;   \'Ecole Polytechnique & INRIA-Rocquencourt
+;;;************************************************
+
+;;; The first macro is a macro definer that allows these macros to
+;;; remain in the compiled image. The second just defines a macro
+;;; local to the sources but normally not visible from the user.
+;;; In fact, regenerates pervasive macros only when first defined.
+
+(##define-macro (define-meroon-macro call . body)
+  `(begin ,(if (memq 'compile-pervasive-macros *meroon-features*)
+             `(eval '(##define-macro ,call . ,body))
+             `#t )
+          (##define-macro ,call . ,body) ) )
+
+(##define-macro (define-internal-meroon-macro call . body)
+  `(##define-macro ,call . ,body) )
+
+;;; When this macro is called, pervasive macros will be compiled.
+
+(##define-macro (meroon-compile-pervasive-macros)
+  (set! *meroon-features*
+        (cons 'compile-pervasive-macros *meroon-features*) )
+  `#f )
+
+;;; Notice that Gambit 1.9 prevents let* to support
+;;; (let* ((v 1)(v 2)) ...)
+
+;;; Conditional compilation: The variable *meroon-features* defines
+;;; the features of Meroon to be taken into account when loading (or
+;;; compiling Meroon). 
+
+(define *meroon-features* 
+  '( Mac gambit 2.2
+     ) )
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; End of adaptation of Meroon for Gambit.

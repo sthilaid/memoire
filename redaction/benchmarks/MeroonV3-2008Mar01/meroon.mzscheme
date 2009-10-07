@@ -1,0 +1,70 @@
+;;; $Id: meroon.mzscheme,v 3.1 1997/11/09 20:51:26 queinnec Exp $
+;;; Copyright (c) 1997 by Christian Queinnec. All rights reserved.
+
+;;;                            *********************************
+;;;                            Meroon V3 Adaptation for MzScheme
+;;;                            *********************************
+
+;;; This file contains the necessary adaptation for MzScheme.
+
+;;; This program is distributed in the hope that it will be useful.
+;;; Use and copying of this software and preparation of derivative works
+;;; based upon this software are permitted, so long as the following
+;;; conditions are met:
+;;;      o credit to the authors is acknowledged following current
+;;;        academic behaviour
+;;;      o no fees or compensation are charged for use, copies, or
+;;;        access to this software
+;;;      o this copyright notice is included intact.
+;;; This software is made available AS IS, and no warranty is made about 
+;;; the software or its performance. 
+
+;;; Bug descriptions, use reports, comments or suggestions are welcome.
+;;; Send them to    
+;;;   <christian.queinnec@lip6.fr>  or to:   <Christian.Queinnec@inria.fr>
+;;;                                 or to:
+;;;   Christian Queinnec                     Christian Queinnec
+;;;   Laboratoire d'Informatique de Paris 6  INRIA -- Rocquencourt
+;;;   Universite Paris 6                     Domaine de Voluceau, BP 105
+;;;   4, place Jussieu                       78153 Le Chesnay Cedex
+;;;   75252 Paris Cedex 05                   France
+;;;   France
+
+;;;************************************************
+;;;    Small, Efficient and Innovative Class System
+;;;       Christian Queinnec  
+;;;   \'Ecole Polytechnique & INRIA-Rocquencourt
+;;;************************************************
+
+;;; This macro defines the define-meroon-macro syntax. This definition
+;;; must be the first one in the file (see expand-meroon.scm
+;;; file). The second definition must be define-internal-meroon-macro.
+
+(define-macro define-meroon-macro 
+  (lambda (call . body)
+    (begin
+      ;(eval '(define-macro ,(car call)
+      ;         (lambda ,(cdr call) . ,body) ))
+      `(define-macro ,(car call)
+         (lambda ,(cdr call) . ,body) ) ) ) )
+
+;;; Test: (expand-defmacro '(define-meroon-macro (f a) (g b)))
+
+(define-macro define-internal-meroon-macro 
+  (lambda (call . body)
+    `(define-macro ,(car call)
+       (lambda ,(cdr call) . ,body) ) ) )
+
+;;; Conditional compilation: The variable *meroon-features* defines
+;;; the features of Meroon to be taken into account when loading (or
+;;; compiling Meroon). 
+
+(define *meroon-features* 
+  '( mzscheme 50
+     ) )
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; End of adaptation of Meroon for MzScheme.

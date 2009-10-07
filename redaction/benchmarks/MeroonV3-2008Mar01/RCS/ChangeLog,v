@@ -1,0 +1,489 @@
+head	1.2;
+access;
+symbols;
+locks
+	lucier:1.2; strict;
+comment	@# @;
+
+
+1.2
+date	2008.01.10.18.18.58;	author lucier;	state Exp;
+branches;
+next	1.1;
+
+1.1
+date	2008.01.10.18.18.52;	author lucier;	state Exp;
+branches;
+next	;
+
+
+desc
+@@
+
+
+1.2
+log
+@*** empty log message ***
+@
+text
+@2008-01-10  Bradley Lucier <lucier@@math.purdue.edu>
+
+	* Doc/meroon.1: change the name of setters to end in -set!
+
+2001-04-12  Christian Queinnec  <Christian.Queinnec@@lip6.fr>
+
+	* clone.scm: Implemented instantiate-from asked for by Brad Lucier.
+	to be finished since it may be better (see find-instantiation-from).
+
+2000-02-12  Christian Queinnec  <Christian.Queinnec@@lip6.fr>
+
+	* postset.scm: Fixed missing accessors for inherited fields.
+
+2000-02-11  Christian Queinnec  <Christian.Queinnec@@lip6.fr>
+
+	* Imakefile: Also incorporated lots of Brad Lucier's remarks.  The
+	new tarball (not a distribution) had been tested against elk,
+	bigloo 2.1a and gambit 3.0.
+
+	* all files or so: Incorporated two major points implemented by
+	Brad Lucier: (1) meroon-plus instead of + to use a fixnum addition
+	instead of a generic one (2) make-meroon-keyword to be independent
+	of DSSSL keywords or others (3) meroon-declare-not-inlinable to
+	qualify some lambda forms that should not be inlinable.
+
+2000-02-07  Christian Queinnec  <Christian.Queinnec@@lip6.fr>
+
+	* postset.scm (generate-maker): Also implemented an inlinable
+	maker and an inlinable predicate. Thanks to
+	<lucier@@math.purdue.edu> to ask for them.
+
+	* walker.scm (make-expander*): Created a new lexical contour for
+	with-access and fixed mis-handling of (let () ...) which was
+	considered as a named let !
+
+2000-02-06  Christian Queinnec  <Christian.Queinnec@@lip6.fr>
+
+	* access.scm: Added for the benefit of postset.scm a series of
+	expanders computing lambda-forms for accessors.
+
+	* postset.scm: This new file implements the MOP programming
+	required to offer field-writers named with a trailing '-set!'.
+	This was asked for by Brad Lucier <lucier@@math.purdue.edu>. It
+	also modifies the expansion of accessors in favor of explicit,
+	potentially inlinable, lambda-forms.
+ 
+	* definers.scm: Introduced *standard-mono-field-metaclass-name*
+	and *standard-poly-field-metaclass-name* names which are the
+	default classes for Fields.
+
+1999-11-27  Christian Queinnec  <Christian.Queinnec@@lip6.fr>
+
+	* option.scm: Bigloo 2.1a now recognizes :foo and foo: keywords
+	but (keyword->string ':foo) is ":foo". Fixed that in
+	meroon-keyword-eq?. 
+
+	* While checkpointing, I noticed that I started a long time ago to
+	implement new things (after discussion with Brad Lucier) that are
+	still not yet finished. Too bad, they're checked in now.
+   
+Mon Feb  9 16:12:10 1998  Christian Queinnec  <queinnec@@lispou.lip6.fr>
+
+	* libgen.scm, access.scm: fixed a bug discovered by
+ 	lucier@@math.purdue.edu on field-value, field-defined?, ... when
+ 	the first (non-discriminating) variable was not a Meroon
+ 	object. Take care to fix in temporary and retrofitted generic
+ 	functions.
+
+Tue Jan 20 13:29:17 1998  Christian Queinnec  <queinnec@@merou.lip6.fr>
+
+	* meroon.guile, option.scm : ported to guile 1.2. Once again
+ 	keywords changed.
+
+Mon Dec 29 10:29:43 1997  Christian Queinnec  <queinnec@@lispou.lip6.fr>
+
+	* Doc/MeroonV3.bk: Fixed the problem of reading #!things (this was
+ 	necessary to regenerate the documentation since MeroonV3 must be
+ 	loaded in LiSP2TeX. Written documentation and added tests.
+
+Sun Dec 28 12:11:39 1997  Christian Queinnec  <queinnec@@lispou.lip6.fr>
+
+	* oo3dsssl.tst: Finished testing DSSSL keywords in generic
+ 	functions. Note that a token such as #!rest cannot be read without
+ 	error by bigloo 1.8 and other Scheme implementations so it is not
+ 	effective to protect such pieces of code with if-meroon-feature.
+
+Wed Dec 17 15:26:20 1997  Christian Queinnec  <queinnec@@lispou.lip6.fr>
+
+	* definers.scm (parse-disc), dispatch.scm (coherent-variables):
+	Introduced DSSSL keyword handling in generic functions.
+
+Sat Dec  6 17:03:46 1997  Christian Queinnec  <queinnec@@lispou.lip6.fr>
+
+	* option.scm ((meroon-keyword-eq? thing symbols)): Following Brad
+ 	Lucier's remarks, DSSSL keywords may be used instead of Meroon
+ 	keywords.  Signalled this fact in the documentation and added a
+ 	new test file oo3dsssl.tst.
+
+Sun Nov  9 21:48:21 1997  Christian Queinnec  <queinnec@@lispou.lip6.fr>
+
+	* meroon.mzscheme: Ported Meroon onto MzScheme. Passes all tests
+ 	with mzscheme, stops with mzrice (to be checked).
+
+Wed Jun 25 18:48:51 1997  Christian Queinnec  <queinnec@@jblaye.ibp.fr>
+
+	* unveil.scm: Following Lucier's remarks, added explicit mutations
+ 	to global variables. Also hacked unveil not to start with a
+ 	newline.
+
+Wed Feb 12 18:16:17 1997  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+	* Imakefile: Regeneration of gsi+ now complete. Released this
+ 	improved version of Meroon as the 'Felix' release. gsc++ still to
+ 	be done.
+
+Tue Feb 11 11:20:22 1997  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+	* macros.scm alloc.scm: Changed the definitions of
+ 	generate-bunch-*-of-makers (as already suggested by Brad Lucier)
+ 	to only expand the body of a function not the whole definition.
+
+Thu Jan  2 12:52:18 1997  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+	* Imakefile (expand.all.sources.with.gambit): This entry expands
+ 	all sources for Gambit (this is to cope with Gambit 2.4). Same
+ 	thing for Bigloo. These expansions are done with the targeted
+ 	interpreter so you do not need Elk or Oscheme to perform it.
+
+Tue Aug 27 21:07:56 1996  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+        * definers.scm: Allow now for (define-class C (SC) ...). This is
+        a provision for multiple inheritance as suggested by Paul Wilson.
+
+Wed Jun 19 12:59:35 1996  Christian Queinnec  <queinnec@@blaye.inria.fr>
+        
+        * Made a new distribution: Named Audrey.
+
+        * Imakefile: propose to send me a mail when installing Meroon. 
+
+        * walker.scm: Fixed quasiquotation stuff that was missing from the
+        walkers of with-access. Fixed a bug in OScheme where
+        unquote-splicing was named unquote-splice.
+        
+        * dispatch.scm: Introduced the enlarge-dispatcher! generic
+        function fixing a bug when a class is defined and extends the size
+        of global dispatchers while one generic function is being traced.
+
+Mon Jun  3 10:42:19 1996  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+        * dispatch.scm ((globalize-dispatcher dispatcher class)): An
+        indexed dispatcher dispatching on Object is converted into a
+        simpler (and slightly more efficient) Global Dispatcher.
+
+Tue May 28 18:00:18 1996  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+        * dispatch.scm: Changed find-method1 into something faster. The
+        function is still extensible ie new subclasses of Dispatcher may
+        be added but it is no longer possible to change the find-method
+        method for predefined dispatchers.
+
+Sat May 18 13:50:02 1996  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+        * macinst.gsc: Started to use Gambit internal support for MeroonV3
+        thanks to Brad Lucier <lucier@@MATH.Purdue.EDU> for his help. Should
+        parameterize the (subtype-meroon) number into something Marc Feeley
+        may change easily.
+
+Sun May 12 14:10:17 1996  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+        * README, Imakefile: Still problem with indent as called by Bigloo.
+        Added compilation options to get rid of that dependence.
+
+Wed Apr 17 19:45:02 1996  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+        * macros.scm : Again falled in the macro trap. Don't use with Gambit
+        the if-meroon-feature within a macro since the expander associated
+        to a macro is not expanded.
+
+Sun Mar 31 11:03:54 1996  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+        * clone.scm: Enhanced the semantics of duplicate. See documentation.
+        
+        * many files: Completely removed class numbering.
+
+Sat Oct 28 13:55:52 1995  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+        * renum.scm: Started to reimplement class numbering.
+
+Wed Oct 18 20:08:29 1995  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+        * Imakefile (gsc++): Added support for the generation of gsi+ and gsc++ 
+that is compiled Meroon + Gambit-C.
+
+Fri Sep 22 14:10:17 1995  Christian Queinnec  <queinnec@@cornas.inria.fr>
+
+        * option.scm: Ported to guile-ii which has its own type for keywords.
+Noticed by boyd@@crl.com (Bonnie L. Boyd). Ported to guile-iii which is 
+slightly different on that point.
+        
+Fri Jun 23 17:50:24 1995  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+        * access.scm ((Poly-Field-create-careful-lengther class fieldname)): 
+Fixed a bug triggered only after two indexed fields.
+
+Wed Jun 14 20:51:48 1995  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+        * anomaly.scm: Warnings now form a class, they are signaled with
+a particular method on meroon-error (which may be overriden or altered).
+This comes from a suggestion of Alexandre Frey and Josep Riverola who 
+wanted to suppress the printing of warnings concerning class renumbering.
+Documented!
+
+        * Imakefile: parameterized ranlib. 
+
+        * genes2.scm: Fixed mutability of the initializer field of 
+class Field, it is possible to redefine them.
+
+Tue May 30 23:00:02 1995  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+        * Imakefile : changed the distributed Makefile.  Inserted a
+missing quote in PCScheme port.
+
+Wed Dec 14 14:29:32 1994  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+        * fill.scm: Fixed a bug on initialization of indexed fields in
+instantiate forms when no other mono-field initialization are present.
+Bug discovered by <riverola@@iese.es>. New distribution Wenceslas+3
+
+Wed Oct 19 09:42:35 1994  Christian Queinnec  <queinnec@@cornas.inria.fr>
+
+        * meroon.vscm ((meroon-macroexpand e)): finished the port to
+vscm.  This is quite ugly! The main reason is that Meroon macros
+expand a class definition into a begin form containing definitions and
+expressions which is not regular Scheme ie (begin (define a 1)
+a). Secondly, it is not possible to write either (begin (define a 1)
+(define b a)) since this requires left to right order to be correctly
+processed. Therefore I modify eval to accept these: this is ugly but
+it works!
+
+Tue Oct 18 13:39:52 1994  Christian Queinnec  <queinnec@@blaye.inria.fr>
+
+        * Imakefile (MIT): Finished port to MIT-Scheme 7.2.0.
+
+        * some days before: added code to allow a Traced-Dispatcher to be
+augmented with new methods while being traced. (Bug signalled by J. Riverola).
+
+Wed Sep 28 12:55:04 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+        * exodus.scm (Tracing-Dispatcher-class): Changed the way generic
+functions are traced. This allows to have a immutable behavior for
+generic functions so they must be more efficient. 
+
+        * fill.scm ((generate-initialization (field Poly-Field)...): fixed
+a bug on the allocation of very big objects. Bug triggered by duplicate.
+
+	* clone.scm : Implemented the duplicate macro. Documented it.
+
+        * dispatch.scm ((rebalance-dispatcher! d dno)): Fixed a bug on
+adding methods to dispatchers in a weird configuration. Created the 
+rebalance-dispatcher! generic function. 
+
+	* Examples/vsg.scm : added the enum specification to
+build-Recursive-CStream to create an enumerated CStream.
+
+Sat Sep 17 16:53:43 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+        * utils.scm ((meroon-integer->string n)): Ported Meroon to
+Fools. Fools miss number->string so create integer->string. Also renamed
+reduce into meroon-reduce to avoid a clash with Fools' reduce. Fools do
+not like a macro call that expands into a macro call to the same
+macro. Another problem lies with Fools' packages: Meroon keywords are
+prefixed with : so they are interned in the top-level package and they can
+no longer be submitted to symbol->string so Meroon keywords are not
+recognized and the first define-class fails!  Given up!
+
+        * meroon.umb: Ported Meroon to UMB Scheme. Changed symbols starting
+with a dash since UMB Scheme thinks they are numbers. Given up since this will
+rule out coercers (->class) which are part of the definition of Meroon.
+
+        * meroon.s48 : Ported to scheme48. Problems with macros: they do 
+are not aware of the functions of the toplevel. Suspended until I print
+the documentation.
+
+Mon Sep 12 09:34:52 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+        * Examples/ : added this directory to the distribution. It contains
+some examples of Meroon programs.
+
+        * dispatch.scm ((find-method d cn)): Simplified and made more reflective
+the dispatch mechanism.
+
+        * macinst.scm ((allocate-full-instance cn content)): improved the
+        case where starting-offset is 1.
+
+        * show.scm ((show-methods-for-class class)): Added this function
+(as suggested by Josep Riverola) to print generics that define method for a 
+class. 
+
+        * definers.scm ((process-define-generic-form call body)): Fixed a
+bug found by Josep Riverola related to the expansion of the instantiate form
+with a pre-class. 
+
+Mon Aug 29 13:57:25 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+        * instance.bigloo: Increaded robustness of Object? for Bigloo. Thanks
+to Thierry Saura for pointing it.
+
+Thu Jul  7 20:48:32 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+        * oo3.tst : changed define forms generated by metaclasses to adopt
+meroon-define now. Added modulo for MacScheme 1.5. Seems to work now!
+
+Wed Jul  6 18:33:04 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+        * option.scm ((find-option-present? keyword options)): Changed the
+way options are looked for since there was a bug with old Scheme confusing
+#f and (). This is the case of MacScheme 1.5
+
+        * fill.scm, definers.scm, utils.scm (gensym): Ported again Meroon to
+MacScheme 1.5 (the old one I bought years ago). Removed calls to gensym
+with an argument since MacScheme does not like it. 
+
+        * macros.scm : Changed the expansion of define-temporary-generic
+that uses a define form inside a toplevel begin form. They now use a
+new macro called meroon-define that expands into define or set!.
+
+Wed Jun 15 20:43:24 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+        * runtime.scm ((Class-add-subclass class super-class own-fields)): 
+Fields are copied and no longer shared between class and subclass. This is
+so to ease redefining inherited initializers. But it does not seem to be
+the correct solution (see last tests of oo3.tst which explains this). This
+feature will probably change soon, this new version of Meroon is not 
+distributed nor boasted.
+
+Sat Jun  4 10:40:18 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+        * Imakefile: Added files in the distribution to make easier to
+build bigloo++, made some other entries look better: there's now a 
+`make install' entry. The new distribution is called SteLouise+1.
+
+Wed Mar 16 12:20:53 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* macros.scm: Corrected a little the Makefile since bigloo++ was not
+correctly rebuilt. Modified utils and macros for PC-Scheme/Geneva. 
+
+Mon Mar  7 11:07:21 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* macros.scm: One ,@@ was incorrect in define-retrofitted-generic.
+Remade a new distribution named SteFelicite.
+
+Sun Mar  6 22:15:22 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* definers.scm (and other files) : Suppressed all ". ," for ",@@" since
+Gambit compiler seems to badly compile this syntax. Gambit compilation
+is OK now and described in compile.gambit.
+
+Wed Mar  2 22:49:02 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* genesis.scm : split genesis.scm into two files to ease Gambit compiler.
+Improved Bigloo++ that compiles now better and 3-times faster. 
+
+* Distributed the StCharles version net-wide.
+
+Sat Feb 26 11:41:18 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* Timings.blaye : Improved bigloo++ and benched scc, speed is quite
+good, better than v2.
+
+Sat Feb 19 18:41:33 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* instance.scm (macinst.scm): separated macros from functions to ease 
+compilation for Gambit. Reorganized *.gambit files for that goal. Introduced
+the compile.gambit file.
+
+Mon Feb  7 12:06:40 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* Imakefile (test.sci.thinman): fixed a bug in :prototype signalled by
+Lance Norskog <thinman@@netcom.com>. Distributed this release as SteEugenie.
+
+Sun Feb  6 16:50:47 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* Imakefile (renum.scm): Fixed a bug, classes that did not move had
+out of date super-numbers. This induces a bug in Indexed-Dispatchers. 
+There is a new source file (check.scm) to test that. Also improved 
+the Imakefile.
+
+Sat Jan 15 21:22:01 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* unveil.scm (show-unveiled-list-content): Fixed a bug on (a . #<aPoint>)
+which was badly written.
+
+Wed Jan  5 10:51:18 1994  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* walker.scm : Add with-access to the code-walker.
+
+Wed Nov 10 08:08:17 1993  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* utils.scm (flat): Bigloo no longer offers it. Improved Imakefile to ease
+the Bigloo port.
+
+Wed Nov  3 15:38:13 1993  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* revision.scm: removed float in favor of a pair of integers for
+meroon-revision since sci 15mar93 on Sony has problems with floats.
+Still continued to port towards bigloo, fixed bugs in the Imakefile
+with -ld, force directives in non-main modules.
+
+Tue Nov  2 17:28:35 1993  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* Imakefile: continue to port to bigloo. Change revision.scm to compare
+floats with a delta. changed meroon.bigloo.
+
+Thu Oct 28 16:05:14 1993  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* macros.scm: Improved if-meroon-feature to support and and or
+features without requiring utils.scm to be there. Started to port to 
+SIOD. Changed the :never-uninitialized to :maybe-uninitialized which
+seems easier to understand. Improved a lot Doc/meroon.1 and the Imakefile.
+
+Sat Oct 23 22:11:12 1993  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* utils.scm: Ported to Mac Gambit which does not accept (let* ((v 1)(v 2))..).
+Also started to port to PC-Scheme. Fixed a bug in retrofitted-generic.
+
+Fri Oct 15 21:09:23 1993  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* Imakefile: Compiles well under Scheme->C. Very good benchmark time better
+than for Meroon V2.
+
+Tue Oct 12 20:30:26 1993  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* *.scm: A new version of Meroon with global dispatchers a la Meroon
+V2 and without any class renumbering. Changed a lot of things but works
+with elk, slib, sci and bigloo.
+
+Sun Oct 10 20:45:26 1993  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* *.scm: changed bootstrap, added if-meroon-feature for conditional loading.
+Changed many things.
+
+Fri Oct  8 18:57:42 1993  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* access.scm: Accessors are now shared as closures. Improved many things.
+
+Sun Oct  3 20:40:56 1993  Christian Queinnec  (queinnec@@blaye.inria.fr)
+
+* many files: Improved instance.scm to contain the representation of
+instances and the associated functions to ease the port of Meroon to
+Bigloo. Also improved small things.
+
+@
+
+
+1.1
+log
+@Initial revision
+@
+text
+@d1 4
+@

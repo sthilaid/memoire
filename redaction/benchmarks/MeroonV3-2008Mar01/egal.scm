@@ -1,0 +1,91 @@
+;;; $Id: egal.scm,v 1.1 2005/02/25 22:19:37 lucier Exp $ 
+;;; Copyright (c) 1990-96 by Christian Queinnec. All rights reserved.
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                    Meroon 
+;;;                              Christian Queinnec  
+;;;                    Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file defines general predicates that compares Meroon. Two
+;;; Meroon objects are substituable if one cannot write a Meroon
+;;; program to distinguish them. Of course, since Meroon objects are
+;;; done with vectors, one can use that to side-effect instances in an
+;;; unseen manner. Two Meroon objects are substituable if they are
+;;; immutable and equal (in Lisp sense) or mutable and eq (still in
+;;; Lisp sense). This is yet another metaprogrammming example.
+
+;;; CAUTION: This predicate only works on Meroon objects.
+;;; See also Henry Baker's paper "Equal Rights for Functional Objects
+;;; or, The More Things Change, The More They Are the Same".
+
+;;; Takes care of cycles. The list has the structure 
+;;;   ( ( o1 o2 . result ) ...) where result is the result of the
+;;; comparison of o1 an o.
+(define *already-compared-objects* '())
+
+(define (substituable? o1 o2)
+  (set! *already-compared-objects* '())
+  (let ((result (compare4egal o1 o2)))
+    (set! *already-compared-objects* '()) ;; make GC happier
+    result ) )
+
+(define (compare4egal o1 o2)
+  ;; look in a cache if an appropriate entry exists and return it or #f.
+  (define (look cache)
+    (if (pair? cache)
+        (let ((entry (car cache)))
+          (if (or (and (eq? (car entry) o1) (eq? (cadr entry) o2))
+                  (and (eq? (car entry) o2) (eq? (cadr entry) o1)) )
+              (begin
+                ;; reorganize the cache                      FUTURE
+                entry ) 
+              (look (cdr cache)) ) )
+        #f ) )
+  ;; if o1 and o2 are the same, do not record an entry for it.
+  (or (eq? o1 o2)
+      (and (Object? o1) 
+           (Object? o2)
+           (fx= (object->class-number o1) (object->class-number o2))
+           ;; We already know that o1 is not physically the same as o2
+           ;; (on a mono-processor) so if these objects are mutable
+           ;; then they differ.
+           (Class-immutable? (object->class o1))
+           ;; Add an entry and recursively compare their fields.
+           (let ((entry (look *already-compared-objects*)))
+             (if (pair? entry) (cddr entry)
+                 (let ((entry (cons o1 (cons o2 #t)))
+                       (c (object->class o1)) )
+                   ;; suppose the comparison yields true
+                   (set! *already-compared-objects*
+                         (cons entry *already-compared-objects*) )
+                   ;; then check whether it is true
+                   (let ((result (every? (lambda (field) 
+                                           (Field-compare field o1 o2) )
+                                         (Class-fields c) )))
+                     (set-cdr! (cdr entry) result)
+                     result ) ) ) ) ) ) )
+
+;;; This generic function compares the content of a similar (possibly
+;;; indexed) field in two objects.
+
+(define-generic (Field-compare (field Field) o1 o2))
+
+(define-method (Field-compare (field Mono-Field) o1 o2)
+  (compare4egal (field-value o1 field)
+                (field-value o2 field) ) )
+
+(define-method (Field-compare (field Poly-Field) o1 o2)
+  (let ((len1 (field-length o1 field))
+        (len2 (field-length o1 field)) )
+    (and (fx= len1 len2)
+         (let iter ((i 0))
+           (or (fx>= i len1)
+               (and (compare4egal (field-value o1 field i)
+                                  (field-value o2 field i))
+                    (iter (fx+ i 1)) ) ) ) ) ) )
+
+;;; faire table de hash pour objets immuables                        FUTURE
+
+;;; end of egal.scm

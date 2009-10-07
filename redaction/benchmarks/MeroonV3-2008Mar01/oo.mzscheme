@@ -1,0 +1,34 @@
+;;; Copyright (c) 1997 by Christian Queinnec. All rights reserved.
+;;; $Id: oo.mzscheme,v 3.2 1997/11/30 15:30:14 queinnec Exp $
+
+;;;                ***********************************************
+;;;                    Small, Efficient and Innovative Class System
+;;;                                  Meroon V3
+;;;                              Christian Queinnec  
+;;;                   \'Ecole Polytechnique & INRIA--Rocquencourt
+;;;                ************************************************
+
+;;; This file allows to test Meroon under MzScheme
+;;; Load this file, then execute:
+;;;                                  (test-oo "oo3.tst")
+
+(load "../tester.scm")
+
+;;; Define a testing toplevel
+
+(define (test-oo file)
+  (suite-test
+   file "?? " "== " #t
+   (lambda (read check err)
+     (lambda ()
+       (with-handlers (((lambda (exc) #t)
+                        (lambda (exc) (err (list 'problem exc)) )))
+        (let ((e (read)))
+          (check (eval e)) ) ) ) )
+   equal? ) )
+
+;;; Local Variables:
+;;; mode: scheme
+;;; End:
+
+;;; end of oo.mzscheme

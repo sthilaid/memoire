@@ -1,0 +1,133 @@
+Gambit Version 4.0 beta 14
+
+> (load "test-oops")
+
+Loading: "format"
+Loaded:  "/home/kend/Oops/Src/format.scm"
+
+Loading: "mechanics"
+Loaded:  "/home/kend/Oops/Src/mechanics.scm"
+
+Loading: "slots"
+Oops: loaded SLOT Support Code
+Loaded:  "/home/kend/Oops/Src/slots.scm"
+
+Loading: "instance"
+Oops: loaded INSTANCE code
+Loaded:  "/home/kend/Oops/Src/instance.scm"
+
+Loading: "class"
+Oops: loaded CLASS bootstrap code
+Loaded:  "/home/kend/Oops/Src/class.scm"
+
+Loading: "subclass"
+Loaded:  "/home/kend/Oops/Src/subclass.scm"
+
+Loading: "setget"
+Oops: loaded Setter/Getter bootstrap code
+Loaded:  "/home/kend/Oops/Src/setget.scm"
+
+Loading: "class-hierarchy"
+Oops: loaded CLASS-HIERARCHY bootstrap code
+Loaded:  "/home/kend/Oops/Src/class-hierarchy.scm"
+
+Loading: "define-class"
+Oops: loaded DEFINE-CLASS code
+Loaded:  "/home/kend/Oops/Src/define-class.scm"
+
+Loading: "methods"
+Oops: loaded METHODS code
+Loaded:  "/home/kend/Oops/Src/methods.scm"
+
+Loading: "generics"
+Oops: loaded GENERICS code
+Loaded:  "/home/kend/Oops/Src/generics.scm"
+
+Loading: "describe"
+Loaded:  "/home/kend/Oops/Src/describe.scm"
+
+Loading: "limited-types"
+Oops: loaded LIMITED TYPES code
+Loaded:  "/home/kend/Oops/Src/limited-types.scm"
+
+Loading: "collection-classes"
+Oops: loaded COLLECTION classes
+Loaded:  "/home/kend/Oops/Src/collection-classes.scm"
+
+Loading: "conditions"
+Oops: loaded CONDITION/HANDLER/RESTART code
+Loaded:  "/home/kend/Oops/Src/conditions.scm"
+
+Loading: "collection-methods"
+Oops: loaded COLLECTIONS methods
+Loaded:  "/home/kend/Oops/Src/collection-methods.scm"
+
+Loading: "ts-table"
+Loaded:  "/home/kend/Oops/Src/ts-table.scm"
+
+Loaded Oops!
+***WARNING: (*** Redefining to setter: real-part-set!)
+was: #<procedure #2 real-part>
+
+***WARNING: (*** Redefining to setter: imag-part-set!)
+was: #<procedure #3 imag-part>
+
+***WARNING: (*** Redefining to getter: real-part)
+was: #<procedure #2 real-part>
+
+***WARNING: (*** Redefining to getter: imag-part)
+was: #<procedure #3 imag-part>
+
+***WARNING: (*** Redefining to getter: magnitude)
+was: #<procedure #4 magnitude>
+
+***WARNING: (*** Redefining to getter: angle)
+was: #<procedure #5 angle>
+
+
+===> Starting  Tests for classes
+===> Completed Tests for classes
+
+===> Starting  Tests for <dictionary>
+===> Completed Tests for <dictionary>
+
+===> Starting  Tests for slots
+===> Completed Tests for slots
+
+===> Starting  Tests for types
+===> Completed Tests for types
+
+===> Starting  Tests for generics
+===> Completed Tests for generics
+
+===> Starting  Tests for collections
+===> Completed Tests for collections
+
+===> Starting  Tests for <string><vector>
+===> Completed Tests for <string><vector>
+
+===> Starting  Tests for <list><pair><null>
+===> Completed Tests for <list><pair><null>
+
+TOTAL PASSED:     321
+TOTAL FAILED:     0
+TOTAL EXCEPTIONS: 0
+
+"/home/kend/Oops/Src/test-oops.scm"
+> (describe sub1)
+Instance of <submarine>
+== Instance Slots ==
+x: 124
+y: 33
+direction: 40
+z: -23
+> (describe (class-of sub1))
+<submarine> is a <class>
+> (describe (class-of "abc"))
+<string> is a <class>
+== Class Slots ==
+element-type: <character>
+index-type: <integer>
+> (exit)
+
+Process scheme finished

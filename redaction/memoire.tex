@@ -1853,12 +1853,17 @@ outils efficaces pour le développement de logiciels.
 
 \todo{ajouter ref pour tcpip?}
 
+
+
 \section{Extension utiles}
+
 Cette section présente un recueil des extension du langage Scheme qui
 sont utilisées dans les chapitres suivant de ce mémoire. Ces dernière
 ne constituent pas nécessairement un atout précis quand à la
 programmation de jeu vidéo, mais apporteront plutôt une meilleure
 compréhension des exemples de codes fournis dans ce mémoire.
+
+\subsection{Fermetures}
 
 Le système Gambit-C permet la définition de paramètres avec
 l'utilisation de mots clés. La figure \ref{Scheme:fun-key} illustre un
@@ -1915,6 +1920,8 @@ de la procédure \scheme{apply}.
   \label{Scheme:apply}
 \end{figure}
 
+\subsection{Tables de hachages}
+
 Le système Gambit-C supporte aussi l'utilisation de tables de
 hachages. Ces dernières peuvent être créées par la fonction
 \scheme{make-table} et des valeurs peuvent y être insérées ou
@@ -1923,6 +1930,8 @@ inspectées avec les fonctions \scheme{(table-set! <table> <key>
   [<default-value>])}. Il est aussi possible de spécialiser ces tables
 afin d'être plus efficaces pour des clés étant des symboles ou des
 chaînes de caractères.
+
+\subsection{Tests d'égalité et opérations conditionnelles}
 
 L'égalité en Scheme entre deux objets appartenant aux types de base du
 langage peut toujours être vérifiée par la fonction
@@ -1958,6 +1967,62 @@ tel qu'illustré dans la figure \ref{Scheme:cond}.
     pour des clés symboliques et d'utilisation de la forme spéciale
     \scheme{cond}}
   \label{Scheme:cond}
+\end{figure}
+
+\subsection{Déclaration et utilisation d'objets}
+
+Le système Gambit-C apporte la définitions d'objets implantant des
+fonctionnalités minimales d'un système de programmation orienté
+objet. La définition de telles structures se fait en utilisant la
+forme spéciale
+
+\noindent
+\scheme{(define-type <type-id> [<member-id>] ... [extender: <extender-name>])}
+
+\noindent
+Celle-ci effectue la création de fonctions d'accès et de modification
+de membres, de création d'instances et de vérification de
+type. L'utilisation du mot clé \scheme{extender:} permet aussi la
+création d'une nouvelle forme spéciale (au nom spécifié) qui permet la
+définition de sous-types héritant des membres de la classe en
+question, implantant ainsi un héritage simple. La figure
+\ref{Scheme:deftype} illustre l'utilisation de cette forme spéciale.
+
+\begin{figure}[htb1]
+  \begin{schemecode}
+(define-type point x y extender: define-type-of-point)
+(define-type-of-point circle r)
+(define (add p1 p2) (make-point (+ (point-x p1) (point-x p2))
+                                (+ (point-y p1) (point-y p2))))
+(add (make-point 1 2) (make-circle 3 4 5)) => \#\textless point \#4 x: 1 y: 1\textgreater
+(if (circle? (make-point 1 2)) 'ok 'no)    => no
+  \end{schemecode}
+  \caption{Exemle de création d'objets dans Gambit-C}
+  \label{Scheme:deftype}
+\end{figure}
+
+\subsection{Affichage de résultats}
+
+Plusieurs fonctions sont disponible en Scheme afin d'effectuer
+l'affichage du résultat de l'évaluation d'une expression. Le standard
+Scheme fourni entre autre les fonctions \scheme{write} et
+\scheme{display} qui permettent un affichage bas niveau de données
+Scheme. Le système Gambit-C offre aussi les fonctions
+\scheme{pretty-print} (ou \scheme{pp}) afin de faire un affichage
+enjolivé d'une sortie de \scheme{write}. La fonction \scheme{println}
+afin de permettre l'affichage d'expressions composées. La figure
+\ref{Scheme:print} illustre des exemples d'utilisations de ces
+fonctions.
+
+\begin{figure}[htb1]
+  \begin{schemecode}
+(write (list 1 'a "a")) => (1 a "a")
+(display (list 1 'a "a")) => (1 a a)
+(write (list 1 'a "a")) => (1 a "a")\textbackslash~n
+(println "Bonjour " (+ 1 2) (map (flip + 1) '(1 2 3))) => Bonjour 3234
+  \end{schemecode}
+  \caption{Exemples d'utilisation de fonctions d'affichage}
+  \label{Scheme:print}
 \end{figure}
 
 \section{Conclusion}
@@ -2026,26 +2091,10 @@ Le SRFI-9~\cite{SRFI_9} (\textit{Scheme Request For Implementation})
 suggère un système très rudimentaire d'objets qui fut implémenté et
 étendu par le système Gambit-C~\cite{Gambit4}. Ce système permet la
 construction de manière générique d'objets typés avec héritage
-simple. L'exemple de la figure \ref{OO:gambit-obj} illustre un exemple
-d'utilisation de ce système. L'utilisation du mot clé
-\scheme{extender:} permet la déclaration de sous-types en utilisant la
-forme spéciale spécifiée. L'accès aux membres des objets issus de la
-même hiérarchie est ainsi possible et donne accès à du polymorphisme
-minimal.
-
-\begin{figure}[htb!]
-  \begin{schemecode}
-(define-type point x y extender: define-type-of-point)
-(define-type-of-point circle r)
-(define (add p1 p2) (make-point (+ (point-x p1) (point-x p2))
-                                (+ (point-y p1) (point-y p2))))
-(add (make-point 1 2) (make-circle 3 4 5))
-  \end{schemecode}
-  \schemeresult{\#\textless point \#135 x: 4 y: 6\textgreater}
-  \caption{Exemple de création d'objets hiérarchiques et de
-    polymorphisme simple dans Gambit-C}
-  \label{OO:gambit-obj}
-\end{figure}
+simple. L'exemple de la figure \ref{Scheme:deftype} illustre un
+exemple d'utilisation de ce système. L'accès aux membres des objets
+issus de la même hiérarchie est ainsi possible et donne accès à une
+polymorphisme minimal.
 
 Ainsi, le système Gambit-C nous permet d'utiliser des concepts de la
 programmation orientée objet de manière rudimentaire. Cette approche
@@ -2220,13 +2269,16 @@ chapitre.
 
 Le système de programmation orientée objet développé est fortement
 inspiré du Common Lisp Object System~\cite{CLOS} et possède la plupart
-des propriétés intéressantes de ce dernier. On retrouve entre autre un
-héritage multiple de classes, du polymorphisme d'instance de classes
+des propriétés intéressantes de ce dernier. On retrouve entre autre de
+l'héritage multiple de classes, du polymorphisme d'instance de classes
 et surtout, des fonctions génériques à \textit{dispatch} multiple
 personnalisé. Malgré ces fonctionnalités de haut niveaux, une
-attention a été apporté aux performances, tout spécialement à l'accès
-aux membres d'instances, puisque ces opérations sont très fréquentes
-dans un jeu vidéo.
+attention a été apportée aux performances, tout spécialement à l'accès
+aux membres d'instances, puisque ces opérations sont fréquentes dans
+un jeu vidéo. En effet, le développement préliminaire de \si (chapitre
+\ref{Chap:exp})nous laissait déjà sous-entendre que l'accès aux
+membres d'instances est une opération très fréquente qui se doit
+d'être efficace afin de ne pas ralentir la cadence du jeu.
 
 Le reste de cette section fourni un API (\textit{Application
   Programming Interface}) au système, tout en motivant l'ajout des
@@ -2261,56 +2313,42 @@ que les fonctions utilitaires générées soient compatibles avec celles
 générées par \scheme{define-type}. Ainsi, une conversion d'un système
 basé sur les objets de \textit{define-type} est extrêmement simple, il
 ne suffit qu'à remplacer la définition du type par une définition de
-classe de notre système d'objets. Les figures \ref{OO:define-type} et
+classe de notre système d'objets. Les figures \ref{Scheme:deftype} et
 \ref{OO:defclass-simple} illustrent la conversion de code nécessaire
-pour passer d'une forme define-type à notre système objet. Aussi, le
-choix d'utiliser des fonctions compatibles à \scheme{define-type} rend
-la base du système d'objets triviale à utiliser par des nouveaux
-utilisateurs déjà familier avec \scheme{define-type}.
-
-\begin{figure}[htb!]
-  \begin{schemecode}
-(define-type point x y extender: define-point-type)
-(define-point-type circle radius)
-(let ((p1 (make-point 1 2)) (p2 (make-circle 3 4 5)))
-  (sqrt (+ (expt (- (point-x p2) (point-x p1)) 2)
-           (expt (- (point-y p2) (point-y p1)) 2))))
-  \end{schemecode}
-  \schemeresult{2.8284271247461903}
-  \caption{Utilisation d'objets créés par la forme spéciale
-    \scheme{define-type} de Gambit-C.}
-  \label{OO:define-type}
-\end{figure}
+pour passer d'une forme \scheme{define-type} à notre système
+objet. Aussi, le choix d'utiliser des fonctions compatibles à
+\scheme{define-type} rend la base du système d'objets triviale à
+utiliser par des nouveaux utilisateurs déjà familier Gambit-C.
 
 \begin{figure}[htb!]
   \begin{schemecode}
 (define-class point () (slot: x) (slot: y))
-(define-class circle (point) (slot: radius))
-(let ((p1 (make-point 1 2)) (p2 (make-circle 3 4 5)))
-  (sqrt (+ (expt (- (point-x p2) (point-x p1)) 2)
-           (expt (- (point-y p2) (point-y p1)) 2))))
+(define-class circle (point) (slot: r))
+(define (add p1 p2) (make-point (+ (point-x p1) (point-x p2))
+                                (+ (point-y p1) (point-y p2))))
+(add (make-point 1 2) (make-circle 3 4 5)) => \#(<class-desc> 4 6)
+(if (circle? (make-point 1 2)) 'ok 'no)    => no
   \end{schemecode}
-  \schemeresult{2.8284271247461903}
   \caption{Utilisation simple du système objets pour une utilisation
     similaire à celle pouvant être fait avec la forme \scheme{define-type}.}
   \label{OO:defclass-simple}
 \end{figure}
 
-Les fonctions utilitaires générées par la création de la classe
-\scheme{point} sont:
+Les fonctions générées par la définition de la classe \scheme{point}
+sont:
 
 \begin{itemize}
 \item \scheme{(make-point <x-val> <y-val>)} : Construit une nouvelle
   instance de la classe avec \scheme{<x-val>} et \scheme{<y-val>}
   comme valeurs initiales d'attributs.
 
-\item \scheme{(point-x <instance>)} : Assesseur de l'attribut
+\item \scheme{(point-x <instance>)} : Accesseur de l'attribut
   \scheme{x} de l'instance passée en argument. Une autre fonction est
   similairement générée pour l'attribut \scheme{y}.
 
-\item \scheme{(point-x-set! <instance> <new-x-val>)} : Fonctions de
-  changement de l'état de l'attribut \scheme{x}. Une autre fonction
-  est similairement générée pour l'attribut \scheme{y}.
+\item \scheme{(point-x-set! <instance> <new-x-val>)} : Fonction de
+  mutation de l'attribut \scheme{x}. Une autre fonction est
+  similairement générée pour l'attribut \scheme{y}.
 
 \item \scheme{(point? <any-value>)} : Prédicat de type de la classe
   \scheme{point}. Cette fonction retourne la valeur \scheme{\#t} si la
@@ -2319,49 +2357,38 @@ Les fonctions utilitaires générées par la création de la classe
   \scheme{\#f} sinon.
 \end{itemize}
 
-En plus de pouvoir allouer des attributs d'instances, il est possible
-d'allouer des attributs de classes, communs à toutes les instances de
+En plus de pouvoir définir des attributs d'instances, il est possible
+de définir des attributs de classes, communs à toutes les instances de
 la classe. Ainsi les informations communes à toutes les instances
 peuvent être factorisées, tout en conservant l'encapsulation de
 l'information dans l'objet. Il est important de noter qu'après la
 déclaration de la classe, tous les attributs de classes se retrouvent
 dans un état non-initialisé et doivent donc être initialisés avant de
-pouvoir être utilisés. L'héritage d'attributs de classes fera en sorte
-que chaque sous-classe possède sa propre instance de l'attribut,
-permettant ainsi des personnalisations des instances de cette classe
-face à cet attribut.
+pouvoir être utilisés. L'héritage d'attributs de classe fait en sorte
+que chaque sous-classe possède sa propre version de l'attribut,
+permettant ainsi des personnalisations de chacune de ces sous-classes
+avec cet attribut.
 
-Puisque ces attributs sont communs, ils ne nécessitent pas d'instance
-pour être accédés ou modifiés, mais ces fonctions d'accès ou de
-modification de valeur d'attributs de classes permettent de prendre
-tout de même une instance pour pouvoir utiliser ces fonctions de
-manière dynamique, ou encore, polymorphique. La figure
-\ref{OO:class-slot} illustre ce processus.
+Puisque ces attributs sont communs à toutes les instances, ils ne
+nécessitent pas de ces dernières pour être accédés ou modifiés.
+Toutefois, ces fonctions d'accès ou de modification de valeur
+d'attributs de classes permettent de prendre optionnellement une
+instance afin d'utiliser ces fonctions de manière polymorphique. La
+figure \ref{OO:class-slot} illustre ce processus.
 
 \begin{figure}[htb!]
   \begin{schemecode}
 (define-class toto () (class-slot: t))
 (define-class blub (toto))
+
 (toto-t-set! 10) (blub-t-set! 'allo)
-(toto-t)
+(toto-t)             => 10
+(blub-t)             => allo
+(toto-t (make-toto)) => 10
+(toto-t (make-blub)) => allo
+(toto-t-set! (make-blub) 'salut) 
+(toto-t (make-blub)) => salut
   \end{schemecode}
-  \schemeresult{10}
-  \begin{schemecode}
-(blub-t)
-  \end{schemecode}
-  \schemeresult{allo}
-  \begin{schemecode}
-(toto-t (make-toto))
-  \end{schemecode}
-  \schemeresult{10}
-  \begin{schemecode}
-(toto-t (make-blub))
-  \end{schemecode}
-  \schemeresult{allo}
-  \begin{schemecode}
-(toto-t-set! (make-blub) 'salut) (toto-t (make-blub))
-  \end{schemecode}
-  \schemeresult{salut}
   \caption{Exemple d'utilisation dynamique d'attributs de classes.}
   \label{OO:class-slot}
 \end{figure}
@@ -2369,7 +2396,7 @@ manière dynamique, ou encore, polymorphique. La figure
 
 En plus des créateurs d'instances à la \scheme{define-type}, le
 système objet permet la définition d'un ou de plusieurs constructeurs
-pour la création de nouvelles instances simplifiée. Ces constructeurs
+pour la création de nouvelles instances simplifiées. Ces constructeurs
 sont plutôt des fonctions d'initialisation de nouvelles
 instances. Elles \emph{doivent} avoir un premier argument
 correspondant à l'instance à initialiser et peuvent posséder un nombre
@@ -2390,31 +2417,46 @@ l'utilisation de constructeurs génériques d'objets.
   (slot: t)
   (constructor: (lambda (self t) (toto-t-set! self t)))
   (constructor: (lambda (self (t titi)) (toto-t-set! self (titi-i t)))))
+
 (let ((obj1 (new toto 1))
       (obj2 (new toto (new titi 2))))
-  (pp (toto-t obj1))
-  (toto-t obj2))
+  (toto-t obj1)  => 1
+  (toto-t obj2)) => 2
   \end{schemecode}
-{{\it
-1\\
-2}}
   \caption{Utilisation générique de constructeurs}
   \label{OO:constructeurs}
 \end{figure}
 
-Finalement, l'utilisation de crochets (\textit{hooks}) sur les
-fonctions assesseur et de modifications d'états d'attributs est
-possible en ajoutant les des mots clés (\textit{keywords}) à
-l'intérieur des attributs désirés. Il est possible de définir des
-crochets en lecture ou en écriture avec respectivement les mots clés
-\scheme{read-hooks:} et \scheme{write-hooks:}. Ces mots clés doivent
-être le premier élément d'une liste qui contiendra tous les fonctions
-de crochets désirées. Des crochets d'attributs d'instance doivent
-prendre en paramètre une référence vers l'instance en question et la
-valeur (ou nouvelle valeur) de l'attribut. Les crochets d'attributs de
-classes ne doivent pas prendre d'instances en paramètres.
+Finalement, l'utilisation de \textit{hooks} sur les fonctions
+accesseur et de mutation d'attributs est possible en ajoutant des mots
+clés appropriés à l'intérieur des déclarations attributs en
+question. Il est possible de définir des \textit{hooks} en lecture ou
+en écriture avec respectivement les mots clés \scheme{read-hooks:} et
+\scheme{write-hooks:}. La figure \ref{OO:hooks} illustre l'utilisation
+de ceux-ci.
 
-\todo{Encore un exemple, ou bien est-ce suffisant? }
+\begin{figure}[htb1]
+  \begin{schemecode}
+(define-class hooked ()
+  (slot: s
+    (read-hooks:  (lambda (obj x) (display "r") (display x)))
+    (write-hooks: (lambda (obj x) (display "w") (display x))))
+  (class-slot: cs
+    (read-hooks:  (lambda (x) (display "r") (display x)))
+    (write-hooks: (lambda (x) (display "w") (display x)))))
+(let ((o (make-hooked 1))) 
+  (hooked-cs-set! 'allo)   => wallo
+  (hooked-s o)             => r1
+  (hooked-s-set! o 2)      => w2
+  (hooked-s o)             => r2
+  (hooked-cs)              => rallo
+  (hooked-cs-set! 'salut)  => wsalut
+  (hooked-cs))             => rsalut
+  \end{schemecode}
+  \caption{Exemple d'utilisation de \textit{hooks} sur des membres
+    d'instances et de classes}
+  \label{OO:hooks}
+\end{figure}
 
 
 
@@ -3663,7 +3705,7 @@ apportent plus de liberté aux utilisateurs du système.
 Le système de coroutine a été conçu de manière à pouvoir permettre de
 créer des systèmes de coroutines de manière cascadée, \ie de créer des
 coroutines qui sont elles-mêmes des système de coroutines. La
-procédure de création de ces derniers est simple, il ne suffit que de
+procédure de création de ces derniers est simple, il suffit de
 démarrer un nouveau système de coroutine à l'intérieur d'une coroutine
 existante. Par contre, un problème se pose: il devient alors
 impossible de pouvoir retourner le contrôle aux coroutines appartenant
@@ -4084,6 +4126,7 @@ balancer ou d'optimiser ces dernières.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Évaluation et expériences}
+\label{Chap:exp}
 
 Afin de pouvoir déterminer les forces et les faiblesses du
 développement de jeux vidéo en Scheme, des jeux doivent être

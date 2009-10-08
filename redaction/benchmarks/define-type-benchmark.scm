@@ -19,6 +19,10 @@
     'ok)
    (else 'no)))
 
+(define-bench define-type-instance-creation
+  ()
+  (make-Point 1 2))
+
 (define-bench define-type-access
   ((p (make-Point 1 2)))
   (Point-x p))
@@ -37,6 +41,7 @@
    (p2 (make-Circle 3 4 34)))
   (add p1 p2))
 
+(pp (define-type-instance-creation))
 (pp (define-type-access))
 (pp (define-type-modif))
 (pp (define-type-dispatch))

@@ -11,6 +11,10 @@
 (define-method (add (p1 Tutu) (p2 Point)) 'tu)
 (define-method (add (p1 Toto) (p2 Point)) 'to)
 
+(define-bench oops-instance-creation
+  ()
+  (Point x: 1 y: 2))
+
 (define-bench oops-access
   ((p (Point x: 1 y: 2)))
   (x p))
@@ -29,6 +33,7 @@
    (p2 (Circle x: 3 y: 4 radius: 34)))
   (add p1 p2))
 
+(pp (oops-instance-creation))
 (pp (oops-access))
 (pp (oops-modif))
 (pp (oops-dispatch))

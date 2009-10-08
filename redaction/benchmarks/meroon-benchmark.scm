@@ -11,6 +11,10 @@
 (define-method (add (p1 Tutu) (p2 Point)) 'tu)
 (define-method (add (p1 Toto) (p2 Point)) 'to)
 
+(define-bench meroon-instance-creation
+  ()
+  (make-Point 1 2))
+
 (define-bench meroon-access
   ((p (make-Point 1 2)))
   (Point-x p))
@@ -29,6 +33,7 @@
    (p2 (make-Circle 3 4 34)))
   (add p1 p2))
 
+(pp (meroon-instance-creation))
 (pp (meroon-access))
 (pp (meroon-modif))
 (pp (meroon-dispatch))

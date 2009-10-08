@@ -50,3 +50,6 @@ class: class-benchmark.o1
 
 class-benchmark.o1: class-benchmark.scm
 	$(GSC) -o ../$@ $(class-prelude) ../$<
+
+clean:
+	rm -rf *.o1

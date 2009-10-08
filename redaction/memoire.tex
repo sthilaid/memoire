@@ -93,7 +93,7 @@ video games, object oriented programming.
  
 \tabledesmatieres
 
-% \listedestableaux
+\listedestableaux
 
 \listedesfigures
 
@@ -879,7 +879,7 @@ un exemple simple de calcul arithmétique.
 (+ (expt 2 5) (sin (/ 3.141592653589793 2)))
   \end{schemecode}
   \schemeresult{33.}
-  \caption{}
+  \caption{Exemple simple d'appels de fonctions en Scheme}
   \label{Scheme:simple-ex}
 \end{figure}
 
@@ -2027,49 +2027,51 @@ suggère un système très rudimentaire d'objets qui fut implémenté et
 étendu par le système Gambit-C~\cite{Gambit4}. Ce système permet la
 construction de manière générique d'objets typés avec héritage
 simple. L'exemple de la figure \ref{OO:gambit-obj} illustre un exemple
-d'utilisation de ce système. On constate qu'il est possible d'utiliser
-du polymorphisme pour l'accès aux membres des objets issus de la même
-hiérarchie.
+d'utilisation de ce système. L'utilisation du mot clé
+\scheme{extender:} permet la déclaration de sous-types en utilisant la
+forme spéciale spécifiée. L'accès aux membres des objets issus de la
+même hiérarchie est ainsi possible et donne accès à du polymorphisme
+minimal.
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(define-type point x y extender: define-point-type)
-(define-point-type circle r)
+(define-type point x y extender: define-type-of-point)
+(define-type-of-point circle r)
 (define (add p1 p2) (make-point (+ (point-x p1) (point-x p2))
                                 (+ (point-y p1) (point-y p2))))
 (add (make-point 1 2) (make-circle 3 4 5))
   \end{schemecode}
   \schemeresult{\#\textless point \#135 x: 4 y: 6\textgreater}
   \caption{Exemple de création d'objets hiérarchiques et de
-    polymorphisme simple dand Gambit-C}
+    polymorphisme simple dans Gambit-C}
   \label{OO:gambit-obj}
 \end{figure}
 
 Ainsi, le système Gambit-C nous permet d'utiliser des concepts de la
-programmation orientée objet, mais d'une manière très limitée. Cette
-approche ne fournie aucune possibilité de créer des méthodes qui sont
-au coeur du réel avantage qu'apporte le polymorphisme. 
+programmation orientée objet de manière rudimentaire. Cette approche
+ne fournie aucune possibilité d'attacher des méthodes aux objets qui
+sont au coeur du polymorphisme.
 
 L'approche plus traditionnelle quant à la déclaration de méthodes de
 classes est celle utilisée par le langage de programmation
 Java~\cite{JavaSpec}. Cette approche lie les méthodes à une et une
-seule classe. Les appels de ces méthodes possèdent ainsi un argument
-caché (souvent nommé \textit{self}) qui se trouve à être une instance
-de cette classe. Le \textit{dispatch} dynamique s'effectue
-\emph{uniquement sur le type de ce premier argument}. C'est l'approche
-appelée \textit{dispatch} simple (\textit{Single Dispatch}). Cette
-approche est bien adaptée pour une interaction centrée sur un seul
-objet à la fois, mais est très limitée pour des interactions
-\emph{génériques} sur plusieurs objets différents. L'exemple de la
-figure \ref{OO:JavaDispatch} illustre la manière d'utiliser des
-méthodes traditionnelles pour effectuer du \textit{dispatch}
-multiple. On constate qu'une discrimination se fait implicitement sur
-l'objet instance de la classe associée à la méthode, mais que le
-\textit{dispatch} sur d'autres objets doit être fait
-manuellement. L'exemple illustré demeure encore très simple puisqu'il
+classe et ses descendantes. Les appels de ces méthodes possèdent ainsi
+un argument caché (souvent nommé \textit{self} ou \textit{this}) qui
+se trouve à être une instance de cette classe. Le \textit{dispatch}
+dynamique s'effectue \emph{uniquement sur le type de ce premier
+  argument}. C'est l'approche appelée \textit{dispatch} simple
+(\textit{Single Dispatch}). Cette approche est bien adaptée pour une
+interaction centrée sur un seul objet à la fois, mais est très limitée
+pour des interactions \emph{génériques} sur de multiple objets
+différents. L'exemple de la figure \ref{OO:JavaDispatch} illustre la
+manière d'utiliser des méthodes traditionnelles pour effectuer du
+\textit{dispatch} multiple. On constate qu'une discrimination se fait
+implicitement sur l'objet instance de la classe associée à la méthode,
+mais que le \textit{dispatch} sur d'autres objets doit être fait
+explicitement. L'exemple illustré demeure encore très simple puisqu'il
 s'agit de \textit{dispatch} double sur deux types, mais pourrait
-devenir très complexe en s'il s'agissait de faire une discrimination
-sur plus d'objets.
+devenir très complexe s'il s'agissait de faire une discrimination sur
+plus que deux objets.
 
 \begin{figure}[htb!]
   \begin{verbatim}
@@ -2105,24 +2107,24 @@ t.add(b) = 3
 \end{figure}
 
 
-Le langage \clisp~\cite{CLISP} possède un système orienté objet,
-le Common Lisp Object System~\cite{CLOS} (CLOS), qui diverge beaucoup
-de l'approche traditionnelle. Entre autre, ce système offre une grande
+Le langage \clisp~\cite{CLISP} possède un système orienté objet, le
+Common Lisp Object System~\cite{CLOS} (CLOS), qui diverge beaucoup de
+l'approche traditionnelle. Entre autre, ce système offre une grande
 flexibilité de comportement et une riche introspection via un
-protocole de méta-objets~\cite{MOP}. Par contre, l'aspect le plus
-intéressant de ce système est l'utilisation de fonctions génériques,
-éliminant l'utilisation de méthodes traditionnelles. Une fonction
-générique est un ensemble de fonctions possédant le même nom dont
-celles-ci possèdent des spécifications optionnelles de types pour ses
-arguments. Lorsqu'un appel de fonction est fait sur une fonction
-générique, le système décide alors de l'instance de la fonction
-générique la meilleure à utiliser en fonction des arguments actuels
-utilisés dans l'appel, des types de ces arguments et de leur
-nombre. On obtient donc un système très dynamique effectuant du
-\textit{dispatch} multiple. La figure \ref{OO:CLOS_ex} contient la
-définition d'une fonction générique effectuant automatiquement le
-choix de la bonne instance en se basant dynamiquement sur les types
-des arguments passés.
+protocole de méta-objets~\cite{MOP} (\textit{Meta Object
+  Protocol}). Par contre, l'aspect le plus intéressant de ce système
+est l'utilisation de fonctions génériques, éliminant l'utilisation de
+méthodes traditionnelles. Une fonction générique est un ensemble de
+fonctions possédant le même nom et qui possèdent des spécifications
+optionnelles de types pour ses arguments. Lorsqu'un appel de fonction
+est fait sur une fonction générique, le système décide alors de
+l'instance de la fonction générique la plus appropriée à utiliser en
+fonction des arguments actuels passés dans l'appel, du type de ces
+arguments et de leur nombre. On obtient donc un système très dynamique
+effectuant du \textit{dispatch multiple}. La figure \ref{OO:CLOS_ex}
+contient la définition d'une fonction générique effectuant
+automatiquement le choix de la bonne instance en se basant
+dynamiquement sur les types des arguments passés.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -2132,14 +2134,12 @@ des arguments passés.
 (defmethod add ((p1 Titi) (p2 Titi)) (+ (x p1) (x p2)))
 (defmethod add ((p1 Titi) (p2 Blub)) (+ (x p1) (val p2)))
 (let ((p1 (make-instance 'Titi :x 1))
-            (p2 (make-instance 'Blub :val 2)))
-        (print (add p1 p1))
-        (print (add p1 p2)))
+      (p2 (make-instance 'Blub :val 2)))
+
+  (print (add p1 p1))  => 2
+  (print (add p1 p2))) => 3
   \end{schemecode}
-  {{\it
-2\\
-3}}
-  \caption{Exemple de \textit{dispatch} multiple écrit en CLOS.}
+  \caption{Exemple de \textit{dispatch multiple} écrit en CLOS.}
   \label{OO:CLOS_ex}
 \end{figure}
 
@@ -2150,14 +2150,20 @@ pas définies dans l'espace de nom d'une classe en particulier. Ceci
 résulte en un meilleur découplage entre les classes et les opérateurs
 interagissant avec leurs instances.
 
-Il serait donc très intéressant de pouvoir utiliser la programmation
-orientée objet afin de pouvoir écrire des jeux vidéo en Scheme. Un tel
-système permettrait de facilement abstraire les comportements communs
-à plusieurs types d'objets tout en gérant de manière générique leurs
-états. Ces problèmes sont très fréquents dans un jeu vidéo où il
-existe souvent une grande variété d'objets similaires ayant un
-comportement commun. L'utilisation de fonctions génériques permettrait
-ainsi de pouvoir facilement modulariser ces comportements.
+La programmation orientée objet apporte ainsi beaucoup d'abstractions
+intéressantes. D'une part, les entités présentes dans un jeu vidéo
+sont aisément représentés par l'utilisation d'objets. En effet, la
+métaphore des objets possédant dans caractéristiques d'états se
+confond parfaitement à la perception d'entités de jeux qui possèdent
+elles aussi des états variant en fonction de l'évolution du
+jeu. D'autre part, une programmation orientée objet permettrait de
+facilement abstraire les comportements communs à plusieurs types
+d'entités présentes dans un jeu vidéo tout en gérant de manière
+générique leurs états.  L'utilisation de fonctions génériques
+permettrait ainsi de pouvoir facilement modulariser ces
+comportements. Il serait donc très intéressant de pouvoir utiliser la
+programmation orientée objet afin de pouvoir écrire des jeux vidéo en
+Scheme de manière naturelle et modulaire.
 
 Plusieurs système objets sont déjà disponible pour des système
 Scheme, dont la plupart sont inspirés de la puissance expressive de
@@ -3009,7 +3015,120 @@ sera recréée lors de l'exécution du programme afin de pouvoir être
 appelée par la fonction de \textit{dispatch}.
 
 
+\section{Performances}
+Ce système de programmation orienté objet a été écrit dans le but
+d'obtenir un compromis entre l'accès à des concepts de haut niveaux et
+de bonnes performances lors de l'exécution, notamment en ce qui à
+attrait à l'accès aux membres d'instances de classes.
 
+Dans un premier temps, les performances du système sont analysées de
+manière théorique. Le tableau \ref{OO:complexity} donne la complexité
+algorithmiques des opérations utilisées. La création d'instances
+directe, \ie utilisant les fonctions \scheme{make-<class-name>},
+s'effectuent en temps constant puisqu'il ne s'agit que de la création
+d'un vecteur. Par contre, la création d'instances utilisant des
+constructeurs, \ie en utilisant \scheme{(new <class-name> ...)},
+possède la complexité des appels de fonctions génériques directs. Par
+\og appel direct \fg, il est sous-entendu que le types des arguments
+de l'appel correspondent aux types attendu directement (et non de
+manière polymorphe) par une instance de fonction générique existante.
+Ces appels possèdent une complexité algorithmique linéaire en fonction
+du nombre de paramètres (appelons le $p$) que possède l'instance. En
+effet, l'obtention d'une instance directe est faite par l'entremise
+d'une recherche dans une table de hachage utilisant \scheme{equal?} à
+titre de comparaison. Cette complexité augmente d'un ordre
+supplémentaire lorsqu'aucune instance directe n'existe et qu'alors une
+instance polymorphique est recherchée puisque une recherche linéaire
+est effectuée sur chacune des instance existantes ($m$), puis la
+compatibilité du type des arguments doit être effectué ($p$). Il est
+intéressant de noter que malgré la complexité quadratique de cette
+opération, le nombre de paramètre ($p$) est normalement très bas.
+L'accès et la modification de membres de classe se fait toutefois de
+manière constante.
+
+\begin{table}
+  \center
+  \begin{tabular}{cc}
+    opération & complexité algorithmique \\
+    \hline
+    création d'instances directe & $O(1)$\\
+    création d'instances avec constructeurs & $O(p)$\\
+    accès aux membres & $O(1)$ \\
+    modification de membres & $O(1)$ \\
+    \textit{dispatch} direct & $O(p)$\\
+    \textit{dispatch} polymorphique & $O(mp)$
+  \end{tabular}
+  \caption{Complexité algorithmique des opérations du système objets
+    effectuées durant l'exécution}
+  \label{OO:complexity}
+\end{table}
+
+Une comparaison pratique de performances a été effectués avec d'autres
+systèmes objets disponibles pour Gambit-C afin d'avoir une meilleure
+idée des constantes cachées dans la complexité des opération
+effectuées durant l'exécution. Il est aussi intéressant de pouvoir
+comparer les performances du systèmes par rapports aux autres afin de
+pouvoir confirmer l'obtention du résultat désiré. Ces résultats sont
+présentés dans le tableau \ref{OO:bench}. Ces derniers correspondent
+aux temps nécessaire à $500 000$ exécutions de chacunes des opérations
+principales du système objet. Les systèmes objets
+Meroon~\cite{MEROON}, OOPS~\cite{OOPS} ainsi que les objets obtenus
+avec l'utilisation de la forme spéciale \scheme{define-type} de
+Gambit-C ont été utilisés pour effectuer cette comparaison. Le tableau
+\ref{OO:bench-rel} présente ces résultats d'une manière relative au
+meilleur temps d'exécution du test pour chaque opération vérifiée.
+
+\begin{table}
+  \center
+  \begin{tabular}{ccccc}
+    Opération & define-type & Meroon & OOPS & class \\
+    \hline
+    création d'instances directe            & 0.182 & 0.111 & 0.819 & 0.044\\
+    création d'instances avec constructeurs & ND    & ND    & ND    & 1.397\\
+    accès aux membres                       & 0.064 & 0.070 & 1.517 & 0.039\\
+    modification de membres                 & 0.064 & 0.074 & 1.926 & 0.044\\
+    \textit{dispatch} direct                & 0.144 & 0.350 & 9.709 & 1.115\\
+    \textit{dispatch} polymorphique         & ND    & 0.382 & 9.398 & 3.841
+  \end{tabular}
+  \caption{Temps en secondes nécessaire pour l'exécution de tests
+    comparatifs pour plusieurs système objets disponibles sur
+    Gambit-C}
+  \label{OO:bench}
+\end{table}
+
+\begin{table}
+  \center
+  \begin{tabular}{ccccc}
+    Opération & define-type & Meroon & OOPS & class \\
+    \hline \hline
+    création d'instances directe            & 4.1 & 2.5 & 18.6 & 1.0\\
+    \hline
+    création d'instances avec constructeurs & ND  & ND  & ND   & 1.0\\
+    \hline
+    accès aux membres                       & 1.6 & 1.8 & 38.9 & 1.0\\
+    \hline
+    modification de membres                 & 1.5 & 1.7 & 43.8 & 1.0\\
+    \hline
+    \textit{dispatch} direct                & 1.0 & 2.4 & 67.4 & 7.7\\
+    \hline
+    \textit{dispatch} polymorphique         & ND  & 1.0 & 24.6 & 10.0
+  \end{tabular}
+  \caption{Comparaison de performances relative au système le plus
+    rapide (1.0) pour chaque opérations du système objet.}
+  \label{OO:bench-rel}
+\end{table}
+
+Ces résultats démontrent bien que les objectifs d'implantation ont été
+atteint. En effet, le système développé (\scheme{class}) offre de très
+bonnes performances quant à la création d'instances et la manipulation
+de membres de celles-ci. Malgré le fait que le système est environ une
+ordre de grandeur plus lent que le système Meroon pour effectuer le
+\textit{dispatch} dynamique de fonctions génériques, ce dernier offre
+beaucoup plus d'expressivité dont l'utilisation de constructeurs ou
+encore de discrimination sur des valeurs. Ainsi, le système développé
+en plus d'offrir plusieurs concepts de hauts niveau quant à la
+programmation orientée objet, se compare très bien aux autres systèmes
+d'objets performants disponibles pour Gambit-C.
 
 \section{Conclusion}
 Ainsi un système objet complet a été développé dans le but d'étendre

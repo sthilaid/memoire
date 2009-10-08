@@ -2165,24 +2165,55 @@ comportements. Il serait donc très intéressant de pouvoir utiliser la
 programmation orientée objet afin de pouvoir écrire des jeux vidéo en
 Scheme de manière naturelle et modulaire.
 
-Plusieurs système objets sont déjà disponible pour des système
-Scheme, dont la plupart sont inspirés de la puissance expressive de
-CLOS. Pour Gambit-C, on retrouve entre autre le système orienté objet
-Meroon~\cite{MEROON}. Ce système semble offrir de bonnes
-performances. Par contre, il implique plusieurs limitations, dont le
+Plusieurs système objets sont déjà disponible pour l'implantation de
+Scheme Gambit-C. La plupart sont inspirés de la puissance expressive
+du système CLOS. On retrouve entre autre le système orienté objet
+Meroon~\cite{MEROON}. Ce système impose plusieurs limitations dont le
 fait que la hiérarchie de classe est limitée à un héritage
 simple. Aussi, il n'est pas possible d'allouer des attributs de
 classes, communs à toutes les instances. OOPS~\cite{OOPS} est un autre
-système objet disponible pour Gambit-C. Celui-ci est beaucoup plus
-générique que Meroon, mais après essaie à démontré des sérieux
-problèmes de performances, ce qui ne peut pas être acceptables dans un
-jeu vidéo.
+système objet disponible pour Gambit-C. Celui-ci offre plus de
+fonctionnalités que Meroon, dont la possibilité de créer des classes
+avec héritage multiples. Cette fonctionnalité est très pertinente pour
+l'écriture de logiciels, car elle permet l'agrégation de plusieurs
+modules de manière très élégante et offre beaucoup de flexibilité. Le
+tableau \ref{OO:fonct-comp} effectue une comparaison de ces systèmes
+objets sur la présence de fonctionnalités utiles pour le développement
+de jeux vidéo.
 
-Ainsi, un système d'objet a été écrit afin de répondre le mieux
-possible aux besoins en efficacité d'un jeu vidéo, tout en apportant
-le plus d'outils et de puissance d'abstraction que possible. Ce
-système et les motivations derrière les choix fait pour le développer
-sont décrits en détails dans le reste de ce chapitre.
+\begin{table}
+  \center
+  \begin{tabular}{cccc}
+    \hline
+    Fonctionnalités désirées           & \scheme{define-type} & Meroon & OOPS\\
+    \hline \hline
+    Héritage multiple                  &                      &         & X\\
+    Constructeurs génériques           &                      &         &  \\
+    membres d'instances                & X                    & X       & X\\
+    membres de classe                  &                      &         &  \\
+    fonctions génériques polymorphique &                      & X       & X\\
+    \textit{dispatch} sur des valeurs  &                      &         & X\\
+    \hline
+  \end{tabular}
+  \caption{Comparaison de la présence des fonctionnalités désirées par
+    les implantation existantes de systèmes d'objets disponibles sur
+    Gambit-C}
+  \label{OO:fonct-comp}
+\end{table}
+
+Le tableau \ref{OO:bench} de la section \ref{OO:bench-sect} illustre
+les performances de ces deux systèmes. On constate que les systèmes
+\textit{define-type} de Gambit-C et Meroon sont beaucoup plus
+performant que OOPS. Il en résulte donc qu'aucun de ces systèmes ne
+semblent offrir de bonnes performances tout en donnant accès aux
+fonctionnalités de la programmation orientée objet de haut niveaux
+énoncés dans le tableau \ref{OO:fonct-comp}. Ainsi, afin d'obtenir un
+compromis entre l'expressivité et les performances, un nouveau système
+d'objet a été développé. Ce dernier aura comme vocation de répondre le
+mieux possible aux besoins en efficacité d'un jeu vidéo, tout en
+apportant le plus d'outils et de puissance d'abstraction que
+possible. Ce dernier est décrit en détails dans le reste de ce
+chapitre.
 
 
 \section{Description du système}
@@ -3049,14 +3080,16 @@ manière constante.
 \begin{table}
   \center
   \begin{tabular}{cc}
-    opération & complexité algorithmique \\
     \hline
+    opération & complexité algorithmique \\
+    \hline \hline
     création d'instances directe & $O(1)$\\
     création d'instances avec constructeurs & $O(p)$\\
     accès aux membres & $O(1)$ \\
     modification de membres & $O(1)$ \\
     \textit{dispatch} direct & $O(p)$\\
-    \textit{dispatch} polymorphique & $O(mp)$
+    \textit{dispatch} polymorphique & $O(mp)$\\
+    \hline
   \end{tabular}
   \caption{Complexité algorithmique des opérations du système objets
     effectuées durant l'exécution}
@@ -3081,14 +3114,16 @@ meilleur temps d'exécution du test pour chaque opération vérifiée.
 \begin{table}
   \center
   \begin{tabular}{ccccc}
-    Opération & define-type & Meroon & OOPS & class \\
     \hline
+    Opération & define-type & Meroon & OOPS & class \\
+    \hline \hline
     création d'instances directe            & 0.182 & 0.111 & 0.819 & 0.044\\
     création d'instances avec constructeurs & ND    & ND    & ND    & 1.397\\
     accès aux membres                       & 0.064 & 0.070 & 1.517 & 0.039\\
     modification de membres                 & 0.064 & 0.074 & 1.926 & 0.044\\
     \textit{dispatch} direct                & 0.144 & 0.350 & 9.709 & 1.115\\
-    \textit{dispatch} polymorphique         & ND    & 0.382 & 9.398 & 3.841
+    \textit{dispatch} polymorphique         & ND    & 0.382 & 9.398 & 3.841\\
+    \hline
   \end{tabular}
   \caption{Temps en secondes nécessaire pour l'exécution de tests
     comparatifs pour plusieurs système objets disponibles sur
@@ -3099,19 +3134,16 @@ meilleur temps d'exécution du test pour chaque opération vérifiée.
 \begin{table}
   \center
   \begin{tabular}{ccccc}
+    \hline
     Opération & define-type & Meroon & OOPS & class \\
     \hline \hline
     création d'instances directe            & 4.1 & 2.5 & 18.6 & 1.0\\
-    \hline
     création d'instances avec constructeurs & ND  & ND  & ND   & 1.0\\
-    \hline
     accès aux membres                       & 1.6 & 1.8 & 38.9 & 1.0\\
-    \hline
     modification de membres                 & 1.5 & 1.7 & 43.8 & 1.0\\
-    \hline
     \textit{dispatch} direct                & 1.0 & 2.4 & 67.4 & 7.7\\
+    \textit{dispatch} polymorphique         & ND  & 1.0 & 24.6 & 10.0\\
     \hline
-    \textit{dispatch} polymorphique         & ND  & 1.0 & 24.6 & 10.0
   \end{tabular}
   \caption{Comparaison de performances relative au système le plus
     rapide (1.0) pour chaque opérations du système objet.}

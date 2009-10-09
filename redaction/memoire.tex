@@ -2016,14 +2016,48 @@ fonctions.
 
 \begin{figure}[htb1]
   \begin{schemecode}
-(write (list 1 'a "a")) => \schemeresult{(1 a "a")}
-(display (list 1 'a "a")) => \schemeresult{(1 a a)}
-(write (list 1 'a "a")) => \schemeresult{(1 a "a")\textbackslash~n}
-(println "Bonjour " (+ 1 2) (map (flip + 1) '(1 2 3))) => \schemeresult{Bonjour 3234}
+(write (list 1 'a "a")) => \schemeresult{(1 a "a")} (display (list 1
+    'a "a")) => \schemeresult{(1 a a)} (write (list 1 'a "a")) =>
+    \schemeresult{(1 a "a")\textbackslash~n} (println "Bonjour " (+ 1
+    2) (map (flip + 1) '(1 2 3))) => \schemeresult{Bonjour 3234}
   \end{schemecode}
   \caption{Exemples d'utilisation de fonctions d'affichage}
   \label{Scheme:print}
 \end{figure}
+
+\subsection{Interfaces aux fonctions étrangères}
+
+Une interfaces aux fonctions étrangères (\textit{Foreign Function
+  Interface} ou FFI) est rendue disponible par le système
+Gambit-C. D'une part, cette dernière permet l'importation et
+l'utilisation de fonctions C ou C++ présentent dans de librairies. La
+figure \ref{}
+
+\begin{figure}[htb1]
+  \begin{schemecode}
+(c-declare "\#include <gl.h>")
+
+(c-define-type GLenum unsigned-int)
+
+(define GL\_QUADS ((c-lambda () int "\_\_\_result = GL\_QUADS;")))
+
+(define glVertex2d (c-lambda ( GLdouble GLdouble ) void "glVertex2d"))
+(define glBegin (c-lambda ( GLenum ) void "glBegin"))
+(define glEnd (c-lambda () void "glEnd"))
+
+(glBegin GL\_QUADS)
+(glVertex2d 0 0) (glVertex2d 0 1)
+(glVertex2d 1 0) (glVertex2d 1 1)
+(glEnd)
+  \end{schemecode}
+  \caption{Exemple d'utilisation de l'interface à des fonctions
+    étrangère de Gambit-C}
+  \label{}
+\end{figure}
+
+D'autre part, il est aussi possible d'exporter des fonctions écrites
+en Scheme de manière à ce qu'elles soient utilisée à partir de code C
+ou C++.
 
 \section{Conclusion}
 
@@ -4164,37 +4198,47 @@ balancer ou d'optimiser ces dernières.
 
 Afin de pouvoir déterminer les forces et les faiblesses du
 développement de jeux vidéo en Scheme, des jeux doivent être
-développés en augmentant graduellement la complexité de ceux-ci de
-manière à résoudre les problèmes reliés à leur développement de
-manière itérative. Un jeu simple comprend les problèmes les plus
-fondamentaux qu'un jeu puisse avoir: détection de collisions,
+développés en augmentant graduellement la complexité de ceux-ci pour
+permettre de trouver et résoudre de manière itérative les problèmes
+reliés à leur développement. Un jeu simple comprend les problèmes les
+plus fondamentaux qu'un jeu puisse avoir: détection de collisions,
 animations, concept de niveaux, etc... Ainsi, ces problèmes peuvent
 être adressés dans un premier temps, puis de nouveaux problèmes
 peuvent être entrepris par la suite en développant un jeu plus
 complexe. Aussi, cette approche permet de bâtir une infrastructure de
-développement de jeux vidéo qui abaisse la difficulté du développement
+développement de jeux vidéo qui réduit la difficulté du développement
 de jeux plus complexes.
 
-Le premier jeu choisi pour la résolution des problèmes de bases est
-\si (1978). Ce dernier date de la période des jeux d'arcades et, tout
-en étant très simple, adresse plusieurs problèmes fondamentaux
-qu'impliquent les jeux vidéo modernes: interactions avec usagers
+Le jeu choisi pour la première phase de développement est \si
+(1978). Ce dernier date de la période des jeux d'arcades et, tout en
+étant très simple, adresse plusieurs problèmes fondamentaux
+qu'impliquent les jeux vidéo modernes: interactions avec usager
 rapide, des niveaux, de la détection de collision et même des parties
 multi-joueurs. Puisque le graphisme de ce jeux est très rudimentaire,
 il consiste en un très bon choix pour un premier jeu, car il permet de
 concentrer le développement sur le moteur de celui-ci. Le
-développement de ce jeu est traité dans la section \ref{Exp:SI}.
+développement de ce jeu est traité dans la section \ref{Exp:SI}. Le
+développement de ce dernier a permis de faire face à plusieurs
+problèmes reliés au développement de jeu dont le rendu graphique, la
+détection et résolution de collision et sur le flot de contrôle du
+jeu. Son développement a permis la création du système orienté objet
+décrit dans le chapitre \ref{Chap:OO} et du système de coroutine
+présenté dans le chapitre \ref{Chap:corout}.
 
 Par la suite, le jeu \lr (1983) a été développé. Ce dernier date de
-l'époque des premiers ordinateurs personnels et est relativement plus
-élaboré. Par contre, c'est la version arcade du jeu (1984) qui a été
-reprise. Tout en conservant les problèmes fondamentaux traités dans
-\si, ce jeu étend le concept de niveaux déjà traité, introduit la
-notion d'intelligence artificielle et possède des entités possédant
-des états beaucoup plus complexes. De plus, le développement de \lr a
-pour but de consolider les techniques développées pour la création du
-premier jeu. Le développement de ce jeu est traité dans la section
-\ref{Exp:ld}.
+l'époque des premiers ordinateurs personnels et est plus élaboré. Par
+contre, c'est la version arcade du jeu (1984) qui a été reprise. Tout
+en conservant les problèmes fondamentaux traités dans \si, ce jeu
+étend le concept de niveaux déjà traités, introduit la notion
+d'intelligence artificielle et possède des entités possédant des états
+plus complexes. De plus, le développement de \lr a pour but de
+consolider les techniques développées pour la création du premier
+jeu. Le développement de ce jeu est traité dans la section
+\ref{Exp:ld}. Les nouveaux problèmes rencontrés furent principalement
+reliés à une gestion des états et du rendu plus complexe des objets et
+à de la plus grande quantité d'objets présent dans le jeu. Les outils
+et techniques déjà développés ont toute fois permis d'aisément
+résoudre ces derniers.
 
 Ainsi, ce chapitre a pour but d'expliquer le cheminement du travail
 nécessaire à l'écriture de ces deux jeux afin de pouvoir répondre à la
@@ -4203,13 +4247,13 @@ problématique de base traité par ce document.
 \section{Développement de \si}
 \label{Exp:SI}
 
-Ce jeu consiste à sauver la galaxie en éliminant une armée
+Ce jeu consiste à \og sauver la galaxie \fg en éliminant une armée
 d'envahisseurs extra-terrestre grâce à un vaisseau spatial équipé de
 lasers et bénéficiant de la présence de trois boucliers. Le joueur ne
 peut se déplacer que de gauche à droite et tirer des lasers. Les
 ennemis sont placés en formations et se déplacent aussi latéralement
-jusqu'à ce qu'ils frappent un côté de l'écran, dans un tel cas, ils
-descendent d'une rangée, se rapprochant ainsi du joueur. La vitesse de
+jusqu'à ce qu'ils frappent un côté de l'écran. Ils descendent alors
+d'une rangée, se rapprochant ainsi du joueur. La vitesse de
 déplacement des ennemis est inversement proportionnelle à leurs
 nombre. Le niveau se termine lorsque tous les ennemis sont
 détruits. Alors, le prochain niveau (qui est exactement le même que le
@@ -4223,8 +4267,8 @@ d'écran du jeu développé.
   \label{Exp:si-screen}
 \end{figure}
 
-L'objectif visé en développant \si est très simple: écrire un premier
-jeu qui permet d'exposer les problèmes fondamentaux reliés au
+L'objectif visé en développant \si est simple: écrire un premier jeu
+qui permet d'exposer les problèmes fondamentaux reliés au
 développement de jeux vidéo et résoudre ces problème en tentant de
 tirer profit de la puissance expressive du langage Scheme. Pour y
 arriver, une approche de développement itératif (en spirale) a été
@@ -4235,36 +4279,36 @@ l'infrastructure de base du jeu et d'identifier les problèmes
 rencontrés au cours du développement. Le développement de cette
 première version est décrit dans la section \ref{Exp:sp1}.
 
-Par la suite, une deuxième version fut écrite afin répondre à
-certaines lacunes que présentait la première version du jeu. Pour ce,
-le développement du système objet~\ref{Chap:OO} fut entrepris. Cette
-démarche d'amélioration du jeu est décrite dans la section
-\ref{Exp:sp2}.
+Par la suite, une deuxième version fut écrite afin de répondre à
+certaines lacunes que présentait la première version du jeu. Pour ce
+faire, le développement du système objet présenté dans le chapitre
+\ref{Chap:OO} fut entrepris. Cette démarche d'amélioration du jeu est
+décrite dans la section \ref{Exp:sp2}.
 
 Finalement, une version expérimentale fut développée. Cette version
 tentait de s'éloigner de l'architecture classique de jeu vidéo où une
 boucle principale (\textit{main loop}) gère l'état du système en
-entier. L'idée a été de tenter de fusionner le système objet et le
-système de coroutine ensemble afin que tous les objets du jeu soient
-eux même des coroutines, en espérant ainsi simplifier l'écriture
-d'entités du jeu. En expérimentant ainsi sur le contrôle de flot du
-jeu, il est possible de démontrer si l'utilisation de Scheme permet de
-faciliter de telles expérimentations. Cette dernière version du jeu
-est décrite dans la section \ref{Exp:sp3}
+entier. L'idée était de tenter de fusionner le système objet et le
+système de coroutine afin que tous les objets du jeu soient eux-mêmes
+des coroutines, en espérant ainsi simplifier l'écriture d'entités du
+jeu. En expérimentant ainsi sur le contrôle de flot du jeu, il est
+possible de démontrer si l'utilisation de Scheme permet de faciliter
+de telles expérimentations. Cette dernière version du jeu est décrite
+dans la section \ref{Exp:sp3}
 
 
 \subsection{Version initiale}
 \label{Exp:sp1}
 
-Une première version du jeu \si a été écrite dans le but de rencontrer
-les problèmes reliés au développement de jeu vidéo et les résoudre en
-utilisant le langage Scheme. Ainsi, après l'analyse de la version
-arcade du jeu disponible sur l'émulateur MAME~\cite{MAME}, plusieurs
-problèmes potentiels ont été rencontrés:
+Dans un premier temps, l'analyse de la version arcade du jeu
+disponible sur l'émulateur MAME~\cite{MAME}. Ce dernier est un système
+émulant plusieurs architectures de machines arcades et permet de
+pouvoir jouer sur PC aux versions originales de ces jeux. Plusieurs
+problèmes potentiels ont alors été identifiés:
 
 \begin{itemize}
-\item Rendu du jeu
-\item Flot du contrôle du jeu
+\item Rendu graphique du jeu
+\item Flot du contrôle logique du jeu
 \item Structures de données
 \item Détection et résolutions de collisions
 \item Animations
@@ -4272,17 +4316,19 @@ problèmes potentiels ont été rencontrés:
 \end{itemize}
 
 Afin de pouvoir effectuer le rendu du jeu, une librairie de lecture et
-chargement d'image a dû être écrite. Le choix de l'écriture de cette
-librairie, plutôt que d'utiliser une librairie C déjà existante pour
-faire ce travail réside dans le but de demeurer indépendant d'autant
-de dépendances externes que possibles et d'avoir autant de code Scheme
-impliqué dans le jeu que possible. Par contre, la librairie
-SDL~\cite{SDL} a été utilisé comme système de gestion d'entrés/sorties
-et de fenêtrage. Le système de rendu utilisé est
-\textit{OpenGL}~\cite{OpenGL} afin de pouvoir profiter d'un bonne
+chargement d'image a dû être écrite. Plutôt que d'utiliser une
+librairie C déjà existante pour faire ce travail, le choix de
+l'écriture de cette librairie visait à limiter les dépendances
+externes et d'avoir autant que possible de code en Scheme. Par contre,
+la librairie SDL~\cite{SDL} a été utilisée comme système de gestion
+d'entrées/sorties et de fenêtrage. Le système de rendu utilisé est
+\textit{OpenGL}~\cite{OpenGL} afin de pouvoir profiter d'une bonne
 portabilité et de permettre facilement d'ultérieurement utiliser les
-travaux effectués pour faire des jeux vidéo produisant rendu tri
-dimensionnel.
+travaux effectués pour faire des jeux vidéo produisant un rendu tri
+dimensionnel. L'utilisation des interfaces aux fonctions étrangères
+(\textit{Foreign Function Interface}) du système Gambit-C ont fait en
+sorte que la tâche d'accès et d'utilisation de ces librairies fut
+triviale.
 
 Ainsi, la librairie de lecture et de chargement d'images s'occupe de
 lire des images en format textuel \textit{ppm}, qui est l'un des

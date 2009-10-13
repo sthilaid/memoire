@@ -5025,16 +5025,16 @@ celui-ci.
 
 \subsection{Gestion de l'état des objets}
 
-Cette approche vis-à-vis le flot de contrôle et le fait que le jeu \lr
-contient des entités plus complexes impliquent que le comportement des
-objets de ce jeu sont dépends de la situation. Encore une fois, ce
-sujet est traité de manière plus traditionnelle en utilisant des états
-d'objets et des machines à états afin de régir leurs animations. La
+Les entités du jeu \lr sont sensiblement plus complexes que celles
+présente dans le jeu précédant. En effet, ces dernières possèdent sont
+animés et réagissent différemment en fonction du contexte de
+celle-ci. Encore une fois, ce sujet est traité de manière
+traditionnelle en utilisant des états d'objets et des machines à états
+afin de régir leurs comportements et les animations de ceux-ci. La
 figure \ref{Exp:hl} donne le contenu de la classe \scheme{human-like}
-qui sert de bases aux classes \scheme{player} et \scheme{robot} qui
-servent à implanter respectivement les instances du joueurs et des
-robots ennemis. Elle démontre bien la complexité de l'état de ces
-entités. 
+qui sert de base aux classes \scheme{player} et \scheme{robot} qui
+implantent respectivement les instances du joueurs et des robots
+ennemis. Elle démontre bien la complexité de l'état de ces entités.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5059,32 +5059,100 @@ La fonction générique \scheme{change-state!}  utilise l'état des
 instances de ces classes pour déterminer l'animation qui doit être
 utilisée afin d'obtenir un rendu cohérent de l'entité. La figure
 \ref{Exp:lr-change-state} contient la gestion principale de l'état des
-entités appartenant à la hiérarchie de la classe \scheme{human-like}.
-
-\todo{Si jai le temps, remplacer ca  un DSL de machines a etats}
+entités appartenant à la hiérarchie de la classe
+\scheme{human-like}. Ici, avant le rendu de chaque image, l'état de
+chaque objet est vérifié et mis-à-jour. Puisque les états possibles
+d'une instance de la class \scheme{human-like} ne sont pas
+orthogonaux, \ie que plusieurs états correspondant à des animations
+différentes peuvent être présent en même temps, l'ordre de la
+modification de l'état est significative. Si ces derniers avaient été
+orthogonaux, la gestion de ceux-ci aurait pu être effectuée en
+utilisant la discrimination de méthodes sur les valeurs de ces
+états. Le code résultant aurait donc été très limpide.
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(define-method (change-state! (p human-like) level)
-  (let* ((v (moving-velocity p)))
+(define-method (change-state! (hl human-like) level)
+  (let* ((v (moving-velocity hl)))
     (cond
-     ((eq? (human-like-escaping? p) 'escaping) (ascend-cycle! p))
-     ((human-like-shooting? p) (shoot-cycle p))
-     ((human-like-stuck-in-hole? p) (dying-cycle! p))
-     ((and (not (zero? (point-x v))) (human-like-can-walk? p))
-      (walk-cycle! p))
-     ((human-like-can-use-rope? p)
+     ((eq? (human-like-escaping? hl) 'escaping) (ascend-cycle! hl))
+     ((human-like-shooting? hl)                 (shoot-cycle hl))
+     ((human-like-stuck-in-hole? hl)            (dying-cycle! hl))
+     ((and (not (zero? (point-x v))) 
+           (human-like-can-walk? hl))
+                                                (walk-cycle! hl))
+     ((human-like-can-use-rope? hl)
        (if (or (not (zero? (point-x v)))
-               (not (memq (human-like-state p) rope-states)))
-           (rope-cycle! p)
+               (not (memq (human-like-state hl) rope-states)))
+           (rope-cycle! hl)
            'keep-same-state^\_^))
-     ((not (human-like-can-go-forward? p)) (fall-cycle! p))
-     ((not (zero? (point-y v))) (ascend-cycle! p))
-     (else (reset-walk-cycle! p)))))
+     ((not (human-like-can-go-forward? hl))     (fall-cycle! hl))
+     ((not (zero? (point-y v)))                 (ascend-cycle! hl))
+     (else (reset-walk-cycle! hl)))))
   \end{schemecode}
   \caption{Gestion de l'état d'une entité appartenant à la hiérarchie
     de type \scheme{human-like} dans \lr}
   \label{Exp:lr-change-state}
+\end{figure}
+
+Les fonctions d'animation des entités (\scheme{walk-cycle},
+\scheme{rope-cycle!}, ...) produisent des animations se répétant de
+manière cyclique. Puisque ce genre d'animation est fréquente dans le
+jeu, elle fut abstraite dans une forme spéciale afin de simplifier la
+définition de celles-ci. La figure \ref{Exp:cyclic-anim-dsl} présente
+cette dernière qui construit une définition de fonction qui met-à-jour
+les champs \scheme{cycle-member} et \scheme{state-member} afin de
+produire correctement le rendu de l'animation. Le champs
+\scheme{cycle-member} de l'instance reçue contiendra un nombre
+correspondant à l'état actuel de l'animation. Cet état est conservé
+dans l'attribut \scheme{state-member} et sera utilisé par l'algorithme
+de rendu graphique du jeu.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-macro (define-cyclic-animation name
+                \#!key base-class cycle-delta cycle-member
+                      state-member states other-actions-fun)
+  (let ((obj (gensym 'obj))
+        (cycling-delta (gensym 'cycling-delta))
+        ...)
+    `(define (,name ,obj)
+       (let* ((,cycle-length (* ,cycle-delta ,(length states))))
+         (update! ,obj ,base-class ,cycle-member
+                  (lambda (s) (modulo (+ s 1) ,cycle-length)))
+         (let ((,next-state
+                (case (quotient (,cycle-member-getter ,obj) ,cycle-delta)
+                  ,@(map-with-index (lambda (i x) `((,i) ',x)) states)
+                  (else (error ...)))))
+           (,state-member-setter ,obj ,next-state)
+           (,other-actions-fun ,obj))))))
+  \end{schemecode}
+  \caption{Forme spéciale utilisée afin de simplifier la définition
+    d'animations cycliques d'entité du jeu \lr}
+  \label{Exp:cyclic-anim-dsl}
+\end{figure}
+
+Ainsi les animations du jeu peuvent être facilement définies en
+utilisant cette forme spéciale. La figure \ref{Exp:cyclic-anim-def}
+illustre la définition de l'animation de marche utilisée par les
+sous-classes de la classe \scheme{human-like}. On peut donc ainsi
+tirer profit du polymorphisme du système objet en plus du petit
+langage de définition d'animations afin de définir de manière claire
+et concise une animation cyclique.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-cyclic-animation walk-cycle!
+  base-class: human-like
+  cycle-delta: 5
+  cycle-member: walk-cycle-state state-member: state
+  states: (standing-up standing-left standing-up standing-right)
+  other-actions-fun:
+    (lambda (obj) (human-like-facing-direction-set!
+                   obj (human-like-get-direction obj))))
+  \end{schemecode}
+  \caption{Définition d'animation cyclique dans le jeu \lr}
+  \label{Exp:cyclic-anim-def}
 \end{figure}
 
 \subsection{Détection et résolution de collisions}

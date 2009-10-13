@@ -5106,7 +5106,9 @@ produire correctement le rendu de l'animation. Le champs
 \scheme{cycle-member} de l'instance reçue contiendra un nombre
 correspondant à l'état actuel de l'animation. Cet état est conservé
 dans l'attribut \scheme{state-member} et sera utilisé par l'algorithme
-de rendu graphique du jeu.
+de rendu graphique du jeu. Le paramètre \scheme{cycle-delta}
+représente le nombre d'images qui seront rendues avant le changement
+de l'état actuel de l'entité.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5220,7 +5222,72 @@ images.
   \label{Exp:layers}
 \end{figure}
 
-\todo{Peut etre parler de l'intelligence artificielle...}
+\subsection{Intelligence Artificielle}
+
+L'intelligence artificielle du jeu fut implantée de manière directe en
+utilisant des fermeture afin d'abstraire les différents algorithmes
+potentiels (proposant différentes difficultés au joueurs). Seuls deux
+algorithmes furent toutefois implantés pour le jeu. Le premier,
+complètement trivial, fait en sorte que les robots demeurent
+immobiles.  Le deuxième utilise un environnement totalement observable
+et reproduit un comportement \emph{similaire} à celui des ennemis de
+la version originale. Ces algorithmes sont présentés dans les figures
+\ref{Exp:ai-imm} et \ref{Exp:ai-seek}. Les fermetures contenant ces
+algorithmes sont utilisées de manière dynamique en fonction du niveau
+de difficulté choisi par le joueur. Il est ainsi possible de pouvoir
+modifier durant la partie la difficulté. Aussi, l'utilisation de
+fermeture donne la chance de pouvoir créer de nouvelles fermetures
+contenant des informations plus spécialisées pour l'état actuel du
+jeu. L'implantation du choix dynamique de l'algorithme d'intelligence
+artificielle est présenté dans la figure \ref{Exp:dyn-ai}.
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (immobile-ai robot level)
+  (robot-velocity-set! robot point-zero))
+  \end{schemecode}
+  \caption{Algorithme trivial d'intelligence artificielle des robots}
+  \label{Exp:ai-imm}
+\end{figure}
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (seeker-ai robot level)
+  (let ((player (level-get 'player level)))
+    (if player
+        (let* ((dir (point-sub player robot))
+               (y-axis? (let ((x (point-x dir)) (y (point-y dir)))
+                          (and (not (zero? y))
+                               (can-go-up/down? robot x y))))
+               (velo (if y-axis?
+                         (new point 0 robot-movement-speed)
+                         (new point robot-movement-speed 0)))
+               (factor (if (< (if y-axis? (point-y dir) (point-x dir)) 0)
+                           -1
+                           1)))
+          (robot-velocity-set! robot (point-scalar-mult velo factor))))))
+  \end{schemecode}
+  \caption{Algorithme d'intelligence artificiel reproduisant un
+    comportement \emph{similaire} au jeu original}
+  \label{Exp:ai-seek}
+\end{figure}
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (get-ai-fun difficulty)
+  (case difficulty
+    ((easy) immobile-ai)
+    ((hard) seeker-ai)
+    (else immobile-ai)))
+
+(define (run-ai robot level)
+  ((get-ai-fun (level-difficulty level)) robot level))
+  \end{schemecode}
+  \caption{Utilisation dynamique des algorithmes d'intelligence
+    artificielle}
+  \label{Exp:dyn-ai}
+\end{figure}
+
 
 \subsection{Conclusion}
 
@@ -5232,14 +5299,19 @@ jeu.
 
 Le flot de contrôle du jeu a été implanté de manière beaucoup plus
 traditionnelle que ce fut le cas pour \si. Il en résulte que le jeu
-dépend beaucoup des notions d'états des objets, ce qui vient à
-l'encontre des paradigmes de la programmation fonctionnelle. Par
-contre, puisque le langage Scheme offre le meilleur des deux mondes,
-\ie qu'il offre un langage fonctionnel permettant des mutations, ce
-type de contrôle de flot a permis de tirer profit des avantages
-qu'offrent la programmation fonctionnelle (fonctions d'ordre
-supérieures, fermetures, etc...) tout en utilisant un modèle éprouvé
-de flot de contrôle et de modularisation.
+dépend beaucoup des notions d'états des objets. Puisque le langage
+Scheme offre le meilleur des deux mondes, \ie qu'il offre un langage
+fonctionnel permettant des mutations, ce type de contrôle de flot a
+permis de tirer profit des avantages qu'offrent la programmation
+fonctionnelle (fonctions d'ordre supérieures, fermetures, etc...) tout
+en utilisant un modèle éprouvé de flot de contrôle et de
+modularisation.
+
+La gestion des états plus complexes des objets du jeu a pu être écrite
+de manière très élégante grâce à la conception d'un langage spécifique
+au domaine minimaliste. Il fut ainsi possible de pouvoir décrire le
+\og quoi \fg des animations tout en cachant la mécanique commune aux
+animations des entités du jeu.
 
 L'ajout d'une grille pour accélérer la détection de collisions semble
 peut-être peu significative puisque \lr ne contient pas une très
@@ -5269,10 +5341,11 @@ Un deuxième jeu a, par la suite, été développé afin de permettre de
 vérifier si les techniques utilisées pour \si s'adaptaient à un autre
 jeu plus complexe. Ainsi, \lr fut développé en utilisant les
 abstractions de haut niveau que permettent les fonctions de première
-classe combinées avec un système d'objets très polyvalent. En
-utilisant, cette fois ci, une approche conservatrice sur le flot de
-contrôle. Le résultat fut très clair: le jeu a été développé
-rapidement et sans problèmes importants.
+classe combinées avec un système d'objets très polyvalent et la
+conception de nouvelles formes spéciales. En utilisant, cette fois ci,
+une approche conservatrice sur le flot de contrôle. Le résultat fut
+très clair: le jeu a été développé rapidement et sans problèmes
+importants.
 
 Ainsi, il serait maintenant intéressant de voir quel serait l'impact
 de l'implantation en Scheme d'un jeu de qualité commerciale afin de
@@ -5280,19 +5353,6 @@ tester plus profondément les limites que pourrait imposer le langage
 sur des jeux plus exigeant tant en utilisation processeur qu'en
 utilisation mémoire.
 
-
-%% Figures qui occupent toute une page (placees a la fin du chap)
-\begin{figure}[htb!]
-  \center
-  \subfloat[Avant optimisation de la coroutine \scheme{invader-move}]
-           {\includegraphics[scale=0.55]{histo-corout-threads1}}
-
-  \subfloat[Après optimisation de la coroutine \scheme{invader-move}]
-           {\includegraphics[scale=0.55]{histo-corout-threads2}}
-
-  \caption{Profilage de coroutines du jeux \si}
-  \label{Exp:prof-corout}
-\end{figure}
 
 \begin{figure}[htb!]
   \begin{schemecode}

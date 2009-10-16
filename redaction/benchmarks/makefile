@@ -1,6 +1,6 @@
 
-GSI = gsi
-GSC = gsc
+GSI = gsi -:dar
+GSC = gsc -prelude '(declare (not safe) (block) (standard-bindings) (extended-bindings))'
 
 meroon-path=MeroonV3-2008Mar01
 meroon-prelude=-e '(load "$(meroon-path)/_meroon.o1")'
@@ -11,9 +11,12 @@ oops-prelude=-e '(parameterize ((current-directory "$(oops-path)")) (load "oops"
 class-path=class
 class-prelude=-e '(current-directory "$(class-path)") (load "lib/scm-lib")'
 
+threadsim-path=thread-simulation
+threadsim-prelude=-e '(current-directory "$(threadsim-path)") (load "lib/scm-lib") (load "lib/rbtree") (load "lib/thread-simulation")'
+
 define-type-prelude=
 
-all: define-type meroon oops class
+all: define-type meroon oops class threadsim gambit-thread erlang
 
 define-type:  define-type-benchmark.o1
 	@echo "*******************************************"
@@ -50,6 +53,31 @@ class: class-benchmark.o1
 
 class-benchmark.o1: class-benchmark.scm
 	$(GSC) -o ../$@ $(class-prelude) ../$<
+
+threadsim: threadsim-benchmark.o1
+	@echo "***************************************"
+	@echo "      Performing Thread Simulation benchmark"
+	@echo "***************************************"
+	$(GSI) $(threadsim-prelude) ../$<
+
+threadsim-benchmark.o1: threadsim-benchmark.scm
+	$(GSC) -o ../$@ $(threadsim-prelude) ../$<
+
+gambit-thread: gambit-thread-benchmark.o1
+	@echo "***************************************"
+	@echo "      Performing Gambit Thread benchmark"
+	@echo "***************************************"
+	$(GSI) $<
+
+gambit-thread-benchmark.o1: gambit-thread-benchmark.scm
+	$(GSC) -o $@ $<
+
+erlang: 
+	@echo "***************************************"
+	@echo "      Performing Erlang benchmark"
+	@echo "***************************************"
+	./erlang_benchmark.erl
+
 
 clean:
 	rm -rf *.o1

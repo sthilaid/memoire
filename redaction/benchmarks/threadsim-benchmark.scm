@@ -13,14 +13,13 @@
     (time-expr (boot (list c1 c2)))))
 
 (define (bench-send-receive)
-  (let* ((c2 (new-corout 'c2 (lambda () (let loop () (?) (yield) (loop)))))
-         (c1 (new-corout
+  (let* ((c1 (new-corout
               'c1 (lambda ()
                     (do ((i 0 (+ i 1)))
                         ((= i 500000) (kill-all! 'done))
-                      (! c2 'ping)
-                      (yield))))))
-    (time-expr (boot (list c1 c2)))))
+                      (! (current-corout) 'ping)
+                      (?))))))
+    (time-expr (boot (list c1)))))
 
 (define (bench-recv)
   (let* ((c2 (new-corout 'c2 (lambda ()

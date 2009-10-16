@@ -14,9 +14,11 @@ class-prelude=-e '(current-directory "$(class-path)") (load "lib/scm-lib")'
 threadsim-path=thread-simulation
 threadsim-prelude=-e '(current-directory "$(threadsim-path)") (load "lib/scm-lib") (load "lib/rbtree") (load "lib/thread-simulation")'
 
+termite-prelude=
+
 define-type-prelude=
 
-all: define-type meroon oops class threadsim gambit-thread erlang
+all: define-type meroon oops class threadsim gambit-thread termite erlang
 
 define-type:  define-type-benchmark.o1
 	@echo "*******************************************"
@@ -71,6 +73,16 @@ gambit-thread: gambit-thread-benchmark.o1
 
 gambit-thread-benchmark.o1: gambit-thread-benchmark.scm
 	$(GSC) -o $@ $<
+
+termite: termite-benchmark.o1
+	@echo "***************************************"
+	@echo "      Performing Termite benchmark"
+	@echo "***************************************"
+	$(GSI) $(termite-prelude) $<
+
+termite-benchmark.o1: termite-benchmark.scm
+	$(GSC) -o $@ $(termite-prelude) $<
+
 
 erlang: 
 	@echo "***************************************"

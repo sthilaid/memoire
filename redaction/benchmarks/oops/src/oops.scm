@@ -69,7 +69,7 @@
         (display file)
         (display "\"")
         (display (string-append "\n" "Loaded:  \""
-                                (compile-file file)
+                                (compile-file file prelude: "(declare (not safe) (block) (standard-bindings) (extended-bindings))")
                                 (load file) "\""))
         (newline)
         ))

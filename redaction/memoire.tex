@@ -3224,12 +3224,12 @@ meilleur temps d'exécution du test pour chaque opération vérifiée.
     \hline
     Opération & define-type & Meroon & OOPS & class \\
     \hline \hline
-    création d'instances directe            & 0.182 & 0.111 & 0.819 & 0.044\\
-    création d'instances avec constructeurs & ND    & ND    & ND    & 1.397\\
-    accès aux membres                       & 0.064 & 0.070 & 1.517 & 0.039\\
-    modification de membres                 & 0.064 & 0.074 & 1.926 & 0.044\\
-    \textit{dispatch} direct                & 0.144 & 0.350 & 9.709 & 1.115\\
-    \textit{dispatch} polymorphique         & ND    & 0.382 & 9.398 & 3.841\\
+    création d'instances directe            & 0.003 & 0.103 & 0.819 & 0.003\\
+    création d'instances avec constructeurs & ND    & ND    & ND    & 1.051\\
+    accès aux membres                       & 0.003 & 0.070 & 1.517 & 0.006\\
+    modification de membres                 & 0.004 & 0.074 & 1.926 & 0.005\\
+    \textit{dispatch} direct                & 0.097 & 0.350 & 9.709 & 0.822\\
+    \textit{dispatch} polymorphique         & 0.101 & 0.382 & 9.398 & 2.795\\
     \hline
   \end{tabular}
   \caption{Temps en secondes nécessaire pour l'exécution de tests
@@ -3244,12 +3244,12 @@ meilleur temps d'exécution du test pour chaque opération vérifiée.
     \hline
     Opération & define-type & Meroon & OOPS & class \\
     \hline \hline
-    création d'instances directe            & 4.1 & 2.5 & 18.6 & 1.0\\
+    création d'instances directe            & 1.0 & 34.3 & 273.0 & 1.0\\
     création d'instances avec constructeurs & ND  & ND  & ND   & 1.0\\
-    accès aux membres                       & 1.6 & 1.8 & 38.9 & 1.0\\
-    modification de membres                 & 1.5 & 1.7 & 43.8 & 1.0\\
-    \textit{dispatch} direct                & 1.0 & 2.4 & 67.4 & 7.7\\
-    \textit{dispatch} polymorphique         & ND  & 1.0 & 24.6 & 10.0\\
+    accès aux membres                       & 1.0 & 23.3 & 505.1 & 2.0\\
+    modification de membres                 & 1.0 & 18.5 & 481.5 & 1.3\\
+    \textit{dispatch} direct                & 1.0 & 3.61 & 100.09 & 8.47\\
+    \textit{dispatch} polymorphique         & 1.0 & 3.78 & 93.05 & 27.67\\
     \hline
   \end{tabular}
   \caption{Comparaison de performances relative au système le plus
@@ -4152,6 +4152,26 @@ vérification après avoir reçu un nouveau message.
   \caption{Expansion macro de \texttt{(recv (\#(allo ,x) x))}}
   \label{Corout:recv-exp}
 \end{figure}
+
+\section{Performances}
+\label{Corout:bench-section}
+
+\begin{table}
+  \center
+  \begin{tabular}{ccccc}
+    \hline
+    Opération & Système développé & Gambit-C & Erlang\\
+    \hline \hline
+    Changement de contexte                & 2.217 & 0.333 &    ND\\
+    Envoi et réception simple de messages & 3.195 & 1.160 &    ND\\
+    Réception de message avec filtrage    & 5.098 & ND    & 1.288\\
+    \hline
+  \end{tabular}
+  \caption{Comparaison de performances des opérations de bases du
+    système de coroutine développé avec des implantations
+    concurentes.}
+  \label{Corout:bench}
+\end{table}
 
 
 \section{Conclusion}

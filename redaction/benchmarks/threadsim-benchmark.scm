@@ -1,4 +1,3 @@
-(pp (current-directory))
 (include "thread-simulation/include/scm-lib_.scm")
 (include "thread-simulation/include/thread-simulation_.scm")
 (include "thread-simulation/include/match.scm")

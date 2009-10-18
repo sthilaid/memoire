@@ -3334,12 +3334,33 @@ synchronisation supplémentaire n'est requise pour assurer la validité
 d'accès concurrents à des sections critiques. En fait, le problème ne
 se pose même plus, mais disparaît complètement. Ceci rend donc très
 attrayant de tels systèmes pour le développement de jeux vidéo. Il
-permettrait de pouvoir exprimer de manière simple des changements de
-contextes dans le jeu, ou même, de modulariser le comportement de
-chacune des entités du jeu.
+permettrait d'exprimer de manière simple des changements de contextes
+dans le jeu, ou même, de modulariser le comportement de chacune des
+entités du jeu. Pour ce faire et afin de conserver la modularité du
+jeu, on peut imaginer une cascade de systèmes de coroutines dont un
+premier niveau permettrait l'implantation de parties multi-joueurs et
+un second niveau permettrait l'implantation du comportement d'entités
+dans le jeu. La figure \ref{Corout:usecase} illustre de manière
+générique cette idée. Dans ce schéma, les carrés noirs représentent
+des système de coroutines et les coroutines sont représentées avec des
+lignes pointillées. L'utilisation systèmes imbriqués permettrait ainsi
+de pouvoir exprimer chaque concept de manière modulaire de manière
+complètement transparente.
 
-Malheureusement, ni Scheme, ni Gambit-C n'offrent de tels système de
-coroutines. Par contre, l'expressivité du langage Scheme, notamment
+\begin{figure}[htb1]
+  \center
+  \includegraphics[scale=1.2]{corout-usecase-design}
+  \caption{Exemple générique d'utilisation de systèmes de coroutines
+    cascadés}
+  \label{Corout:usecase}
+\end{figure}
+
+Gambit-C offre la possibilité de transformer son système de
+\textit{threads} en système de coroutines lorsque le délais de
+changement de contexte automatique est choisi comme étant
+l'infini. Toutefois, 
+
+Par contre, l'expressivité du langage Scheme, notamment
 grâce à la réification de continuations, rend la tâche tout à fait
 accessible et réalisable. Ce chapitre vise donc à présenter un système
 de \textit{threads} \emph{coopératifs} développé dans le but de bien
@@ -4158,13 +4179,13 @@ vérification après avoir reçu un nouveau message.
 
 \begin{table}
   \center
-  \begin{tabular}{ccccc}
+  \begin{tabular}{cccccc}
     \hline
-    Opération & Système développé & Gambit-C & Erlang\\
+    Opération & Système développé & Gambit-C & Termite & Erlang\\
     \hline \hline
-    Changement de contexte                & 2.217 & 0.333 &    ND\\
-    Envoi et réception simple de messages & 0.855 & 1.060 &    ND\\
-    Réception de message avec filtrage    & 5.098 & ND    & 1.288\\
+    Changement de contexte                & 2.217 & 0.333 & ND    &    ND\\
+    Envoi et réception simple de messages & 0.855 & 1.060 & 3.128 &    ND\\
+    Réception de message avec filtrage    & 5.098 & ND    & 2.167 & 1.288\\
     \hline
   \end{tabular}
   \caption{Comparaison de performances des opérations de bases du

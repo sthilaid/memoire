@@ -10,10 +10,14 @@
                (?))))
 
 (define (bench-recv)
-  (time-expr (do ((i 0 (+ i 1)))
-                 ((= i 500000) 'ok)
-               (! (self) (list (self) 'ping))
-               (recv ((pid 'ping) 'ok)))))
+  (time-expr (let ((pong-server
+                    (spawn (lambda ()
+                             (let loop () (recv ((from 'ping) (! from 'pong)))
+                                  (loop))))))
+               (do ((i 0 (+ i 1)))
+                   ((= i 500000) 'ok)
+                 (! pong-server (list (self) 'ping))
+                 (recv ('pong 'ok))))))
 
 (pp `(termite send-receive: ,(bench-send-receive)))
 (pp `(termite recv: ,(bench-recv)))

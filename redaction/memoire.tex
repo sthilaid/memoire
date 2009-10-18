@@ -3347,7 +3347,7 @@ lignes pointillées. L'utilisation systèmes imbriqués permettrait ainsi
 de pouvoir exprimer chaque concept de manière modulaire de manière
 complètement transparente.
 
-\begin{figure}[htb1]
+\begin{figure}[htb!]
   \center
   \includegraphics[scale=1.2]{corout-usecase-design}
   \caption{Exemple générique d'utilisation de systèmes de coroutines
@@ -3358,14 +3358,20 @@ complètement transparente.
 Gambit-C offre la possibilité de transformer son système de
 \textit{threads} en système de coroutines lorsque le délais de
 changement de contexte automatique est choisi comme étant
-l'infini. Toutefois, 
+l'infini. Toutefois, il est impossible d'utiliser plusieurs systèmes
+de coroutines avec cette approche. Ainsi, l'utilisation directe des
+fonctionnalités de Gambit-C limite l'utilisation de coroutines au
+développement d'un seul concept dans un jeu.
 
-Par contre, l'expressivité du langage Scheme, notamment
-grâce à la réification de continuations, rend la tâche tout à fait
-accessible et réalisable. Ce chapitre vise donc à présenter un système
-de \textit{threads} \emph{coopératifs} développé dans le but de bien
-répondre aux besoins de jeux vidéo quant à l'écriture de code
-s'exécutant de manière parallèle de manière sécuritaire.
+Afin de ne pas être limité par les fonctionnalités fournies par
+Gambit-C, l'expressivité du langage Scheme peut être mise à profit. En
+effet, grâce à la réification de continuations du calcul, la tâche de
+l'implantation d'un système de coroutine fait sur mesure est tout à
+fait accessible et réalisable sans changer le langage. Ce chapitre
+présente un système de \textit{threads} \emph{coopératifs} développé
+dans le but de bien répondre aux besoins de jeux vidéo quant à
+l'écriture de code s'exécutant en concurrente de manière sécuritaire
+tout en permettant l'utilisation récursive de ce système.
 
 
 \section{Description du langage}
@@ -3374,39 +3380,38 @@ Un système de \textit{threads} coopératifs implique donc que le
 changement de contexte d'exécution associés aux changements de
 \textit{threads} doivent être faits de manière explicite par les
 utilisateurs. Ainsi, ces changements de contextes peuvent être faits
-aux moments opportuns, assurant ainsi l'intégrité des
+aux moments opportuns, pour assurer l'intégrité des
 données. Toutefois, des synchronisations entre les différentes
 coroutines pourraient être encore nécessaires afin de bien orchestrer
 l'exécution de ces dernières. Afin de permettre aux coroutines de
-pouvoir communiquer entre elles, une synchronisation par passage de
-message avec \textit{pattern matching} à la
-Termite~\cite{Termite_paper} a été adoptée. Ce mécanisme permet de
-pouvoir synchroniser de manière élégante les coroutines d'une manière
-très naturelle.
+communiquer entre elles, une synchronisation par passage de message
+avec \textit{pattern matching} similaire à celle utilisée dans les
+systèmes Termite~\cite{Termite_paper} ou Erlang~\cite{Erlang} a été
+adoptée. Ce mécanisme permet de synchroniser de manière élégante les
+coroutines naturellement.
 
-De plus, le système a été conçu afin de permettre d'être utilisé de
-manière récursive. Il est donc possible d'avoir une coroutine qui sera
-elle-même un système de coroutine, et ainsi de suite. Cette
-fonctionnalité a été implantée de manière à ce que le système soit le
-plus générique possible. De plus, l'idée de système récursifs est
-aussi très près du langage Scheme dans lequel la récursion de
-fonctions est très courante et commune grâce à l'implantation de
-l'optimisation d'appels terminaux.
+De plus, le système a été conçu pour être utilisé récursivement. Il
+est donc possible d'avoir une coroutine qui sera elle-même un système
+de coroutine, et ainsi de suite. Cette fonctionnalité a été implantée
+pour que le système soit le plus générique possible. De plus, l'idée
+de système récursifs est aussi très près du langage Scheme dans lequel
+la récursion de fonctions est très courante et commune grâce à
+l'implantation de l'optimisation d'appels terminaux.
 
 Aussi, la notion de temps a été abstraite dans le système avec
 l'introduction de compteurs de temps (\textit{timers}). Il est donc
 possible de choisir non seulement une granularité temporelle en
-spécifiant la fréquence de se compteur de temps, mais il est aussi
-possible de spécifier un facteur d'accélération, permettant de pouvoir
-accélérer la simulation en cours.
+spécifiant la fréquence de ce compteur, mais il est aussi possible de
+spécifier un facteur d'accélération, permettant d'accélérer la
+simulation en cours.
 
 Le système se résume à un ordonnanceur de coroutine qui utilise une
-file de coroutines prêtes pour choisir la prochaine de celles-ci à
-prendre le contrôle. Aussi, une file de coroutine en attente sur le
-temps et sur de conditions sont disponible afin de permettre une bonne
+file de coroutines prêtes à exécuter pour choisir la prochaine qui
+doit prendre le contrôle. Aussi, une file de coroutines en attente sur
+le temps et sur des conditions sont disponible pour une bonne
 régulation du système. Lorsqu'une coroutine décide de passer la main à
 la coroutine suivante ou lorsqu'elle ne doit plus attendre après le
-temps ou une condition, elle se fait enfiler à la fait de la file
+temps ou une condition, elle se fait enfiler à la fin de la file
 d'attente de coroutines prêtes. La figure \ref{Corout:system-schema}
 illustre l'architecture globale du système.
 
@@ -3418,17 +3423,17 @@ illustre l'architecture globale du système.
 \end{figure}
 
  Les sections suivantes décrivent un \textit{API} permettant
-l'utilisation du système de coroutines créé.
+l'utilisation du système de coroutines développé.
 
 
 \subsection{Création de coroutines}
 Les coroutines sont des objets en eux même et peuvent être créés de
 manière externe au système de coroutines pour, par la suite, être
-intégrées à celui-ci. L'avantage de cette approche, utilisée aussi par
+ajoutées à celui-ci. L'avantage de cette approche, utilisée aussi par
 le système de \textit{threads} de Gambit-C, réside dans le fait que
-les objets correspondant aux \textit{threads} peuvent être préparés à
-l'avance et conservés jusqu'au moment opportun de leurs intégration
-dans le système. Une nouvelle instance de coroutine s'effectue avec
+les objets correspondant aux \textit{threads} peuvent être initialisés
+à l'avance et conservés jusqu'au moment opportun de leurs ajout au
+système. Une nouvelle instance de coroutine s'effectue avec
 
 \begin{schemecode}
 (new-corout <corout-id> <thunk>)
@@ -3436,51 +3441,67 @@ dans le système. Une nouvelle instance de coroutine s'effectue avec
 
 \noindent
 où \scheme{<corout-id>} est un symbol permettant d'identifier la
-coroutine et le dernier argument est une fonction prenant aucun
-argument (appelée aussi \textit{thunk}), qui contient le corps de
-l'exécution de cette coroutine.
+coroutine et le dernier argument est un \textit{thunk} (une fonction
+ne prenant aucun argument) qui contient le corps de l'exécution de
+cette coroutine.
 
-L'objet créé pourra être par la suite intégré à un nouveau système par
-les fonctions d'initialisations \scheme{boot} et \scheme{simple-boot}
-ou encore intégrés à une coroutine d'une simulation existante avec la
-fonction \scheme{spawn-brother}. Ces fonction sont décrites plus bas.
+La figure \ref{Corout:state-diag} illustre un diagramme des états
+possibles pour une coroutine avec les transitions correspondantes. Sur
+chacune des transition, un exemple d'appel de fonction effectuant
+cette transition est donné. On constate ainsi qu'une coroutine est
+soit prête, en attente ou bien terminée. L'attente d'une coroutine
+peut être conditionnelle à la réception d'un message, au relâchement
+d'une sémaphore ou à un certain délais de temps prescrit. De plus,
+l'attente sur le temps peut être interruptible par la réception d'un
+message. Cet état se produit lorsqu'une attente de message est
+effectuée avec une attente bornée.
 
-Finalement, il est possible de rendre une coroutine prioritaire ou non
-prioritaire en utilisant les fonctions \scheme{(prioritize! <corout>)}
-et \scheme{(unprioritize! <corout>)}. Lors de leurs création, toute
-les coroutines sont considérées comme étant non
-prioritaire. Lorsqu'une coroutine devient prioritaire, elle sera
-automatiquement \emph{la prochaine} a être exécutée lors d'un
-changement de contexte. Il est donc important que cette coroutine
-enlève sa priorité pour éviter d'obtenir des boucles infinies par la
-suite.
+\begin{figure}[htb!]
+  \center
+  \includegraphics[scale=0.6]{corout-state-diag}
+  \caption{Diagramme d'états d'une coroutine}
+  \label{Corout:state-diag}
+\end{figure}
+
+L'objet créé pourra être par la suite ajouté à un nouveau système par
+la fonction d'initialisation \scheme{boot} ou encore par une coroutine
+d'une simulation existante avec la fonction
+\scheme{spawn-brother}. Ces fonction sont décrites ci-dessous.
+
+
 
 \subsection{Démarrage du système}
 
-Le système de coroutines peut être démarrer en utilisant la fonction 
+Le système de coroutines peut être démarré en utilisant la fonction 
 
 \begin{schemecode}
-(boot <timer> <return-val-handler> <corout1> ...)
+(boot <list of corout> [<timer>])
 \end{schemecode}
 
 \noindent
-dont le premier argument doit être un objet correspondant à un
-compteur de temps pour le système, le deuxième paramètre est une
-fonction permettant la gestion des valeurs de retours des coroutines
-et par la suite viennent les coroutines qui seront présentent au
-démarrage du système créé. L'ordre de ces coroutines est significatif
-car il indique dans quel ordre seront enfilées les coroutines dans la
-file d'attente de coroutines prêtes.
-
-La création de \textit{timers} se fait par un appel à la fonction 
+dont le premier argument doit être une liste contenant les coroutine
+présentes lors du démarrage du système et, optionnellement un objet
+correspondant à un compteur de temps pour le système. L'ordre des
+coroutines dans la liste est significatif car il indique dans quel
+ordre seront enfilées les coroutines dans la file d'attente de
+coroutines prêtes. Ainsi, la première coroutine de la liste sera la
+première à être exécutée. La création de \textit{timers} se fait par
+un appel à la fonction
 
 \begin{schemecode}
 (start-timer! <period> [time-multiplier: <time-mult-value>]))
 \end{schemecode}
 
 \noindent
-qui s'occupe de créer un objet faisant abstraction du temps avec une
-granularité associée à la période (en secondes) spécifiée. La fonction
+qui s'occupe de créer un objet faisant abstraction du temps. Ce
+dernier sera rafraîchi selon la période (en seconde) indiquée en temps
+réel. On peut ainsi faire varier la granularité de la simulation afin
+de l'adapter aux besoins existant. Le paramètre optionnelle
+\scheme{<time-mult-value>}, si spécifié, accélérera la simulation de
+ce facteur. Ainsi, le temps passera deux fois plus vite que le temps
+réel en utilisant une valeur de multiplicateur de temps de deux.
+
+La fonction
 \scheme{(stop-timer! <timer>)} doit être utilisée afin d'arrêter le
 compteur de temps, lorsque son utilisation n'est plus nécessaire.
 

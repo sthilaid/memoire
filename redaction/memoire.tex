@@ -1106,7 +1106,25 @@ avoir d'interférences dans l'état du programme, ce qui n'est pas
 nécessairement le cas avec des modules impératifs dépendant
 directement de l'état du programme pour leur exécution.
 
+De plus, il est possible en Scheme de créer des fermetures n'attendant
+aucun arguments. Ces dernières sont généralement appelées
+\textit{thunk} de manière historique. Elle sont généralement utilisée
+afin de retarder l'évaluation de code dans le but de faire de
+l'évaluation paresseuse et encore d'encapsuler un comportement. La
+figure \ref{Scheme:thunk} illustre l'utilisation d'un \textit{thunk}
+avec le système de \textit{threads} de Gambit-C afin de suspendre
+l'évaluation du corps du processus léger créé jusqu'à ce que ce dernier soit démarré.
 
+\begin{figure}[htb!]
+  \begin{schemecode}
+(let ((thunk (lambda () (display 'B))))
+  (display 'A)
+  (thread-start! (make-thread thunk))) => \schemeresult{AB}
+  \end{schemecode}
+  \caption{Utilisation d'un \textit{thunk} dans le but de retarder
+    l'évaluation de code}
+  \label{Scheme:thunk}
+\end{figure}
 
 
 \section{Macros}
@@ -2055,6 +2073,36 @@ comme n'importe qu'elle fonction Scheme.
 D'autre part, il est aussi possible d'exporter des fonctions écrites
 en Scheme de manière à ce qu'elles soient utilisées à partir de code C
 ou C++.
+
+\subsection{Capture de continuations}
+
+Le système Gambit-C effectue une abstraction de la fonction
+\scheme{call/cc} avec la fonction
+\scheme{continuation-capture}~\cite{Feeley01abetter}. Cette dernière
+retourne plutôt une structure de donnée contenant la continuation du
+calcul au moment de l'appel à celle-ci. Une valeur peut alors être
+retournée à la continuation obtenue en utilisant la fonction
+\scheme{(continuation-return <cont> <val>)}. De plus, en utilisant ce
+mécanisme, il est possible d'attacher une continuation à la suite d'un
+\textit{thunk} en utilisant la fonction \scheme{(continuation-graft
+  <cont> <thunk>)}. La figure \ref{Scheme:cont-capt} illustre une
+telle capture de continuation, ainsi que des exemples d'utilisations
+de cette dernière.
+
+\begin{figure}[htb1]
+  \begin{schemecode}
+(define k \#f)
+(+ 1 (continuation-capture (lambda (cont) (set! k cont) 2)))
+
+(continuation-return k 2) => \schemeresult{3}
+
+(let ((thunk (lambda () (display 'allo) (+ 2 3))))
+    (+ 10 (continuation-graft k thunk))) => \schemeresult{allo6}
+  \end{schemecode}
+  \caption{Exemple d'utilisation de l'api amélioré de capture de
+    continuations fourni par Gambit-C}
+  \label{Scheme:cont-capt}
+\end{figure}
 
 \section{Conclusion}
 
@@ -3398,12 +3446,16 @@ de système récursifs est aussi très près du langage Scheme dans lequel
 la récursion de fonctions est très courante et commune grâce à
 l'implantation de l'optimisation d'appels terminaux.
 
-Aussi, la notion de temps a été abstraite dans le système avec
-l'introduction de compteurs de temps (\textit{timers}). Il est donc
-possible de choisir non seulement une granularité temporelle en
-spécifiant la fréquence de ce compteur, mais il est aussi possible de
-spécifier un facteur d'accélération, permettant d'accélérer la
-simulation en cours.
+Un tel système de coroutine peut être également vu comme étant un
+système de simulation basée sur les agents, par opposition aux
+simulations basées sur des événements discrets. Le comportement des
+entités est alors représenté par chacune des coroutines du
+système. Dans cette optique, la notion de temps du système développé a
+été abstraite grâce à l'introduction de compteurs de temps
+(\textit{timers}). Il est donc possible de choisir non seulement une
+granularité temporelle en spécifiant la fréquence de ce compteur, mais
+il est aussi possible de spécifier un facteur d'accélération,
+permettant d'accélérer la simulation en cours.
 
 Le système se résume à un ordonnanceur de coroutine qui utilise une
 file de coroutines prêtes à exécuter pour choisir la prochaine qui
@@ -3498,21 +3550,10 @@ dernier sera rafraîchi selon la période (en seconde) indiquée en temps
 réel. On peut ainsi faire varier la granularité de la simulation afin
 de l'adapter aux besoins existant. Le paramètre optionnelle
 \scheme{<time-mult-value>}, si spécifié, accélérera la simulation de
-ce facteur. Ainsi, le temps passera deux fois plus vite que le temps
-réel en utilisant une valeur de multiplicateur de temps de deux.
-
-La fonction
-\scheme{(stop-timer! <timer>)} doit être utilisée afin d'arrêter le
-compteur de temps, lorsque son utilisation n'est plus nécessaire.
-
-La fonction s'occupant de gérer les valeurs de retour des coroutines
-se doit de recevoir deux arguments, le premier étant le résultat
-accumulé des précédentes terminaisons de coroutines et le deuxième
-étant la valeur de retour de la dernière coroutine à avoir terminé
-son exécution. La valeur de retour de cette fonction sera alors
-utilisée comme la prochaine valeur accumulée lors de la terminaison
-subséquente d'une coroutine, comme c'est le cas avec la fonction
-\scheme{fold} (voir la figure \ref{Scheme:fold}).
+ce facteur. Ainsi, le temps dans la simulation passera deux fois plus
+vite que le temps réel en utilisant une valeur de multiplicateur de
+temps de deux. La fonction \scheme{(pause-timer! <timer>)} peut être
+utilisée afin de mettre en pause et de repartir le compteur de temps.
 
 La figure \ref{Corout:boot} présente un exemple de démarrage d'un
 système de coroutine où le temps sera augmenté toutes les secondes et
@@ -3523,36 +3564,14 @@ nécessaire.
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(let* ((c1 (new corout 'c1 (lambda () 1)))
-       (c2 (new corout 'c2 (lambda () 2)))
-       (c3 (new corout 'c3 (lambda () 3)))
-       (timer (start-timer! 1.0))
-       (result (boot timer + c1 c2 c3)))
-    (stop-timer! timer)
-    result) => \schemeresult{6}
+(let* ((c1 (new-corout 'c1 (lambda () (display 1))))
+       (c2 (new-corout 'c2 (lambda () (display 2))))
+       (c3 (new-corout 'c3 (lambda () (display 3))))
+       (timer (start-timer! 1.0)))
+  (boot (list c1 c2 c3))) => \schemeresult{123}
   \end{schemecode}
   \caption{Exemple de démarrage d'un système de coroutines}
   \label{Corout:boot}
-\end{figure}
-
-Le processus de démarrage peut être simplifié avec l'utilisation de la
-fonction \scheme{(simple-boot <corout1> ...)} qui utilise un
-\textit{timer} par défaut avec une période de $0.001$ secondes et
-retourne la valeur de la dernière coroutine à être exécutée dans le
-système comme valeur de retour du système. La figure
-\ref{Corout:simple-boot} illustre le démarrage d'un système de
-coroutines en utilisant \scheme{simple-boot}. 
-
-\begin{figure}[htb!]
-  \begin{schemecode}
-(let* ((c1 (new corout 'c1 (lambda () 1)))
-       (c2 (new corout 'c2 (lambda () 2)))
-       (c3 (new corout 'c3 (lambda () 3))))
-
-    (simple-boot c1 c2 c3)) => \schemeresult{3}
-  \end{schemecode}
-  \caption{Exemple de démarrage simple de système de coroutines}
-  \label{Corout:simple-boot}
 \end{figure}
 
 
@@ -3566,27 +3585,30 @@ corps.
 
 La fonction la plus simple de manipulation du flot d'exécution est
 \scheme{(yield)}. Celle-ci arrête temporairement la coroutine actuelle
-et passe le contrôle à la \emph{prochaine} coroutine disponible. La
-prochaine coroutine sera déterminée de manière déterministe avec une
-simple file d'attente. La coroutine actuelle sera donc placée à la fin
-de cette file d'attente (à moins d'être prioritaire). Ainsi, le retour
-du contrôle à cette coroutine ne sera exécutée uniquement lorsque
-toutes les autres coroutines prêtes auront décidée de passer la main à
-la coroutine suivante. Il est également possible de choisir
-explicitement à quelle coroutine le contrôle sera passé avec la
-fonction \scheme{(yield-to <corout>)}. 
+et passe le contrôle à la \emph{prochaine} coroutine disponible. Cette
+dernière est déterminée en utilisant la prochaine coroutine présente
+dans la file de coroutines prêtes, tel qu'illustré dans la figure
+\ref{Corout:system-schema}. La coroutine effectuant l'appel à la
+fonction \scheme{yield} sera alors placée à la fin de cette file
+d'attente. Il en résulte que le retour du contrôle à cette coroutine
+ne sera exécutée uniquement lorsque toutes les autres coroutines
+prêtes auront décidée de passer la main à la coroutine suivante. Il
+est également possible de choisir explicitement à quelle coroutine le
+contrôle sera passé avec la fonction \scheme{(yield-to <corout>)}.
 
 Une coroutine peut aussi décider de se mettre en attente pour une
 certaine période de temps avec la fonction \scheme{(sleep-for <sec>)}
 un certain nombre de secondes. Il en résultera que la coroutine
 actuelle sera placée dans une file d'attente séparée et ne sera
-ré-enfilée dans la file de coroutines prêtes uniquement lorsque le
+réenfilée dans la file de coroutines prêtes uniquement lorsque le
 délais prescrit sera dépassé. Cela n'implique pas que la coroutine
 sera exécutée à ce moment là, car si cette file contient déjà des
 coroutines en attentes, elle devra attendre sont tour pour pouvoir
-poursuivre son exécution.
+poursuivre son exécution. Puisqu'une telle attente peu varier en
+fonction de la plateforme utilisée, elle introduit un certain
+indéterminisme dans le système.
 
-Il est également possible pour une coroutine d'intégrer des nouvelles
+Il est également possible pour une coroutine d'ajouter de nouvelles
 coroutines dans le système en utilisant les fonctions:
 
 \begin{schemecode}
@@ -3594,40 +3616,41 @@ coroutines dans le système en utilisant les fonctions:
 (spawn-brother-thunk <corout-id> <thunk>)
 \end{schemecode}
 
-La première intégrera simplement la coroutine spécifiée dans la file
-de coroutines prêtes. Cette coroutine \emph{ne doit pas} déjà être
+La première ajoute simplement la coroutine spécifiée dans la file de
+coroutines prêtes. Cette coroutine \emph{ne doit pas} déjà être
 présente dans le système. La deuxième fonction,
-\scheme{spawn-brother-thunk} créera une nouvelle coroutine ayant comme
-identificateur \scheme{<corout-id>} et la fonction spécifiée comme
-corps et sera, par la suite, intégrée de même manière dans le système.
+\scheme{spawn-brother-thunk}, sert de sucre syntaxique en créeant une
+nouvelle coroutine ayant comme identificateur \scheme{<corout-id>} et
+la fonction spécifiée comme corps avant d'ajouter cette dernière dans
+le système.
 
-Une coroutine peut aussi altérer le fil de son exécution en modifiant
-la continuation de son calcul par celui d'une autre coroutine ou d'un
-\textit{thunk} (fonction sans argument) de manière similaire à la
-forme spéciale \scheme{call/cc} de Scheme. Ainsi, un appel à la forme
-spéciale \scheme{(continue-with <corout>)} fera en sorte que la
-continuation de la coroutine devienne celle de cette autre
-coroutine. De manière similaire, \scheme{(continue-with-thunk!
-  <thunk>)} utilisera la fonction passée comme continuation du
-calcul. La figure \ref{Corout:cont-mod} présente un exemple utilisant
-ces deux formes spéciales. Lorsque la coroutine \scheme{c1} s'exécute,
-sa continue change pour celle de \scheme{c2} qui change à sont tour
-pour la fonction \scheme{t}. Ainsi, la fin du corps des coroutines
-\scheme{c1} et \scheme{c2} ne sera jamais exécutée puisque leurs
-continuation ont été altérées.
+Dans le cadre de l'écriture de jeux vidéo, la modularité des
+coroutines est très importante. Afin de pouvoir facilité l'écriture
+modulaire de corps des coroutines, des formes spéciales permettant
+d'utiliser un style CPS ont été ajoutées. Ces dernière permettent
+l'altération le fil d'exécution d'une coroutine en modifiant la
+continuation de son calcul par celui d'une autre coroutine ou d'un
+\textit{thunk}. Ainsi, un appel à la forme spéciale
+\scheme{(continue-with <corout>)} fera en sorte que la continuation de
+la coroutine devienne celle de cette autre coroutine. De manière
+similaire, \scheme{(continue-with-thunk!  <thunk>)} utilisera la
+fonction passée comme continuation du calcul. La figure
+\ref{Corout:cont-mod} présente un exemple utilisant ces deux formes
+spéciales. Lorsque la coroutine \scheme{c1} s'exécute, sa continue
+change pour celle de \scheme{c2} qui change à sont tour pour la
+fonction \scheme{t}. Ainsi, la fin du corps des coroutines \scheme{c1}
+et \scheme{c2} ne sera jamais exécutée puisque leurs continuation ont
+été altérées.
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(let* ((t (lambda () (pp 'bonjour) 0))
+(let* ((t (lambda () (pp 'bonjour)))
        (c2 (new corout 'c2
                 (lambda () (continue-with-thunk! t) (pp 'allo ) 2)))
        (c1 (new corout 'c1
                 (lambda () (continue-with c2) (pp 'salut) 1))))
-  (simple-boot c1))
+  (boot (list c1))) => \schemeresult{bonjour}
   \end{schemecode}
-  {{\it
-bonjour\\
-0}}
   \caption{Exemple de modification de la continuation d'une coroutine}
   \label{Corout:cont-mod}
 \end{figure}
@@ -3635,18 +3658,22 @@ bonjour\\
 Finalement, une coroutine peut changer sa continuation de manière plus
 drastique en forçant la terminaison du fil d'exécution de celle-ci en
 utilisant la fonction \scheme{(terminate-corout <return-val>)}. La
-valeur de retour de la coroutine sera alors la valeur spécifiée en
-paramètre. Il est aussi possible de faire terminer le système actuel
-de coroutine, au complet, en faisant appel à \scheme{(kill-all!
-  <return-val>)}. La valeur de retour finale de l'exécution du système
-sera alors la valeur spécifiée.
+valeur de retour de la coroutine spécifiée en paramètre est conservée
+dans la structure de donnée de la coroutine et peut être obtenue en
+faisant appel à la fonction \scheme{(corout-get-result <corout>)}. Il
+est aussi possible de faire terminer le système actuel de coroutine,
+au complet, en faisant appel à \scheme{(kill-all!  <return-val>)}. La
+valeur de retour finale de l'exécution du système sera alors la valeur
+spécifiée.
 
 
 
 \subsection{Environnement dynamique}
-Un environnement dynamique est disponible pour les coroutines, lors de
-leurs exécution. Cet environnement donne accès à de l'information sur
-ce dernier. il comprend les paramètres:
+
+Une certaine introspection est très utile pour un programmeur, surtout
+pour des fins de déboggage.  Un environnement dynamique est disponible
+pour les coroutines, lors de leurs exécution. Cet environnement donne
+accès à de l'information sur ce dernier. il comprend les paramètres:
 
 \begin{itemize}
 \item \scheme{(current-corout)} : retourne l'instance de la coroutine
@@ -3656,21 +3683,22 @@ ce dernier. il comprend les paramètres:
   associé avec le système courant. La valeur actuelle du temps peut
   être obtenue facilement en appellent plutôt la fonction
   \scheme{(current-sim-time)}.
-
-\item \scheme{(return-value)} : Valeur de retour accumulée des
-  coroutines au moment de l'appel.
 \end{itemize}
 
 
 
-\subsection{Système de communication inter coroutines}
-Le mécanisme principal de synchronisation des coroutines est basé sur
-le passage de messages, tel que fait dans le système de programmation
-distribué Termite~\cite{Termite_paper}. Cette approche semble
-naturelle pour la programmation de jeux vidéo où les coroutines
-peuvent devenir des entités à part entière et pourraient ainsi
-communiquer avec d'autres entités par ces mécanismes d'une manière
-naturelle.
+\subsection{Système de communication inter-coroutines}
+
+Que ce soit afin d'informer une partie du score d'un autre joueur ou
+d'un vaisseau spatial attendant le bon moment pour effectuer son
+déplacement la synchronisation des entités d'un jeu est primordiale.
+Le mécanisme principal de synchronisation des coroutines pour ce
+système est basé sur le passage de messages, tel que fait dans le
+système de programmation distribué Termite~\cite{Termite_paper}. Cette
+approche semble naturelle pour la programmation de jeux vidéo où les
+coroutines peuvent devenir des entités à part entière et pourraient
+ainsi communiquer avec d'autres entités par ces mécanismes d'une
+manière naturelle.
 
 L'envoi de messages se fait par la fonction \scheme{(! <corout>
   <msg>)} qui s'occupe d'acheminer le message désiré à la coroutine
@@ -3681,33 +3709,31 @@ fonctions distinctes et une forme spéciale:
 \item \scheme{(? [timeout: <sec>])} : Réception du premier message
   disponible avec attente bloquante. Un \textit{timeout} peut être
   spécifié afin de limiter l'attente faite. Si plusieurs messages sont
-  disponibles, le premier arrivé sera alors retourné, afin de respecter
-  une politique équitable de réception de messages.
+  disponibles, le premier arrivé sera alors retourné.
 
 \item \scheme{(?? <predicat> [timeout: <secs>])} : Réception du
   premier message qui retourne vrai selon le prédicat spécifié. Le
   prédicat doit prendre un seul argument, un message reçu. Comme pour
   la fonction \scheme{?}, l'attente bloquante peut être interrompue
-  après un délais de temps, si ce dernier est spécifié.
+  après un délai de temps, si ce dernier est spécifié.
 
 \item \scheme{(recv (<pattern> <body>) ...)} : Cette forme spéciale
   permet la réception sélective de messages selon des patrons de
   filtrage par motifs (\textit{pattern matching}). Ces patrons
-  permettent de pouvoir facilement exprimer la forme attendue du
-  message et de pouvoir lier des variables locales à des parties du
-  message reçu afin de les utiliser dans le corps du patron. Lorsque
-  plusieurs messages reçus peuvent correspondre aux motifs donnés, la
-  sélection du message se fait en choisissant dans un premier temps le
-  premier motifs possible, et par la suite le premier message
-  répondant à ce motif. Ainsi l'ordre de spécification des motifs est
-  important et significatif.
-
+  permettent de facilement exprimer la forme attendue du message et de
+  lier des variables locales à des parties du message reçu afin de les
+  utiliser dans le corps du patron. Lorsque plusieurs messages reçus
+  peuvent correspondre aux motifs donnés, la sélection du message se
+  fait en choisissant dans un premier temps le premier motifs
+  possible, et par la suite le premier message répondant à ce
+  motif. Ainsi l'ordre de spécification des motifs est important et
+  significatif.
 \end{itemize}
 
-Les valeurs de délais d'attente maximal spécifié pour la réception de
-messages implique qu'il est possible qu'une réception échoue. Dans
-un tel cas, une exception de type \scheme{mailbox-timeout-exception}
-est lancée par la fonction de réception utilisée.
+Les valeurs de délai d'attente maximal spécifié pour la réception de
+messages implique qu'il est possible qu'une réception échoue. Dans un
+tel cas, une exception de type \scheme{mailbox-timeout-exception} est
+lancée par la fonction de réception utilisée.
 
 Les patrons utilisés dans le filtrage de motifs de la forme spéciale
 \scheme{recv} diffèrent de ceux dans Termite. Ici, le patron doit être
@@ -3718,21 +3744,21 @@ formats de motifs reconnus sont les symboles, les mots clés, les
 caractères, les valeurs booléennes, les nombres, les chaînes de
 caractères, les listes et les vecteurs. Aussi, un patron spécial
 permettant d'effectuer des attentes bornées dans le temps est
-disponible sous la forme \scheme{(after <sec> <body> ...)}. Ce patron
+disponible sous la forme \scheme{(after <timeout> <body> ...)}. Ce patron
 spécial doit être spécifié \emph{en dernier}, s'il est présent. La
 figure \ref{Corout:recv-pat} illustre plusieurs motifs différents qui
 peuvent être utilisés.
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(recv (salut 'got-salut)                   ; symbol match
-      ("bonjour" 'bonjour)                 ; strng match
-      (1011 '11-or-1011?)                  ; number match
-      ((a ,b c) (string b \#\textbackslash k))           ; list match
-      (\#(a b ,c) c)                        ; vector match
-      ((tata 1 \#(toto ,x) "titi") (+ x 1)) ; complex match
-      (,anything anything)                 ; can match anything
-      (after 2 'timeout!))                 ; timeout
+(recv (salut                      'got-salut)      ; symbol match
+      ("bonjour"                  'bonjour)        ; string match
+      (1011                       '11-or-1011?)    ; number match
+      ((a ,b c)                   (string b \#\textbackslash k)) ; list match
+      (\#(a b ,c)                  c)               ; vector match
+      ((tata 1 \#(toto ,x) "titi") (+ x 1))         ; complex match
+      (,anything                  anything)        ; can match anything
+      (after 2                    'timeout!))      ; timeout
   \end{schemecode}
   \caption{Exemple de patrons pouvant être utilisés dans le filtrage
     par motifs de la forme spécial \scheme{recv}}
@@ -3752,6 +3778,24 @@ est donc possible de factoriser des patrons communs et de les
 appliquer à tous les appels de la forme spéciale de réception de
 messages par filtrage de motifs.
 
+Le filtrage par patron présenté diffère de ceux disponibles dans les
+système Termite~\cite{Termite} ou Erlang~\cite{Erlang} par le fait que
+la sélection du message reçu se fait prioritairement sur le premier
+patron possédant un message valide, contrairement à ces deux autres
+systèmes où la sélection se fait plutôt sur le premier message reçu
+correspondant à un filtre existant. Il en résulte que l'ordre dans
+lequel sont spécifiés les motifs de filtrage donne une priorité
+décroissante a ceux-ci. Il en résulte que certains messages peuvent
+ainsi être considéré prioritairement à leurs prédécesseurs. Ce
+mécanisme est fort utile pour l'implantation d'un jeu vidéo où un
+changement d'état du jeu nécessiter des actions immédiates, comme la
+mort d'un joueur, par exemple. Toutefois, puisque le réveil de
+coroutines en attente sur le temps est indéterministe, il est possible
+que l'arrivée de messages prioritaires soit retardée. Un tel cas de
+figure résulterait en une exécution différente du système et donc, il
+en résulte que la réception de messages est indirectement
+indéterministe aussi.
+
 Aussi, un mécanisme de liste de diffusion a été inclus. Ce mécanisme
 simple permet d'enregistrer des coroutine dans une liste de diffusion
 et, par la suite, d'envoyer à toutes les coroutines inscrites des
@@ -3765,18 +3809,32 @@ listes de diffusions sont:
   coroutine spécifiée à la liste de diffusion identifiée par le symbole
   choisi. Si la liste n'existait pas, elle sera créée.
 
-\item \scheme{(unsubscribe <list-id> <corout>} : Désinscription d'une
+\item \scheme{(unsubscribe <list-id> <corout>)} : Désinscription d'une
   coroutine à une liste de diffusion.
 
 \item \scheme{(broadcast <list-id> <msg>)} : Envoi d'un message à une
   liste de diffusion.
 \end{itemize}
 
+\noindent
+Un identificateur de liste de diffusion est représenté par une donné
+Scheme. L'avantage d'utiliser des données comme identificateur est
+qu'il est alors possible de créer celui-ci durant
+l'exécution. L'utilisation de variables Scheme pointant vers une
+structure de donnés, plutôt que des données Scheme, offriraient de
+meilleurs performances, mais ce dynamisme ne serait pas disponible.
+
 \subsection{Autres mécanismes de synchronisation}
-En plus du mécanisme de messagerie sophistiqué du système de
-coroutine, les coroutines disposent d'un système de sémaphores afin de
-pouvoir exécuter des synchronisation de manière plus
-traditionnelle. Ces dernières sont manipulés par les fonctions:
+Le mécanisme de messagerie sophistiqué du système de coroutine permet
+d'effectuer de manière élégante les synchronisation nécessaire entre
+les coroutines. Toutefois, certains problèmes pourraient être exprimés
+plus facilement grâce à des moyens plus traditionnels de
+synchronisation.  Pour ce faire, des
+sémaphores~\cite{DIJKSTRA_SEMAPHORE} ont été ajoutées au système de
+coroutine développé. Celles-ci permettent donc d'exprimer de manière
+différente les contraintes de synchronisations qui peuvent être
+nécessaire pour l'implantation d'un jeu. Les fonctions de manipulation
+et de création de sémaphores sont données ci-bas:
 
 \begin{itemize}
 \item \scheme{(new-semaphore <init-value>)} : Création d'une nouvelle

@@ -3574,6 +3574,70 @@ nécessaire.
   \label{Corout:boot}
 \end{figure}
 
+Le système de coroutine a été conçu de manière à pouvoir permettre de
+créer des systèmes de coroutines de manière cascadée, \ie de créer des
+coroutines qui sont elles-mêmes des systèmes de coroutines. De tels
+systèmes récursifs comportent de nombreux avantages. En effet,
+l'utilisation de tels systèmes facilite grandement la modularité de
+l'utilisation du système de coroutine. En effet, il devient possible
+de modulariser les différents aspects d'utilisations dans leurs
+propres systèmes. Par exemple, dans le cadre de jeux simples, on peut
+implanter des parties multi-joueurs en utilisant une coroutine par
+partie. Ces coroutine peuvent alors elle-même contenir un système de
+coroutine utilisé par la partie en elle-même. 
+
+La procédure de création de ces derniers est simple, il suffit de
+démarrer un nouveau système de coroutine à l'intérieur d'une coroutine
+existante. Lorsque des coroutines démarrent un nouveau système de
+coroutines, l'objet d'abstraction du temps (\textit{timer}) du système
+de coroutine primordial est automatiquement utilisé pour les systèmes
+récursifs de manière à conserver une cohérence entre ceux-ci. Par
+contre, un problème se pose: il devient alors impossible de pouvoir
+retourner le contrôle aux coroutines appartenant au système
+primordial, puisque \scheme{(yield)} ne fera que changer de contexte
+que les coroutines du sous-système.
+
+Ce problème est résolu par l'utilisation de la fonction
+\scheme{(super-yield)} qui effectue un changement de contexte pour le
+système de coroutine courant. Si le système courant ne se retrouve pas
+dans un système cascadé, alors rien ne se produira. Une fonction
+similaire, \scheme{(super-kill-all! <return-value>)} terminera
+\emph{tous} les systèmes de coroutines se retrouvant dans
+l'arborescence de système de coroutine présentement active. Un exemple
+de système de coroutines en cascade est donné dans la figure
+\ref{Corout:cascade}.  On constate que les appels à
+\scheme{super-yield} ont bien effectué les changements de contextes de
+des coroutines hôtes des sous-systèmes de coroutines (\scheme{s1} et
+\scheme{s2}).
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(let* ((ret (lambda (x) (pp `(now returning: ,x)) x))
+       (c1 (new-corout 'c1 (lambda () (ret 1))))
+       (c2 (new-corout 'c2 (lambda () (super-yield) (ret 2))))
+       (c3 (new-corout 'c3 (lambda () (super-yield) (ret 3))))
+       
+       (c4 (new-corout 'c4 (lambda () (ret 4))))
+       (c5 (new-corout 'c5 (lambda () (super-yield) (ret 5))))
+       (c6 (new-corout 'c6 (lambda () (ret 6))))
+       
+       (s1 (new-corout 's1 (lambda () (boot (list c1 c2 c3)))))
+       (s2 (new-corout 's2 (lambda () (boot (list c4 c5 c6))))))
+  (boot (list s1 s2))
+  (fold-l + 0 (map corout-get-result (list c1 c2 c3 c4 c5 c6))))
+=> \schemeresult{(now returning: 1)}
+   \schemeresult{(now returning: 4)}
+   \schemeresult{(now returning: 2)}
+   \schemeresult{(now returning: 5)}
+   \schemeresult{(now returning: 6)}
+   \schemeresult{(now returning: 3)}
+   \schemeresult{21}
+  \end{schemecode}
+  \caption{Exemple de démarrage de système de coroutines en cascade}
+  \label{Corout:cascade}
+\end{figure}
+
+
 
 \subsection{Manipulation du flot de contrôle}
 Puisque le contrôle du flot d'exécution entre les coroutines doit être
@@ -3845,76 +3909,20 @@ et de création de sémaphores sont données ci-bas:
 
 \item \scheme{(sem-locked? <sem>)} : Permet de vérifier s'il reste des
   ressources disponibles dans une sémaphore. S'il en reste, la
-  fonction retournera vrai, ou faux sinon.
+  fonction retournera vrai, et faux sinon.
 
 \item \scheme{(sem-lock! <sem>)} : Prend une ressource de la sémaphore
   spécifiée. Si aucune ressource n'est disponible, la coroutine se met
-  en étant d'attente bloquante jusqu'à ce qu'une ressource soit
+  en état d'attente bloquante jusqu'à ce qu'une ressource soit
   libérée.
 
 \item \scheme{(sem-unlock! <sem>)} : Libère une ressource de la
-  sémaphore spécifiée. Aucune vérification n'est faite qu'en a
-  s'assurer que la coroutine courante possède réellement cette
-  ressource. Si des coroutines sont en attentes de ressources, la
-  première à s'être mise en attente est alors réveillée.
+  sémaphore spécifiée. Aucune vérification n'est faite pour s'assurer
+  que la coroutine courante possède réellement cette ressource. Si des
+  coroutines sont en attentes de cette ressource, la première à s'être
+  mise en attente est alors réveillée et enfilée dans la file de
+  coroutines prêtes.
 \end{itemize}
-
-L'utilisation de sémaphores n'est pas nécessaire, puisque le système
-de messagerie permet d'effectuer n'importe qu'elle
-synchronisation. Par contre, les sémaphores permettent de pouvoir
-exprimer d'une manières différente des synchronisations et donc
-apportent plus de liberté aux utilisateurs du système.
-
-\subsection{Systèmes en cascades}
-
-Le système de coroutine a été conçu de manière à pouvoir permettre de
-créer des systèmes de coroutines de manière cascadée, \ie de créer des
-coroutines qui sont elles-mêmes des système de coroutines. La
-procédure de création de ces derniers est simple, il suffit de
-démarrer un nouveau système de coroutine à l'intérieur d'une coroutine
-existante. Par contre, un problème se pose: il devient alors
-impossible de pouvoir retourner le contrôle aux coroutines appartenant
-au système primordial, puisque \scheme{(yield)} ne fera que changer de
-contexte que les coroutines du sous-système.
-
-Ce problème est résolu par l'utilisation de la fonction
-\scheme{(super-yield)} qui effectue un changement de contexte pour le
-système de coroutine courant. Si le système courant ne se retrouve pas
-dans un système cascadé, alors rien ne se produira. Une fonction
-similaire, \scheme{(super-kill-all! <return-value>)} terminera
-\emph{tous} les systèmes de coroutines se retrouvant dans
-l'arborescence de système de coroutine présentement active. Un exemple
-de système de coroutines en cascade est donné dans la figure
-\ref{Corout:cascade}.  On constate que les appels à
-\scheme{super-yield} ont bien effectué les changements de contextes de
-des coroutines hôtes des sous-systèmes de coroutines (\scheme{s1} et
-\scheme{s2}).
-
-\begin{figure}[htb!]
-  \begin{schemecode}
-(let* ((ret (lambda (x) (pp `(now returning: ,x)) x))
-       (c1 (new corout 'c1 (lambda () (ret 1))))
-       (c2 (new corout 'c2 (lambda () (super-yield) (ret 2))))
-       (c3 (new corout 'c3 (lambda () (ret 3))))
-       (c4 (new corout 'c4 (lambda () (ret 8))))
-       (c5 (new corout 'c5 (lambda () (super-yield) (ret 4))))
-       (c6 (new corout 'c6 (lambda () (ret 2))))
-       (timer (start-timer! 1.0))
-       (s1 (new corout 's1 (lambda () (boot timer + c1 c2 c3))))
-       (s2 (new corout 's2 (lambda () (boot timer - c4 c5 c6)))))
-  (boot timer * s1 s2))
-  \end{schemecode}
-  {{\it
-(now returning: 1)\\
-(now returning: 8)\\
-(now returning: 2)\\
-(now returning: 3)\\
-(now returning: 4)\\
-(now returning: 2)\\
-12}}
-  \caption{Exemple de démarrage de système de coroutines en cascade}
-  \label{Corout:cascade}
-\end{figure}
 
 
 

@@ -3930,8 +3930,9 @@ et de création de sémaphores sont données ci-bas:
 \section{Implantation}
 
 L'implantation de ce système de coroutine est centralisée sur
-l'utilisation de la forme spéciale \scheme{call/cc} afin de permettre
-la conservation de l'état courant d'une coroutine.
+l'utilisation des fonctions \scheme{continuation-capture} et
+\scheme{continuation-return} afin de permettre la conservation de
+l'état courant d'une coroutine.
 
 Un net avantage lorsque le système est directement implanté par
 l'utilisateur est qu'il répond sur mesure aux demandes de ce dernier
@@ -3945,28 +3946,31 @@ données utilisées, mais aussi les algorithmes utilisés.
 \subsection{Implantation des coroutines}
 
 La structure de donnée des coroutine est implantée en utilisant le
-système d'objets fournit dans le système Gambit-C. Une version
-orientée objet est aussi disponible. La structure employée est
-illustrée dans la figure \ref{Corout:corout-class}. Elle contient
-toutes les informations essentielles au fonctionnement de celle-ci,
-dont entre autre sa continuation (\scheme{kont}), sa boîte de
-messagerie, une sauvegarde de l'environnement d'un sous-système de
-coroutine (\scheme{state-env}), etc...
+système d'objets fourni dans le système Gambit-C. Une version orientée
+objet est aussi disponible. La structure employée est illustrée dans
+la figure \ref{Corout:corout-class}. Elle contient toutes les
+informations essentielles au fonctionnement de celle-ci, dont entre
+autre sa continuation (\scheme{kont}), sa boîte de messagerie, une
+sauvegarde de l'environnement d'un sous-système de coroutine
+(\scheme{state-env}), etc...
 
 \begin{figure}[htb!]
   \begin{schemecode}
 (define-type corout id kont mailbox state-env
-                    prioritize? sleeping? delta-t msg-lists)
+                    sleeping? delta-t msg-lists result)
+
+(define corout-unbound-result (gensym 'corout-unbound-result))
+
 (define (new-corout id thunk)
   (let ((kont (lambda (dummy) (terminate-corout (thunk))))
         (mailbox (new-queue))
         (state-env \#f)
-        (prioritize? \#f)
         (sleeping? \#f)
         (delta-t \#f)
-        (msg-lists (empty-set)))
+        (msg-lists (empty-set))
+        (result corout-unbound-result)
    (make-corout id kont mailbox state-env 
-                prioritize? sleeping? delta-t msg-lists)))
+                sleeping? delta-t msg-lists result)))
   \end{schemecode}
   \caption{Structure de donnée représentant une coroutine}
   \label{Corout:corout-class}
@@ -3974,21 +3978,42 @@ coroutine (\scheme{state-env}), etc...
 
 La continuation primordiale d'une coroutine est sa terminaison de
 manière \og propre \fg, \ie en utilisant la fonction de terminaison de
-coroutines. C'est ce qui permet à une coroutine ayant comme corps
-uniquement \scheme{(lambda () 1)} de terminer correctement avec la
-valeur de retour 1.
+coroutines. C'est ce qui permet à une coroutine ayant comme
+\textit{thunk} uniquement \scheme{(lambda () 1)} de terminer
+correctement avec la valeur de retour 1.
 
 La variable d'état \scheme{sleeping?} permet d'indiquer à
 l'ordonnanceur de savoir si la coroutine qui vient de céder le
-contrôle a été mise en veuille ou non, afin de savoir si cette
-dernière doit retourner dans la file d'attente des coroutine prêtes.
+contrôle a été mise en veille ou non, afin de savoir si cette dernière
+doit retourner dans la file d'attente des coroutine prêtes. La figure
+\ref{Corout:state-diag} illustre les états possibles contenus dans
+\scheme{sleeping?}.
+
+Afin de pouvoir déterminer si la coroutine possède ou non une valeur
+de retour, un symbole unique connu est utilisé afin d'initialiser la
+valeur de retour d'une coroutine. Lorsque l'utilisateur demande à
+obtenir la valeur de retour d'une coroutine, le contenu du membre
+\scheme{result} est comparé à ce symbole afin de savoir si une valeur
+de retour s'y trouve ou non, tel qu'illustré dans la figure
+\ref{Corout:get-result}.
+
+\begin{figure}[htb1]
+  \begin{schemecode}
+(define (corout-get-result c)
+  (if (eq? (corout-result c) corout-unbound-result)
+      (raise 'coroutine-not-terminated-exception)
+      (corout-result c)))
+  \end{schemecode}
+  \caption{Obtention de la valeur de retour d'une coroutine}
+  \label{Corout:get-result}
+\end{figure}
 
 \subsection{Timers}
 Les timers sont aussi implantés comme des structures
 \textit{define-type}. Leurs rôle est de fournir une abstraction
 temporelle pour le déroulement du système de coroutines, qui peut être
 perçu comme une simulation. Cette classe très simple contient des
-champs afin de garder compte du temps courant de la simulation, de la
+champs afin de tenir compte du temps courant de la simulation, de la
 période du timer, etc...
 
 Les timers doivent être rafraîchis régulièrement selon une période
@@ -4000,117 +4025,115 @@ concurrente avec le système de coroutines.
 
 \subsection{Ordonnancement}
 L'ordonnancement est le coeur du système de coroutine. Cet
-ordonnancement évolue dans un environnement dynamique contenant l'état
-du système de coroutines actif. Cet environnement dynamique comprend
-les paramètres:
+ordonnancement évolue dans un environnement contenant l'état du
+système de coroutines actif. Cet environnement est conservé dans une
+structure de donnée globale et peut être accédé en appelant la
+fonction ayant le nom du paramètre. Par exemple, le paramètre
+d'environnement \scheme{current-corout} peut être accédé et modifié
+par la fonction \scheme{(current-corout [<new-value>])}.
 
 \begin{itemize}
 \item \scheme{current-corout} : Paramètre contenant la coroutine
-  actuellement exécutée. Lorsque celle-ci termine sont exécution, sa
+  actuellement exécutée. Lorsque celle-ci termine son exécution, sa
   valeur de retour doit être placée dans ce paramètre pour signaler à
   l'ordonnanceur la terminaison de la coroutine.
 \item \scheme{q} : File d'attente des coroutines prêtes à être
-  exécutée (\textit{ready queue}).
+  exécutées (\textit{ready queue}).
 \item \scheme{timer} : \textit{Timer} utilisé pour la simulation.
 \item \scheme{time-sleep-q} : File prioritaire implantée avec un arbre
-  rouge-noire qui contient les coroutines en attentes sur le temps.
-\item \scheme{root-k} : Continuation primordiale, \ie continuation de
-  du système de coroutine courant.
-\item \scheme{return-value-handler} : Fonction utilisée pour accumuler
-  les résultats de terminaison des coroutines.
-\item \scheme{return-value} : Accumulateur de valeurs de retour des
-  coroutines terminées.
+  rouge-noir qui contient les coroutines en attente sur le temps.
+\item \scheme{root-k} : Continuation primordiale, \ie continuation du
+  système de coroutine courant.
 \item \scheme{parent-state} : Sauvegarde de l'état du système de
   coroutine \emph{parent} au système actuel, pour des systèmes
   cascadés. Cet état est décrit par les paramètres présentés ici.
-\item \scheme{return-to-sched} : Continuation de l'ordonnanceur
 \item \scheme{dynamic-handlers} : Liste de patrons dynamiques utilisés
   avec la forme spéciale \scheme{recv}.
 \item \scheme{sleeping-coroutines}: Nombres de coroutines en
   attentes. Cette variable est nécessaire parce que l'accès aux files
   \scheme{q} et \scheme{time-sleep-q} n'est pas suffisante. En effet,
-  les coroutines peuvent être en attente sur des mutex ou sur eux-même
-  (reception d'un message), ainsi ce paramètre permet à l'ordonnanceur
+  les coroutines peuvent être en attente sur une sémaphore ou sur la
+  réception d'un message. Ainsi ce paramètre permet à l'ordonnanceur
   de savoir s'il existe toujours au moins une coroutine en attente.
 \end{itemize}
 
-La récursion de système fonctionne grâce à un système de sauvegarde
-de cet état dans le paramètre \scheme{parent-state} dans un sens ou
-dans le champs \scheme{state-env} d'un objet de coroutine dans
-l'autre.
+La récursion du système fonctionne grâce à un système de sauvegarde de
+cet état dans le paramètre d'environnement \scheme{parent-state} dans
+un sens ou dans le champs \scheme{state-env} d'un objet de coroutine
+dans l'autre.
 
 L'algorithme d'ordonnancement, en lui même, est très simple. Ce
 dernier est présenté intégralement dans la figure
-\ref{Corout:scheduler}. Dans un premier temps, la valeur de retour de
-la coroutine précédente, si cette dernière a terminée, est traitée ou
-dans le cas échéant, elle est automatiquement remise dans la file
-d'attente des coroutines prêtes. Par la suite, la file prioritaire de
-coroutines en attente sur le temps est regardée afin réveiller toutes
-coroutines ayant dépassé leurs délais de sommeil. Finalement, la
-première coroutine disponible dans la file de coroutines prêtes est
-choisie comme prochaine coroutine et sont travail est poursuivi par un
-appel à \scheme{resume-coroutine}. Si toutefois aucune coroutine ne se
+\ref{Corout:scheduler}. Dans un premier temps, la coroutine ayant
+suspendu son exécution est traitée. Si cette dernière a terminé son
+exécution, elle sa valeur de retour est sauvegardé, sinon elle est
+automatiquement remise dans la file d'attente des coroutines
+prêtes. Par la suite, la file prioritaire de coroutines en attente sur
+le temps est regardée afin réveiller toutes coroutines ayant dépassées
+leurs délais de sommeil. Finalement, la première coroutine disponible
+dans la file de coroutines prêtes est choisie comme prochaine
+coroutine et son travail est poursuivi par un appel à
+\scheme{resume-coroutine}. Si toutefois aucune coroutine ne se
 trouvait dans la file \scheme{q}, alors une vérification des
 coroutines en attente sur le temps est faite afin de déterminer s'il
-reste du travail à faire. S'il y a des coroutine en attente sur le
+reste du travail à faire. S'il y a des coroutines en attente sur le
 temps, alors l'ordonnanceur se met en veille pour le délais d'attente
 restant. Cette particularité se distingue nettement des simulations à
 événements discrets qui auraient plutôt incrémentés leur horloge
 interne directement de ce délais, comportement qui est indésirable
-pour un jeu vidéo. Par contre, si aucune coroutine n'est prête ou ne
-dort sur le temps, alors le système ne peut plus rien faire. S'il
-existe d'autres coroutines en veille (par exemple sur l'attente d'un
-message), alors le système est en position d'interblocage. Sinon, le
-travail est terminé et donc, l'état du système parent est rétabli et
-la continuation primordiale est invoquée.
+pour un jeu vidéo. Par contre, lorsqu'aucune coroutine n'est prête ou
+ne dort sur le temps, alors le système ne peut plus rien faire. Dans
+le cas où il existe d'autres coroutines en veille (par exemple sur
+l'attente d'un message), alors le système est en position
+d'interblocage. Sinon, le travail est terminé et donc, l'état du
+système parent est rétabli et la continuation primordiale est
+invoquée.
 
 \begin{figure}[htb!]
   \begin{schemecode}
 (define (corout-scheduler)
-    (manage-return-value)
-    (wake-up-sleepers)
-    (current-corout (dequeue! (q)))
-    (cond
-     ((corout? (current-corout))
-      (resume-coroutine)
-      (corout-scheduler))
-     ((not (time-sleep-q-empty? (time-sleep-q)))
+  (manage-return-value)
+  (wake-up-sleepers)
+  (current-corout (dequeue! (q)))
+  (cond
+   ((corout? (current-corout)) (resume-coroutine))
+
+   ((not (time-sleep-q-empty? (time-sleep-q)))
+    (begin
       (let* ((next-wake-time
-              (time-sleep-q-el-wake-time
-               (time-sleep-q-peek? (time-sleep-q)))))
+              (time-sleep-q-el-wake-time 
+                (time-sleep-q-peek? (time-sleep-q)))))
         (thread-sleep! (/ (- next-wake-time (current-sim-time))
                           (timer-time-multiplier (timer)))))
-      (current-corout \_\_\_scheduler-is-speeping\_\_\_)
-      (corout-scheduler))
-     (else
-      (let ((finish-scheduling (root-k))
-            (ret-val (return-value)))
-        (if (> (sleeping-coroutines) 0)
-            (error "Deadlock detected in coroutine system..."))
-        (restore-state (parent-state))
-        (continuation-return finish-scheduling ret-val)))))
+      (current-corout \_\_\_scheduler-is-spleeping\_\_\_)
+      (corout-scheduler)))
+      
+   (else
+    (let ((finish-scheduling (root-k))
+          (ret-val (void)))
+      (if (> (sleeping-coroutines) 0)
+          (error "Deadlock detected in coroutine system..."))
+      (restore-state (parent-state))
+      (continuation-return finish-scheduling ret-val)))))
   \end{schemecode}
   \caption{Algorithme d'ordonnancement}
   \label{Corout:scheduler}
 \end{figure}
 
 Le changement de contexte et le retour au contexte d'une coroutine
-sont fait, à la base, par les fonctions \scheme{yield} et
-\scheme{resume-coroutine}, illustrée respectivement dans les figure
+sont faits, à la base, par les fonctions \scheme{yield} et
+\scheme{resume-coroutine}, illustrées respectivement dans les figures
 \ref{Corout:yield} et \ref{Corout:resume-corout}. La figure
 \ref{Corout:yield} illustre aussi la version permettant le changement
-de contexte du système de coroutine. Ces fonctions illustre la base
-même du système de coroutine, où la réification de continuations
-permet la sauvegarde de l'état présent du calcul pour une utilisation
-future. Comme l'indique la figure \ref{Corout:resume-corout}, l'état
-de ces calculs sont poursuivis simplement par l'appel de ces
-continuations sauvegardées dans la structure de donnée des
-coroutine. Il est important de préciser que l'ordre dans lequel les
-états des systèmes de continuations (pour des systèmes récursifs) sont
-sauvegardés et restaurés est critique afin du bon fonctionnement de
-ces appels. Par exemple, lors d'un appel à \scheme{super-yield},
-l'état du système actuel doit absolument être sauvegardé avant de
-restauré l'état du système parent pour éviter d'être perdu.
+de contexte d'un système de coroutine récursif. Ces dernières
+illustrent la base même du système de coroutine, où la réification de
+continuations permet la sauvegarde de l'état présent du calcul pour
+une utilisation future. Comme l'indique la figure
+\ref{Corout:resume-corout}, l'état de ces calculs sont poursuivis
+simplement par un retour à ces continuations sauvegardées dans la
+structure de donnée des coroutine. La valeur utilisée pour le retour a
+ces continuations est complètement arbitraire et sera ignorée par
+celle-ci.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4118,17 +4141,19 @@ restauré l'état du système parent pour éviter d'être perdu.
   (continuation-capture
    (lambda (k)
      (corout-kont-set! (current-corout) k)
-     (resume-scheduling))))
+     (corout-scheduler))))
+
 (define (super-yield)
   (continuation-capture
    (lambda (k)
-     (if (parent-state)
-         (let ((state (save-state)))
-           (restore-state (parent-state))
-           (corout-state-env-set! (current-corout) state)
-           (corout-kont-set! (current-corout) k)
-           (resume-scheduling))))))
-
+     (let ((parent (parent-state)))
+       (if parent
+          (let ((state (save-state)))
+            (restore-state parent)
+            (let ((current-c (current-corout)))
+              (corout-state-env-set! current-c state)
+              (corout-kont-set! current-c k))
+            (corout-scheduler)))))))
   \end{schemecode}
   \caption{Fonctions de changement de contexte explicites}
   \label{Corout:yield}
@@ -4137,15 +4162,14 @@ restauré l'état du système parent pour éviter d'être perdu.
 \begin{figure}[htb!]
   \begin{schemecode}
 (define (resume-coroutine)
-  (continuation-capture
-   (lambda (k)
-     (return-to-sched k)
-     (let ((kontinuation (corout-kont (current-corout))))
-       (if (corout-state-env (current-corout))
-           (let ((state (save-state)))
-             (restore-state (corout-state-env (current-corout)))
-             (parent-state state)))
-       (continuation-return kontinuation 'go)))))
+  (let ((kontinuation (corout-kont (current-corout))))
+    (if (corout-state-env (current-corout))
+        (let ((state (save-state)))
+          (restore-state (corout-state-env (current-corout)))
+          (parent-state state)))
+    (if (procedure? kontinuation)
+        (kontinuation 'go)
+        (continuation-return kontinuation 'go))))
   \end{schemecode}
   \caption{Implantation du retour au contexte d'une coroutine}
   \label{Corout:resume-corout}
@@ -4158,20 +4182,21 @@ restauré l'état du système parent pour éviter d'être perdu.
 La fonctionnalité de messagerie du système de coroutines est à la base
 très simple. Comme l'illustre la figure \ref{Corout:corout-class},
 chaque objet coroutine possède une boîte de réception de
-messages. Cette boîte est implantée simplement comme une file
-d'attente, de manière similaire à la file d'attente des coroutines
-prêtes utilisée par l'ordonnanceur.
+messages. Cette boîte est implantée comme une file d'attente,
+similairement à la file d'attente des coroutines prêtes utilisée par
+l'ordonnanceur.
 
-L'envoi de message n'est qu'alors l'ajout d'un nouveau message dans
-cette file d'attente. Après cet ajout, le système vérifie si la
-coroutine réceptrice était en attente d'un message et si c'est le cas,
-alors cette dernière est remise en action dans l'ordonnanceur. La
-figure \ref{Corout:!} illustre ce procédé d'acheminement de
+L'envoi de message consiste à ajouter un nouveau message dans cette
+file d'attente. Après cet ajout, le système vérifie si la coroutine
+réceptrice était en attente d'un message et si c'est le cas, alors
+cette dernière est remise en action dans l'ordonnanceur. La figure
+\ref{Corout:!} illustre ce procédé d'acheminement de
 message. Puisqu'il est possible de spécifier une valeur d'attente
 maximale de messages, la coroutine en attente pourrait se retrouver
 dans la file d'attente sur le temps des coroutines. Afin de pouvoir
 distinguer une telle attente bornée d'un appel à \scheme{sleep-for},
-l'état \scheme{interruptible?} est utilisé.
+l'état \scheme{interruptible?} du champs \scheme{sleeping?} d'une
+coroutine est utilisé.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4190,74 +4215,107 @@ l'état \scheme{interruptible?} est utilisé.
   \label{Corout:!}
 \end{figure}
 
-La réception de messages se marie bien avec l'envoi. La coroutine
-vérifie si un message est disponible et si c'est le cas retourne le
-retourne. Sinon, alors deux cas sont possibles: soit la coroutine
-attendra jusqu'à la réception d'un nouveau message, soit cette attente
-sera bornée dans le temps. Pour une attente bornée, la coroutine est
-mise en veille pour la durée spécifiée, en spécifiant qu'elle peut
-être interrompue par la réception d'un message. Sinon, alors l'état de
-la coroutine est conservée et elle est considérée comme \og dormante
-en attente de message \fg. Si le délais d'attente est dépassé, alors
-une exception est lancée à l'utilisateur. La figure \ref{Corout:?}
-illustre l'implantation de la fonction \scheme{?}, la plus simple pour
-la réception de message. Elle permet par contre de donner une bonne
-idée du procédé employé.
+Pour la réception de messages, la coroutine actuelle vérifie si un
+message est disponible dans sa boîte de réception et, si c'est le cas,
+elle retourne le premier message enfilé dans celle-ci. Lorsqu'aucun
+message n'est disponible, la coroutine attend alors jusqu'à la
+réception d'un nouveau message avec une attente bornée dans le temps
+ou pas. Pour une attente bornée, la coroutine est mise en veille pour
+la durée spécifiée, en spécifiant qu'elle peut être interrompue par la
+réception d'un message. Sinon, alors l'état de la coroutine est
+conservée et elle est considérée comme dormante en attente de
+message. Si le délais d'attente est dépassé, alors une exception est
+lancée à l'utilisateur. La figure \ref{Corout:?}  illustre
+l'implantation de la fonction \scheme{?}, la plus simple pour la
+réception de message. Elle permet par contre de donner une bonne idée
+du procédé employé.
 
 \begin{figure}[htb!]
   \begin{schemecode}
 (define (? \#!key (timeout 'infinity))
-  (define mailbox (corout-mailbox (current-corout)))
-  (if (empty-queue? mailbox)
-      (if (number? timeout)
-          (sleep-for timeout interruptible?: \#t)
-          (continuation-capture
-           (lambda (k)
-             (let ((corout (current-corout)))
-               (corout-kont-set! corout k)
-               (corout-set-sleeping-mode! corout (sleeping-on-msg))
-               (resume-scheduling))))))
-  (if (empty-queue? mailbox)
-      (raise mailbox-timeout-exception)
-      (dequeue! mailbox)))
+  (let ((mailbox (corout-mailbox (current-corout))))
+    (if (empty-queue? mailbox)
+        (if (not (eq? timeout 'infinity))
+            (sleep-for timeout interruptible?: \#t)
+            (continuation-capture
+             (lambda (k)
+               (let ((corout (current-corout)))
+                 (corout-kont-set! corout k)
+                 (corout-set-sleeping-mode! corout (sleeping-on-msg))
+                 (corout-scheduler))))))
+    (if (empty-queue? mailbox)
+        (raise mailbox-timeout-exception)
+        (dequeue! mailbox))))
   \end{schemecode}
   \caption{Réception de messages avec la fonction \scheme{?}}
   \label{Corout:?}
 \end{figure}
 
 L'implantation de la forme spéciale de réception de messages
-\scheme{recv} est complexe et ne sera pas détaillée. Par contre, un
-exemple d'expansion de cette macro est donné dans la figure
-\ref{Corout:recv-exp}. On constate que le patron donné est vérifié en
-premier lieu. Par la suite, si aucun messages ne correspondent à ce
-patron, une vérification est faite parmi les patrons dynamique afin de
-trouver un message pouvant être utilisé. Si aucun message n'est
-trouvé, alors la coroutine est mise en veuille et recommencera la
-vérification après avoir reçu un nouveau message.
+\scheme{recv} est complexe et ne sera pas expliquée en détails. Cette
+dernière est implantée par une macro Scheme qui transforme les patrons
+de filtrage données dans une deuxième forme spéciale de filtrage par
+motifs appelée \scheme{match}. Le code généré par la macro
+\scheme{recv} tente d'effectuer le filtrage par motifs sur chacun des
+messages présents dans la boîte de réception de la coroutine
+actuelle. Ainsi, le premier messages (dans leur ordre d'arrivé) qui se
+conforme à un des patrons de filtrage sera retenu. La figure
+\ref{Corout:recv-order} illustre ce comportement.
+
+ L'expansion macro du corps de la coroutine \scheme{c1} est donnée
+ dans la figure \ref{Corout:recv-exp}. On constate que le patron donné
+ est vérifié en premier sur chaque messages. Par la suite, si aucun
+ messages ne correspondent à ce patron, une vérification est faite
+ parmi les patrons dynamiques afin de trouver un message pouvant être
+ utilisé. Si aucun message n'est trouvé, alors la coroutine est mise
+ en veille pour une seconde et pourrait être interrompue par l'arrivée
+ d'un nouveau message.
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(let ((\#:mailbox3058 (corout-mailbox (current-corout))))
-  (let \#:loop3057 ()
-    (cond ((queue-find-and-remove!
-            (lambda (\#:msg3059) (match \#:msg3059 (\#(allo ,x) \#t) (,\_ \#f)))
-            \#:mailbox3058)
-           =>
-           (lambda (\#:msg3060) (match \#:msg3060 (\#(allo ,x) x) (,\_ \#f))))
-          ((find-value (lambda (pred) (pred)) (dynamic-handlers))
-           =>
-           (lambda (res) (unbox res) (\#:loop3057)))
-          (else
-           (begin
-             (continuation-capture
-              (lambda (k)
-                (let ((corout (current-corout)))
-                  (corout-kont-set! corout k)
-                  (corout-set-sleeping-mode! corout (sleeping-on-msg))
-                  (resume-scheduling))))
-             (\#:loop3057))))))
+(let* ((c1 (new-corout 'c1 (lambda ()
+                             (let loop ()
+                               (recv
+                                (ping (display 'ping-) (loop))
+                                (pong (display 'pong-) (loop))
+                                (after 1 (display 'finished!)))))))
+       (c2 (new-corout 'c2 (lambda () (! c1 'pong))))
+       (c3 (new-corout 'c3 (lambda () (! c1 'ping)))))
+
+  (boot (list c2 c3 c1))) => \schemeresult{pong-ping-finished!}
   \end{schemecode}
-  \caption{Expansion macro de \texttt{(recv (\#(allo ,x) x))}}
+  \caption{Illustration des priorités de réception de messages avec la
+    forme spéciale \scheme{recv}}
+  \label{Corout:recv-order}
+\end{figure}
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(let loop ()
+  (let ((\#:mailbox44 (corout-mailbox (current-corout))))
+    (let \#:loop43 ()
+      (cond ((queue-find-and-remove!
+              (lambda (\#:msg45)
+                (match \#:msg45 (ping \#t) (pong \#t) (,\_ \#f)))
+              \#:mailbox44)
+             => (lambda (\#:msg46)
+                  (match \#:msg46
+                         (ping (display 'ping-) (loop))
+                         (pong (display 'pong-) (loop))
+                         (,\_ \#f))))
+            
+            ((find-value (lambda (pred) (pred)) (dynamic-handlers))
+             => (lambda (res) (unbox res) (\#:loop43)))
+            
+            (else
+             (let ((msg-q-size (queue-size \#:mailbox44)))
+               (sleep-for 1 interruptible?: \#t)
+               (if (= (queue-size \#:mailbox44) msg-q-size)
+                   (display 'finished!)
+                   (\#:loop43))))))))
+  \end{schemecode}
+  \caption{Expansion macro du corps de la coroutine \scheme{c1} de la
+    figure \ref{Corout:recv-order}}
   \label{Corout:recv-exp}
 \end{figure}
 

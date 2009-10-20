@@ -23,7 +23,7 @@ pongloop() ->
 main(_) ->
 	Pid2 = spawn(erlang_benchmark, pongloop, []),
   {_, T1_s, T1_us} = erlang:now(),
-  pingloop(Pid2, 500000),
+  pingloop(Pid2, 1000000),
   {_, T2_s, T2_us} = erlang:now(),
   io:format("(erlang recv: ~w)~n",[T2_s - T1_s + (T2_us - T1_us)/1000000]).
 

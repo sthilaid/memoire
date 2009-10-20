@@ -7,7 +7,7 @@
   (let ((c1 (new-corout
              'c1 (lambda ()
                    (do ((i 0 (+ i 1)))
-                       ((= i 500000) (kill-all! 'done))
+                       ((= i benchmark-limit) (kill-all! 'done))
                      (yield)))))
         (c2 (new-corout 'c2 (lambda () (let loop () (yield) (loop))))))
     (time-expr (boot (list c1 c2)))))
@@ -16,7 +16,7 @@
   (let* ((c1 (new-corout
               'c1 (lambda ()
                     (do ((i 0 (+ i 1)))
-                        ((= i 500000) (kill-all! 'done))
+                        ((= i benchmark-limit) (kill-all! 'done))
                       (! (current-corout) 'ping)
                       (?))))))
     (time-expr (boot (list c1)))))
@@ -29,7 +29,7 @@
          (c1 (new-corout
               'c1 (lambda ()
                     (do ((i 0 (+ i 1)))
-                        ((= i 500000) (kill-all! 'done))
+                        ((= i benchmark-limit) (kill-all! 'done))
                       (! c2 (list (current-corout) 'ping))
                       (recv (pong 'ok)))))))
     (time-expr (boot (list c1 c2)))))

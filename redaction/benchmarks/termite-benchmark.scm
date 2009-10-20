@@ -5,7 +5,7 @@
 
 (define (bench-send-receive)
   (time-expr (do ((i 0 (+ i 1)))
-                 ((= i 500000) 'ok)
+                 ((= i benchmark-limit) 'ok)
                (! (self) 'ping)
                (?))))
 
@@ -15,7 +15,7 @@
                              (let loop () (recv ((from 'ping) (! from 'pong)))
                                   (loop))))))
                (do ((i 0 (+ i 1)))
-                   ((= i 500000) 'ok)
+                   ((= i benchmark-limit) 'ok)
                  (! pong-server (list (self) 'ping))
                  (recv ('pong 'ok))))))
 

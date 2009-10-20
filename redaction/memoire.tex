@@ -3272,17 +3272,17 @@ meilleur temps d'exécution du test pour chaque opération vérifiée.
     \hline
     Opération & define-type & Meroon & OOPS & class \\
     \hline \hline
-    création d'instances directe            & 0.003 & 0.103 & 0.819 & 0.003\\
-    création d'instances avec constructeurs & ND    & ND    & ND    & 1.051\\
-    accès aux membres                       & 0.003 & 0.070 & 1.517 & 0.006\\
-    modification de membres                 & 0.004 & 0.074 & 1.926 & 0.005\\
-    \textit{dispatch} direct                & 0.097 & 0.350 & 9.709 & 0.822\\
-    \textit{dispatch} polymorphique         & 0.101 & 0.382 & 9.398 & 2.795\\
+    création d'instances directe            & 0.005 & 0.215 & 1.423 & 0.007\\
+    création d'instances avec constructeurs & ND    & ND    & ND    & 2.173\\
+    accès aux membres                       & 0.006 & 0.126 & 3.120 & 0.014\\
+    modification de membres                 & 0.008 & 0.117 & 3.961 & 0.011\\
+    \textit{dispatch} direct                & 0.185 & 0.188 & 19.210 & 1.860\\
+    \textit{dispatch} polymorphique         & 0.213 & 0.773 & 18.995 & 5.786\\
     \hline
   \end{tabular}
-  \caption{Temps en secondes nécessaire pour l'exécution de tests
-    comparatifs pour plusieurs système objets disponibles sur
-    Gambit-C}
+  \caption{Temps d'exécution (en secondes) de 1000000 itérations de
+    tests comparatifs sur les opérations du système de programmation
+    orientée objet développé avec d'autres systèmes objets existant}
   \label{OO:bench}
 \end{table}
 
@@ -3292,12 +3292,12 @@ meilleur temps d'exécution du test pour chaque opération vérifiée.
     \hline
     Opération & define-type & Meroon & OOPS & class \\
     \hline \hline
-    création d'instances directe            & 1.0 & 34.3 & 273.0 & 1.0\\
-    création d'instances avec constructeurs & ND  & ND  & ND   & 1.0\\
-    accès aux membres                       & 1.0 & 23.3 & 505.1 & 2.0\\
-    modification de membres                 & 1.0 & 18.5 & 481.5 & 1.3\\
-    \textit{dispatch} direct                & 1.0 & 3.61 & 100.09 & 8.47\\
-    \textit{dispatch} polymorphique         & 1.0 & 3.78 & 93.05 & 27.67\\
+    création d'instances directe & 1.0 & 43.0 & 284.6 & 1.4 \\
+    création d'instances avec constructeurs & ND & ND & ND & 1.0 \\
+    accès aux membres & 1.0 & 21.0 & 520.0 & 2.3 \\
+    modification de membres & 1.0 & 14.6 & 495.1 & 1.4 \\
+    \textit{dispatch} direct & 1.0 & 1.0 & 103.8 & 10.0 \\
+    \textit{dispatch} polymorphique & 1.0 & 3.6 & 89.1 & 27.1 \\
     \hline
   \end{tabular}
   \caption{Comparaison de performances relative au système le plus
@@ -3788,9 +3788,10 @@ fonctions distinctes et une forme spéciale:
   lier des variables locales à des parties du message reçu afin de les
   utiliser dans le corps du patron. Lorsque plusieurs messages reçus
   peuvent correspondre aux motifs donnés, la sélection du message se
-  fait en choisissant dans un premier temps le premier motifs
-  possible, et par la suite le premier message répondant à ce
-  motif. Ainsi l'ordre de spécification des motifs est important et
+  fait en choisissant le premier message reçu qui correspond à au
+  moins un patron. Si plusieurs patrons peuvent correspondre à ce
+  message, le premier patron (selon l'ordre de définition) sera
+  utilisé. Ainsi l'ordre de spécification des motifs est important et
   significatif.
 \end{itemize}
 
@@ -3806,12 +3807,16 @@ d'une virgule (\textit{unquote}), le symbole est \emph{lié} à la
 valeur trouvée à cet endroit du motif dans le message reçu. Les
 formats de motifs reconnus sont les symboles, les mots clés, les
 caractères, les valeurs booléennes, les nombres, les chaînes de
-caractères, les listes et les vecteurs. Aussi, un patron spécial
-permettant d'effectuer des attentes bornées dans le temps est
-disponible sous la forme \scheme{(after <timeout> <body> ...)}. Ce patron
-spécial doit être spécifié \emph{en dernier}, s'il est présent. La
-figure \ref{Corout:recv-pat} illustre plusieurs motifs différents qui
-peuvent être utilisés.
+caractères, les listes et les vecteurs. Aussi, il est possible
+d'ajouter des gardes (filtrage conditionnel au prédicat) en incluant
+une liste de la forme \scheme{(where <pred-expr>)} après le motif de
+filtrage. Le prédicat utilisé est simplement une expression
+Scheme. Finalement, un patron spécial permettant d'effectuer des
+attentes bornées dans le temps est disponible sous la forme
+\scheme{(after <timeout> <body> ...)}. Ce patron spécial doit être
+spécifié \emph{en dernier}, s'il est présent. La figure
+\ref{Corout:recv-pat} illustre plusieurs motifs différents qui peuvent
+être utilisés.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -3820,7 +3825,10 @@ peuvent être utilisés.
       (1011                       '11-or-1011?)    ; number match
       ((a ,b c)                   (string b \#\textbackslash k)) ; list match
       (\#(a b ,c)                  c)               ; vector match
-      ((tata 1 \#(toto ,x) "titi") (+ x 1))         ; complex match
+      (,any-char                                   ; guarded match
+       (where (char? any-char))   'got-a-char)
+      ((tata 1 \#(toto ,x) "titi")                  ; complex match
+       (where (number? x))        (+ x 1))
       (,anything                  anything)        ; can match anything
       (after 2                    'timeout!))      ; timeout
   \end{schemecode}
@@ -3842,23 +3850,17 @@ est donc possible de factoriser des patrons communs et de les
 appliquer à tous les appels de la forme spéciale de réception de
 messages par filtrage de motifs.
 
-Le filtrage par patron présenté diffère de ceux disponibles dans les
-système Termite~\cite{Termite} ou Erlang~\cite{Erlang} par le fait que
-la sélection du message reçu se fait prioritairement sur le premier
-patron possédant un message valide, contrairement à ces deux autres
-systèmes où la sélection se fait plutôt sur le premier message reçu
-correspondant à un filtre existant. Il en résulte que l'ordre dans
-lequel sont spécifiés les motifs de filtrage donne une priorité
-décroissante a ceux-ci. Il en résulte que certains messages peuvent
-ainsi être considéré prioritairement à leurs prédécesseurs. Ce
-mécanisme est fort utile pour l'implantation d'un jeu vidéo où un
-changement d'état du jeu nécessiter des actions immédiates, comme la
-mort d'un joueur, par exemple. Toutefois, puisque le réveil de
-coroutines en attente sur le temps est indéterministe, il est possible
-que l'arrivée de messages prioritaires soit retardée. Un tel cas de
-figure résulterait en une exécution différente du système et donc, il
-en résulte que la réception de messages est indirectement
-indéterministe aussi.
+Le filtrage par patron présenté se conforme à la sémantique définie
+par les formes équivalente dans les système Termite~\cite{Termite} et
+Erlang~\cite{Erlang} par le fait que la sélection du message reçu se
+fait sur le premier message reçu qui correspond à au moins un patron
+de filtrage. Ce choix semble raisonnable puisqu'il en résulte que la
+sélection de message est complètement déterministe. En effet, la
+réception de nouveaux messages (qui est indéterministe dû à
+l'incertitude qu'apporte la fonction \scheme{sleep-for}) n'influence
+pas le choix du message. Si un message déjà reçu correspond à un
+patron il sera choisi peu importe l'arrivée d'un nouveau message. Il
+en découle que le système de messagerie est robuste et fiable.
 
 Aussi, un mécanisme de liste de diffusion a été inclus. Ce mécanisme
 simple permet d'enregistrer des coroutine dans une liste de diffusion
@@ -4269,7 +4271,16 @@ conforme à un des patrons de filtrage sera retenu. La figure
  parmi les patrons dynamiques afin de trouver un message pouvant être
  utilisé. Si aucun message n'est trouvé, alors la coroutine est mise
  en veille pour une seconde et pourrait être interrompue par l'arrivée
- d'un nouveau message.
+ d'un nouveau message. Il est intéressant de noter que lorsqu'un
+ message est trouvé dans la boîte aux lettres d'une coroutine, un
+ deuxième appel à la macro \scheme{match} est fait afin de pouvoir
+ exécuter le corps du patron dans un environnement effectuant les
+ liaisons déclarées dans le motif du patron. Il en résulte ainsi une
+ légère perte de performances, mais l'optimisation de cette double
+ recherche du motif est complexe~\cite{Marc-Erlang}. Ainsi, puisque
+ l'utilisation de cette forme spéciale a été mise de côté vers la fin
+ de la recherche effectuée pour ce mémoire, cette optimisation a été
+ omise pour des fins de simplicité.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4320,6 +4331,18 @@ conforme à un des patrons de filtrage sera retenu. La figure
 \end{figure}
 
 \section{Performances}
+Afin d'obtenir une idée des performances du système développé, ce
+dernier est comparé à d'autres systèmes similaires sur les fonctions
+critiques de ces derniers. La comparaison est effectuée selon le temps
+(en secondes) pour faire un million de ces opérations critiques. Les
+opérations critiques choisies sont le changement de contexte
+(\scheme{yield}), l'envoi et la réception de messages simple
+(\scheme{!} et \scheme{?}) ainsi que l'envoi et la réception de
+messages avec filtrage (\scheme{!} et \scheme{recv}). Le tableau
+\ref{Corout:bench} présente ces résultats. Le tableau
+\ref{Corout:bench-rel} présente ces mêmes résultat de manière relative
+dans le but de mieux illustrer les différences de performances.
+
 \label{Corout:bench-section}
 
 \begin{table}
@@ -4328,32 +4351,78 @@ conforme à un des patrons de filtrage sera retenu. La figure
     \hline
     Opération & Système développé & Gambit-C & Termite & Erlang\\
     \hline \hline
-    Changement de contexte                & 2.217 & 0.333 & ND    &    ND\\
-    Envoi et réception simple de messages & 0.855 & 1.060 & 3.128 &    ND\\
-    Réception de message avec filtrage    & 5.098 & ND    & 2.167 & 1.288\\
+    Changement de contexte                & 4.648 & 0.737 & ND    &    ND\\
+    Envoi et réception simple de messages & 1.798 & 2.374 & 6.992 &    ND\\
+    Réception de message avec filtrage    & 5.098 & ND    & 4.877 & 2.575\\
     \hline
   \end{tabular}
-  \caption{Comparaison de performances des opérations de bases du
-    système de coroutine développé avec des implantations
-    concurentes.}
+  \caption{Temps d'exécution (en secondes) de 1000000 d'itérations de
+    tests comparatifs entre le système développé et d'autres systèmes
+    similaires}
   \label{Corout:bench}
 \end{table}
 
+\begin{table}
+  \center
+  \begin{tabular}{cccccc}
+    \hline
+    Opération & Système développé & Gambit-C & Termite & Erlang\\
+    \hline \hline
+    Changement de contexte                & 6.3 & 1.0 & ND  & ND \\
+    Envoi et réception simple de messages & 1.0 & 1.3 & 3.9 & ND \\
+    Réception de message avec filtrage    & 2.0 & ND  & 1.9 & 1.0 \\
+    \hline
+  \end{tabular}
+  \caption{Comparaison de performances relative au système le plus
+    rapide (1.0) en fonction des données de la table
+    \ref{Corout:bench}}
+  \label{Corout:bench-rel}
+\end{table}
+
+La comparaison du temps de changement de contexte est uniquement
+effectué avec Gambit-C puisque Termite et Erlang ne sont pas des
+systèmes de coroutines, mais plutôt des systèmes de programmation
+concurrente. On constate que le changement de contexte est environ six
+fois plus lent que celui effectué par Gambit-C. Puisque le code de
+\scheme{yield} est déjà très épuré, ce test comparatif indique qu'il
+s'agit plutôt de l'ordonnanceur de notre système est plus lent que
+celui de Gambit-C. 
+
+En ce qui concerne l'envoi et la réception de messages simples, notre
+système est comparé aux la fonctions
+\scheme{thread-send}/\scheme{thread-receive} de Gambit-C et aux
+fonctions \scheme{!} et \scheme{?} de Termite. On constate que notre
+système offre des meilleurs performances pour ce test
+comparatif. L'écart au système Gambit-C se justifie probablement par
+le fait que l'utilisation d'outils de synchronisation n'est pas
+nécessaire dans notre système. Termite offre quant-à-lui des
+performances plutôt surprenantes pour ce test comparatif puisqu'il est
+non seulement quatre fois plus lent que notre système, mais il est
+aussi presque trois fois plus lent que lui-même pour la réception de
+messages en utilisant du filtrage par motifs.
+
+Finalement, la comparaison de filtrage par motif entre notre système,
+Termite et Erlang indique que notre système et Termite offrent des
+performances équivalentes, soient environ deux fois plus lentes que
+celles offertes par Erlang. Ce résultat n'est pas très surprenant
+puisque Erlang est réputé comme étant très efficace. Toutefois,
+plusieurs optimisations sur la réception de message par filtrage
+pourraient être effectuées afin d'améliorer cette performance.
 
 \section{Conclusion}
 
-Ainsi, un système de coroutine a été implanté de manière à pouvoir
-fournir aux programmeurs de jeux vidéo une interface à un système
-permettant de pouvoir facilement exprimer des problèmes de changements
-de contextes (notamment dans le cadre de jeux multi-joueurs), sans
-avoir à se soucier de synchroniser les coroutines dans le but d'éviter
-les problèmes de sections critiques.
+Ainsi, un système de coroutine a été implanté qui fournit aux
+programmeurs de jeux vidéo une interface à un système permettant de
+facilement exprimer des problèmes de changements de contextes
+(notamment dans le cadre de jeux multi-joueurs), sans avoir à se
+soucier de synchroniser les coroutines pour éviter les problèmes de
+sections critiques.
 
 Ce système offre ainsi une interface similaire à celle offerte par le
-système Termite~\cite{Termite_paper}, orientée sur un calcul en série
-au lieu de distribué. Il est ainsi possible de concevoir des
-coroutines comme des entités évoluant dans un même environnement de
-manière successive (comme s'est souvent le cas dans un jeu vidéo).
+système Termite~\cite{Termite_paper}, orientée sur un calcul sériel au
+lieu de distribué. Il est ainsi possible de concevoir des coroutines
+comme des entités évoluant dans un même environnement de manière
+successive (comme c'est souvent le cas dans un jeu vidéo).
 
 Le système a également été généralisé de manière à permettre une
 utilisation en cascade de systèmes de coroutines. Ainsi, l'utilisation
@@ -4364,15 +4433,16 @@ L'utilisation de synchronisation de coroutines par envoi et réception
 de messages est très naturelle et donc facile à utiliser. Lorsqu'elle
 est combinée avec des listes de diffusion de message, on obtient un
 style de programmation se rapprochant beaucoup des système de
-programmation réactive~\cite{FRP}.
+programmation réactive~\cite{FRP}. Cette approche est très
+intéressante pour les jeux vidéo car elle intègre le concept de flot
+temporel par l'entremise de signaux envoyés entre les
+entités~\cite{yampa}.
 
 Il serait maintenant intéressant d'ajouter un mécanisme de profilage
 de coroutine au système développé. Un tel mécanisme permettrait
 d'avoir, entre autre, une meilleur idée du temps moyen que prend une
 coroutine donnée avant de céder le contrôle dans le but de mieux
 balancer ou d'optimiser ces dernières.
-
-\todo{Ajouter en annexe le code?}
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

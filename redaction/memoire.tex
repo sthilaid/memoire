@@ -5913,10 +5913,10 @@ Dépistage d'erreurs          & bas niveau & bas niveau & haut niveau\\
 \section{Jeux en \lisp}
 
 Malgré la domination du langage C++ dans l'industrie du jeu vidéo,
-certains jeux ont déjà été reconnu pour utiliser Scheme à différents
-degrés. Ceux-ci sont mis en lumière dans cette section afin de
-permettre de comparer l'expérience acquise par ces développeurs à
-celle acquise pour la rédaction de ce mémoire.
+certains jeux ont déjà été reconnus pour utiliser Lisp ou Scheme à
+différents degrés dans leur développement. Ceux-ci sont mis en lumière
+dans cette section afin de permettre de comparer l'expérience acquise
+par ces développeurs à celle acquise dans notre travail.
 
 
 \subsection{Naughty Dog}
@@ -5924,27 +5924,33 @@ celle acquise pour la rédaction de ce mémoire.
 %% http://www.naughtydog.com/site/post/presentations_from_game_developers_conference_2008/
 
 La compagnie Naughty Dog~\cite{ND} est bien connue pour utiliser des
-dialectes de \lisp dans le développement de jeux vidéo. En effet, cette
-compagnie a écrits plusieurs jeux sur la \textit{PlayStation 2} en
-utilisant le compilateur \textit{GOAL}(\textit{Game Oriented Assembly
-  Lisp}), un système maison uniquement compilé vers du code machine
-pour le \textit{PlayStation 2} qui comprenait entre autre un système
-d'objet. Ce dernier fut utilisé pour développer entièrement de
+dialectes de \lisp dans le développement de jeux vidéo. En effet,
+cette compagnie a écrits plusieurs jeux sur la \textit{PlayStation 2}
+en utilisant le compilateur \textit{GOAL}/\textit{Game Oriented
+  Assembly Lisp}, un système maison uniquement compilé vers du code
+machine pour le \textit{PlayStation 2} qui comprenait entre autre un
+système objet. Ce dernier fut utilisé pour développer entièrement de
 nombreux jeux sur la console dont les jeux \textit{Crash Bandicoot} et
 \textit{Jak and Dexter}.
 
 Scott Shumaker, programmeur chef chez Naughty Dog, a commenté leur
-utilisation de GOAL dans un article sur le site
-Gamasutra~\cite{ND_GOAL}. Dans ce dernier, il mentionne que le
-développement de leur propre compilateur de \lisp leur a permis
-d'utiliser plusieurs techniques qui n'auraient pas pu être utilisées
-avec d'autres langages. Entre autre, leur système, malgré le fait
-qu'il ne comprenait pas d'interpète, permettait la compilation de code
-et le chargement de celui-ci directement dans le jeu qui était exécuté
-sur une console \textit{PlayStation 2} donnant accès ainsi à de la
-programmation très dynamique basée sur du prototypage. Il mentionne
-également que GOAL comprenait un système de coroutine. Un exemple de
-code simplifié pour GOAL est donné dans la figure \ref{Rev:goal}.
+utilisation de GOAL dans un article sur le site web consacré au
+développement de jeux vidéo Gamasutra~\cite{ND_GOAL}. Dans ce dernier,
+il mentionne que le développement de leur propre compilateur de \lisp
+leur a permis d'utiliser plusieurs techniques qui n'auraient pas pu
+être utilisées avec d'autres langages. Entre autre, leur système,
+malgré le fait qu'il ne comprenait pas d'interpète, permettait la
+compilation de code et le chargement de celui-ci directement dans le
+jeu qui était exécuté sur une console \textit{PlayStation 2} donnant
+accès ainsi à de la programmation très dynamique basée sur du
+prototypage. Il mentionne également que GOAL comprenait un système de
+coroutine. Un exemple de code simplifié pour GOAL est donné dans la
+figure \ref{Rev:goal}. Le code présenté a été simplifié dans le but
+d'illustrer l'utilisation des coroutines de ce jeu. On constate que le
+code conserve l'état de la variable \scheme{ii} qui se trouve a être,
+dans cet exemple, un compteur d'images rendues pour une animation
+nommée \scheme{idle}. L'utilisation de coroutine leur a permis de
+facilement conserver l'état du calcul en cours.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5976,14 +5982,19 @@ ainsi des performances qu'offrent C++ pour les zones critiques du jeu
 et utilisent un langage de plus haut niveau pour la description des
 données et utilisent un schéma de compilation dynamique similaire à
 celui utilisé par GOAL. La figure \ref{Rev:Drake} illustre la
-constructions de données utilisées dans ce jeu.
+constructions de données utilisées dans ce jeu. Cet exemple de code
+illustre bien le type d'utilisation faite du langage Scheme, \ie que
+Scheme est utilisé non seulement comme langage de script, mais aussi
+pour la définition des données du langage.
 
 \begin{figure}[htb!]
   \begin{schemecode}
 (deftype vec4 (:align 16)
   ((x float) (y float)
    (z float) (w float :default 0)))
+
 (deftype quaternion (:parent vec4) ())
+
 (define (axis-angle->quat axis angle)
  (let ((sin-angle/2 (sin (* 0.5 angle))))
   (new quaternion
@@ -6000,11 +6011,12 @@ constructions de données utilisées dans ce jeu.
 
 \subsection{QuantZ}
 Récemment, le jeu QuantZ~\cite{Quantz} fut développé presque
-exclusivement en utilisant le langage Scheme. Ce dernier constitue un
-jeu de puzzle où le but est d'agencer des billes de même couleurs sur
-un cube. 
-
-\todo{Trouver comment dire que j'ai travaille sur le jeu... O\_O}
+exclusivement en utilisant le langage Scheme et le compilateur
+Gambit-C. Ce dernier constitue un jeu de puzzle 3D similaire à Tetris
+où le but est d'agencer des billes de même couleurs sur un cube. Les
+informations relatives au développement de ce jeu ont été acquise par
+l'auteur qui est toujours employé par le studio de développement de
+jeux vidéo \textit{Gamerizon inc}.
 
 L'utilisation de Scheme dans QuantZ a apporté plusieurs avantages
 technologiques. En effet, le dynamisme du langage a su profiter aux
@@ -6012,35 +6024,44 @@ développeurs en leur permettant de pouvoir débugger le jeu lors de son
 exécution résultant permettant ainsi la résolution rapides de
 problèmes.
 
-Aussi, la syntaxe sous formes de S expressions de a été utilisée a
-profit en créant un système d'analyse de code permettant de pouvoir
-extraire toutes les chaînes de caractères présente de le jeu afin de
-pouvoir créer facilement des outils d'internationalisations. Ces
-outils permettent entre autre la création automatiques de fontes
-optimisées par langues, qui contiennent uniquement les caractères
-utilisées dans celles-ci.
+Aussi, la syntaxe sous formes de S-expressions des programmes Scheme a
+été utilisée à profit en créant un système d'analyse de code
+permettant d'extraire toutes les chaînes de caractères présente dans
+le jeu afin de pouvoir créer facilement des outils
+d'internationalisation. Ces outils permettent entre autre la création
+automatique de fontes optimisées par langues, qui contiennent
+uniquement les caractères utilisées dans celles-ci. L'utilisation de
+la fonction Scheme \scheme{read} combinée à la récursivité du langage
+ont facilement permis d'écrire un analyseur de code. Cette tâche
+aurait été beaucoup plus complexe dans un autre langage de
+programmation.
 
 Les fermetures disponible en Scheme ont été utilisées comme base d'un
 système d'interface graphique complet permettant la création de
 fenêtres, de boutons, etc... En utilisant ces fermetures pour
 conserver l'état de ces entités, on obtient ainsi un résultat
-similaire l'utilisation d'un système de programmation orienté objet,
+similaire à l'utilisation d'un système de programmation orienté objet,
 où l'état est conservé dans ces fermetures, mais ne fournissant pas de
 fonctions génériques.
 
-Afin d'éviter d'avoir des problèmes de pauses dues à la gestion de
-mémoire automatique, plusieurs techniques ont été utilisées afin de
-cacher des données statiques au gestionnaire automatique de
-mémoire. En effet, l'utilisation de la sérialisation de données
-disponible dans Gambit-C a été utilisée afin de transformer de grosses
-structures de données statiques lors de l'exécution du jeu et ainsi
-éviter que le ramasse miettes n'aies à la parcourir pour chaque images
-du jeu générées.
+Afin d'éviter d'avoir des problèmes de pauses aléatoires dues à la
+gestion de mémoire automatique, plusieurs techniques ont été utilisées
+dans le développement de ce jeu. Dans un premier temps, le
+gestionnaire de mémoire est appelé explicitement avant le rendu de
+chaque image afin d'éviter d'accumuler trop de données mortes dans la
+mémoire et causer ainsi de longues pauses durant l'exécution du
+jeu. Aussi, la sérialisation de données disponible dans Gambit-C a été
+utilisée afin de transformer de grosses structures de données
+statiques (préférences, scores de joueurs, ...) afin que celles-ci ne
+soient pas traversée par le gestionnaire avant le rendu de chaque
+image du jeu.
 
 L'état du jeu a été implanté en utilisant un mécanisme de
 programmation fonctionnelle réactive basée sur Scheme permettant
 l'écriture élégante de niveaux grâce à la propagation de signaux
-correspondant à l'état du jeu.
+correspondant à l'état du jeu. Aussi, le moteur de physique du jeu,
+écrit en C, a pu être intégrer sans problèmes au reste du moteur de
+QuantZ en utilisant le FFI de Gambit-C.
 
 Ainsi, le jeu QuantZ représente un exemple concret d'un jeu commercial
 ayant utilisé Scheme comme langage principal de développement. Leur
@@ -6052,14 +6073,13 @@ premier ordre et du dynamisme du système Gambit-C.
 Ainsi, plusieurs langages sont utilisés dans l'industrie du jeu vidéo
 dont, notamment les langages Lua et C++. Après une comparaison au
 langage Scheme, on constate que ces derniers répondent à des besoins
-précis présents dans les jeux vidéo. Lua propose un dynamisme
-permettant un développement dynamique tandis que C++ permet d'obtenir
-de très bonnes performances au coût d'avoir moins de puissance
-d'abstractions. Le choix du langage le plus approprié pour le
-développement d'un jeu devrait donc être fait en prenant en
-considération le matériel utilisé afin d'assurer que de pouvoir
-utiliser le plus de puissance expressive que possible, sans toutefois
-avoir un coût relié à ces abstractions trop élevé.
+précis présents dans les jeux vidéo. Lua propose un développement plus
+dynamique tandis que C++ permet d'obtenir de très bonnes performances
+au coût d'avoir moins de puissance d'abstractions. Le choix du langage
+le plus approprié pour le développement d'un jeu devrait donc être
+fait en prenant en considération le matériel utilisé afin d'assurer
+que de pouvoir utiliser le plus de puissance expressive que possible,
+sans toutefois avoir un coût relié à ces abstractions trop élevé.
 
 Aussi, \lisp et Scheme ont déjà été utilisés dans l'industrie du jeu
 vidéo pour développer des jeux de grandes qualités tels \textit{Jak
@@ -6067,11 +6087,11 @@ vidéo pour développer des jeux de grandes qualités tels \textit{Jak
 \textit{QuantZ}. L'expérience acquise par les développeurs de ces jeux
 est très positive. On constate de manière unanime ces langages leurs
 ont fourni un environnement de développement dynamique et
-l'extensibilité du langage a jouer à l'avantage de ceux-ci. On
-constate ainsi, que malgré la faible adoption de Scheme pour
-l'écriture de jeux vidéo commerciaux, les équipes l'ayant utilisé
-semblent l'avoir beaucoup apprécier et surtout, l'utilise toujours
-dans le développement de leurs jeux.
+l'extensibilité du langage a jouer à l'avantage de ceux-ci. Ainsi,
+malgré la faible adoption de Scheme pour l'écriture de jeux vidéo
+commerciaux par les compagnies de l'industrie, les équipes l'ayant
+utilisé semblent l'avoir beaucoup apprécier et surtout, l'utilisent
+toujours dans le développement de leurs jeux.
 
 
 
@@ -6085,29 +6105,30 @@ l'utilisation d'un langage de programmation fonctionnelle et dynamique
 tel que Scheme pour le développement de jeux vidéo.
 
 L'expressivité du langage Scheme, notamment grâce aux fonctions de
-premier ordre et aux macros, a permis de pouvoir développer un système
-de programmation orientée objet et l'intégrer directement au
-langage. Aussi, la réification de continuations a rendu possible le
-développement d'un système de coroutines élaboré.  L'utilisation de
-ces systèmes dans la programmation de jeu vidéo fut très bénéfique
-quant à l'amélioration du code produit grâce à l'introduction d'une
-bonne modularité fournie par les fonctions génériques du système
-objets et une grande simplicité pour l'implantation de parties
-multi-joueurs grâce à l'utilisation de coroutines pour encapsuler les
-parties se déroulant en parallèle. Le coût de développement de tels
-modules, en utilisant des langages donnant accès à moins de puissance
-d'abstraction, aurait certainement rendu le développement de ceux-ci
-impossible et donc, Scheme s'est révélé un langage très puissant pour
-le développement de ces outils indispensables.
+première classes et aux macros procédurales, a permis de pouvoir
+développer un système de programmation orientée objet et l'intégrer
+directement au langage. Aussi, la réification de continuations a rendu
+possible le développement d'un système de coroutines élaboré.
+L'utilisation de ces systèmes dans la programmation de jeu vidéo fut
+très bénéfique quant à l'amélioration du code produit grâce à
+l'introduction d'une bonne modularité fournie par les fonctions
+génériques du système objets et une grande simplicité pour
+l'implantation de parties multi-joueurs grâce à l'utilisation de
+coroutines pour encapsuler les parties se déroulant en parallèle. Le
+coût de développement de tels modules, en utilisant des langages
+donnant accès à moins de puissance d'abstraction, aurait certainement
+rendu le développement de ceux-ci impossible et donc, Scheme s'est
+révélé un langage très puissant pour le développement de ces outils
+indispensables.
 
 Le dynamisme du langage a également jouer un rôle implicite très
 important pour le développement de ces jeux. En effet, la présence
-d'un déboggeur très dynamique a apporté une grande flexibilité au
-développement et permis de développer efficacement ces deux jeux. En
-effet, malgré le fait que les erreurs de programmation sont signalées
-durant l'exécution du jeu, la résolution de celles-ci sont font très
-rapidement grâce à la possibilité d'introspection de l'état du
-programme et d'évaluation dynamique de code.
+d'un déboggeur très dynamique et efficace a apporté une grande
+flexibilité au développement et permis de développer efficacement ces
+deux jeux. En effet, malgré le fait que les erreurs de programmation
+sont signalées durant l'exécution du jeu, la résolution de celles-ci
+sont font très rapidement grâce à la possibilité d'introspection de
+l'état du programme et d'évaluation dynamique de code.
 
 Aussi, le langage Scheme a permis de facilement pouvoir expérimenter
 sur le contrôle de flot des jeux en permettant de développer
@@ -6121,18 +6142,18 @@ performances pour ceux-ci. Ainsi, une difficulté d'utiliser un langage
 comme Scheme face à la programmation de jeux vidéo réside entre
 trouver le bon équilibre entre le niveau d'abstraction et la
 spécification de code (optimisations). Bien sûr cette balance varie
-grandement en fonction du matériel sur lequel le jeu sera porté. S'il
-s'agit d'une plateforme au matériel très limité, alors le coût
-d'abstraction pourrait peut-être s'avérer trop grand. Dans un tel cas,
-l'utilisation de langages de plus bas niveau, comme C++, semble plus
-appropriée afin de bâtir le moteur du jeu, mais Scheme pourrait alors
-très bien être utilisé comme langage de script afin de permettre de
-développer dynamiquement le \textit{gameplay} du jeu. Par contre, s'il
-s'agit de plateforme performantes, comme c'est le cas pour les jeux
-développés dans le cadre de ce mémoire, alors la possibilité de
-modulariser le code est beaucoup plus grande et les performances
-deviennent moins critiques, face à la réutilisabilité potentielle du
-code écrit. Scheme devient alors un candidat idéal.
+grandement en fonction de l'architecture du matériel sur lequel le jeu
+sera déployé. S'il s'agit d'une plateforme au matériel très limité,
+alors le coût d'abstraction pourrait peut-être s'avérer trop
+grand. Dans un tel cas, l'utilisation de langages de plus bas niveau,
+comme C++, semble plus appropriée afin de bâtir le moteur du jeu, mais
+Scheme pourrait alors être utilisé comme langage de script afin de
+permettre de développer dynamiquement le \textit{gameplay} du jeu. Par
+contre, s'il s'agit de plateforme performantes, comme c'est le cas
+pour les jeux développés dans le cadre de ce mémoire, alors la
+possibilité de modulariser le code est beaucoup plus grande et les
+performances deviennent moins critiques, face à la réutilisabilité
+potentielle du code écrit. Scheme devient alors un candidat idéal.
 
 Un problème potentiel qui n'a pas été adressé dans ce mémoire est
 relié à l'allocation et la gestion de mémoire automatique utilisée par
@@ -6140,12 +6161,11 @@ le langage Scheme. En effet, puisque Scheme est un langage
 fonctionnel, ce dernier effectue généralement beaucoup d'allocations
 mémoire. Ainsi, il est possible que sur des systèmes où le coût
 d'allocation mémoire est élevé, l'utilisation d'un tel langage
-devienne plus grand. De même, la présence du gestionnaire automatique
-de mémoire pourrait potentiellement engendrer des pauses du jeu qui
-sont très indésirables, si les pause dues à la gestion automatiques
-deviennent trop grandes. Ces phénomènes n'ont par contre pas été
-observés dans les jeux développés pour ce mémoire, puisqu'ils
-demeuraient trop simples.
+devienne trop coûteux. De même, la présence du gestionnaire
+automatique de mémoire pourrait potentiellement engendrer des pauses
+de durées aléatoires du jeu qui sont très indésirables. Ces phénomènes
+n'ont par contre pas été observés dans les jeux développés pour ce
+mémoire, puisqu'ils demeuraient trop simples.
 
 Ainsi, malgré le coût que peut apporter l'utilisation d'abstractions,
 nous croyons que le bénéfice résultant est bien supérieur à ce

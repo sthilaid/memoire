@@ -5407,6 +5407,105 @@ et concise une animation cyclique.
   \label{Exp:cyclic-anim-def}
 \end{figure}
 
+En plus de considérer les objets du jeu comme des machines à états,
+les niveaux eux-mêmes peuvent aussi être considérés comme tel. En
+effet, on peut subdiviser le flot d'un niveau en 6 états différents:
+\scheme{pre-game}, \scheme{start}, \scheme{in-game}, \scheme{paused},
+\scheme{game-over} et \scheme{level-cleared}.  La figure
+\ref{Exp:lr-state-diag} illustre les transitions possibles entre ces
+derniers. Chaque états sont justifiés par un comportement différent du
+niveau, soit par une gestion différente des entrées du joueurs comme
+c'est le cas pour l'état \scheme{paused} ou encore par un rendu
+graphique différent du niveau.
+
+\begin{figure}[htb!]
+  \center
+  \includegraphics[scale=0.7]{lr-state-diag}
+  \caption{Diagramme d'états d'un niveau de \lr}
+  \label{Exp:lr-state-diag}
+\end{figure}
+
+Afin d'implémenter ce système de machines à états, un petit langage
+spécifique au domaine a été développé. Ce dernier tire avantage du
+système de programmation orienté objet utilisé, notamment de la
+discrimination de méthodes sur des valeurs afin de valider les
+transitions effectuées. Sans trop entrer dans les détails, il ne
+suffit que de sous-classer la classe \scheme{state-machine} par les
+objets de niveaux et d'ensuite effectuer la déclaration qui se fait
+selon l'interface
+
+\begin{schemecode}
+(define-state-machine <class-name> <init-state> <init-action> <state-list>
+                      ((<from-state> <to-state> <transition-action>) ...))
+\end{schemecode}
+
+\noindent
+où les états sont normalement décrits par des symboles. Les actions
+peuvent être n'importe quelles expression Scheme. Aussi, lors de la
+description des transitions, il est possible d'utiliser le symbole
+\scheme{*} afin de représenter tous les états possibles ou sinon
+d'utiliser une sous-liste contenant les états de provenance ou
+d'arrivé pour cette transition. La figure
+\ref{Exp:lr-lvl-state-machine}.
+
+\begin{figure}[htb1]
+  \begin{schemecode}
+(define-state-machine level
+  'pre-game pre-game-transition
+  (pre-game start in-game game-over level-cleared paused)
+  ((pre-game start         level-start-transition)
+   (start    in-game       level-in-game-transition)
+   (in-game  game-over     level-game-over-transition)
+   (in-game  level-cleared level-cleared-transition)
+   (in-game  paused        level-paused-transition)
+   (paused   in-game       level-paused-transition)
+   (* * (lambda (self) (println "unknown transtion into " to))))
+  create-new-class?: \#f)
+  \end{schemecode}
+  \caption{Implantation de la machine à états pour les niveaux dans \lr}
+  \label{Exp:lr-lvl-state-machine}
+\end{figure}
+
+Les actions utilisées lors des transitions servent principalement à
+initialiser le nouvel état du niveau. Les fonctions de rendu et de
+gestion des entrées du joueur s'occupent elles-mêmes de faire la
+distinction entre ces états. Par exemple, la fonction
+\scheme{level-start-transition} qui sert à faire le compte à rebours
+du début de la partie s'occupe d'ajouter un nouvel objet représentant
+une chaîne de caractères qui contient le compte à rebours. Ce dernier
+utilise la récursivité afin de se recréé avec le rebours mis-à-jour à
+tous les 60 images rendues.
+
+\begin{figure}[htb1]
+  \begin{schemecode}
+(define (level-start-transition lvl)
+  (define (make-counter-label counter)
+    (if (>= counter 0)
+        (let ((lab
+               (new label
+                    'start-counter
+                    (if (zero? counter) "Start!" (number->string counter))
+                    24 18 'green
+                    (list (lifetime 60
+                                    (lambda (l lvl)
+                                      (level-delete! l lvl)
+                                      (make-counter-label (- counter 1))))))))
+          (gui-centered?-set! lab \#t)
+          (gui-scale-ratio-set! lab 4.)
+          (level-add! lab lvl))
+        (transition lvl 'in-game)))
+  (make-counter-label 3))
+  \end{schemecode}
+  \caption{Action de transition vers l'état \scheme{start} d'un niveau
+    du jeu \lr}
+  \label{Exp:lr-start-transition}
+\end{figure}
+
+Ainsi, les macros et les fonctions d'ordre supérieures de Scheme ont
+permis de pouvoir exprimer de manière élégante et modulaire les
+concepts reliés à la déclarations de machines à états pour les entités
+ainsi que les niveau du jeu \textit{Lode Runner}.
+
 \subsection{Détection et résolution de collisions}
 
 Une nette amélioration apportée au jeu, en comparaison celui

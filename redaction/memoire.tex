@@ -1,4 +1,4 @@
-\documentclass[12pt,oneside,letterpaper,francais]{book}
+\documentclass[12pt,twoside,letterpaper,francais]{book}
 
 %% \documentclass[12pt]{report}
 
@@ -10,6 +10,7 @@
 \usepackage{verbatim}
 \usepackage{subfig}
 \usepackage{amssymb}
+\usepackage{placeins}
 
 \usepackage{udem_these_fr}
 
@@ -197,6 +198,8 @@ Il semble donc qu'une utilisation judicieuse de ce système a le
 potentiel de faire bénéficier des projets aussi complexes que le sont
 les productions de jeux vidéo.
 
+
+\FloatBarrier
 \section{Problématique}
 Ce mémoire de maîtrise vise à répondre à la problématique suivante:
 
@@ -205,6 +208,8 @@ Ce mémoire de maîtrise vise à répondre à la problématique suivante:
   programmation Scheme pour le développement de jeux vidéo.
 \end{quote}
 
+
+\FloatBarrier
 \section{Méthodologie}
 
 %% Afin de pouvoir répondre à la problématique posée, nous avons utilisé
@@ -238,7 +243,7 @@ développé afin de consolider les techniques précédemment utilisées et
 nouveaux défi, comme l'implantation d'une intelligence artificielle.
 
 
-
+\FloatBarrier
 \section{Aperçu du mémoire}
 Ce mémoire est composé de quatre parties. La première partie est une
 introduction qui traite de programmation fonctionnelle, du langage de
@@ -272,7 +277,7 @@ développement de jeux vidéo en Scheme y est fait et les avantages et
 inconvénients ou problèmes obtenus seront exposés.
 
 
-
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Développement de jeux vidéo}
@@ -298,6 +303,7 @@ sont énoncés afin de pouvoir cerner les composantes importantes pour
 un langage de programmation utilisé pour le développement de jeux.
 
 
+\FloatBarrier
 \section{Historique}
 
 L'histoire des jeux vidéo s'étale sur environ un demi-siècle et est
@@ -309,6 +315,8 @@ années~\cite{VIDEOGAMES_history}~\cite{HISCORE}.
 
 %% http://en.wikipedia.org/wiki/History_of_video_games
 
+
+\FloatBarrier
 \subsection{Préhistoire 1948-1970}
 Les jeux vidéo ont fait leur apparition avant même les premiers
 ordinateurs. En effet, le \textit{Cathode Ray Amusement
@@ -330,6 +338,8 @@ Avec un intérêt soutenu envers le potentiel de divertissement
 qu'offrait les jeux vidéo de l'époque, le développement de machines
 dédiées aux jeux vidéo a ainsi débuté.
 
+
+\FloatBarrier
 \subsection{Système arcade 1970-1985}
 En 1971, des étudiants de l'université de Stanford ont réimplanté le
 jeu \textit{Spacewar!} sur une machine fonctionnant avec de l'argent
@@ -354,6 +364,8 @@ On retrouve toujours des salles d'arcades de nos jours, mais celles-ci
 ont perdu de la popularité puisque les consoles de jeu se
 retrouvent dans nos salons.
 
+
+\FloatBarrier
 \subsection{Premières consoles 1972-1984}
 
 La première console de jeu vidéo, le \textit{Magnavox Odyssey} fit son
@@ -371,6 +383,8 @@ comme le \textit{ColecoVision} qui démarrèrent l'ère des consoles
 dans le développement de jeu, mais plutôt de rendre disponible les
 jeux d'arcades populaires sur les consoles.
 
+
+\FloatBarrier
 \subsection{Ordinateurs personnels 1977-...}
 Les premiers ordinateurs personnels firent leur apparition vers la
 fin des années 1970, notamment l'ordinateur \textit{Apple II}
@@ -409,6 +423,7 @@ n'est plus valide. Il en résulte que les jeux sur des consoles
 actuelles surpassent souvent les jeux d'ordinateurs.
 
 
+\FloatBarrier
 \subsection{Consoles portables 1980-...}
 Les toutes premières consoles portables furent développées par la
 compagnie \textit{Mattel Toys} qui créèrent les jeux \textit{Auto
@@ -440,6 +455,8 @@ de Sony, le \textit{PlayStation 2}. On peut donc développer des jeux
 très complexes sur ces consoles portables, mais ils ne peuvent toujours
 pas rivaliser avec les jeux sur consoles ou d'ordinateurs.
 
+
+\FloatBarrier
 \subsection{Consoles intermédiaires 1984-2006}
 Au début des années 1980, plusieurs consoles étaient disponibles sur
 le marché, mais une saturation de mauvais jeux et des problèmes de
@@ -464,6 +481,8 @@ où lorsqu'une compagnie développe un nouveau jeu ou une nouvelle
 console, les compétiteurs ne tardent pas à produire un jeu ou console
 équivalent pour les utilisateurs de leurs produits.
 
+
+\FloatBarrier
 \subsection{Consoles modernes 2005-...}
 Les consoles modernes sont généralement conçues avec du matériel à la
 fine pointe de la technologie et sont adaptées un certain public
@@ -486,7 +505,7 @@ dernier possède aussi une carte graphique très puissante comprenant
 une mémoire vidéo de 256 Mo de mémoire vidéo. 
 
 
-
+\FloatBarrier
 \section{Industrie du jeu vidéo}
 Tel que mentionné mentionné dans le chapitre \ref{Chap:Intro},
 l'industrie du jeu vidéo est très importante et génère des milliards
@@ -564,7 +583,7 @@ catégories. Notre but ici est simplement de donner une idée de la
 diversité du contenu des jeux vidéo produits.
 
 
-
+\FloatBarrier
 \section{Contraintes de programmation}
 
 Le développement de jeu vidéo implique une programmation sous des
@@ -588,9 +607,11 @@ la modularité. La conséquence est que chaque jeu représente un énorme
 travail car peu de code peut être réutilisé.
 
 
+\FloatBarrier
 \subsection{Fluidité}
 
 
+\FloatBarrier
 \subsubsection{Taux de rafraîchissement}
 Une contrainte très importante dans le développement d'un jeu vidéo
 est la fluidité de celui-ci. Lorsqu'un film est projeté sur un écran
@@ -631,6 +652,7 @@ Il n'en demeure pas moins que toute la logique du jeu doit être aussi
 efficace que possible afin que le processus de rendu des trames soit
 transparent au joueur.
 
+\FloatBarrier
 \subsubsection{Réponse quasi temps réelle}
 
 Une autre implication de la fluidité requise par un jeu vidéo est le
@@ -641,6 +663,7 @@ traitement des entrées du joueur se doit aussi d'être très efficace
 afin de ne pas encombrer le moteur du jeu qui n'a déjà pas beaucoup de
 temps pour effectuer son travail.
 
+\FloatBarrier
 \subsection{Modularité}
 
 En plus de devoir être efficacement implanté, un jeu vidéo moderne se
@@ -675,6 +698,7 @@ haut niveau, facilite cette tâche. Un système orienté objet ou un bon
 système de module permettraient certainement aussi de bien modulariser
 les composantes d'un jeu.
 
+\FloatBarrier
 \subsection{Malléabilité}
 
 La malléabilité d'un logiciel pourrait se définir comme la facilité
@@ -693,6 +717,7 @@ aussi efficace, car il permet de pouvoir ajouter facilement de
 nouvelles abstractions où les besoins de changement apparaissent.
 
 
+\FloatBarrier
 \section{Conclusion}
 Dans ce chapitre, l'industrie du jeu vidéo, avec son histoire, ont été
 mis en lumière afin d'exposer l'évolution des jeux vidéo et de motiver
@@ -729,7 +754,7 @@ accessible le développement de jeux au plus petites compagnies
 possédant des budgets moins importants.
 
 
-
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Le langage Scheme}
@@ -769,6 +794,8 @@ littérature~\cite{R5RS}~\cite{SICP}. Finalement, les particularités du
 langage sont mises en lumière pour rendre plus clair l'ampleur de
 celles-ci dans le contexte du développement de jeux vidéo.
 
+
+\FloatBarrier
 \section{Héritage \lisp}
 \label{Scheme:hist}
 
@@ -779,6 +806,8 @@ présentée. Par la suite, les langages de programmation qui furent
 inspirés du langage Scheme sont mentionnés en expliquant brièvement
 leurs racines commune à Scheme et leurs principales disparités.
 
+
+\FloatBarrier
 \subsection{Histoire de \lisp}
 Le langage \lisp est le tout premier langage de programmation de haut
 niveau qui fut conçu et est le deuxième plus vieux langage de
@@ -811,6 +840,8 @@ dialectes lui ayant donné naissance. Ainsi, \clisp possède beaucoup de
 bagages, et il devient difficile pour un programmeur de pouvoir
 maîtriser tous les concepts de ce langage.
 
+
+\FloatBarrier
 \subsection{Avènement de Scheme}
 Peu avant la standardisation de \clisp, Guy Steele et Gerald
 J. Sussman conçurent la spécification d'un nouveau dialecte du langage
@@ -847,6 +878,8 @@ pas disponible, créant ainsi une bonne autonomie chez les programmeurs
 Scheme. De plus, le langage est accompagné d'une centaine librairies
 externes de traitement générique dénommées \textit{Scheme Request For Implementation} (SRFI~\cite{SRFI}).
 
+
+\FloatBarrier
 \subsection{Langages inspirés de Scheme}
 
 Plusieurs langages de programmation récents furent inspirés des
@@ -873,6 +906,7 @@ d'erreurs très dynamique et donnant accès à l'évaluation d'expressions
 Scheme lorsqu'une erreur se produit dans une telle boucle.
 
 
+\FloatBarrier
 \section{Introduction au langage}
 Tout en bénéficiant du riche héritage des langages \lisp, Scheme
 demeure un langage épuré et très simple. Cette section vise à
@@ -881,6 +915,8 @@ système Gambit-C~\cite{Gambit4} afin de familiariser le lecteur avec
 non seulement la syntaxe du langage, mais aussi les fonctionnalités de
 base et les extensions au langage fournies par Gambit-C.
 
+
+\FloatBarrier
 \subsection{Syntaxe}
 Les langages de la famille \lisp dont Scheme fait parti adoptent une
 notation préfixe parenthésée. Il en résulte que la syntaxe du langage
@@ -930,6 +966,8 @@ aussi utilisées en utilisant les caractères respectifs \scheme{'},
   \label{Scheme:s-quote-ex}
 \end{figure}
 
+
+\FloatBarrier
 \subsection{Aperçu des fonctionnalités requise par le standard}
 
 Le standard du langage Scheme~\cite{R5RS} est très minimaliste, mais
@@ -950,7 +988,7 @@ la création de fermeture telle qu'elles existent dans le lambda
 calcul. La figure \ref{Scheme:basic-ex} illustre l'utilisation des
 quelques uns parmi ces types de base.
 
-\begin{figure}[htb1]
+\begin{figure}[htb!]
   \begin{schemecode}
 ((lambda (x y) (+ (car x) (vector-ref y 2))) 
  '(1 2 3) 
@@ -963,6 +1001,8 @@ quelques uns parmi ces types de base.
   \label{Scheme:basic-ex}
 \end{figure}
 
+
+\FloatBarrier
 \section{Programmation fonctionnelle}
 Le langage Scheme est à la base un langage fonctionnel. Cette famille
 de langage de programmation est caractérisée par une programmation
@@ -976,6 +1016,8 @@ généralement beaucoup plus faciles à comprendre, ce qui attire un
 grand nombre de chercheurs à contribuer au développement et
 l'utilisation de tels langages dans le milieu commercial.
 
+
+\FloatBarrier
 \subsection{Programmation fonctionnelle pure}
 
 Une programmation dite purement fonctionnelle respecte de manière
@@ -1044,6 +1086,8 @@ programmeur de choisir le paradigme de programmation qui lui apparaît
 le plus approprié. Par contre, un abus de mutation est considéré comme
 étant de très mauvais style en Scheme.
 
+
+\FloatBarrier
 \subsection{Programmation fonctionnelle en Scheme}
 
 Le lambda calcul ouvre la porte à la création d'abstractions très
@@ -1127,6 +1171,7 @@ l'évaluation du corps du processus léger créé jusqu'à ce que ce dernier soi
 \end{figure}
 
 
+\FloatBarrier
 \section{Macros}
 \label{Scheme:macros}
 
@@ -1331,7 +1376,7 @@ deuxième macro effectuant durant l'expansion macro la combinaison de
 masques binaires. On obtient un petit langage pour la déclaration
 efficace de tels masques. 
 
-\begin{figure}[htb1]
+\begin{figure}[htb!]
   \begin{schemecode}
 (define-macro (mask-or . masks)
   (apply bitwise-ior (map eval masks)))
@@ -1370,7 +1415,7 @@ dessus de Scheme dans le but de résoudre un problème précis de manière
 efficace, tout en offrant une syntaxe facilitant leur utilisation.
 
 
-
+\FloatBarrier
 \section{Continuations}
 
 La forme d'écriture de code appelée CPS (\textit{Continuation Passing
@@ -1466,12 +1511,16 @@ continuation et dans le but de la réutiliser plus tard.
 Ainsi, la sauvegarde d'une continuation permet de conserver l'état du
 calcul et la réutilisation de celui-ci. 
 
+
+\FloatBarrier
 \subsection{Exemples d'utilisations}
 L'utilisation de continuations ajoute beaucoup de puissance au niveau
 de la programmation en Scheme, si elle est habilement exécutée. Cette
 section présente quelques utilisations intéressantes permettant
 d'entrevoir les possibilités qu'offre cet aspect de Scheme.
 
+
+\FloatBarrier
 \subsubsection{Échappement au flux de contrôle}
 Un exemple simple d'utilisation de continuation est pour l'échappement
 au contrôle d'une fonction. Bien sûr, un programmeur a toujours le
@@ -1551,6 +1600,8 @@ prenant comme valeur de retour la valeur trouvée.
   \label{Scheme:better-foldl}
 \end{figure}
 
+
+\FloatBarrier
 \subsubsection{Recherche par retour arrière}
 Un autre exemple d'utilisation intéressant de continuations est dans
 la création d'un système de recherche par retour arrière
@@ -1590,6 +1641,8 @@ décision à cet endroit. Cet exemple illustre bien l'élégance qui peut
 résulter de l'utilisation judicieuse de la forme spéciale
 \scheme{call/cc}.
 
+
+\FloatBarrier
 \subsection{Conclusion}
 
 Ainsi, la réification de continuation implicites ou encore
@@ -1604,7 +1657,7 @@ dans le cadre de la programmation de jeux vidéo.
 
 
 
-
+\FloatBarrier
 \section{Gestion mémoire automatique}
 
 L'écriture de code effectuant la gestion de la mémoire d'un programme
@@ -1652,6 +1705,7 @@ fuites sont toutefois beaucoup plus difficile à créer que celles
 obtenues lorsqu'une gestion manuelle de mémoire est utilisée.
 
 
+\FloatBarrier
 \subsection{Survol des techniques}
 Plusieurs techniques de gestion de mémoire automatiques ont été
 développées au cours des années. Cette section effectue un bref survol
@@ -1660,6 +1714,8 @@ des techniques sont disponibles pour fournir plus de détails sur ces
 techniques sur le
 sujet~\cite{GC_REVIEW1}~\cite{GC_REVIEW2}~\cite{GC_REVIEW3}. 
 
+
+\FloatBarrier
 \subsubsection{\textit{Mark And Sweep}}
 Une des techniques la plus simple de gestion de mémoire automatique
 est le \textit{Mark And Sweep}~\cite{LISP_ORIGINS}. Cette technique
@@ -1672,6 +1728,8 @@ mémoire. De plus, elle requiert de traverser toute la mémoire utilisée
 par deux fois, impliquant donc un certaine pause dans l'exécution du
 programme.
 
+
+\FloatBarrier
 \subsubsection{\textit{Stop And Copy}}
 Une autre technique classique se nomme \textit{Stop And
   Copy}~\cite{STOP_AND_COPY}. De manière similaire au \textit{Mark And
@@ -1690,6 +1748,8 @@ précédente. Cette technique est légèrement plus efficace que le
 d'espace mémoire pour faire la gestion de la mémoire. Cette technique
 est utilisée dans l'implantation Scheme Gambit-C.
 
+
+\FloatBarrier
 \subsubsection{Gestionnaires générationnels}
 Une amélioration notable de la technique du \textit{Mark And Sweep} a
 donné naissance aux ramasses miettes
@@ -1713,6 +1773,8 @@ mémoire. Ainsi, les gestionnaires de mémoires générationnels
 améliorent les performances du temps de récupération moyen, en
 augmentant le temps de récupération de toute la mémoire (pire cas).
 
+
+\FloatBarrier
 \subsubsection{Gestionnaires incrémentaux}
 Afin de remédier au problème d'arrêt complet de l'exécution du
 programme, d'un nouveaux types de ramasses miettes a été développé:
@@ -1750,6 +1812,7 @@ possèdent plusieurs variantes qui effectuent des compromis entre
 l'efficacité algorithmique et l'efficacité de récupération. 
 
 
+\FloatBarrier
 \subsection{Conclusion}
 
 Malgré que les techniques de récupération automatique de mémoire
@@ -1772,7 +1835,7 @@ offrent de bonnes performances pour les utilisations normales de la
 mémoire, comme c'est généralement le cas pour des jeux vidéo.
 
 
-
+\FloatBarrier
 \section{Dynamisme du langage}
 
 Le langage Scheme est un langage à typage dynamique, faisant ainsi
@@ -1823,6 +1886,7 @@ suite pour éviter une évolution qui pourrait aller dans une mauvaise
 direction.
 
 
+\FloatBarrier
 \subsection{Interprétation et débuggage efficace}
 
 Un langage typé dynamiquement à la possibilité d'être interprété
@@ -1866,7 +1930,7 @@ outils efficaces pour le développement de logiciels.
 \todo{ajouter ref pour tcpip?}
 
 
-
+\FloatBarrier
 \section{Extension utiles}
 
 Cette section présente un recueil des extension du langage Scheme qui
@@ -1875,6 +1939,8 @@ ne constituent pas nécessairement un atout précis quand à la
 programmation de jeu vidéo, mais apporteront plutôt une meilleure
 compréhension des exemples de codes fournis dans ce mémoire.
 
+
+\FloatBarrier
 \subsection{Fermetures}
 
 Le système Gambit-C permet la définition de paramètres avec
@@ -1883,7 +1949,7 @@ exemple de définition d'une telle fonction avec quelques appels à
 celle-ci. On constate qu'il est alors possible de définir des valeurs
 optionnelles qui peuvent posséder une valeur par défaut.
 
-\begin{figure}[htb1]
+\begin{figure}[htb!]
   \begin{schemecode}
 (define (f x y \#!key z (sum (+ x y)))
   (list x y z sum))
@@ -1903,7 +1969,7 @@ contiendra une liste de tous les paramètres supplémentaires
 utilisés. La figure \ref{Scheme:rest-ex} illustre un exemple
 d'utilisation du paramètre reste.
 
-\begin{figure}[htb1]
+\begin{figure}[htb!]
   \begin{schemecode}
 (define (g x y . z) (list x y z))
 (g 1 2)       => \schemeresult{(1 2 ())}
@@ -1922,7 +1988,7 @@ contenu de cette liste sera inséré dans un appel à la fonction
 spécifiée. La figure \ref{Scheme:apply} illustre quelques utilisations
 de la procédure \scheme{apply}.
 
-\begin{figure}[htb1]
+\begin{figure}[htb!]
   \begin{schemecode}
 (+ 1 2 3 4 5)                           => \schemeresult{15}
 (apply + 1 2 '(3 4 5))                  => \schemeresult{15}
@@ -1932,6 +1998,8 @@ de la procédure \scheme{apply}.
   \label{Scheme:apply}
 \end{figure}
 
+
+\FloatBarrier
 \subsection{Tables de hachages}
 
 Le système Gambit-C supporte aussi l'utilisation de tables de
@@ -1943,6 +2011,8 @@ inspectées avec les fonctions \scheme{(table-set! <table> <key>
 afin d'être plus efficaces pour des clés étant des symboles ou des
 chaînes de caractères.
 
+
+\FloatBarrier
 \subsection{Tests d'égalité et opérations conditionnelles}
 
 L'égalité en Scheme entre deux objets appartenant aux types de base du
@@ -1964,7 +2034,7 @@ utilisée. Cette dernière permet aussi de pouvoir récupérer la valeur
 retournée par un prédicat s'évaluant à vrai en ajoutant \scheme{=>}
 tel qu'illustré dans la figure \ref{Scheme:cond}.
 
-\begin{figure}[htb1]
+\begin{figure}[htb!]
   \begin{schemecode}
 (let ((t (make-table test: eq?)))
   (table-set! t (list 'a) 'a)
@@ -1981,6 +2051,8 @@ tel qu'illustré dans la figure \ref{Scheme:cond}.
   \label{Scheme:cond}
 \end{figure}
 
+
+\FloatBarrier
 \subsection{Déclaration et utilisation d'objets}
 
 Le système Gambit-C apporte la définitions d'objets implantant des
@@ -2000,7 +2072,7 @@ définition de sous-types héritant des membres de la classe en
 question, implantant ainsi un héritage simple. La figure
 \ref{Scheme:deftype} illustre l'utilisation de cette forme spéciale.
 
-\begin{figure}[htb1]
+\begin{figure}[htb!]
   \begin{schemecode}
 (define-type point x y extender: define-type-of-point)
 (define-type-of-point circle r)
@@ -2013,6 +2085,8 @@ question, implantant ainsi un héritage simple. La figure
   \label{Scheme:deftype}
 \end{figure}
 
+
+\FloatBarrier
 \subsection{Affichage de résultats}
 
 Plusieurs fonctions sont disponible en Scheme afin d'effectuer
@@ -2026,7 +2100,7 @@ afin de permettre l'affichage d'expressions composées. La figure
 \ref{Scheme:print} illustre des exemples d'utilisations de ces
 fonctions.
 
-\begin{figure}[htb1]
+\begin{figure}[htb!]
   \begin{schemecode}
 (write (list 1 'a "a")) => \schemeresult{(1 a "a")} (display (list 1
     'a "a")) => \schemeresult{(1 a a)} (write (list 1 'a "a")) =>
@@ -2037,6 +2111,8 @@ fonctions.
   \label{Scheme:print}
 \end{figure}
 
+
+\FloatBarrier
 \subsection{Interfaces aux fonctions étrangères}
 
 Une interfaces aux fonctions étrangères (\textit{Foreign Function
@@ -2048,7 +2124,7 @@ OpenGL et une utilisation de cette interface. On constate donc qu'une
 fois importées, les fonctions de cette dernière peuvent être utilisées
 comme n'importe qu'elle fonction Scheme.
 
-\begin{figure}[htb1]
+\begin{figure}[htb!]
   \begin{schemecode}
 (c-declare "\#include <gl.h>")
 
@@ -2074,6 +2150,8 @@ D'autre part, il est aussi possible d'exporter des fonctions écrites
 en Scheme de manière à ce qu'elles soient utilisées à partir de code C
 ou C++.
 
+
+\FloatBarrier
 \subsection{Capture de continuations}
 
 Le système Gambit-C effectue une abstraction de la fonction
@@ -2089,7 +2167,7 @@ mécanisme, il est possible d'attacher une continuation à la suite d'un
 telle capture de continuation, ainsi que des exemples d'utilisations
 de cette dernière.
 
-\begin{figure}[htb1]
+\begin{figure}[htb!]
   \begin{schemecode}
 (define k \#f)
 (+ 1 (continuation-capture (lambda (cont) (set! k cont) 2)))
@@ -2104,6 +2182,8 @@ de cette dernière.
   \label{Scheme:cont-capt}
 \end{figure}
 
+
+\FloatBarrier
 \section{Conclusion}
 
 Cet aperçu des particularités du langage fonctionnel Scheme démontrent
@@ -2131,6 +2211,7 @@ facile. Ainsi, deux extensions au langages Scheme ont été développées
 dans le but de pouvoir répondre spécifiquement aux besoins des jeux
 vidéo.
 
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Programmation orientée objet}
@@ -2201,7 +2282,8 @@ s'agit de \textit{dispatch} double sur deux types, mais pourrait
 devenir très complexe s'il s'agissait de faire une discrimination sur
 plus que deux objets.
 
-\begin{figure}[htb!]
+% deplacee pcq trop grande... mise a la fin de la section
+\begin{figure}[h!]
   \begin{verbatim}
 class Toto {
   public static void main(String[] args){
@@ -2234,6 +2316,7 @@ t.add(b) = 3
   \label{OO:JavaDispatch}
 \end{figure}
 
+\FloatBarrier
 
 Le langage \clisp~\cite{CLISP} possède un système orienté objet, le
 Common Lisp Object System~\cite{CLOS} (CLOS), qui diverge beaucoup de
@@ -2254,7 +2337,7 @@ contient la définition d'une fonction générique effectuant
 automatiquement le choix de la bonne instance en se basant
 dynamiquement sur les types des arguments passés.
 
-\begin{figure}[htb!]
+\begin{figure}[h!]
   \begin{schemecode}
 (defclass Titi () ((x :accessor x :initarg :x)))
 (defclass Blub () ((val :accessor val :initarg :val)))
@@ -2344,6 +2427,8 @@ possible. Ce dernier est décrit en détails dans le reste de ce
 chapitre.
 
 
+
+\FloatBarrier
 \section{Description du système}
 
 Le système de programmation orientée objet développé est fortement
@@ -2364,13 +2449,14 @@ Le reste de cette section fourni un API (\textit{Application
 fonctionnalités clés de celui-ci et fournissant des exemples
 d'utilisations.
 
+\FloatBarrier
 \subsection{Définition de classes}
 La définition de classes, faite via la forme spéciale
 \textit{define-class}, est une version simplifiée de la forme
 \scheme{defclass} de CLOS. La syntaxe de \scheme{define-class} est
 présentée dans la figure \ref{OO:defclass-syntaxe}.
 
-\begin{figure}[htb!]
+\begin{figure}[h!]
   \begin{schemecode}
 (define-class <class-name> (<super1> ...) <member1> ...)
   \end{schemecode}
@@ -2399,7 +2485,7 @@ objet. Aussi, le choix d'utiliser des fonctions compatibles à
 \scheme{define-type} rend la base du système d'objets triviale à
 utiliser par des nouveaux utilisateurs déjà familier Gambit-C.
 
-\begin{figure}[htb!]
+\begin{figure}[h!]
   \begin{schemecode}
 (define-class point () (slot: x) (slot: y))
 (define-class circle (point) (slot: r))
@@ -2458,7 +2544,7 @@ d'attributs de classes permettent de prendre optionnellement une
 instance afin d'utiliser ces fonctions de manière polymorphique. La
 figure \ref{OO:class-slot} illustre ce processus.
 
-\begin{figure}[htb!]
+\begin{figure}[h!]
   \begin{schemecode}
 (define-class toto () (class-slot: t))
 (define-class blub (toto))
@@ -2492,7 +2578,7 @@ instance de l'objet et d'appeler la fonction générique
 \scheme{init!}. La figure \ref{OO:constructeurs} illustre
 l'utilisation de constructeurs génériques d'objets.
 
-\begin{figure}[htb!]
+\begin{figure}[h!]
   \begin{schemecode}
 (define-class titi () (slot: i))
 (define-class toto ()
@@ -2517,7 +2603,7 @@ en écriture avec respectivement les mots clés \scheme{read-hooks:} et
 \scheme{write-hooks:}. La figure \ref{OO:hooks} illustre l'utilisation
 de ceux-ci.
 
-\begin{figure}[htb1]
+\begin{figure}[h!]
   \begin{schemecode}
 (define-class hooked ()
   (slot: s
@@ -2541,7 +2627,7 @@ de ceux-ci.
 \end{figure}
 
 
-
+\FloatBarrier
 \subsection{Définition de fonctions génériques}
 \label{OO:genfun}
 
@@ -2592,7 +2678,7 @@ d'utilisations d'instances d'une fonction générique effectuant des
 additions sur des objets s'étalant sur plusieurs types et avec un
 nombre variable de paramètres.
 
-\begin{figure}[htb!]
+\begin{figure}[h!]
   \begin{schemecode}
 (define-class length () (slot: l))
 (define-class point () (slot: x) (slot: y))
@@ -2615,6 +2701,8 @@ nombre variable de paramètres.
     générique.}
   \label{OO:genfun-ex}
 \end{figure}
+
+\FloatBarrier
 
 Le type d'un argument d'une méthode, peut être membre d'une syntaxe
 étendue permettant de faire de la discrimination d'instances de
@@ -2656,7 +2744,7 @@ recoupent pas entre elles. Une discrimination arbitraire pourrait se
 produire si plusieurs instances peuvent être discriminées de manières
 équivalentes pour un même appel.
 
-\begin{figure}[htb!]
+\begin{figure}[h!]
   \begin{schemecode}
 (define-class point () (slot: x) (slot: y) (class-slot: zero))
 (point-zero-set! (new point 0 0))
@@ -2711,7 +2799,7 @@ utilisée. Si les valeurs de discrimination sont égales pour plusieurs
 instances, alors c'est la méthode définie en dernier qui sera
 utilisée.
 
-\begin{figure}[htb!]
+\begin{figure}[h!]
   \begin{schemecode}
 (define-class point () (slot: x) (slot: y))
 (define-class circle (point) (slot: radius))
@@ -2744,7 +2832,7 @@ l'objet conteneur est initialisé en choisissant explicitement le
 constructeur attendant un argument de type \scheme{point}. L'objet
 correctement initialisé est finalement retourné.
 
-\begin{figure}[p!]
+\begin{figure}[h!]
   \begin{schemecode}
 (define-class point () (slot: x) (slot: y)
   (constructor: (lambda (self x y)
@@ -2775,6 +2863,7 @@ correctement initialisé est finalement retourné.
 \end{figure}
 
 
+\FloatBarrier
 \subsection{Fonctions et formes spéciales utilitaires}
 
 Plusieurs fonctions et formes spéciales utilitaires sont disponibles
@@ -2842,7 +2931,7 @@ sont:
 La figure \ref{OO:specform} illustre un exemple d'utilisation de ces
 formes spéciales.
 
-\begin{figure}[htb!]
+\begin{figure}[h!]
   \begin{schemecode}
 (define-class point () (slot: x) (slot: y))
 (define-class colored-circle (point) (slot: radius) (slot: color)
@@ -2860,8 +2949,9 @@ formes spéciales.
   \label{OO:specform}
 \end{figure}
 
+%\clearpage
 
-
+\FloatBarrier
 \section{Implantation}
 
 Afin de pouvoir implanter ce système objet comme une extension directe
@@ -2894,7 +2984,7 @@ l'implantation de ce système objet et justifient les choix
 d'implantations qui ont dû être faits.
 
 
-
+\FloatBarrier
 \subsection{Implantation de define-class}
 
 Le fonctionnement de \scheme{define-class} est intimement lié aux
@@ -3048,7 +3138,7 @@ classe. Finalement, la valeur de l'attribut est obtenue en effectuant
 l'indirection sur l'instance.
 
 
-\begin{figure}[htb1]
+\begin{figure}[htb!]
   \begin{verbatim}
 (lambda (#:obj518)
   (vector-ref #:obj518 
@@ -3102,7 +3192,7 @@ module. L'implantation du support intermodulaire du système objet n'a
 pas été abordé dû à la complexité de la tâche et à la potentielle
 baisse de performance qui pourrait être apporté par un tel support.
 
-
+\FloatBarrier
 \subsection{Implantation de define-generic}
 
 De manière similaire à la définition de nouvelles classes, des
@@ -3191,6 +3281,7 @@ permet d'écrire des corps de méthodes légèrement plus génériques, mais
 l'utilisation du \scheme{cast} permet de faire sensiblement le même
 travail sans avoir à subir des pertes de performances.
 
+\FloatBarrier
 \subsection{Implantation de define-method}
 L'expansion de la macro \scheme{define-method} est très simple, elle 
 consiste en la création d'une structure de donnée qui contient le
@@ -3200,6 +3291,7 @@ sera recréée lors de l'exécution du programme afin de pouvoir être
 appelée par la fonction de \textit{dispatch}.
 
 
+\FloatBarrier
 \section{Performances}
 \label{OO:bench-sect}
 Ce système de programmation orienté objet a été écrit dans le but
@@ -3317,6 +3409,7 @@ en plus d'offrir plusieurs concepts de hauts niveau quant à la
 programmation orientée objet, se compare très bien aux autres systèmes
 d'objets performants disponibles pour Gambit-C.
 
+\FloatBarrier
 \section{Conclusion}
 Ainsi un système objet complet a été développé dans le but d'étendre
 le langage Scheme et d'y inclure le paradigme de la programmation
@@ -3349,6 +3442,7 @@ Par contre, une attention particulière devrait être portée aux coûts
 en performance que ces modifications pourraient impliquer afin de
 respecter la philosophie de base de ce système.
 
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Système de coroutines}
@@ -3422,6 +3516,7 @@ l'écriture de code s'exécutant en concurrente de manière sécuritaire
 tout en permettant l'utilisation récursive de ce système.
 
 
+\FloatBarrier
 \section{Description du langage}
 
 Un système de \textit{threads} coopératifs implique donc que le
@@ -3478,6 +3573,7 @@ illustre l'architecture globale du système.
 l'utilisation du système de coroutines développé.
 
 
+\FloatBarrier
 \subsection{Création de coroutines}
 Les coroutines sont des objets en eux même et peuvent être créés de
 manière externe au système de coroutines pour, par la suite, être
@@ -3521,7 +3617,7 @@ d'une simulation existante avec la fonction
 \scheme{spawn-brother}. Ces fonction sont décrites ci-dessous.
 
 
-
+\FloatBarrier
 \subsection{Démarrage du système}
 
 Le système de coroutines peut être démarré en utilisant la fonction 
@@ -3638,7 +3734,7 @@ des coroutines hôtes des sous-systèmes de coroutines (\scheme{s1} et
 \end{figure}
 
 
-
+\FloatBarrier
 \subsection{Manipulation du flot de contrôle}
 Puisque le contrôle du flot d'exécution entre les coroutines doit être
 explicité par l'utilisateur, une bonne diversité de fonctions
@@ -3731,7 +3827,7 @@ valeur de retour finale de l'exécution du système sera alors la valeur
 spécifiée.
 
 
-
+\FloatBarrier
 \subsection{Environnement dynamique}
 
 Une certaine introspection est très utile pour un programmeur, surtout
@@ -3890,6 +3986,8 @@ l'exécution. L'utilisation de variables Scheme pointant vers une
 structure de donnés, plutôt que des données Scheme, offriraient de
 meilleurs performances, mais ce dynamisme ne serait pas disponible.
 
+
+\FloatBarrier
 \subsection{Autres mécanismes de synchronisation}
 Le mécanisme de messagerie sophistiqué du système de coroutine permet
 d'effectuer de manière élégante les synchronisation nécessaire entre
@@ -3928,7 +4026,7 @@ et de création de sémaphores sont données ci-bas:
 
 
 
-
+\FloatBarrier
 \section{Implantation}
 
 L'implantation de ce système de coroutine est centralisée sur
@@ -3945,6 +4043,7 @@ Cette section explique les mécaniques internes du système de
 coroutines développé, en expliquant non seulement les structures de
 données utilisées, mais aussi les algorithmes utilisés.
 
+\FloatBarrier
 \subsection{Implantation des coroutines}
 
 La structure de donnée des coroutine est implantée en utilisant le
@@ -3999,7 +4098,7 @@ obtenir la valeur de retour d'une coroutine, le contenu du membre
 de retour s'y trouve ou non, tel qu'illustré dans la figure
 \ref{Corout:get-result}.
 
-\begin{figure}[htb1]
+\begin{figure}[htb!]
   \begin{schemecode}
 (define (corout-get-result c)
   (if (eq? (corout-result c) corout-unbound-result)
@@ -4010,6 +4109,8 @@ de retour s'y trouve ou non, tel qu'illustré dans la figure
   \label{Corout:get-result}
 \end{figure}
 
+
+\FloatBarrier
 \subsection{Timers}
 Les timers sont aussi implantés comme des structures
 \textit{define-type}. Leurs rôle est de fournir une abstraction
@@ -4178,7 +4279,7 @@ celle-ci.
 \end{figure}
 
 
-
+\FloatBarrier
 \subsection{Système de messagerie}
 
 La fonctionnalité de messagerie du système de coroutines est à la base
@@ -4330,6 +4431,8 @@ conforme à un des patrons de filtrage sera retenu. La figure
   \label{Corout:recv-exp}
 \end{figure}
 
+
+\FloatBarrier
 \section{Performances}
 Afin d'obtenir une idée des performances du système développé, ce
 dernier est comparé à d'autres systèmes similaires sur les fonctions
@@ -4349,11 +4452,11 @@ dans le but de mieux illustrer les différences de performances.
   \center
   \begin{tabular}{cccccc}
     \hline
-    Opération & Système développé & Gambit-C & Termite & Erlang\\
+    Opération & Coroutines & Gambit-C & Termite & Erlang\\
     \hline \hline
-    Changement de contexte                & 4.648 & 0.737 & ND    &    ND\\
-    Envoi et réception simple de messages & 1.798 & 2.374 & 6.992 &    ND\\
-    Réception de message avec filtrage    & 5.098 & ND    & 4.877 & 2.575\\
+    Changement de contexte  & 4.648 & 0.737 & ND    &    ND\\
+    Messagerie simple       & 1.798 & 2.374 & 6.992 &    ND\\
+    Réception avec filtrage & 5.098 & ND    & 4.877 & 2.575\\
     \hline
   \end{tabular}
   \caption{Temps d'exécution (en secondes) de 1000000 d'itérations de
@@ -4366,11 +4469,11 @@ dans le but de mieux illustrer les différences de performances.
   \center
   \begin{tabular}{cccccc}
     \hline
-    Opération & Système développé & Gambit-C & Termite & Erlang\\
+    Opération & Coroutines & Gambit-C & Termite & Erlang\\
     \hline \hline
-    Changement de contexte                & 6.3 & 1.0 & ND  & ND \\
-    Envoi et réception simple de messages & 1.0 & 1.3 & 3.9 & ND \\
-    Réception de message avec filtrage    & 2.0 & ND  & 1.9 & 1.0 \\
+    Changement de contexte  & 6.3 & 1.0 & ND  & ND \\
+    Messagerie simple       & 1.0 & 1.3 & 3.9 & ND \\
+    Réception avec filtrage & 2.0 & ND  & 1.9 & 1.0 \\
     \hline
   \end{tabular}
   \caption{Comparaison de performances relative au système le plus
@@ -4409,6 +4512,8 @@ puisque Erlang est réputé comme étant très efficace. Toutefois,
 plusieurs optimisations sur la réception de message par filtrage
 pourraient être effectuées afin d'améliorer cette performance.
 
+
+\FloatBarrier
 \section{Conclusion}
 
 Ainsi, un système de coroutine a été implanté qui fournit aux
@@ -4444,6 +4549,7 @@ d'avoir, entre autre, une meilleur idée du temps moyen que prend une
 coroutine donnée avant de céder le contrôle dans le but de mieux
 balancer ou d'optimiser ces dernières.
 
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Évaluation et expériences}
@@ -4497,6 +4603,8 @@ Ainsi, ce chapitre a pour but d'expliquer le cheminement du travail
 nécessaire à l'écriture de ces deux jeux afin de pouvoir répondre à la
 problématique de base traité par ce document.
 
+
+\FloatBarrier
 \section{Développement de \si}
 \label{Exp:SI}
 
@@ -4550,6 +4658,7 @@ de telles expérimentations. Cette dernière version du jeu est décrite
 dans la section \ref{Exp:sp3}
 
 
+\FloatBarrier
 \subsection{Version initiale}
 \label{Exp:sp1}
 
@@ -4568,6 +4677,8 @@ problèmes potentiels ont alors été identifiés:
 \item Parties multi-joueurs
 \end{itemize}
 
+
+\FloatBarrier
 \subsubsection{Rendu graphique}
 
 Afin de pouvoir effectuer le rendu graphique du jeu, une librairie de
@@ -4598,7 +4709,7 @@ doit être accompagnée d'un fichier de même nom, portant une extension
 
 \begin{figure}[htb!]
   \center
-  \includegraphics[scale=0.5]{font-example}
+  \includegraphics[scale=0.3]{font-example}
   \caption{Exemple de fontes utilisée dans \si.}
   \label{Exp:font}
 \end{figure}
@@ -4627,6 +4738,8 @@ aux sous-images de taille uniformes. Ce choix fut effectué puisqu'il
 était bien adapté aux jeux développés et dans le but de ne pas trop
 complexifier la tâche de la création des jeux.
 
+
+\FloatBarrier
 \subsubsection{Logique du jeu}
 
 Le flot de contrôle de la logique de ce jeu fut expérimental dès le
@@ -4759,6 +4872,8 @@ début de partie de la figure \ref{Exp:des}.
   \label{Exp:anim}
 \end{figure}
 
+
+\FloatBarrier
 \subsubsection{Structures de donnés}
 
 Les structures de données utilisées dans \si furent définies par la
@@ -4800,6 +4915,8 @@ pointeur vers le bon type est par la suite ajouté dans le champs
 jeu. L'utilisation de ce petit système de type demande ainsi une
 écriture de code fastidieuse qui ne devrait pas être nécessaire.
 
+
+\FloatBarrier
 \subsubsection{Détection et résolution de collisions}
 
 La détection de collisions sur ces objets a pu être faite de manière
@@ -4851,6 +4968,8 @@ très facile d'introduire des erreurs.
   \label{Exp:si1-col-res}
 \end{figure}
 
+
+\FloatBarrier
 \subsubsection{Parties multi-joueurs}
 
 Les parties multi-joueurs de \si sont très simples. Chaque joueur joue
@@ -4912,6 +5031,8 @@ partie du joueur actuel.
   \label{Exp:si-mort}
 \end{figure}
 
+
+\FloatBarrier
 \subsubsection{Conclusion}
 
 Ainsi, l'écriture de cette première version de \si a permis
@@ -4932,6 +5053,8 @@ ne semble pas naturelle pour d'autres. Ainsi, le flot de contrôle
 pourrait aussi être amélioré de manière à pouvoir exprimer de manière
 plus naturelle le comportement des entités du jeu.
 
+
+\FloatBarrier
 \subsection{Version orientée objet}
 \label{Exp:sp2}
 
@@ -5052,6 +5175,7 @@ version. En effet, le flot de contrôle implanté par une simulation à
 comportements des entités du jeu.
 
 
+\FloatBarrier
 \subsection{Version avec flot de contrôle sous forme de coroutines}
 \label{Exp:sp3}
 
@@ -5153,6 +5277,46 @@ démontrer la facilité avec laquelle il a été possible de modifier le
 coeur du jeu pour essayer de nouvelles options quant à l'architecture
 du programme et de son flot de contrôle.
 
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define (invader-controller)
+  (define (init-state)
+    (recv
+     (init
+      (subscribe instant-components (self))
+      (broadcast `(invader-row ,(Inv-Controller-row (self)))
+                 'move)
+      (wait-state))))
+  (define-wait-state wait-state moved (inv-nb)
+    (recv
+     (go-down-warning
+      (let ((row-nb (Inv-Controller-row (self))))
+        (broadcast `(invader-row ,row-nb) 'wall-collision)
+        (for i 0 (< i invader-row-number)
+             (if (not (= i row-nb))
+                 (if (not (zero? (msg-list-size `(invader-row ,i))))
+                     (let ((move-back? (< i row-nb)))
+                       (broadcast `(invader-row ,i)
+                                  `(wall-collision ,move-back? \#f))))
+                 (broadcast `(invader-row ,i)
+                            `(wall-collision  \#t ,(self))))))
+      (wait-state))
+     (after 0
+            (wait-for-next-instant)
+            (broadcast `(row-controller
+                         ,(next-row (Inv-Controller-row (self))))
+                       'init)
+            (unsubscribe instant-components (self))
+            (init-state))))
+  (init-state))
+  \end{schemecode}
+  \caption{Comportement du méta-objet \scheme{invader-controller} qui
+    régi le comportement d'une rangée d'\textit{invaders}}
+  \label{Exp:inv-cnt}
+\end{figure}
+
+
+\FloatBarrier
 \subsection{Conclusion}
 
 Ainsi, le développement de \si en Scheme fut très riche en
@@ -5191,7 +5355,7 @@ applicables et de voir si elles s'étendent bien aux nouveaux défis de
 programmations résultant de l'implantation d'un tel jeu.
 
 
-
+\FloatBarrier
 \section{Développement de \lr}
 \label{Exp:ld}
 
@@ -5223,6 +5387,8 @@ du jeu développé.
   \label{Exp:ld-screen}
 \end{figure}
 
+
+\FloatBarrier
 \subsection{Logique du jeu}
 
 Afin de pouvoir développer ce jeu, les meilleurs techniques utilisées
@@ -5273,6 +5439,8 @@ Par contre, l'utilisation d'une telle boucle fait en sorte que la
 vitesse du jeu dépend directement du taux de rafraîchissement de
 celui-ci.
 
+
+\FloatBarrier
 \subsection{Gestion de l'état des objets}
 
 Les entités du jeu \lr sont sensiblement plus complexes que celles
@@ -5432,16 +5600,9 @@ discrimination de méthodes sur des valeurs afin de valider les
 transitions effectuées. Sans trop entrer dans les détails, il ne
 suffit que de sous-classer la classe \scheme{state-machine} par les
 objets de niveaux et d'ensuite effectuer la déclaration qui se fait
-selon l'interface
-
-\begin{schemecode}
-(define-state-machine <class-name> <init-state> <init-action> <state-list>
-                      ((<from-state> <to-state> <transition-action>) ...))
-\end{schemecode}
-
-\noindent
-où les états sont normalement décrits par des symboles. Les actions
-peuvent être n'importe quelles expression Scheme. Aussi, lors de la
+selon l'interface présentée dans la figure \ref{Exp:def-state}. Les
+états sont normalement décrits par des symboles. Les actions peuvent
+être n'importe quelles expression Scheme. Aussi, lors de la
 description des transitions, il est possible d'utiliser le symbole
 \scheme{*} afin de représenter tous les états possibles ou sinon
 d'utiliser une sous-liste contenant les états de provenance ou
@@ -5450,6 +5611,18 @@ d'arrivé pour cette transition. La figure
 
 \begin{figure}[htb1]
   \begin{schemecode}
+(define-state-machine <class-name> <init-state> <init-action> <state-list>
+                      ((<from-state> <to-state> <transition-action>) ...))
+  \end{schemecode}
+  \caption{Interface du système de machines à états développé pour les
+    niveaux de \lr}
+  \label{Exp:def-state}
+\end{figure}
+
+\begin{figure}[htb!]
+  \begin{schemecode}
+(define-class level (menu state-machine) ...)
+
 (define-state-machine level
   'pre-game pre-game-transition
   (pre-game start in-game game-over level-cleared paused)
@@ -5476,7 +5649,7 @@ une chaîne de caractères qui contient le compte à rebours. Ce dernier
 utilise la récursivité afin de se recréé avec le rebours mis-à-jour à
 tous les 60 images rendues.
 
-\begin{figure}[htb1]
+\begin{figure}[htb!]
   \begin{schemecode}
 (define (level-start-transition lvl)
   (define (make-counter-label counter)
@@ -5506,6 +5679,8 @@ permis de pouvoir exprimer de manière élégante et modulaire les
 concepts reliés à la déclarations de machines à états pour les entités
 ainsi que les niveau du jeu \textit{Lode Runner}.
 
+
+\FloatBarrier
 \subsection{Détection et résolution de collisions}
 
 Une nette amélioration apportée au jeu, en comparaison celui
@@ -5544,6 +5719,8 @@ dans \si. Des fonctions génériques \scheme{resolve-collision} et
 \scheme{render} s'occupent de choisir dynamiquement la bonne instance
 de ces fonctions génériques en fonction des objets passés. 
 
+
+\FloatBarrier
 \subsection{Rendu graphique}
 
 Il est intéressant de noter que le rendu graphique est légèrement plus
@@ -5571,6 +5748,8 @@ images.
   \label{Exp:layers}
 \end{figure}
 
+
+\FloatBarrier
 \subsection{Intelligence Artificielle}
 
 L'intelligence artificielle du jeu fut implantée de manière directe en
@@ -5638,6 +5817,7 @@ artificielle est présenté dans la figure \ref{Exp:dyn-ai}.
 \end{figure}
 
 
+\FloatBarrier
 \subsection{Conclusion}
 
 L'implantation du jeu \lr a permis de consolider certaines des
@@ -5673,6 +5853,8 @@ pas été un problème pour le développement de ce jeu. En effet, malgré
 un plus grand nombre d'objets présents, ceux-ci demeurent trop peu
 pour éprouver la gestion mémoire sur des ordinateurs récents.
 
+
+\FloatBarrier
 \section{Conclusion}
 Ainsi, il a été possible de développer deux jeux vidéo de complexité
 croissante en utilisant le langage Scheme. Le développement du premier
@@ -5703,47 +5885,10 @@ sur des jeux plus exigeant tant en utilisation processeur qu'en
 utilisation mémoire.
 
 
-\begin{figure}[htb!]
-  \begin{schemecode}
-(define (invader-controller)
-  (define (init-state)
-    (recv
-     (init
-      (subscribe instant-components (self))
-      (broadcast `(invader-row ,(Inv-Controller-row (self)))
-                 'move)
-      (wait-state))))
-  (define-wait-state wait-state moved (inv-nb)
-    (recv
-     (go-down-warning
-      (let ((row-nb (Inv-Controller-row (self))))
-        (broadcast `(invader-row ,row-nb) 'wall-collision)
-        (for i 0 (< i invader-row-number)
-             (if (not (= i row-nb))
-                 (if (not (zero? (msg-list-size `(invader-row ,i))))
-                     (let ((move-back? (< i row-nb)))
-                       (broadcast `(invader-row ,i)
-                                  `(wall-collision ,move-back? \#f))))
-                 (broadcast `(invader-row ,i)
-                            `(wall-collision  \#t ,(self))))))
-      (wait-state))
-     (after 0
-            (wait-for-next-instant)
-            (broadcast `(row-controller
-                         ,(next-row (Inv-Controller-row (self))))
-                       'init)
-            (unsubscribe instant-components (self))
-            (init-state))))
-  (init-state))
-  \end{schemecode}
-  \caption{Comportement du méta-objet \scheme{invader-controller} qui
-    régi le comportement d'une rangée d'\textit{invaders}}
-  \label{Exp:inv-cnt}
-\end{figure}
 
 
 
-
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Travaux reliés}
@@ -5763,6 +5908,8 @@ portrait des techniques de programmation utilisées dans l'industrie
 est dressé dans le but de bien situer les travaux présentés dans ce
 mémoire.
 
+
+\FloatBarrier
 \section{Comparaison de langages}
 
 L'industrie du jeu vidéo est déjà bien établie et donc, certains
@@ -5776,6 +5923,8 @@ les fonctionnalités offertes par ces langages, le typage utilisé dans
 ceux-ci, le niveau d'abstraction du langage ainsi que les modes
 d'utilisations de celui-ci. 
 
+
+\FloatBarrier
 \subsection{C++}
 Le langage principalement utilisé pour le développement de jeu vidéo
 est sans aucun doute le langage C++~\cite{cplusplus}. Ce dernier est
@@ -5835,6 +5984,7 @@ l'embauche de programmeurs C++ beaucoup plus nombreux. Rendant ainsi
 C++ plus attrayant et moins risqué pour une entreprise.
 
 
+\FloatBarrier
 \subsection{Lua}
 
 Un langage Lua~\cite{Lua} est fréquemment utilisé non pas pour
@@ -5871,6 +6021,8 @@ jeu. Parmi ceux-ci, on retrouve principalement Python~\cite{Python} et
 Javascript~\cite{ECMA-262} qui sont très similaire à Lua et donc
 constituent eux aussi un sous ensemble de Scheme.
 
+
+\FloatBarrier
 \section{Sommaire}
 Ainsi, les langages C++ et Lua offrent des fonctionnalités différentes
 de celles offertes en Scheme. Le tableau \ref{Rev:lang-comp} effectue
@@ -5910,6 +6062,8 @@ Dépistage d'erreurs          & bas niveau & bas niveau & haut niveau\\
 \label{Rev:lang-comp}
 \end{table}
 
+
+\FloatBarrier
 \section{Jeux en \lisp}
 
 Malgré la domination du langage C++ dans l'industrie du jeu vidéo,
@@ -5919,6 +6073,7 @@ dans cette section afin de permettre de comparer l'expérience acquise
 par ces développeurs à celle acquise dans notre travail.
 
 
+\FloatBarrier
 \subsection{Naughty Dog}
 
 %% http://www.naughtydog.com/site/post/presentations_from_game_developers_conference_2008/
@@ -6009,6 +6164,7 @@ pour la définition des données du langage.
 \end{figure}
 
 
+\FloatBarrier
 \subsection{QuantZ}
 Récemment, le jeu QuantZ~\cite{Quantz} fut développé presque
 exclusivement en utilisant le langage Scheme et le compilateur
@@ -6069,6 +6225,8 @@ utilisation du langage a su tirer profit de la plupart des
 particularité de Scheme dont notamment l'utilisation de fonctions de
 premier ordre et du dynamisme du système Gambit-C.
 
+
+\FloatBarrier
 \section{Conclusion}
 Ainsi, plusieurs langages sont utilisés dans l'industrie du jeu vidéo
 dont, notamment les langages Lua et C++. Après une comparaison au
@@ -6093,7 +6251,7 @@ commerciaux par les compagnies de l'industrie, les équipes l'ayant
 utilisé semblent l'avoir beaucoup apprécier et surtout, l'utilisent
 toujours dans le développement de leurs jeux.
 
-
+\clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Conclusion}

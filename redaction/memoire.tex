@@ -153,12 +153,12 @@ engendrer une diminution énorme des coûts de production et améliorer
 la qualité des environnements utilisés par les développeurs.
 
 Jusqu'à ce jour, la grande majorité des jeux vidéo sont écrits à
-l'aide de langages de relativement bas niveau, comme par exemple en C,
-C++ ou encore C\#~\cite{CSHARP_SPEC}. Les langages de bas niveaux sont
-caractérisés par contact facile au matériel du système utilisé pour
-exécuter le programme. Ces langages sont généralement utilisés parce
-qu'ils sont déjà bien établis et que la main d'oeuvre est facilement
-accessible.
+l'aide de langages de relativement bas niveau, comme par exemple en
+C~\cite{Ritchie-C-dev}, C++~\cite{cplusplus} ou encore
+C\#~\cite{CSHARP_SPEC}. Les langages de bas niveaux sont caractérisés
+par contact facile au matériel du système utilisé pour exécuter le
+programme. Ces langages sont généralement utilisés parce qu'ils sont
+déjà bien établis et que la main d'oeuvre est facilement accessible.
 
 Les langages de haut niveau sont généralement caractérisés par le fait
 qu'ils font une bonne abstraction du système utilisé et permettent
@@ -5748,15 +5748,6 @@ utilisation mémoire.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Travaux reliés}
 
-
-Dans un premier temps, il serait intéressant de comparer les
-différents langages utilisés dans l'industrie du jeu vidéo avec Scheme
-afin d'en faire ressortir les différences. Ces différences mènent
-directement à une méthode de développement qui seront nécessairement
-différentes. Ainsi, un portrait des techniques de programmation
-utilisées dans l'industrie est dressé dans le but de situer où se
-retrouvent les travaux présentés dans ce mémoire.
-
 Les langages de programmation de la famille \lisp ont déjà été utilisés
 pour produire des jeux vidéo commerciaux de très bonne
 qualité. Certains seront cités et une revue de l'expérience acquise
@@ -5764,24 +5755,37 @@ par les développeurs sera exposée dans le but de pouvoir comparer
 leurs expériences avec celle acquise pour le développement de \si et
 de \lr.
 
+Avant tout, nous comparerons les différents langages utilisés dans
+l'industrie du jeu vidéo avec Scheme afin d'en faire ressortir les
+forces et faiblesses. Les différences mènent à des méthodes de
+développement qui seront nécessairement divergentes. Ainsi, un
+portrait des techniques de programmation utilisées dans l'industrie
+est dressé dans le but de bien situer les travaux présentés dans ce
+mémoire.
+
 \section{Comparaison de langages}
 
 L'industrie du jeu vidéo est déjà bien établie et donc, certains
-langages semblent être favorisés quant au développement de jeux vidéo
-par les compagnies oeuvrant dans le domaine. Cette section présente
-ces langages dans le but de comparer ces langages à Scheme afin de
-mettre en lumière la possibilité de les remplacer par ce dernier.
+langages sont favorisés quant au développement de jeux vidéo par les
+compagnies oeuvrant dans le domaine. Cette section présente ces
+langages dans le but de les comparer à Scheme afin de mettre en
+lumière la possibilité de les remplacer par ce dernier.
+
+Les critères de comparaison utilisés dans cette section comprennent
+les fonctionnalités offertes par ces langages, le typage utilisé dans
+ceux-ci, le niveau d'abstraction du langage ainsi que les modes
+d'utilisations de celui-ci. 
 
 \subsection{C++}
-Langage principal utilisé pour le développement de jeu vidéo est sans
-aucun doute le langage C++. Ce dernier est une version orientée objet
-du langage C qui est aussi très répandu et apprécié pour être un
-langage suffisamment de bas niveau pour permettre d'écrire du code
-très efficace. Ainsi, C++ apporte les paradigmes de la programmation
-orientée objet en introduisant des classes à héritage multiples et des
-fonctions virtuelles permettant un \textit{dispatch} simple. C++
-possède également un système de gestion d'exceptions et de
-\textit{templates}. 
+Le langage principalement utilisé pour le développement de jeu vidéo
+est sans aucun doute le langage C++~\cite{cplusplus}. Ce dernier est
+une version orientée objet du langage C qui est aussi très répandu et
+apprécié pour être un langage suffisamment de bas niveau pour
+permettre d'écrire du code très efficace. Ainsi, C++ apporte les
+paradigmes de la programmation orientée objet en introduisant des
+classes à héritage multiple et des fonctions virtuelles permettant un
+\textit{dispatch} dynamique simple. C++ possède également un système
+de gestion d'exceptions et de \textit{templates}.
 
 Ainsi, le langage C++ semble être grandement apprécié pour son mélange
 de concepts de haut niveau comme la programmation orientée objet et de
@@ -5790,22 +5794,35 @@ d'exécution très près du matériel. Il diffère grandement d'un langage
 de haut niveau tel que Scheme. En effet, il ne possède pas de
 fermetures, de continuations et de système de macros évolué. La
 programmation en C++ est dite impérative parce que le résultat du
-programme dépend intrinsèquement de l'état de celui-ci. Puisqu'il
-s'agit d'un langage typé statiquement, il peut difficilement être
-interprèté tout en conservant ses avantages de performances.
+programme dépend intrinsèquement de l'état de celui-ci. De plus,
+puisqu'il s'agit d'un langage typé statiquement, le dépistage
+d'erreurs de programmation est plus ardu.
 
-Il en découle donc que C++ met à la disposition beaucoup moins de
-concepts de haut niveaux, réduisant ainsi la facilité d'abstractions
-et de programmation en générale pour donner accès plus facilement à de
-bonnes performances. Ainsi, C++ semble un bon choix de langage pour
-des plateformes possédant un matériel limité, tant en mémoire que
+Il en découle donc que C++ offre beaucoup moins de concepts de haut
+niveau, réduisant ainsi la facilité d'abstractions et de programmation
+en général pour donner accès plus facilement à de bonnes
+performances. Ainsi, C++ semble un bon choix de langage pour des
+plateformes possédant un matériel limité, tant en mémoire que
 puissance du processeur. Par contre, sur des machines plus puissantes,
 Scheme semble plus approprié parce qu'il apporte beaucoup plus de
 puissance d'abstraction aux programmeurs. Une utilisation de C++ pour
-implanter les parties critiques du moteur de jeu pourrait tout en
-utilisant un langage comme Scheme pour développer la partie
-\textit{gameplay} du jeu semble aussi une bonne approche sur des
-plateformes performantes afin d'optimiser les performances du jeu.
+implanter les parties critiques du moteur de jeu pourrait et de Scheme
+pour développer la partie \textit{gameplay} du jeu semble aussi une
+bonne approche sur des plateformes performantes afin d'optimiser les
+performances du jeu.
+
+Un net avantage du langage C++ face à Scheme est la quantité
+astronomique de librairies de tout genres disponibles aux
+programmeurs. Toutefois, l'interface aux fonctions étrangères de
+Gambit-C rend accessible l'utilisation de ces librairies en Scheme
+avec peu d'efforts. Dans le cadre des travaux présentés dans le
+chapitre \ref{Chap:exp}, l'utilisation de telles librairie a été
+minimisé dans le but d'avoir la plus grande base de code Scheme
+possible afin de ne pas biaiser l'expérience faite. L'utilisation de
+librairies C/C++ pour le développement d'applications commerciales
+représente certainement un net avantage. Par exemple, le chargement
+d'images pourrait être fait par l'une des nombreuses librairies
+disponibles.
 
 Il est également important de souligner le facteur de la main d'oeuvre
 pour l'adoption de Scheme pour remplacer C++. En effet, la quantité de
@@ -5829,27 +5846,69 @@ pouvoir ajouter des éléments au jeu de manière dynamique.
 
 Ce langage est reconnu pour avoir un environnement d'exécution très
 léger, environ 150 kilo-octets, ce qui fait en sorte que l'ajout de
-cet environnement se fait très bien, surtout lorsque cette intégration
-est faite sur des plateformes au matériel plus limité comme des
-consoles portables. Lua contient certains éléments de la programmation
-dite de haut niveau dont des fermetures, une gestion de mémoire
-automatique, l'optimisation d'appels terminaux et un système de
-coroutines. Il fourni aussi un système d'objet très limité à la
-Javascript~\cite{ECMA-262}, basé sur le prototypage d'objets.
+cet environnement a un faible coût en espace mémoire, ce qui est utile
+lorsque cette intégration est faite sur des plateformes au matériel
+plus limité comme des consoles portables. Lua contient certains
+éléments de la programmation dite de haut niveau dont les fermetures,
+une gestion de mémoire automatique, l'optimisation d'appels terminaux
+et un système de coroutines. Il fourni aussi un système objet limité à
+la Javascript~\cite{ECMA-262}, basé sur le prototypage d'objets.
 
 Ainsi, malgré le fait que ce dernier contient plusieurs aspects de la
-programmation de haut niveau, Lua possède plusieurs différence au
+programmation de haut niveau, Lua possède plusieurs différences au
 langage Scheme. Il ne supporte pas la réification de continuation et
-ne possède pas de système de macros. Il s'agit d'un langage
-généralement uniquement interprété, ce qui ne le rend pas approprié
-pour écrire le moteur d'un jeu vidéo.
+ne possède pas de système de macros. Ainsi, l'absence de ces
+fonctionnalités rend l'abstraction et la modularité, utile pour de
+gros projets, moins accessible. Il en résulte que Lua est moins
+approprié pour écrire le moteur de jeux vidéo non triviaux. Toutefois,
+puisque l'interprète du langage est très rapide, il pourrait être
+envisagé pour être utilisé pour le développement de jeux à plus petite
+échelle.
 
 Pour les mêmes raison que Lua, d'autre langages de programmations sont
-également utilisés afin d'effectuer le \textit{scrpting} d'un
+également utilisés afin d'effectuer le \textit{scripting} d'un
 jeu. Parmi ceux-ci, on retrouve principalement Python~\cite{Python} et
 Javascript~\cite{ECMA-262} qui sont très similaire à Lua et donc
 constituent eux aussi un sous ensemble de Scheme.
 
+\section{Sommaire}
+Ainsi, les langages C++ et Lua offrent des fonctionnalités différentes
+de celles offertes en Scheme. Le tableau \ref{Rev:lang-comp} effectue
+un résumé des différences entre ces langages. Le langage C++ offre de
+très bonnes performances grâce à son modèle d'exécution près de
+l'architecture de la plateforme utilisée. Puisqu'il n'offre que très
+peu de fonctionnalités de haut niveau, il constitue un choix idéal
+pour l'implantation de jeux sur des plateforme aux ressources très
+limitées, tel que c'est le cas sur les consoles portables ou sur les
+téléphones cellulaire. Le langage Lua, quant-à-lui, est un
+sous-ensemble du langage Scheme. La présence de gestion de mémoire
+automatique, de fermeture et d'un typage dynamique font de lui un très
+bon candidat comme langage de script afin de pouvoir évaluer
+dynamiquement des parties expérimentales du jeu dans le but de
+raffiner le \textit{gameplay}. Scheme offre beaucoup de fonctionnalité
+de haut niveau tels que des fermeture, de la réification de
+continuation ou encore des macros procédurales. Son coût plus élevé en
+allocations mémoires fait de lui un excellent choix pour le
+développement de moteurs de jeu sur des plateformes modernes ou comme
+engin de \textit{scripting} sur des plateforme plus limitée sur la
+mémoire.
+
+\begin{table}
+\begin{tabular}{cccc}
+Points de comparaison         & C++ & Lua & Scheme\\
+\hline \hline
+Typage                       & statique & dynamique & dynamique\\
+Gestion mémoire              & manuelle & automatique & automatique\\
+Fermetures                   & non & oui & oui\\
+Macros                       & textuelles & aucune & procédurales\\
+Réification de continuations & non & non & oui\\
+Mode usuel d'utilisation     & compilé & interprété & compilé et interprété\\
+Dépistage d'erreurs          & bas niveau & bas niveau & haut niveau\\
+\hline
+\end{tabular}
+\caption{Comparaison des langages C++, Lua et Scheme}
+\label{Rev:lang-comp}
+\end{table}
 
 \section{Jeux en \lisp}
 

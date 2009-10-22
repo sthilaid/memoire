@@ -10,7 +10,7 @@
 % Traduction en anglais et améliorations : Anne Broadbent, 2004
 
 \ProvidesPackage{udem_these_fr}[2001/09/05]
-\RequirePackage{doublespace,cite,indentfirst,epsfig,ifthen}
+\RequirePackage{setspace,cite,indentfirst,epsfig,ifthen}
 
 \typeout{}
 %\typeout{SVP, signaler toutes erreurs ou commentaires \`a Pierre.Carrier@UMontreal.CA}
@@ -63,7 +63,7 @@
 
 \def\examinateur#1{\gdef\@examinateur{#1}\@exextrue}
 \def\@universite{Universit\'e de Montr\'eal}
-\def\@facpresente{Facult\'e des \'etudes sup\'erieures}
+\def\@facpresente{Facult\'e des \'etudes sup\'erieures et postdoctorales}
 \def\@fac{Facult\'e des arts et des sciences}
 \def\fac#1{\gdef\@fac{#1}}
 \gdef\@titre{Titre de la th\`ese}
@@ -186,11 +186,21 @@
 %  Formattage des pages couverture
 %
 
-\newcommand{\PagesCouverture}{\begin{singlespace}
+\newcommand{\PagesCouverture}{\begin{singlespacing}
                               \pagetitre
-                              %\clearpage\pagejury
-                              \clearpage\pagejuryfinal
-                              \end{singlespace}}
+                              \if@twoside
+                              \pagevide
+                              \fi
+                              \pagejuryfinal
+                              \if@twoside
+                              \pagevide
+                              \fi
+                              \end{singlespacing}}
+
+\def\pagevide{
+  \thispagestyle{empty}
+  \null\newpage
+}
 
 \def\pagetitre{
         \thispagestyle{empty}

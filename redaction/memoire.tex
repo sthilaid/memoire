@@ -3,27 +3,35 @@
 %% \documentclass[12pt]{report}
 
 \usepackage[french, english]{babel}
-%\usepackage{isolatin1}
 \usepackage[utf8]{inputenc}
 \usepackage{url}
 \usepackage{setspace}
 \usepackage{verbatim}
 \usepackage{subfig}
 \usepackage{amssymb}
-\usepackage{placeins}
+\usepackage{placeins} % used for \
 
 \usepackage{udem_these_fr}
 
+
+% Positionnement des numeros de page en bas au centre
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\fancyhf{} % clear all header and footer fields
+%\fancyhead[C]{--------- TOTO -----------}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+
 \newcommand{\todo}[1]{[TODO: {\it #1}]}
-
-%\newcommand{\object}[1]{$\#<#1 \ldots>$}
 \newcommand{\object}[1]{{\it #1}}
-
 \newcommand{\ie}{{\textit{i.e. }}}
 \newcommand{\lr}{{\textit{Lode Runner }}}
 \newcommand{\si}{{\textit{Space Invaders }}}
 \newcommand{\lisp}{{\textit{Lisp }}}
 \newcommand{\clisp}{{\textit{Common Lisp }}}
+\newcommand{\Schemelang}{{\textit{Scheme }}}
 
 \input{r5rscommands.tex}
 
@@ -35,7 +43,8 @@
 
 %% \hyphenation{ex-écu-tion} %% marche pas a cause de l'accent
 
-\title{Développement de jeux vidéo en Scheme}
+\title{Sur l'utilisation du langage de programmation \Schemelang pour
+  le développement de jeux video}
 
 % remplir les champs...
 \Auteur{David}{St-Hilaire}
@@ -56,18 +65,26 @@
 
 %Pour un doctorat, changer simplement \MSc par \PhD
 %titre: 15 mots, max. 175 caractère
-\MSc{Sur l'utilisation du langage de programmation Scheme pour le développement de jeux video}
+\MSc{Sur l'utilisation du langage de programmation \Schemelang pour le développement de jeux video}
     {}
     {d'informatique et de recherche op\'{e}rationnelle}
     {informatique}
     {Novembre}
     {2009}
 
-\setstretch{2}
+\setstretch{2.0}
 \begin{document}
 
-\setcounter{page}{1}
- \PagesCouverture
+\setcounter{page}{0}
+\PagesCouverture
+
+% Modifications du layout des pages
+\setlength\textheight{9.0in}
+\setlength\headsep{20pt}
+\setlength\headheight{0in}
+\setlength\topmargin{0in}
+\addtolength{\voffset}{-0.5in}
+\setstretch{1.5}
 
 \resume
 
@@ -75,7 +92,7 @@
 \vspace{2em}
 
 \noindent {\bf Mots clés}: Language de programmation fonctionnels,
-Scheme, jeux vidéo, programmation orientée objet.
+\Schemelang, jeux vidéo, programmation orientée objet.
 
 \abstract
 
@@ -84,7 +101,7 @@ Scheme, jeux vidéo, programmation orientée objet.
 
 \vspace{2em}
 
-\noindent {\bf Keywords}: Functional programming languages, Scheme,
+\noindent {\bf Keywords}: Functional programming languages, \Schemelang,
 video games, object oriented programming.
 
 
@@ -103,19 +120,28 @@ video games, object oriented programming.
 \remerciements
 
 Je tient à remercier ma femme, mon fils et ma famille proche pour le
-soutient précieux qu'ils m'ont apporté tout au long de mes études
-universitaires. Je n'aurai jamais pu y arriver sans leurs aide. Je
-voudrais également remercier tout les membres du laboratoire de
+soutien précieux qu'ils m'ont apporté tout au long de mes études
+universitaires. Je n'aurais jamais pu y arriver sans leur aide.
+
+Je voudrais également remercier tout les membres du laboratoire de
 traitement parallèle dans lequel j'ai effectué les travaux de
 recherche présentés dans ce mémoire. Leurs connaissances et amitié me
 suivront tout au long de mon cheminement professionnel. Mon directeur
-de recherche, Marc Feeley, a jouer un rôle très important des ces
+de recherche, Marc Feeley, a joué un rôle très important des ces
 études, tant au niveau des connaissances scientifiques qu'au niveau de
 la persévérance et de la continuité. Je lui en suis très
-reconnaissant. Finalement, je tiens à remercier le Conseil de
-recherche en sciences et en génie du Canada (CRSNG) pour leur précieux
-soutient financier qui m'ont permis d'entreprendre mes études
-graduées.
+reconnaissant. 
+
+Je tiens également à remercier le Conseil de recherche en sciences et
+en génie du Canada (CRSNG) pour leur précieux soutien financier qui
+m'a permis d'entreprendre la recherche présentée dans ce document.
+
+Aussi, je voudrais remercier le studio de développement de jeux vidéo
+\textit{Gamerizon inc}. pour lequel je travaille et qui m'a permis de
+prendre congé afin de rédiger ce mémoire de maîtrise.
+
+Finalement, je voudrais remercier tous les lecteurs et lectrices qui
+auront le courage de lire ce document au complet!
 
 % \preface
 % 
@@ -124,9 +150,7 @@ graduées.
 \debutchapitres
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Introduction}
-\label{Chap:Intro}
-
+\chapter{Introduction} \label{Chap:Intro}
 L'industrie du jeu vidéo devient de plus en plus importante dans le
 domaine de l'informatique. Cette croissance est bien reflétée par
 l'augmentation de 28\% des revenus provenant de la vente de jeux vidéo
@@ -147,142 +171,130 @@ salaire moyen d'un artiste ou d'un développeur de jeu vidéo à 60
 années/hommes.
 
 Puisque la création d'un jeu vidéo peut nécessiter autant d'efforts,
-il semble très intéressant de vouloir tenter de faciliter le
-développement de ces derniers. Avec autant d'efforts mis en place,
-même une petite amélioration sur le cycle de développement peut
-engendrer une diminution énorme des coûts de production et améliorer
-la qualité des environnements utilisés par les développeurs.
+il semble très intéressant de faciliter le développement de ces
+derniers. Avec autant d'efforts mis en place, même une petite
+amélioration sur le cycle de développement peut engendrer une
+diminution énorme des coûts de production et améliorer la qualité des
+environnements utilisés par les développeurs.
 
 Jusqu'à ce jour, la grande majorité des jeux vidéo sont écrits à
-l'aide de langages de relativement bas niveau, comme par exemple en
-C~\cite{Ritchie-C-dev}, C++~\cite{cplusplus} ou encore
-C\#~\cite{CSHARP_SPEC}. Les langages de bas niveaux sont caractérisés
-par contact facile au matériel du système utilisé pour exécuter le
-programme. Ces langages sont généralement utilisés parce qu'ils sont
+l'aide de langages de bas niveau, tels que C~\cite{Ritchie-C-dev},
+C++~\cite{cplusplus} ou encore C\#~\cite{CSHARP_SPEC}. Les langages de
+bas niveaux sont caractérisés par un modèle d'implantation près de
+l'architecture de la plate-forme sur laquelle le logiciel est
+déployé. Ces langages sont généralement utilisés parce qu'ils sont
 déjà bien établis et que la main d'oeuvre est facilement accessible.
 
-Les langages de haut niveau sont généralement caractérisés par le fait
-qu'ils font une bonne abstraction du système utilisé et permettent
-d'exprimer un calcul de manière naturelle. Elles facilitent donc le
+Les langages de haut niveau sont, quant à eux, caractérisés par une
+bonne abstraction du système utilisé. Ces derniers permettent
+d'exprimer un calcul de manière naturelle. Ils facilitent donc le
 travail de programmation. Le coût de ces abstractions se répercute
 généralement en un coût de performance du programme. Dans le passé, la
 performance était critique dans les jeux vidéo, mais les consoles
 modernes sont devenues plus performantes que la plupart des
-ordinateurs personnels. Actuellement la performance n'est donc plus
-aussi critique. Aussi, les améliorations du domaine de la compilation
-de langages de haut niveau font en sorte que les performances de ces
-systèmes sont comparables à l'utilisation de langages de plus bas
-niveau.
+ordinateurs personnels. Ainsi, la performance n'est donc plus aussi
+critique qu'auparavant. De plus, les améliorations du domaine de la
+compilation de langages de haut niveau font en sorte que les
+performances de ces systèmes sont comparables à l'utilisation de
+langages de plus bas niveau.
 
-Ainsi, l'utilisation de langages de plus haut niveau pourrait
+Ainsi, l'utilisation de langages de haut niveau pourrait
 potentiellement améliorer le temps de développement des jeux en
 permettant aux programmeurs et designers de s'exprimer plus
-facilement. Les langages dans la famille \lisp semblent être de bons
+facilement. Les langages de la famille \lisp semblent être de bons
 candidats en tant que langages de haut niveau. Le langage
-Scheme~\cite{R5RS}, un \lisp moderne et performant, offre ainsi
-beaucoup ainsi plusieurs fonctionnalités de haut niveau. On retrouve,
-entre autre, du typage dynamique, des fonctions de premier ordre, un
-système de macro évolué, un accès direct aux continuation du calcul et
-un système de déboggage très efficace. Ces particularités du langage
-Scheme sont discutées plus en détail dans le chapitre
+\Schemelang~\cite{R5RS}, un \lisp moderne et performant, offre ainsi
+plusieurs fonctionnalités de haut niveau. On retrouve, entre autres,
+du typage dynamique, des fonctions de premier ordre, un système de
+macro évolué, un accès direct aux continuations du calcul et un
+système de déboggage très efficace. Ces particularités du langage
+\Schemelang sont discutées plus en détails dans le chapitre
 \ref{Chap:Scheme}.
 
-Le système Gambit-C~\cite{Gambit4}, l'une des implantations de Scheme
-les plus performantes~\cite{GAMBIT_BENCHMARKS} sera utilisé pour
-effectuer les expériences pratiques. Ce système comporte de nombreuses
-extensions pouvant être très utiles au développement de jeux vidéo. On
-y retrouve entre autres des tables de hachages et des \textit{threads}
-(processus légers).
+Le système Gambit-C~\cite{Gambit4}, l'une des implantations de
+\Schemelang les plus performantes~\cite{GAMBIT_BENCHMARKS} sera
+utilisé pour effectuer les expériences pratiques. Ce système comporte
+de nombreuses extensions pouvant être très utiles au développement de
+jeux vidéo. On y retrouve entre autres des tables de hachage et des
+\textit{threads} (processus légers).
 
-Il semble donc qu'une utilisation judicieuse de ce système a le
-potentiel de faire bénéficier des projets aussi complexes que le sont
-les productions de jeux vidéo.
-
+Une utilisation judicieuse de ce système pourrait potentiellement
+bénéficier à des projets aussi complexes que le sont les productions
+de jeux vidéo.
 
 \FloatBarrier
 \section{Problématique}
 Ce mémoire de maîtrise vise à répondre à la problématique suivante:
-
 \begin{quote}
   Quelles sont les forces et les faiblesses du langages de
-  programmation Scheme pour le développement de jeux vidéo.
+  programmation \Schemelang pour le développement de jeux vidéo.
 \end{quote}
-
 
 \FloatBarrier
 \section{Méthodologie}
-
-%% Afin de pouvoir répondre à la problématique posée, nous avons utilisé
-%% l'approche
-
-%% \begin{itemize}
-%% \item Dev 1er jeu simple pour determiner les besoins pour Scheme
-%% \item Augmenter Scheme pour repondre a ces besoins
-%% \item Ecrire un nouveau jeu utilisant les techniques developpees pour le 1er jeu
-%% \end{itemize}
-
 Afin de pouvoir répondre à la problématique posée, nous avons étudié
-les caractéristiques de Scheme et du compilateur Gambit-C, ainsi que
-les besoins au niveau du développement de jeux vidéo. Par la suite,
-deux jeux ont été développés en tentant d'utiliser a profit ces
+les caractéristiques de \Schemelang et du compilateur Gambit-C, ainsi
+que les besoins au niveau du développement de jeux vidéo. Par la
+suite, deux jeux ont été développés en utilisant à profit ces
 caractéristiques dans le but de raffiner nos approches et les évaluer
-dans un contexte réel.
+dans un contexte pratique.
 
 Le premier jeu a servi de plate-forme d'exploration permettant
-d'élaborer une méthodologie qui semble efficace pour le développement
-de jeux. Afin d'obtenir une telle méthodologie, plusieurs itérations
-de développement ont été effectuées, chacune permettant d'explorer de
+d'élaborer une méthodologie efficace pour le développement de
+jeux. Afin d'obtenir une telle méthodologie, plusieurs itérations de
+développement ont été effectuées, chacune permettant d'explorer de
 nouveaux aspects sur la manière de résoudre les problématiques
-associées à la création de jeux, par exemple comment arriver à
-synchroniser des entités dans le jeux ou comment arriver à décrire
-efficacement un système de détection et de résolution de collisions.
+associées à la création de jeux. Par exemple, la synchronisation des
+entités dans le jeu ou la description efficace d'un système de
+détection et de résolution de collisions ont été résolus.
 
-Suite à l'écriture de ce jeu, un deuxième jeu, plus complexe, a été
-développé afin de consolider les techniques précédemment utilisées et
-étendre ces techniques dans le cadre de ce nouveau jeu comportant de
-nouveaux défi, comme l'implantation d'une intelligence artificielle.
+Suite à l'écriture de ce jeu, un deuxième jeu plus complexe a été
+développé. Ce dernier visait à consolider les techniques précédemment
+utilisées et étendre celles-ci dans le cadre de ce jeu qui présente de
+nouveaux défis, tel que l'implantation d'une intelligence
+artificielle.
 
 
 \FloatBarrier
 \section{Aperçu du mémoire}
 Ce mémoire est composé de quatre parties. La première partie est une
-introduction qui traite de programmation fonctionnelle, du langage de
-programmation Scheme et des outils de développement disponibles, en
-particulier le compilateur Gambit-C. Ce chapitre donne un aperçu
+présentation de l'industrie des jeux vidéo et des défis découlant du
+développement de ces derniers. Par la suite, une introduction traitant
+de programmation fonctionnelle, du langage de programmation
+\Schemelang et des outils de développement disponibles, en particulier
+le compilateur Gambit-C est présentée. Ce chapitre donne un aperçu
 général de ces langages et permet de saisir les concepts fondamentaux
-du langage Scheme. Une présentation de l'industrie des jeux vidéo et
-des défis découlant du développement suit ce chapitre.
+du langage \Schemelang.
 
 La deuxième partie du mémoire porte sur des extensions faites au
-langage Scheme qui ont été utilisées dans le but d'améliorer le
+langage \Schemelang qui ont été utilisées dans le but d'améliorer le
 développement de jeux vidéo. On y présente la programmation orientée
 objet et un système d'objets conçu pour répondre aux besoins de la
 programmation de jeux vidéo. Un système de coroutines conçu dans les
 mêmes optiques est également présenté.
 
-La troisième partie du mémoire porte sur l'expérience acquise par
-l'auteur en effectuant l'écriture de deux jeux vidéo simples, mais
-possédant suffisamment de complexité pour exposer les problèmes
-associés à la création de jeux vidéo et comment tirer profit du
-langage de programmation Scheme pour résoudre ces problèmes. Une
-présentation des travaux reliés aux résultats présentés suit ce
-dernier chapitre. On y parle de l'utilisation d'autres langages pour
-le développement de jeux vidéo et cite des exemples d'utilisation des
-langages Scheme et \lisp dans des jeux vidéo commerciaux et de
+La troisième partie porte sur l'expérience acquise par l'auteur en
+effectuant l'écriture de deux jeux vidéo simples, mais possédant
+suffisamment de complexité pour exposer les problèmes associés au
+développement de jeux vidéo en général. De plus, la façon de tirer
+profit du langage de programmation \Schemelang pour résoudre ces
+problèmes est abordée. Une présentation des travaux reliés aux
+résultats présentés suit ce dernier chapitre. On y parle de
+l'utilisation d'autres langages pour le développement de jeux
+vidéo. On y cite aussi des exemples d'utilisation des langages
+\Schemelang et \lisp dans des jeux vidéo commerciaux et de
 l'expérience tirée de cette utilisation par les développeurs.
 
 Finalement, une conclusion apporte la lumière sur la problématique
 exposée dans ce mémoire. Le point sur l'expérience acquise pour le
-développement de jeux vidéo en Scheme y est fait et les avantages et
-inconvénients ou problèmes obtenus seront exposés.
+développement de jeux vidéo en \Schemelang y est fait et les avantages
+et inconvénients ou problèmes rencontrés sont exposés.
 
 
 \clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Développement de jeux vidéo}
-\label{Chap:JV}
-
+\chapter{Développement de jeux vidéo} \label{Chap:JV}
 Les jeux vidéo font parti d'un domaine de l'informatique en pleine
 effervescence grâce à une demande constante de nouveaux
 produits. 
@@ -305,16 +317,12 @@ un langage de programmation utilisé pour le développement de jeux.
 
 \FloatBarrier
 \section{Historique}
-
 L'histoire des jeux vidéo s'étale sur environ un demi-siècle et est
 une source importante d'informations qui permet d'exposer la manière
 avec laquelle les jeux vidéo évoluent. Seulement un bref résumé est
 présenté afin de donner les grandes lignes de l'évolution des
 jeux au cours des cinquante dernières
 années~\cite{VIDEOGAMES_history}~\cite{HISCORE}.
-
-%% http://en.wikipedia.org/wiki/History_of_video_games
-
 
 \FloatBarrier
 \subsection{Préhistoire 1948-1970}
@@ -367,7 +375,6 @@ retrouvent dans nos salons.
 
 \FloatBarrier
 \subsection{Premières consoles 1972-1984}
-
 La première console de jeu vidéo, le \textit{Magnavox Odyssey} fit son
 apparition en Amérique du Nord en 1972. Cette console permettait aux
 joueurs de jouer sur la télévision assis confortablement dans leurs
@@ -585,7 +592,6 @@ diversité du contenu des jeux vidéo produits.
 
 \FloatBarrier
 \section{Contraintes de programmation}
-
 Le développement de jeu vidéo implique une programmation sous des
 contraintes sévères afin que le jeu respecte les normes du marché
 et respecte les attentes des joueurs.
@@ -609,9 +615,6 @@ travail car peu de code peut être réutilisé.
 
 \FloatBarrier
 \subsection{Fluidité}
-
-
-\FloatBarrier
 \subsubsection{Taux de rafraîchissement}
 Une contrainte très importante dans le développement d'un jeu vidéo
 est la fluidité de celui-ci. Lorsqu'un film est projeté sur un écran
@@ -654,7 +657,6 @@ transparent au joueur.
 
 \FloatBarrier
 \subsubsection{Réponse quasi temps réelle}
-
 Une autre implication de la fluidité requise par un jeu vidéo est le
 délai de réponse face aux entrées du joueur. Ce délai aussi doit être
 aussi faible que possible pour donner l'impression que le personnage
@@ -665,7 +667,6 @@ temps pour effectuer son travail.
 
 \FloatBarrier
 \subsection{Modularité}
-
 En plus de devoir être efficacement implanté, un jeu vidéo moderne se
 doit d'être aussi modulaire que possible. Pour y arriver, le couplage
 entre les différentes composantes de ces dernières doit être faible. 
@@ -700,7 +701,6 @@ les composantes d'un jeu.
 
 \FloatBarrier
 \subsection{Malléabilité}
-
 La malléabilité d'un logiciel pourrait se définir comme la facilité
 avec laquelle ce dernier peut être modifié ou transformé. Cette
 qualité est importante pour le développement de jeu puisqu'un tel
@@ -757,9 +757,7 @@ possédant des budgets moins importants.
 \clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Le langage Scheme}
-\label{Chap:Scheme}
-
+\chapter{Le langage \Schemelang} \label{Chap:Scheme}
 Dans le cadre d'un projet donné, le choix d'un langage de
 programmation a beaucoup d'influence sur la structure du code écrit
 pour sa réalisation. Plusieurs facteurs influencent ces
@@ -772,7 +770,7 @@ langage répondant le mieux possible à ceux-ci.
 
 En se basant sur les besoins et les contraintes énoncés dans le
 chapitre \ref{Chap:JV}, nous proposons l'utilisation du langage de
-programmation Scheme comme outil principal de développement de jeux
+programmation \Schemelang comme outil principal de développement de jeux
 vidéo. Il s'agit d'un langage de très haut niveau qui semble être un
 candidat idéal pour de permettre un développement efficace de jeux
 vidéo. En effet, en plus de posséder plusieurs implantations très
@@ -780,31 +778,29 @@ performantes, ce langage offre une très grande quantité de concepts de
 programmation de très haut niveau. Parmi ceux-ci, l'on retrouve entre
 autre les concepts de la programmation fonctionnelle qui offre un
 grand potentiel d'abstractions au niveau de la structure du code, un
-système de macro évolué qui permet d'augmenter Scheme avec des
+système de macro évolué qui permet d'augmenter \Schemelang avec des
 langages spécifiques au domaine, l'accès aux continuations du calculs
 qui permettent une manipulation très puissante du flot de contrôle du
 programme et un système de gestion mémoire automatique.
 
-Ce chapitre donne un historique du langage Scheme afin de mettre en
+Ce chapitre donne un historique du langage \Schemelang afin de mettre en
 situation le langage et donner un aperçu de son origine. Par la suite,
 une brève explication des concepts de base du langage est donnée dans
-le but d'illustrer la simplicité du langage Scheme. Plus
-d'informations sur les bases de Scheme peuvent être obtenues dans la
+le but d'illustrer la simplicité du langage \Schemelang. Plus
+d'informations sur les bases de \Schemelang peuvent être obtenues dans la
 littérature~\cite{R5RS}~\cite{SICP}. Finalement, les particularités du
 langage sont mises en lumière pour rendre plus clair l'ampleur de
 celles-ci dans le contexte du développement de jeux vidéo.
 
 
 \FloatBarrier
-\section{Héritage \lisp}
-\label{Scheme:hist}
-
-Le langage Scheme est une forme épurée du tout premier langage de
+\section{Héritage \lisp} \label{Scheme:hist}
+Le langage \Schemelang est une forme épurée du tout premier langage de
 programmation de haut niveau, le langage \lisp. Ainsi, pour illustrer
-les origines de Scheme, une courte histoire du langage \lisp est
+les origines de \Schemelang, une courte histoire du langage \lisp est
 présentée. Par la suite, les langages de programmation qui furent
-inspirés du langage Scheme sont mentionnés en expliquant brièvement
-leurs racines commune à Scheme et leurs principales disparités.
+inspirés du langage \Schemelang sont mentionnés en expliquant brièvement
+leurs racines commune à \Schemelang et leurs principales disparités.
 
 
 \FloatBarrier
@@ -842,11 +838,11 @@ maîtriser tous les concepts de ce langage.
 
 
 \FloatBarrier
-\subsection{Avènement de Scheme}
+\subsection{Avènement de \Schemelang}
 Peu avant la standardisation de \clisp, Guy Steele et Gerald
 J. Sussman conçurent la spécification d'un nouveau dialecte du langage
-\lisp appelé Scheme~\cite{SCHEME_ORIGINS}. L'origine du développement
-de Scheme provient de la tentative de compréhension d'un formalisme
+\lisp appelé \Schemelang~\cite{SCHEME_ORIGINS}. L'origine du développement
+de \Schemelang provient de la tentative de compréhension d'un formalisme
 modulaire d'agents en intelligence
 artificielle~\cite{ACTOR}~\cite{Scheme-History}. Ils ont donc bâti un
 interprète minimaliste basé sur \lisp afin de pouvoir comprendre ce
@@ -859,9 +855,9 @@ le langage expérimental créé répondait parfaitement à leurs besoins et
 se trouvait à être très simple, beaucoup plus simple que ce qu'ils
 avaient anticipé. 
 
-Scheme devint ainsi populaire et est présentement l'un des deux
+\Schemelang devint ainsi populaire et est présentement l'un des deux
 dialectes les plus utilisés de \lisp, en concurrence avec \clisp. Même
-après avoir subi 5 révisions, le langage Scheme demeure très simple
+après avoir subi 5 révisions, le langage \Schemelang demeure très simple
 avec un standard ne comptant qu'environ une trentaine de
 pages~\cite{R5RS}. Il en résulte qu'on ne retrouve actuellement pas
 moins d'une cinquantaine d'implantations disponibles, dont une
@@ -870,18 +866,17 @@ implantations majeures offrent non seulement plusieurs extensions du
 langage, mais aussi de bonnes performances grâce à l'implantation
 d'optimisations de compilation avancées.
 
-Le langage Scheme impose une philosophie de minimalisme à ces
+Le langage \Schemelang impose une philosophie de minimalisme à ces
 programmeurs en ne leur fournissant que la base dans le
 standard. Cette philosophie est souvent appréciée car elle mène à
 utiliser ce qui est vraiment nécessaire et faire soi même ce qui n'est
 pas disponible, créant ainsi une bonne autonomie chez les programmeurs
-Scheme. De plus, le langage est accompagné d'une centaine librairies
+\Schemelang. De plus, le langage est accompagné d'une centaine librairies
 externes de traitement générique dénommées \textit{Scheme Request For Implementation} (SRFI~\cite{SRFI}).
 
 
 \FloatBarrier
-\subsection{Langages inspirés de Scheme}
-
+\subsection{Langages inspirés de \Schemelang}
 Plusieurs langages de programmation récents furent inspirés des
 langages \lisp. Pour la plupart, il s'agit de langages de script comme
 JavaScript~\cite{ECMA-262}, Ruby~\cite{RUBY} ou Perl~\cite{PERL}. Ces
@@ -895,22 +890,22 @@ fonctionnelle.
 Ces langages demeurent par contre toujours des sous-ensembles, en
 terme de fonctionnalités, des langages \lisp. Ils sont devenus
 populaires pour leur simplicité d'utilisation, mais un bon
-apprentissage de Scheme pourrait certainement être plus bénéfique à
-long terme. Entre autre, Scheme est un langage interprété et compilé,
+apprentissage de \Schemelang pourrait certainement être plus bénéfique à
+long terme. Entre autre, \Schemelang est un langage interprété et compilé,
 permettant de développer des applications très efficaces. Il en
 résulte que le code peut être développé de manière dynamique en
 utilisant une \textit{Read Eval Print Loop} (\textit{REPL}) afin de
 pouvoir tester et corriger facilement un programme développé. La
 présence d'une \textit{REPL} permet aussi un mode de récupération
 d'erreurs très dynamique et donnant accès à l'évaluation d'expressions
-Scheme lorsqu'une erreur se produit dans une telle boucle.
+\Schemelang lorsqu'une erreur se produit dans une telle boucle.
 
 
 \FloatBarrier
 \section{Introduction au langage}
-Tout en bénéficiant du riche héritage des langages \lisp, Scheme
+Tout en bénéficiant du riche héritage des langages \lisp, \Schemelang
 demeure un langage épuré et très simple. Cette section vise à
-présenter les bases du langage Scheme et de son implantation par le
+présenter les bases du langage \Schemelang et de son implantation par le
 système Gambit-C~\cite{Gambit4} afin de familiariser le lecteur avec
 non seulement la syntaxe du langage, mais aussi les fonctionnalités de
 base et les extensions au langage fournies par Gambit-C.
@@ -918,7 +913,7 @@ base et les extensions au langage fournies par Gambit-C.
 
 \FloatBarrier
 \subsection{Syntaxe}
-Les langages de la famille \lisp dont Scheme fait parti adoptent une
+Les langages de la famille \lisp dont \Schemelang fait parti adoptent une
 notation préfixe parenthésée. Il en résulte que la syntaxe du langage
 est consistante et simple. La figure \ref{Scheme:simple-ex} illustre
 un exemple simple de calcul arithmétique.
@@ -927,21 +922,21 @@ un exemple simple de calcul arithmétique.
   \begin{schemecode}
 (+ (expt 2 5) (sin (/ 3.141592653589793 2))) => \schemeresult{33.}
   \end{schemecode}
-  \caption{Exemple simple d'appels de fonctions en Scheme}
+  \caption{Exemple simple d'appels de fonctions en \Schemelang}
   \label{Scheme:simple-ex}
 \end{figure}
 
 Cette syntaxe apporte plusieurs bénéfices au langage. Puisque chaque
 appel de fonction (ou de forme spéciale) est parenthésé, il en résulte
-qu'un programme Scheme est très structuré et peut être manipulé
+qu'un programme \Schemelang est très structuré et peut être manipulé
 efficacement en utilisant des outils de développement performant tel
-\textit{VI} ou \textit{Gnu Emacs}. De plus, Scheme utilise \emph{la
+\textit{VI} ou \textit{Gnu Emacs}. De plus, \Schemelang utilise \emph{la
   même syntaxe} pour les données d'un programme que pour le programme
 en lui même. Il devient ainsi possible concevoir des programmes qui
-créent des programmes Scheme. C'est ce qui constitue la base du
-système de macro de Scheme. On dit ainsi qu'un programme Scheme est
+créent des programmes \Schemelang. C'est ce qui constitue la base du
+système de macro de \Schemelang. On dit ainsi qu'un programme \Schemelang est
 représenté par des expressions symboliques, fréquemment appelées
-S-expression. La distinction dans un programme Scheme entre une donnée
+S-expression. La distinction dans un programme \Schemelang entre une donnée
 et le programme se fait par l'entremise des formes spéciales
 \scheme{quote} et \scheme{quasiquote} spécifient respectivement que
 l'expression doit être entièrement ou en partie traité comme une
@@ -969,13 +964,12 @@ aussi utilisées en utilisant les caractères respectifs \scheme{'},
 
 \FloatBarrier
 \subsection{Aperçu des fonctionnalités requise par le standard}
-
-Le standard du langage Scheme~\cite{R5RS} est très minimaliste, mais
+Le standard du langage \Schemelang~\cite{R5RS} est très minimaliste, mais
 requiert toutes les fonctionnalités de base requises par un langage de
-haut niveau comme Scheme. On y spécifie que Scheme est un langage typé
+haut niveau comme \Schemelang. On y spécifie que \Schemelang est un langage typé
 dynamiquement, \ie que les vérifications de types sont faites durant
 l'exécution d'un programme, et non durant la compilation. Cette
-particularité fait en sorte que Scheme est un langage qui peut être
+particularité fait en sorte que \Schemelang est un langage qui peut être
 facilement interprété ou compilé. Les types de base du langage sont
 tous disjoints entre eux (aucun objet ne peut appartenir a plus d'un
 de ces types). Ces types sont vérifiés par les prédicats
@@ -997,14 +991,14 @@ quelques uns parmi ces types de base.
            0 
            3) => \schemeresult{"all"}
   \end{schemecode}
-  \caption{Exemples d'utilisation des type de bases de Scheme}
+  \caption{Exemples d'utilisation des type de bases de \Schemelang}
   \label{Scheme:basic-ex}
 \end{figure}
 
 
 \FloatBarrier
 \section{Programmation fonctionnelle}
-Le langage Scheme est à la base un langage fonctionnel. Cette famille
+Le langage \Schemelang est à la base un langage fonctionnel. Cette famille
 de langage de programmation est caractérisée par une programmation
 centrée sur l'appel de fonctions dites avec une transparence
 référentielle, où la valeur de retour d'une fonction dépend uniquement
@@ -1019,7 +1013,6 @@ l'utilisation de tels langages dans le milieu commercial.
 
 \FloatBarrier
 \subsection{Programmation fonctionnelle pure}
-
 Une programmation dite purement fonctionnelle respecte de manière
 stricte le paradigme de la programmation fonctionnelle, \ie que les
 fonctions sont des entités mathématique qui ne sont pas affectées par
@@ -1030,7 +1023,7 @@ de fonctions mathématique dénommé lambda calcul non
 typé~\cite{LAMBDA_CALCULUS}. Ce formalisme introduit un formalisme de
 définition de fonctions qui sert de base aux langages de programmation
 fonctionnels. La figure \ref{FIG:lambda-calcul} illustre la définition
-de la fonction \scheme{flip} définie en Scheme dans la figure
+de la fonction \scheme{flip} définie en \Schemelang dans la figure
 \ref{FIG:hof}.
 
 \begin{figure}[htb!]
@@ -1056,7 +1049,7 @@ lequel elles se trouvaient lors de leur création. Cette capacité de
 retenir l'environnement est très puissante et permet l'utilisation de
 fermeture comme structure de données. Par exemple, la figure
 \ref{Scheme:lambda-pairs} illustre l'implantation de paires similaire
-à celles retrouvées dans Scheme en lambda calcul.
+à celles retrouvées dans \Schemelang en lambda calcul.
 
 \begin{figure}[htb]
   \center
@@ -1075,21 +1068,20 @@ Comme déjà mentionné dans la section \ref{Scheme:hist}, le lambda
 calcul a donné naissance à une famille de langages dont la racine est
 le langage \lisp. Dans cette famille, les langages ML~\cite{SML} et
 Haskell~\cite{HASKELL} sont parmi les plus connus de ceux qui adhèrent
-fidèlement au modèle de calcul de Alonzo Church. Le langage Scheme est
+fidèlement au modèle de calcul de Alonzo Church. Le langage \Schemelang est
 lui aussi un langage fonctionnel, mais il n'est pas considéré comme
 étant pur puisque les mutations de l'état du programme sont
 permises. En effet, des opérateurs tels que \scheme{set!},
 \scheme{set-car!} ou encore \scheme{vector-set!}  permettent la
 modification de liaison ou du contenu de cellules mémoires. Ainsi,
-Scheme partage le meilleur des deux mondes en laissant la liberté au
+\Schemelang partage le meilleur des deux mondes en laissant la liberté au
 programmeur de choisir le paradigme de programmation qui lui apparaît
 le plus approprié. Par contre, un abus de mutation est considéré comme
-étant de très mauvais style en Scheme.
+étant de très mauvais style en \Schemelang.
 
 
 \FloatBarrier
-\subsection{Programmation fonctionnelle en Scheme}
-
+\subsection{Programmation fonctionnelle en \Schemelang}
 Le lambda calcul ouvre la porte à la création d'abstractions très
 intéressantes: les fonctions d'ordre supérieure. Celles-ci reçoivent
 des fonctions en paramètre, les manipulent et en retournent de
@@ -1150,7 +1142,7 @@ avoir d'interférences dans l'état du programme, ce qui n'est pas
 nécessairement le cas avec des modules impératifs dépendant
 directement de l'état du programme pour leur exécution.
 
-De plus, il est possible en Scheme de créer des fermetures n'attendant
+De plus, il est possible en \Schemelang de créer des fermetures n'attendant
 aucun arguments. Ces dernières sont généralement appelées
 \textit{thunk} de manière historique. Elle sont généralement utilisée
 afin de retarder l'évaluation de code dans le but de faire de
@@ -1172,9 +1164,7 @@ l'évaluation du corps du processus léger créé jusqu'à ce que ce dernier soi
 
 
 \FloatBarrier
-\section{Macros}
-\label{Scheme:macros}
-
+\section{Macros} \label{Scheme:macros}
 Les macros d'un langage de programmation sont des systèmes utilisés
 pour faire des abstractions qui sont résolues durant la compilation
 d'un fichier source. Dans sa forme la plus élémentaire, un système de
@@ -1219,16 +1209,16 @@ soit la définition de la macro en question.
 
 L'utilisation d'expressions symboliques pour représenter de la même
 manière les données d'un programme et le code source de celui-ci en
-Scheme la porte à l'implanter un système de macro très puissant, un
+\Schemelang la porte à l'implanter un système de macro très puissant, un
 système de macro procédural. Plusieurs de ces systèmes d'expansion de
-macro sont disponibles en Scheme. Le plus simple d'entre eux est celui
+macro sont disponibles en \Schemelang. Le plus simple d'entre eux est celui
 qui provient directement de \lisp, soit la forme spéciale
-\scheme{define-macro}. Avec cet expanseur, une macro Scheme est une
+\scheme{define-macro}. Avec cet expanseur, une macro \Schemelang est une
 fonction dont les paramètres \emph{ne sont pas évalués} avant d'être
 passés au corps de la fonction. Il en résulte ainsi que le code étant
 en position d'argument est considéré par la macro comme étant des
-données Scheme (listes, symboles, nombres, etc...). Puisque la macro
-Scheme est une fonction, elle possède toute la puissance du langage à
+données \Schemelang (listes, symboles, nombres, etc...). Puisque la macro
+\Schemelang est une fonction, elle possède toute la puissance du langage à
 sa disposition. La S expression retournée par la macro sera le
 résultat de l'expansion de celle-ci et sera donc évalué durant
 l'exécution du programme à l'endroit où l'appel de la macro se
@@ -1236,7 +1226,7 @@ retrouvait. Un exemple simple de macro tirant profit du fait que
 l'argument est passé par nom est illustré dans la figure
 \ref{Scheme:macro-ex2}. Cette macro très simple utilise le passage par
 nom pour permettre d'incrémenter la valeur d'une variable, ce qui ne
-serait pas possible autrement en Scheme puisque le passage d'argument
+serait pas possible autrement en \Schemelang puisque le passage d'argument
 se fait normalement par valeur.
 
 \begin{figure}[htb!]
@@ -1253,7 +1243,7 @@ se fait normalement par valeur.
 
 Un autre exemple de macro utilisant le passage par nom est donné dans
 la figure \ref{Scheme:macro-ex3}. Cette macro permet d'augmenter le
-langage Scheme d'une nouvelle forme spéciale qui correspond à une
+langage \Schemelang d'une nouvelle forme spéciale qui correspond à une
 forme simple d'itération comme l'on retrouve souvent dans les langages
 impératifs. L'expansion de l'appel à cette macro illustré dans la
 figure \ref{Scheme:macro-ex3} est présentée dans la figure
@@ -1298,7 +1288,7 @@ l'un de ses paramètres possède une référence à une variable déjà
 existante nommée \scheme{loop}. Le problème de capture de variables
 était tout aussi présent dans les macro de C et constituait pour ce
 type de macro un problème insolvable. Par contre, il est possible
-d'éviter ce problème en Scheme en générant un nom de variable pour
+d'éviter ce problème en \Schemelang en générant un nom de variable pour
 \scheme{loop} qui est assurément unique. L'implantation Gambit-C offre
 la fonction \scheme{gensym} pour ces besoins.
 
@@ -1339,7 +1329,7 @@ elle permet une plus grande liberté d'écriture. En effet, parfois la
 collision de nom peut, être intentionnelle. Aussi, le problème est
 facilement résolu avec l'utilisation de symboles uniques.
 
-Un exemple plus convaincant d'une macro Scheme utilisant la puissance
+Un exemple plus convaincant d'une macro \Schemelang utilisant la puissance
 de calcul du langage est illustré dans la figure
 \ref{Scheme:macro-ex1}. Cette macro résulte en la création d'un masque
 binaire ayant les bits des puissances de deux spécifiées en
@@ -1357,7 +1347,7 @@ paramètre, mais elle reçoit plutôt de ce cas ci la liste \scheme{(+ 1
   (apply + (map (curry2 expt 2) bits)))
 (number->string (mask 1 3 8) 2) => \schemeresult{"100001010"}
   \end{schemecode}
-  \caption{Exemple plus avancé de macro Scheme.}
+  \caption{Exemple plus avancé de macro \Schemelang.}
   \label{Scheme:macro-ex1}
 \end{figure}
 
@@ -1367,7 +1357,7 @@ intéressantes, sans toutefois perdre au niveau de l'élégance du
 code. Ce genre de macros mènent directement vers la construction de
 langages spécifiques au domaine (\textit{Domain Specific Languages} ou
 simplement \textit{DSL}). Ces derniers constituent l'ajout de
-nouvelles constructions à Scheme permettant d'exprimer facilement des
+nouvelles constructions à \Schemelang permettant d'exprimer facilement des
 idées relié à un concept précis de manière élégante, sans perte de
 performances. La macro \scheme{mask} pourrait constituer le pilier de
 base d'un \textit{DSL} effectuant la création et la manipulation de
@@ -1397,27 +1387,26 @@ de d'un langage naturel et, durant l'expansion, transformer ces
 déclaration et combinaisons, en des structures de données efficaces
 tant en utilisation mémoire qu'en rapidité d'accès et de
 manipulation. Un autre exemple pourrait être la création d'un système
-de programmation orienté objet à l'aide de macros Scheme. La puissance
+de programmation orienté objet à l'aide de macros \Schemelang. La puissance
 de calcul disponible durant l'expansion pourrait ainsi servir à la
 création des fonctions auxiliaire d'accès aux membres, à la
 détermination des membres hérités, etc...
 
-En conclusion, les macros Scheme donnent accès à une très grande
+En conclusion, les macros \Schemelang donnent accès à une très grande
 puissance expressive en permettant l'utilisation de la puissance
 complète du langage durant l'expansion de ces dernières. Cette
 puissance de calcul et cette simplicité provient du fait que le code
-source de Scheme et les données du langage Scheme utilisent la même
+source de \Schemelang et les données du langage \Schemelang utilisent la même
 syntaxe, soit les S-expressions. Ainsi, en utilisant ce système de
 macros, il est possible d'ajouter des nouvelles formes spéciales au
 langages et ainsi créer des langages spécifiques au domaine
 (\textit{Domain specific languages}). Ces derniers sont créés au
-dessus de Scheme dans le but de résoudre un problème précis de manière
+dessus de \Schemelang dans le but de résoudre un problème précis de manière
 efficace, tout en offrant une syntaxe facilitant leur utilisation.
 
 
 \FloatBarrier
 \section{Continuations}
-
 La forme d'écriture de code appelée CPS (\textit{Continuation Passing
   Style}) est un style d'écriture utilisé dans les langages
 fonctionnels qui permet d'expliciter la suite du calcul d'une fonction
@@ -1447,7 +1436,7 @@ suivante: un appel terminal est un appel qui termine l'exécution d'une
 fonction et un appel non-terminal est tel que le résultat de cet appel
 nécessitera du traitement ultérieur dans la fonction avant que
 celle-ci termine. Ainsi, seul l'appel à la fonction \scheme{*} est
-terminal dans la fonction \scheme{fact}. Le standard du langage Scheme
+terminal dans la fonction \scheme{fact}. Le standard du langage \Schemelang
 requiert l'implantation de l'optimisation d'appels terminaux. Cette
 dernière fait en sorte que le résultat d'un appel terminal est passé
 directement à la continuation de l'appel à la fonction en question. Il
@@ -1480,13 +1469,13 @@ continuation passée en paramètre, nommée \scheme{k}.
 Une propriété intéressante de cette transformation de code est reliée
 au fait que tous les appels de fonctions deviennent des appels
 terminaux. La transformation CPS est souvent utilisée par les
-implantations de Scheme car elle facilite l'implantation de
+implantations de \Schemelang car elle facilite l'implantation de
 l'optimisation d'appels terminaux. Ce style de programmation permet
 aussi d'utiliser de manière élégante la puissance d'abstraction des
 langages fonctionnels en permettant de diviser le calcul en petites
 parties facilement interchangeables et modulaires.
 
-Le langage Scheme offre la possibilité de réifier automatiquement la
+Le langage \Schemelang offre la possibilité de réifier automatiquement la
 continuation d'un calcul donné par l'entremise de la forme spéciale
 \scheme{call-with-current-continuation} souvent nommée aussi
 \scheme{call/cc}. Cette forme spéciale s'attend à recevoir une
@@ -1515,9 +1504,9 @@ calcul et la réutilisation de celui-ci.
 \FloatBarrier
 \subsection{Exemples d'utilisations}
 L'utilisation de continuations ajoute beaucoup de puissance au niveau
-de la programmation en Scheme, si elle est habilement exécutée. Cette
+de la programmation en \Schemelang, si elle est habilement exécutée. Cette
 section présente quelques utilisations intéressantes permettant
-d'entrevoir les possibilités qu'offre cet aspect de Scheme.
+d'entrevoir les possibilités qu'offre cet aspect de \Schemelang.
 
 
 \FloatBarrier
@@ -1644,10 +1633,9 @@ résulter de l'utilisation judicieuse de la forme spéciale
 
 \FloatBarrier
 \subsection{Conclusion}
-
 Ainsi, la réification de continuation implicites ou encore
 l'utilisation d'un style CPS utilisant des continuation explicites
-apporte beaucoup de puissance au langage Scheme. L'utilisation de
+apporte beaucoup de puissance au langage \Schemelang. L'utilisation de
 continuation permet la sauvegarde de l'état d'un calcul en cours dans
 une fermeture et permet sa réutilisation ultérieure. On peut ainsi
 créer sans trop d'efforts des systèmes d'exceptions, de retour arrière
@@ -1659,7 +1647,6 @@ dans le cadre de la programmation de jeux vidéo.
 
 \FloatBarrier
 \section{Gestion mémoire automatique}
-
 L'écriture de code effectuant la gestion de la mémoire d'un programme
 a toujours été une partie délicate du développement d'un logiciel. Non
 seulement, il est très facile de faire des erreurs, mais ces erreurs
@@ -1746,7 +1733,7 @@ désallocation implicite des espaces inutilisés dans la zone
 précédente. Cette technique est légèrement plus efficace que le
 \textit{Mark And Sweep} traditionnel, mais nécessite le double
 d'espace mémoire pour faire la gestion de la mémoire. Cette technique
-est utilisée dans l'implantation Scheme Gambit-C.
+est utilisée dans l'implantation \Schemelang Gambit-C.
 
 
 \FloatBarrier
@@ -1814,7 +1801,6 @@ l'efficacité algorithmique et l'efficacité de récupération.
 
 \FloatBarrier
 \subsection{Conclusion}
-
 Malgré que les techniques de récupération automatique de mémoire
 impliquent des coût supplémentaires en utilisation du processeur et de
 la mémoire, le gain en productivité pour le développement est
@@ -1837,8 +1823,7 @@ mémoire, comme c'est généralement le cas pour des jeux vidéo.
 
 \FloatBarrier
 \section{Dynamisme du langage}
-
-Le langage Scheme est un langage à typage dynamique, faisant ainsi
+Le langage \Schemelang est un langage à typage dynamique, faisant ainsi
 contraste aux langages fonctionnels de la famille \textit{ML}. Un
 typage dynamique se distingue par des vérifications de types
 effectuées durant l'exécution d'un programme. Un typage statique,
@@ -1888,7 +1873,6 @@ direction.
 
 \FloatBarrier
 \subsection{Interprétation et débuggage efficace}
-
 Un langage typé dynamiquement à la possibilité d'être interprété
 puisque les types ne doivent pas nécessairement être correct avant
 l'exécution. On peut ainsi évaluer les instruction les unes à la suite
@@ -1920,7 +1904,7 @@ analyser une erreur s'étant produite sur un processus distant, qui
 pourrait potentiellement être exécuté sur un système embarqué ou un
 appareil ne disposant pas d'interface permettant la récupération
 d'erreurs. Par exemple, ce système a été utilisé afin de pouvoir
-débugger des processus Scheme exécutés sur un téléphone mobile.
+débugger des processus \Schemelang exécutés sur un téléphone mobile.
 
 Il en résulte donc que malgré un faible coût en performance lors de
 l'exécution d'un programme, un système utilisant le typage dynamique
@@ -1932,8 +1916,7 @@ outils efficaces pour le développement de logiciels.
 
 \FloatBarrier
 \section{Extension utiles}
-
-Cette section présente un recueil des extension du langage Scheme qui
+Cette section présente un recueil des extension du langage \Schemelang qui
 sont utilisées dans les chapitres suivant de ce mémoire. Ces dernière
 ne constituent pas nécessairement un atout précis quand à la
 programmation de jeu vidéo, mais apporteront plutôt une meilleure
@@ -1942,7 +1925,6 @@ compréhension des exemples de codes fournis dans ce mémoire.
 
 \FloatBarrier
 \subsection{Fermetures}
-
 Le système Gambit-C permet la définition de paramètres avec
 l'utilisation de mots clés. La figure \ref{Scheme:fun-key} illustre un
 exemple de définition d'une telle fonction avec quelques appels à
@@ -2001,7 +1983,6 @@ de la procédure \scheme{apply}.
 
 \FloatBarrier
 \subsection{Tables de hachages}
-
 Le système Gambit-C supporte aussi l'utilisation de tables de
 hachages. Ces dernières peuvent être créées par la fonction
 \scheme{make-table} et des valeurs peuvent y être insérées ou
@@ -2014,17 +1995,16 @@ chaînes de caractères.
 
 \FloatBarrier
 \subsection{Tests d'égalité et opérations conditionnelles}
-
-L'égalité en Scheme entre deux objets appartenant aux types de base du
+L'égalité en \Schemelang entre deux objets appartenant aux types de base du
 langage peut toujours être vérifiée par la fonction
 \scheme{equal?}. Cette dernière supporte ainsi la vérification
 d'égalité sur plusieurs types d'objets et se trouve ainsi peu
 efficace. La fonction \scheme{eq?} permet la vérification d'égalité
-sur des pointeurs et puisque, en Scheme, un symbole ou un mot clé ne
+sur des pointeurs et puisque, en \Schemelang, un symbole ou un mot clé ne
 possède qu'un instance unique, ce prédicat peut être également utilisé
 pour distinguer ces derniers types.
 
-L'opération conditionnelle de base en Scheme est effectué par la forme
+L'opération conditionnelle de base en \Schemelang est effectué par la forme
 spéciale \scheme{(if <cond> <true> [<false>])}. Plusieurs formes
 spéciales dérivent de cette dernière afin de pouvoir exprimer plus
 facilement certains cas typiques. Par exemple, lorsque plusieurs
@@ -2054,7 +2034,6 @@ tel qu'illustré dans la figure \ref{Scheme:cond}.
 
 \FloatBarrier
 \subsection{Déclaration et utilisation d'objets}
-
 Le système Gambit-C apporte la définitions d'objets implantant des
 fonctionnalités minimales d'un système de programmation orienté
 objet. La définition de telles structures se fait en utilisant la
@@ -2088,12 +2067,11 @@ question, implantant ainsi un héritage simple. La figure
 
 \FloatBarrier
 \subsection{Affichage de résultats}
-
-Plusieurs fonctions sont disponible en Scheme afin d'effectuer
+Plusieurs fonctions sont disponible en \Schemelang afin d'effectuer
 l'affichage du résultat de l'évaluation d'une expression. Le standard
-Scheme fourni entre autre les fonctions \scheme{write} et
+\Schemelang fourni entre autre les fonctions \scheme{write} et
 \scheme{display} qui permettent un affichage bas niveau de données
-Scheme. Le système Gambit-C offre aussi les fonctions
+\Schemelang. Le système Gambit-C offre aussi les fonctions
 \scheme{pretty-print} (ou \scheme{pp}) afin de faire un affichage
 enjolivé d'une sortie de \scheme{write}. La fonction \scheme{println}
 afin de permettre l'affichage d'expressions composées. La figure
@@ -2114,7 +2092,6 @@ fonctions.
 
 \FloatBarrier
 \subsection{Interfaces aux fonctions étrangères}
-
 Une interfaces aux fonctions étrangères (\textit{Foreign Function
   Interface} ou FFI) est disponible dans le système Gambit-C. D'une
 part, cette dernière permet l'importation et l'utilisation de
@@ -2122,7 +2099,7 @@ fonctions C ou C++ présentent dans de librairies. La figure
 \ref{Scheme:FFI} illustre une interface minimaliste à la librairie C
 OpenGL et une utilisation de cette interface. On constate donc qu'une
 fois importées, les fonctions de cette dernière peuvent être utilisées
-comme n'importe qu'elle fonction Scheme.
+comme n'importe qu'elle fonction \Schemelang.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -2147,13 +2124,12 @@ comme n'importe qu'elle fonction Scheme.
 \end{figure}
 
 D'autre part, il est aussi possible d'exporter des fonctions écrites
-en Scheme de manière à ce qu'elles soient utilisées à partir de code C
+en \Schemelang de manière à ce qu'elles soient utilisées à partir de code C
 ou C++.
 
 
 \FloatBarrier
 \subsection{Capture de continuations}
-
 Le système Gambit-C effectue une abstraction de la fonction
 \scheme{call/cc} avec la fonction
 \scheme{continuation-capture}~\cite{Feeley01abetter}. Cette dernière
@@ -2185,8 +2161,7 @@ de cette dernière.
 
 \FloatBarrier
 \section{Conclusion}
-
-Cet aperçu des particularités du langage fonctionnel Scheme démontrent
+Cet aperçu des particularités du langage fonctionnel \Schemelang démontrent
 clairement que le langage répond grandement aux besoins établis par
 les jeux vidéo. Notamment, la puissance d'abstraction provenant de
 l'aspect de programmation fonctionnel du langage permettrait d'obtenir
@@ -2203,25 +2178,23 @@ ralentissement lors de l'exécution de jeux. Finalement, la possibilité
 de pouvoir réifier les continuations d'un programme en cours
 d'exécution offre beaucoup de puissance expressive au programmeur.
 
-Le langage Scheme étant très simple à la base, il est essentiel de
+Le langage \Schemelang étant très simple à la base, il est essentiel de
 développer des extensions de ce langage afin de pouvoir développer sur
 une base solide créée pour les besoins spécifiques du types
 d'application développé. L'expressivité du langage rend cette tâche
-facile. Ainsi, deux extensions au langages Scheme ont été développées
+facile. Ainsi, deux extensions au langages \Schemelang ont été développées
 dans le but de pouvoir répondre spécifiquement aux besoins des jeux
 vidéo.
 
 \clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Programmation orientée objet}
-\label{Chap:OO}
-
-Scheme est un langage offrant aux programmeurs beaucoup de ressources
+\chapter{Programmation orientée objet}\label{Chap:OO}
+\Schemelang est un langage offrant aux programmeurs beaucoup de ressources
 à l'état brut et leur permet de se bâtir des outils personnalisés pour
 mieux répondre leurs à besoins.
 
-Un paradigme qui n'est pas supporté directement par le langage Scheme
+Un paradigme qui n'est pas supporté directement par le langage \Schemelang
 est celui de la programmation orientée objet. Ce paradigme possède des
 structures de données hiérarchiques, les objets, favorisant la
 modularité et l'encapsulation de celles-ci. Cette modularité provient
@@ -2374,10 +2347,10 @@ générique leurs états.  L'utilisation de fonctions génériques
 permettrait ainsi de pouvoir facilement modulariser ces
 comportements. Il serait donc très intéressant de pouvoir utiliser la
 programmation orientée objet afin de pouvoir écrire des jeux vidéo en
-Scheme de manière naturelle et modulaire.
+\Schemelang de manière naturelle et modulaire.
 
 Plusieurs système objets sont déjà disponible pour l'implantation de
-Scheme Gambit-C. La plupart sont inspirés de la puissance expressive
+\Schemelang Gambit-C. La plupart sont inspirés de la puissance expressive
 du système CLOS. On retrouve entre autre le système orienté objet
 Meroon~\cite{MEROON}. Ce système impose plusieurs limitations dont le
 fait que la hiérarchie de classe est limitée à un héritage
@@ -2430,7 +2403,6 @@ chapitre.
 
 \FloatBarrier
 \section{Description du système}
-
 Le système de programmation orientée objet développé est fortement
 inspiré du Common Lisp Object System~\cite{CLOS} et possède la plupart
 des propriétés intéressantes de ce dernier. On retrouve entre autre de
@@ -2628,9 +2600,7 @@ de ceux-ci.
 
 
 \FloatBarrier
-\subsection{Définition de fonctions génériques}
-\label{OO:genfun}
-
+\subsection{Définition de fonctions génériques} \label{OO:genfun}
 Toujours avec une forte inspiration du modèle éprouvé du système
 objets de \clisp~\cite{CLOS}, le système d'objet développé possède des
 fonctions génériques permettant de faire du \textit{dispatch} multiple
@@ -2865,7 +2835,6 @@ correctement initialisé est finalement retourné.
 
 \FloatBarrier
 \subsection{Fonctions et formes spéciales utilitaires}
-
 Plusieurs fonctions et formes spéciales utilitaires sont disponibles
 afin de simplifier les tâches répétitives ou bien de permettre une
 introspection limitée avec le système objet. On retrouve plusieurs
@@ -2953,13 +2922,12 @@ formes spéciales.
 
 \FloatBarrier
 \section{Implantation}
-
 Afin de pouvoir implanter ce système objet comme une extension directe
-du langage Scheme, les macros Scheme ont dû être utilisées. Il en
+du langage \Schemelang, les macros \Schemelang ont dû être utilisées. Il en
 résulte donc en l'ajout d'un langage spécifique au domaine de la
 programmation orientée objet.
 
-Puisque l'expansion de macros Scheme se fait lors de la compilation,
+Puisque l'expansion de macros \Schemelang se fait lors de la compilation,
 il devient très avantageux de faire le plus de travail possible durant
 cette expansion afin de pouvoir obtenir de bonnes performances lors de
 l'exécution. Par contre, afin de pouvoir effectuer beaucoup de travail
@@ -2986,7 +2954,6 @@ d'implantations qui ont dû être faits.
 
 \FloatBarrier
 \subsection{Implantation de define-class}
-
 Le fonctionnement de \scheme{define-class} est intimement lié aux
 structures de données utilisées pour conserver l'information sur les
 classes afin de transmettre celle-ci aux instances. L'expansion de la
@@ -3059,7 +3026,7 @@ bon compromis entre l'utilisation de la mémoire et la rapidité d'accès
 aux attributs. 
 
 Ces structures de données sont implantées en utilisant des vecteurs
-Scheme. Ceux-ci ont été choisis dans le but de donner un accès rapide
+\Schemelang. Ceux-ci ont été choisis dans le but de donner un accès rapide
 aux attributs de ces derniers.
 
 Lorsque la forme spéciale \scheme{define-class} est expansée,
@@ -3175,7 +3142,7 @@ alors plus été possible de l'utiliser de manière polymorphique avec
 les sous-classes de la classe \scheme{point} puisqu'il n'est pas
 certain que l'attribut \scheme{x} se retrouvera au même endroit dans
 une instance de ces sous-classes. Puisqu'un accès au champs d'un
-vecteur est une opération efficace en Scheme, nous avons préféré opté
+vecteur est une opération efficace en \Schemelang, nous avons préféré opté
 pour la présence du polymorphisme qui apporte beaucoup en terme de
 puissance expressive.
 
@@ -3183,7 +3150,7 @@ Puisque le système objet est implanté en utilisant l'expanseur de
 macro \scheme{define-macro} de Gambit-C, les données conservées sur
 les classes définies durant cette expansion sont perdues lorsque
 l'expansion est terminée. Il en résulte ainsi qu'il n'est pas possible
-de modifier la hiérarchie de classe définie dans un module Scheme (un
+de modifier la hiérarchie de classe définie dans un module \Schemelang (un
 fichier) dans un autre module. Par exemple, une classe \scheme{Alpha}
 définie dans un fichier \scheme{A} ne pourrait pas être sous-classée
 dans un autre fichier \scheme{B}. Toutefois, il est possible de créer
@@ -3194,7 +3161,6 @@ baisse de performance qui pourrait être apporté par un tel support.
 
 \FloatBarrier
 \subsection{Implantation de define-generic}
-
 De manière similaire à la définition de nouvelles classes, des
 informations sur les fonctions génériques définies et sur leurs
 instances sont conservées dans une table de hachage globale durant
@@ -3292,8 +3258,7 @@ appelée par la fonction de \textit{dispatch}.
 
 
 \FloatBarrier
-\section{Performances}
-\label{OO:bench-sect}
+\section{Performances} \label{OO:bench-sect}
 Ce système de programmation orienté objet a été écrit dans le but
 d'obtenir un compromis entre l'accès à des concepts de haut niveaux et
 de bonnes performances lors de l'exécution, notamment en ce qui à
@@ -3412,7 +3377,7 @@ d'objets performants disponibles pour Gambit-C.
 \FloatBarrier
 \section{Conclusion}
 Ainsi un système objet complet a été développé dans le but d'étendre
-le langage Scheme et d'y inclure le paradigme de la programmation
+le langage \Schemelang et d'y inclure le paradigme de la programmation
 orientée objet. Ce système objet permet la déclaration de classes avec
 héritage multiple, polymorphisme et fonctions génériques effectuant du
 \textit{dispatch} multiple. Ces choix de caractéristiques ont été
@@ -3445,9 +3410,7 @@ respecter la philosophie de base de ce système.
 \clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Système de coroutines}
-\label{Chap:corout}
-
+\chapter{Système de coroutines} \label{Chap:corout}
 Les \textit{threads} constituent un outil de programmation important
 permettant l'exécution parallèle matérielle ou logicielle de
 code. L'utilisation de \textit{threads} dans un jeu vidéo peut être
@@ -3457,7 +3420,7 @@ multi-joueurs où ces derniers jouent à tours de rôles se représente
 bien par un modèle parallèle, puisqu'il s'agit vraiment de deux
 parties distinctes qui sont jouées en même temps. 
 
-Le langage Scheme tel que décrit par le standard~\cite{R5RS} ne fourni
+Le langage \Schemelang tel que décrit par le standard~\cite{R5RS} ne fourni
 pas de système de \textit{threads}. Par contre, le document SRFI
 18~\cite{SRFI18} (\textit{Scheme Request For Implementation}) décrit
 un \textit{API} (\textit{Application Programming Interface}) de
@@ -3506,7 +3469,7 @@ fonctionnalités de Gambit-C limite l'utilisation de coroutines au
 développement d'un seul concept dans un jeu.
 
 Afin de ne pas être limité par les fonctionnalités fournies par
-Gambit-C, l'expressivité du langage Scheme peut être mise à profit. En
+Gambit-C, l'expressivité du langage \Schemelang peut être mise à profit. En
 effet, grâce à la réification de continuations du calcul, la tâche de
 l'implantation d'un système de coroutine fait sur mesure est tout à
 fait accessible et réalisable sans changer le langage. Ce chapitre
@@ -3518,7 +3481,6 @@ tout en permettant l'utilisation récursive de ce système.
 
 \FloatBarrier
 \section{Description du langage}
-
 Un système de \textit{threads} coopératifs implique donc que le
 changement de contexte d'exécution associés aux changements de
 \textit{threads} doivent être faits de manière explicite par les
@@ -3537,7 +3499,7 @@ De plus, le système a été conçu pour être utilisé récursivement. Il
 est donc possible d'avoir une coroutine qui sera elle-même un système
 de coroutine, et ainsi de suite. Cette fonctionnalité a été implantée
 pour que le système soit le plus générique possible. De plus, l'idée
-de système récursifs est aussi très près du langage Scheme dans lequel
+de système récursifs est aussi très près du langage \Schemelang dans lequel
 la récursion de fonctions est très courante et commune grâce à
 l'implantation de l'optimisation d'appels terminaux.
 
@@ -3619,7 +3581,6 @@ d'une simulation existante avec la fonction
 
 \FloatBarrier
 \subsection{Démarrage du système}
-
 Le système de coroutines peut être démarré en utilisant la fonction 
 
 \begin{schemecode}
@@ -3765,7 +3726,7 @@ délais prescrit sera dépassé. Cela n'implique pas que la coroutine
 sera exécutée à ce moment là, car si cette file contient déjà des
 coroutines en attentes, elle devra attendre sont tour pour pouvoir
 poursuivre son exécution. Puisqu'une telle attente peu varier en
-fonction de la plateforme utilisée, elle introduit un certain
+fonction de la plate-forme utilisée, elle introduit un certain
 indéterminisme dans le système.
 
 Il est également possible pour une coroutine d'ajouter de nouvelles
@@ -3829,7 +3790,6 @@ spécifiée.
 
 \FloatBarrier
 \subsection{Environnement dynamique}
-
 Une certaine introspection est très utile pour un programmeur, surtout
 pour des fins de déboggage.  Un environnement dynamique est disponible
 pour les coroutines, lors de leurs exécution. Cet environnement donne
@@ -3848,7 +3808,6 @@ accès à de l'information sur ce dernier. il comprend les paramètres:
 
 
 \subsection{Système de communication inter-coroutines}
-
 Que ce soit afin d'informer une partie du score d'un autre joueur ou
 d'un vaisseau spatial attendant le bon moment pour effectuer son
 déplacement la synchronisation des entités d'un jeu est primordiale.
@@ -3898,7 +3857,7 @@ lancée par la fonction de réception utilisée.
 
 Les patrons utilisés dans le filtrage de motifs de la forme spéciale
 \scheme{recv} diffèrent de ceux dans Termite. Ici, le patron doit être
-une donnée Scheme. Lorsque, dans cette donnée, un symbole est précédé
+une donnée \Schemelang. Lorsque, dans cette donnée, un symbole est précédé
 d'une virgule (\textit{unquote}), le symbole est \emph{lié} à la
 valeur trouvée à cet endroit du motif dans le message reçu. Les
 formats de motifs reconnus sont les symboles, les mots clés, les
@@ -3907,7 +3866,7 @@ caractères, les listes et les vecteurs. Aussi, il est possible
 d'ajouter des gardes (filtrage conditionnel au prédicat) en incluant
 une liste de la forme \scheme{(where <pred-expr>)} après le motif de
 filtrage. Le prédicat utilisé est simplement une expression
-Scheme. Finalement, un patron spécial permettant d'effectuer des
+\Schemelang. Finalement, un patron spécial permettant d'effectuer des
 attentes bornées dans le temps est disponible sous la forme
 \scheme{(after <timeout> <body> ...)}. Ce patron spécial doit être
 spécifié \emph{en dernier}, s'il est présent. La figure
@@ -3980,10 +3939,10 @@ listes de diffusions sont:
 
 \noindent
 Un identificateur de liste de diffusion est représenté par une donné
-Scheme. L'avantage d'utiliser des données comme identificateur est
+\Schemelang. L'avantage d'utiliser des données comme identificateur est
 qu'il est alors possible de créer celui-ci durant
-l'exécution. L'utilisation de variables Scheme pointant vers une
-structure de donnés, plutôt que des données Scheme, offriraient de
+l'exécution. L'utilisation de variables \Schemelang pointant vers une
+structure de donnés, plutôt que des données \Schemelang, offriraient de
 meilleurs performances, mais ce dynamisme ne serait pas disponible.
 
 
@@ -4028,7 +3987,6 @@ et de création de sémaphores sont données ci-bas:
 
 \FloatBarrier
 \section{Implantation}
-
 L'implantation de ce système de coroutine est centralisée sur
 l'utilisation des fonctions \scheme{continuation-capture} et
 \scheme{continuation-return} afin de permettre la conservation de
@@ -4045,7 +4003,6 @@ données utilisées, mais aussi les algorithmes utilisés.
 
 \FloatBarrier
 \subsection{Implantation des coroutines}
-
 La structure de donnée des coroutine est implantée en utilisant le
 système d'objets fourni dans le système Gambit-C. Une version orientée
 objet est aussi disponible. La structure employée est illustrée dans
@@ -4281,7 +4238,6 @@ celle-ci.
 
 \FloatBarrier
 \subsection{Système de messagerie}
-
 La fonctionnalité de messagerie du système de coroutines est à la base
 très simple. Comme l'illustre la figure \ref{Corout:corout-class},
 chaque objet coroutine possède une boîte de réception de
@@ -4356,7 +4312,7 @@ du procédé employé.
 
 L'implantation de la forme spéciale de réception de messages
 \scheme{recv} est complexe et ne sera pas expliquée en détails. Cette
-dernière est implantée par une macro Scheme qui transforme les patrons
+dernière est implantée par une macro \Schemelang qui transforme les patrons
 de filtrage données dans une deuxième forme spéciale de filtrage par
 motifs appelée \scheme{match}. Le code généré par la macro
 \scheme{recv} tente d'effectuer le filtrage par motifs sur chacun des
@@ -4515,7 +4471,6 @@ pourraient être effectuées afin d'améliorer cette performance.
 
 \FloatBarrier
 \section{Conclusion}
-
 Ainsi, un système de coroutine a été implanté qui fournit aux
 programmeurs de jeux vidéo une interface à un système permettant de
 facilement exprimer des problèmes de changements de contextes
@@ -4552,11 +4507,9 @@ balancer ou d'optimiser ces dernières.
 \clearpage
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Évaluation et expériences}
-\label{Chap:exp}
-
+\chapter{Évaluation et expériences}\label{Chap:exp}
 Afin de pouvoir déterminer les forces et les faiblesses du
-développement de jeux vidéo en Scheme, des jeux doivent être
+développement de jeux vidéo en \Schemelang, des jeux doivent être
 développés en augmentant graduellement la complexité de ceux-ci pour
 permettre de trouver et résoudre de manière itérative les problèmes
 reliés à leur développement. Un jeu simple comprend les problèmes les
@@ -4605,9 +4558,7 @@ problématique de base traité par ce document.
 
 
 \FloatBarrier
-\section{Développement de \si}
-\label{Exp:SI}
-
+\section{Développement de \si} \label{Exp:SI}
 Ce jeu consiste à \og sauver la galaxie \fg en éliminant une armée
 d'envahisseurs extra-terrestre grâce à un vaisseau spatial équipé de
 lasers et bénéficiant de la présence de trois boucliers. Le joueur ne
@@ -4631,7 +4582,7 @@ d'écran du jeu développé.
 L'objectif visé en développant \si est simple: écrire un premier jeu
 qui permet d'exposer les problèmes fondamentaux reliés au
 développement de jeux vidéo et résoudre ces problème en tentant de
-tirer profit de la puissance expressive du langage Scheme. Pour y
+tirer profit de la puissance expressive du langage \Schemelang. Pour y
 arriver, une approche de développement itératif (en spirale) a été
 utilisée.
 
@@ -4653,15 +4604,13 @@ entier. L'idée était de tenter de fusionner le système objet et le
 système de coroutine afin que tous les objets du jeu soient eux-mêmes
 des coroutines, en espérant ainsi simplifier l'écriture d'entités du
 jeu. En expérimentant ainsi sur le contrôle de flot du jeu, il est
-possible de démontrer si l'utilisation de Scheme permet de faciliter
+possible de démontrer si l'utilisation de \Schemelang permet de faciliter
 de telles expérimentations. Cette dernière version du jeu est décrite
 dans la section \ref{Exp:sp3}
 
 
 \FloatBarrier
-\subsection{Version initiale}
-\label{Exp:sp1}
-
+\subsection{Version initiale} \label{Exp:sp1}
 Dans un premier temps, l'analyse de la version arcade du jeu
 disponible sur l'émulateur MAME~\cite{MAME}. Ce dernier est un système
 émulant plusieurs architectures de machines arcades et permet de
@@ -4680,12 +4629,11 @@ problèmes potentiels ont alors été identifiés:
 
 \FloatBarrier
 \subsubsection{Rendu graphique}
-
 Afin de pouvoir effectuer le rendu graphique du jeu, une librairie de
 lecture et chargement d'images a dû être écrite. Plutôt que d'utiliser
 une librairie C déjà existante pour faire ce travail, le choix de
 l'écriture de cette librairie visait à limiter les dépendances
-externes et d'avoir autant que possible de code en Scheme. Par contre,
+externes et d'avoir autant que possible de code en \Schemelang. Par contre,
 les librairie SDL~\cite{SDL} et \textit{OpenGL}~\cite{OpenGL} ont été
 utilisées afin de pouvoir simplifier la gestion d'entrées/sorties, du
 fenêtrage et du rendu de l'application. L'utilisation des interfaces
@@ -4741,7 +4689,6 @@ complexifier la tâche de la création des jeux.
 
 \FloatBarrier
 \subsubsection{Logique du jeu}
-
 Le flot de contrôle de la logique de ce jeu fut expérimental dès le
 départ. Dans la première version développée, une simulation par
 événements discrets a été utilisée. L'idée derrière ce choix provenait
@@ -4753,7 +4700,7 @@ etc... Ainsi, un petit système de simulation par événements discrets a
 simple en utilisant un monceau triant les événements ordonnancés de
 manière croissante en fonction du temps de leurs arrivé dans la
 simulation. Ces évènements étaient des \textit{thunk}, fermetures
-Scheme sans arguments, effectuant le travail à accomplir par
+\Schemelang sans arguments, effectuant le travail à accomplir par
 l'évènement. Lorsqu'un évènement se termine, l'ordonnanceur choisi
 alors le prochain et appelle le corps de celui-ci. Il est également
 possible pour un évènement d'ordonnancer un autre évènement grâce à la
@@ -4875,7 +4822,6 @@ début de partie de la figure \ref{Exp:des}.
 
 \FloatBarrier
 \subsubsection{Structures de donnés}
-
 Les structures de données utilisées dans \si furent définies par la
 forme spéciale \scheme{define-type} de Gambit-C. Elles ont utilisé
 l'héritage simple que permet cette forme de manière à tirer profit du
@@ -4918,7 +4864,6 @@ jeu. L'utilisation de ce petit système de type demande ainsi une
 
 \FloatBarrier
 \subsubsection{Détection et résolution de collisions}
-
 La détection de collisions sur ces objets a pu être faite de manière
 efficace et modulaire grâce aux types qui contiennent de l'information
 sur les boîtes englobantes des objets. Puisqu'il n'y a jamais beaucoup
@@ -4971,7 +4916,6 @@ très facile d'introduire des erreurs.
 
 \FloatBarrier
 \subsubsection{Parties multi-joueurs}
-
 Les parties multi-joueurs de \si sont très simples. Chaque joueur joue
 en alternance jusqu'à se que son vaisseau se fasse détruire. Ainsi,
 cela implique de pouvoir conserver deux parties du jeu en
@@ -5034,12 +4978,11 @@ partie du joueur actuel.
 
 \FloatBarrier
 \subsubsection{Conclusion}
-
 Ainsi, l'écriture de cette première version de \si a permis
 d'identifier plusieurs problèmes reliés au développement de jeux vidéo
 (détection et résolution de collisions, parties multi-joueurs,
 etc...). En plus de permettre de pouvoir facilement expérimenter sur
-le type de flot de contrôle utilisé pour développer ce jeu, Scheme a
+le type de flot de contrôle utilisé pour développer ce jeu, \Schemelang a
 permis de faire rapidement plusieurs outils non triviaux pour
 l'implantation du jeu, dont un système de fontes et un petit système
 de coroutines.
@@ -5055,9 +4998,7 @@ plus naturelle le comportement des entités du jeu.
 
 
 \FloatBarrier
-\subsection{Version orientée objet}
-\label{Exp:sp2}
-
+\subsection{Version orientée objet} \label{Exp:sp2}
 Une nouvelle version de \si fut développée afin de pallier à une
 lacune existante dans la première version écrite: le problème relié
 aux types de structures de données qui engendrait des cascades
@@ -5163,7 +5104,7 @@ précédente du jeu.
 \end{figure}
 
 La deuxième version du jeu apporte beaucoup d'améliorations face au
-développement de jeu vidéo en Scheme grâce à l'utilisation de la
+développement de jeu vidéo en \Schemelang grâce à l'utilisation de la
 programmation orientée objet. La modularité et l'abstraction du code
 de la première version a été améliorée de grâce à l'utilisation d'une
 hiérarchie de classes annotée de propriétés et comportant des membres
@@ -5176,9 +5117,7 @@ comportements des entités du jeu.
 
 
 \FloatBarrier
-\subsection{Version avec flot de contrôle sous forme de coroutines}
-\label{Exp:sp3}
-
+\subsection{Version avec flot de contrôle sous forme de coroutines} \label{Exp:sp3}
 Ainsi, après deux version du jeu, \si possède toujours certains
 problèmes dont le flot de contrôle utilisé qui n'est très bien adapté
 aux objets du jeu. Afin d'adresser ce problème, le système de
@@ -5318,12 +5257,11 @@ du programme et de son flot de contrôle.
 
 \FloatBarrier
 \subsection{Conclusion}
-
-Ainsi, le développement de \si en Scheme fut très riche en
+Ainsi, le développement de \si en \Schemelang fut très riche en
 expériences. Il a permis de trouver plusieurs problèmes reliés au
 développement de jeux vidéo. Ces derniers ont été résolus en utilisant
 le mieux possible les avantages qu'offrent un langage de haut niveau
-tel que Scheme en utilisant les fonctions d'ordres supérieures, un
+tel que \Schemelang en utilisant les fonctions d'ordres supérieures, un
 style de programmation CPS et en développant un système de coroutines.
 
 La création d'un système de programmation orienté objet a grandement
@@ -5356,9 +5294,7 @@ programmations résultant de l'implantation d'un tel jeu.
 
 
 \FloatBarrier
-\section{Développement de \lr}
-\label{Exp:ld}
-
+\section{Développement de \lr} \label{Exp:ld}
 Après avoir développé \textit{Space Invaders}, un deuxième jeu a dû
 être développé afin de pouvoir consolider les techniques
 développées. Le jeu \lr a été choisi dans le but de remplir cette
@@ -5390,7 +5326,6 @@ du jeu développé.
 
 \FloatBarrier
 \subsection{Logique du jeu}
-
 Afin de pouvoir développer ce jeu, les meilleurs techniques utilisées
 pour le développement de \si ont été réutilisées et raffinées pour les
 besoins plus grands de \lr. Par contre, le flot de contrôle de la
@@ -5442,7 +5377,6 @@ celui-ci.
 
 \FloatBarrier
 \subsection{Gestion de l'état des objets}
-
 Les entités du jeu \lr sont sensiblement plus complexes que celles
 présente dans le jeu précédant. En effet, ces dernières possèdent sont
 animés et réagissent différemment en fonction du contexte de
@@ -5602,7 +5536,7 @@ suffit que de sous-classer la classe \scheme{state-machine} par les
 objets de niveaux et d'ensuite effectuer la déclaration qui se fait
 selon l'interface présentée dans la figure \ref{Exp:def-state}. Les
 états sont normalement décrits par des symboles. Les actions peuvent
-être n'importe quelles expression Scheme. Aussi, lors de la
+être n'importe quelles expression \Schemelang. Aussi, lors de la
 description des transitions, il est possible d'utiliser le symbole
 \scheme{*} afin de représenter tous les états possibles ou sinon
 d'utiliser une sous-liste contenant les états de provenance ou
@@ -5674,7 +5608,7 @@ tous les 60 images rendues.
   \label{Exp:lr-start-transition}
 \end{figure}
 
-Ainsi, les macros et les fonctions d'ordre supérieures de Scheme ont
+Ainsi, les macros et les fonctions d'ordre supérieures de \Schemelang ont
 permis de pouvoir exprimer de manière élégante et modulaire les
 concepts reliés à la déclarations de machines à états pour les entités
 ainsi que les niveau du jeu \textit{Lode Runner}.
@@ -5682,7 +5616,6 @@ ainsi que les niveau du jeu \textit{Lode Runner}.
 
 \FloatBarrier
 \subsection{Détection et résolution de collisions}
-
 Une nette amélioration apportée au jeu, en comparaison celui
 développé précédemment, est l'utilisation d'une grille pour accélérer
 la détection de collisions. Le principe est simple: une grille
@@ -5722,7 +5655,6 @@ de ces fonctions génériques en fonction des objets passés.
 
 \FloatBarrier
 \subsection{Rendu graphique}
-
 Il est intéressant de noter que le rendu graphique est légèrement plus
 complexe que pour le jeu \si, car il est possible d'avoir des objets
 qui se superposent. Afin de résoudre les problèmes de visibilités qui
@@ -5751,7 +5683,6 @@ images.
 
 \FloatBarrier
 \subsection{Intelligence Artificielle}
-
 L'intelligence artificielle du jeu fut implantée de manière directe en
 utilisant des fermeture afin d'abstraire les différents algorithmes
 potentiels (proposant différentes difficultés au joueurs). Seuls deux
@@ -5819,7 +5750,6 @@ artificielle est présenté dans la figure \ref{Exp:dyn-ai}.
 
 \FloatBarrier
 \subsection{Conclusion}
-
 L'implantation du jeu \lr a permis de consolider certaines des
 techniques d'implantation de jeux développés pour \si. En effet,
 l'utilisation de fonctions génériques a permis d'exprimer simplement
@@ -5829,7 +5759,7 @@ jeu.
 Le flot de contrôle du jeu a été implanté de manière beaucoup plus
 traditionnelle que ce fut le cas pour \si. Il en résulte que le jeu
 dépend beaucoup des notions d'états des objets. Puisque le langage
-Scheme offre le meilleur des deux mondes, \ie qu'il offre un langage
+\Schemelang offre le meilleur des deux mondes, \ie qu'il offre un langage
 fonctionnel permettant des mutations, ce type de contrôle de flot a
 permis de tirer profit des avantages qu'offrent la programmation
 fonctionnelle (fonctions d'ordre supérieures, fermetures, etc...) tout
@@ -5857,11 +5787,11 @@ pour éprouver la gestion mémoire sur des ordinateurs récents.
 \FloatBarrier
 \section{Conclusion}
 Ainsi, il a été possible de développer deux jeux vidéo de complexité
-croissante en utilisant le langage Scheme. Le développement du premier
+croissante en utilisant le langage \Schemelang. Le développement du premier
 jeu, \si, a permis d'identifier et de répondre aux besoins
 fondamentaux de jeux vidéo: rendu graphique, détection de collisions,
 etc... Pour ce faire, un système de programmation orienté objet et un
-système de coroutines ont été ajouté au langage Scheme. Aussi, le
+système de coroutines ont été ajouté au langage \Schemelang. Aussi, le
 premier jeu a permis de vérifier la difficulté inhérente au changement
 de l'architecture du flot de contrôle d'un jeu en passant d'un flot
 contrôlé par une simulation par événements discrets à une simulation
@@ -5879,7 +5809,7 @@ très clair: le jeu a été développé rapidement et sans problèmes
 importants.
 
 Ainsi, il serait maintenant intéressant de voir quel serait l'impact
-de l'implantation en Scheme d'un jeu de qualité commerciale afin de
+de l'implantation en \Schemelang d'un jeu de qualité commerciale afin de
 tester plus profondément les limites que pourrait imposer le langage
 sur des jeux plus exigeant tant en utilisation processeur qu'en
 utilisation mémoire.
@@ -5892,7 +5822,6 @@ utilisation mémoire.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Travaux reliés}
-
 Les langages de programmation de la famille \lisp ont déjà été utilisés
 pour produire des jeux vidéo commerciaux de très bonne
 qualité. Certains seront cités et une revue de l'expérience acquise
@@ -5901,7 +5830,7 @@ leurs expériences avec celle acquise pour le développement de \si et
 de \lr.
 
 Avant tout, nous comparerons les différents langages utilisés dans
-l'industrie du jeu vidéo avec Scheme afin d'en faire ressortir les
+l'industrie du jeu vidéo avec \Schemelang afin d'en faire ressortir les
 forces et faiblesses. Les différences mènent à des méthodes de
 développement qui seront nécessairement divergentes. Ainsi, un
 portrait des techniques de programmation utilisées dans l'industrie
@@ -5911,11 +5840,10 @@ mémoire.
 
 \FloatBarrier
 \section{Comparaison de langages}
-
 L'industrie du jeu vidéo est déjà bien établie et donc, certains
 langages sont favorisés quant au développement de jeux vidéo par les
 compagnies oeuvrant dans le domaine. Cette section présente ces
-langages dans le but de les comparer à Scheme afin de mettre en
+langages dans le but de les comparer à \Schemelang afin de mettre en
 lumière la possibilité de les remplacer par ce dernier.
 
 Les critères de comparaison utilisés dans cette section comprennent
@@ -5940,7 +5868,7 @@ Ainsi, le langage C++ semble être grandement apprécié pour son mélange
 de concepts de haut niveau comme la programmation orientée objet et de
 bas niveau, comme la gestion de mémoire manuelle et son modèle
 d'exécution très près du matériel. Il diffère grandement d'un langage
-de haut niveau tel que Scheme. En effet, il ne possède pas de
+de haut niveau tel que \Schemelang. En effet, il ne possède pas de
 fermetures, de continuations et de système de macros évolué. La
 programmation en C++ est dite impérative parce que le résultat du
 programme dépend intrinsèquement de l'état de celui-ci. De plus,
@@ -5951,22 +5879,22 @@ Il en découle donc que C++ offre beaucoup moins de concepts de haut
 niveau, réduisant ainsi la facilité d'abstractions et de programmation
 en général pour donner accès plus facilement à de bonnes
 performances. Ainsi, C++ semble un bon choix de langage pour des
-plateformes possédant un matériel limité, tant en mémoire que
+plate-formes possédant un matériel limité, tant en mémoire que
 puissance du processeur. Par contre, sur des machines plus puissantes,
-Scheme semble plus approprié parce qu'il apporte beaucoup plus de
+\Schemelang semble plus approprié parce qu'il apporte beaucoup plus de
 puissance d'abstraction aux programmeurs. Une utilisation de C++ pour
-implanter les parties critiques du moteur de jeu pourrait et de Scheme
+implanter les parties critiques du moteur de jeu pourrait et de \Schemelang
 pour développer la partie \textit{gameplay} du jeu semble aussi une
-bonne approche sur des plateformes performantes afin d'optimiser les
+bonne approche sur des plate-formes performantes afin d'optimiser les
 performances du jeu.
 
-Un net avantage du langage C++ face à Scheme est la quantité
+Un net avantage du langage C++ face à \Schemelang est la quantité
 astronomique de librairies de tout genres disponibles aux
 programmeurs. Toutefois, l'interface aux fonctions étrangères de
-Gambit-C rend accessible l'utilisation de ces librairies en Scheme
+Gambit-C rend accessible l'utilisation de ces librairies en \Schemelang
 avec peu d'efforts. Dans le cadre des travaux présentés dans le
 chapitre \ref{Chap:exp}, l'utilisation de telles librairie a été
-minimisé dans le but d'avoir la plus grande base de code Scheme
+minimisé dans le but d'avoir la plus grande base de code \Schemelang
 possible afin de ne pas biaiser l'expérience faite. L'utilisation de
 librairies C/C++ pour le développement d'applications commerciales
 représente certainement un net avantage. Par exemple, le chargement
@@ -5974,19 +5902,18 @@ d'images pourrait être fait par l'une des nombreuses librairies
 disponibles.
 
 Il est également important de souligner le facteur de la main d'oeuvre
-pour l'adoption de Scheme pour remplacer C++. En effet, la quantité de
-programmeurs maîtrisant le langage Scheme est très restreintes en
-comparaison aux nombres de programmeurs C++ et donc, même si Scheme
+pour l'adoption de \Schemelang pour remplacer C++. En effet, la quantité de
+programmeurs maîtrisant le langage \Schemelang est très restreintes en
+comparaison aux nombres de programmeurs C++ et donc, même si \Schemelang
 pourrait se révéler un meilleur choix technologique pour le
 développement d'un jeu, il est possible que l'embauche de suffisamment
-de programmeurs Scheme soit trop difficile et coûteux vis-à-vis
+de programmeurs \Schemelang soit trop difficile et coûteux vis-à-vis
 l'embauche de programmeurs C++ beaucoup plus nombreux. Rendant ainsi
 C++ plus attrayant et moins risqué pour une entreprise.
 
 
 \FloatBarrier
 \subsection{Lua}
-
 Un langage Lua~\cite{Lua} est fréquemment utilisé non pas pour
 implanter le moteur d'un jeu vidéo, mais plutôt pour effectuer le
 \textit{scripting} de celui-ci, \ie le développement dynamique de
@@ -5997,7 +5924,7 @@ pouvoir ajouter des éléments au jeu de manière dynamique.
 Ce langage est reconnu pour avoir un environnement d'exécution très
 léger, environ 150 kilo-octets, ce qui fait en sorte que l'ajout de
 cet environnement a un faible coût en espace mémoire, ce qui est utile
-lorsque cette intégration est faite sur des plateformes au matériel
+lorsque cette intégration est faite sur des plate-formes au matériel
 plus limité comme des consoles portables. Lua contient certains
 éléments de la programmation dite de haut niveau dont les fermetures,
 une gestion de mémoire automatique, l'optimisation d'appels terminaux
@@ -6006,7 +5933,7 @@ la Javascript~\cite{ECMA-262}, basé sur le prototypage d'objets.
 
 Ainsi, malgré le fait que ce dernier contient plusieurs aspects de la
 programmation de haut niveau, Lua possède plusieurs différences au
-langage Scheme. Il ne supporte pas la réification de continuation et
+langage \Schemelang. Il ne supporte pas la réification de continuation et
 ne possède pas de système de macros. Ainsi, l'absence de ces
 fonctionnalités rend l'abstraction et la modularité, utile pour de
 gros projets, moins accessible. Il en résulte que Lua est moins
@@ -6019,35 +5946,35 @@ Pour les mêmes raison que Lua, d'autre langages de programmations sont
 également utilisés afin d'effectuer le \textit{scripting} d'un
 jeu. Parmi ceux-ci, on retrouve principalement Python~\cite{Python} et
 Javascript~\cite{ECMA-262} qui sont très similaire à Lua et donc
-constituent eux aussi un sous ensemble de Scheme.
+constituent eux aussi un sous ensemble de \Schemelang.
 
 
 \FloatBarrier
 \section{Sommaire}
 Ainsi, les langages C++ et Lua offrent des fonctionnalités différentes
-de celles offertes en Scheme. Le tableau \ref{Rev:lang-comp} effectue
+de celles offertes en \Schemelang. Le tableau \ref{Rev:lang-comp} effectue
 un résumé des différences entre ces langages. Le langage C++ offre de
 très bonnes performances grâce à son modèle d'exécution près de
-l'architecture de la plateforme utilisée. Puisqu'il n'offre que très
+l'architecture de la plate-forme utilisée. Puisqu'il n'offre que très
 peu de fonctionnalités de haut niveau, il constitue un choix idéal
-pour l'implantation de jeux sur des plateforme aux ressources très
+pour l'implantation de jeux sur des plate-forme aux ressources très
 limitées, tel que c'est le cas sur les consoles portables ou sur les
 téléphones cellulaire. Le langage Lua, quant-à-lui, est un
-sous-ensemble du langage Scheme. La présence de gestion de mémoire
+sous-ensemble du langage \Schemelang. La présence de gestion de mémoire
 automatique, de fermeture et d'un typage dynamique font de lui un très
 bon candidat comme langage de script afin de pouvoir évaluer
 dynamiquement des parties expérimentales du jeu dans le but de
-raffiner le \textit{gameplay}. Scheme offre beaucoup de fonctionnalité
+raffiner le \textit{gameplay}. \Schemelang offre beaucoup de fonctionnalité
 de haut niveau tels que des fermeture, de la réification de
 continuation ou encore des macros procédurales. Son coût plus élevé en
 allocations mémoires fait de lui un excellent choix pour le
-développement de moteurs de jeu sur des plateformes modernes ou comme
-engin de \textit{scripting} sur des plateforme plus limitée sur la
+développement de moteurs de jeu sur des plate-formes modernes ou comme
+engin de \textit{scripting} sur des plate-forme plus limitée sur la
 mémoire.
 
 \begin{table}
 \begin{tabular}{cccc}
-Points de comparaison         & C++ & Lua & Scheme\\
+Points de comparaison         & C++ & Lua & \Schemelang\\
 \hline \hline
 Typage                       & statique & dynamique & dynamique\\
 Gestion mémoire              & manuelle & automatique & automatique\\
@@ -6058,16 +5985,15 @@ Mode usuel d'utilisation     & compilé & interprété & compilé et interprét�
 Dépistage d'erreurs          & bas niveau & bas niveau & haut niveau\\
 \hline
 \end{tabular}
-\caption{Comparaison des langages C++, Lua et Scheme}
+\caption{Comparaison des langages C++, Lua et \Schemelang}
 \label{Rev:lang-comp}
 \end{table}
 
 
 \FloatBarrier
 \section{Jeux en \lisp}
-
 Malgré la domination du langage C++ dans l'industrie du jeu vidéo,
-certains jeux ont déjà été reconnus pour utiliser Lisp ou Scheme à
+certains jeux ont déjà été reconnus pour utiliser Lisp ou \Schemelang à
 différents degrés dans leur développement. Ceux-ci sont mis en lumière
 dans cette section afin de permettre de comparer l'expérience acquise
 par ces développeurs à celle acquise dans notre travail.
@@ -6075,9 +6001,6 @@ par ces développeurs à celle acquise dans notre travail.
 
 \FloatBarrier
 \subsection{Naughty Dog}
-
-%% http://www.naughtydog.com/site/post/presentations_from_game_developers_conference_2008/
-
 La compagnie Naughty Dog~\cite{ND} est bien connue pour utiliser des
 dialectes de \lisp dans le développement de jeux vidéo. En effet,
 cette compagnie a écrits plusieurs jeux sur la \textit{PlayStation 2}
@@ -6131,15 +6054,15 @@ très populaire pour l'action et le rendu graphique exceptionnel
 contenu dans ces titres. Dan Liebgold de Naughty Dog a donné une
 conférence sur le développement du jeu \textit{Uncharted: Drake's
   fortune}~\cite{ND_DRAKE} et mentionna qu'ils ont utilisé le langage
-Scheme afin de pouvoir exprimer les données du jeu de manière
+\Schemelang afin de pouvoir exprimer les données du jeu de manière
 dynamique, mais que le moteur du jeu est écrit en C++. Ils profitent
 ainsi des performances qu'offrent C++ pour les zones critiques du jeu
 et utilisent un langage de plus haut niveau pour la description des
 données et utilisent un schéma de compilation dynamique similaire à
 celui utilisé par GOAL. La figure \ref{Rev:Drake} illustre la
 constructions de données utilisées dans ce jeu. Cet exemple de code
-illustre bien le type d'utilisation faite du langage Scheme, \ie que
-Scheme est utilisé non seulement comme langage de script, mais aussi
+illustre bien le type d'utilisation faite du langage \Schemelang, \ie que
+\Schemelang est utilisé non seulement comme langage de script, mais aussi
 pour la définition des données du langage.
 
 \begin{figure}[htb!]
@@ -6167,32 +6090,32 @@ pour la définition des données du langage.
 \FloatBarrier
 \subsection{QuantZ}
 Récemment, le jeu QuantZ~\cite{Quantz} fut développé presque
-exclusivement en utilisant le langage Scheme et le compilateur
+exclusivement en utilisant le langage \Schemelang et le compilateur
 Gambit-C. Ce dernier constitue un jeu de puzzle 3D similaire à Tetris
 où le but est d'agencer des billes de même couleurs sur un cube. Les
 informations relatives au développement de ce jeu ont été acquise par
 l'auteur qui est toujours employé par le studio de développement de
 jeux vidéo \textit{Gamerizon inc}.
 
-L'utilisation de Scheme dans QuantZ a apporté plusieurs avantages
+L'utilisation de \Schemelang dans QuantZ a apporté plusieurs avantages
 technologiques. En effet, le dynamisme du langage a su profiter aux
 développeurs en leur permettant de pouvoir débugger le jeu lors de son
 exécution résultant permettant ainsi la résolution rapides de
 problèmes.
 
-Aussi, la syntaxe sous formes de S-expressions des programmes Scheme a
+Aussi, la syntaxe sous formes de S-expressions des programmes \Schemelang a
 été utilisée à profit en créant un système d'analyse de code
 permettant d'extraire toutes les chaînes de caractères présente dans
 le jeu afin de pouvoir créer facilement des outils
 d'internationalisation. Ces outils permettent entre autre la création
 automatique de fontes optimisées par langues, qui contiennent
 uniquement les caractères utilisées dans celles-ci. L'utilisation de
-la fonction Scheme \scheme{read} combinée à la récursivité du langage
+la fonction \Schemelang \scheme{read} combinée à la récursivité du langage
 ont facilement permis d'écrire un analyseur de code. Cette tâche
 aurait été beaucoup plus complexe dans un autre langage de
 programmation.
 
-Les fermetures disponible en Scheme ont été utilisées comme base d'un
+Les fermetures disponible en \Schemelang ont été utilisées comme base d'un
 système d'interface graphique complet permettant la création de
 fenêtres, de boutons, etc... En utilisant ces fermetures pour
 conserver l'état de ces entités, on obtient ainsi un résultat
@@ -6213,16 +6136,16 @@ soient pas traversée par le gestionnaire avant le rendu de chaque
 image du jeu.
 
 L'état du jeu a été implanté en utilisant un mécanisme de
-programmation fonctionnelle réactive basée sur Scheme permettant
+programmation fonctionnelle réactive basée sur \Schemelang permettant
 l'écriture élégante de niveaux grâce à la propagation de signaux
 correspondant à l'état du jeu. Aussi, le moteur de physique du jeu,
 écrit en C, a pu être intégrer sans problèmes au reste du moteur de
 QuantZ en utilisant le FFI de Gambit-C.
 
 Ainsi, le jeu QuantZ représente un exemple concret d'un jeu commercial
-ayant utilisé Scheme comme langage principal de développement. Leur
+ayant utilisé \Schemelang comme langage principal de développement. Leur
 utilisation du langage a su tirer profit de la plupart des
-particularité de Scheme dont notamment l'utilisation de fonctions de
+particularité de \Schemelang dont notamment l'utilisation de fonctions de
 premier ordre et du dynamisme du système Gambit-C.
 
 
@@ -6230,7 +6153,7 @@ premier ordre et du dynamisme du système Gambit-C.
 \section{Conclusion}
 Ainsi, plusieurs langages sont utilisés dans l'industrie du jeu vidéo
 dont, notamment les langages Lua et C++. Après une comparaison au
-langage Scheme, on constate que ces derniers répondent à des besoins
+langage \Schemelang, on constate que ces derniers répondent à des besoins
 précis présents dans les jeux vidéo. Lua propose un développement plus
 dynamique tandis que C++ permet d'obtenir de très bonnes performances
 au coût d'avoir moins de puissance d'abstractions. Le choix du langage
@@ -6239,14 +6162,14 @@ fait en prenant en considération le matériel utilisé afin d'assurer
 que de pouvoir utiliser le plus de puissance expressive que possible,
 sans toutefois avoir un coût relié à ces abstractions trop élevé.
 
-Aussi, \lisp et Scheme ont déjà été utilisés dans l'industrie du jeu
+Aussi, \lisp et \Schemelang ont déjà été utilisés dans l'industrie du jeu
 vidéo pour développer des jeux de grandes qualités tels \textit{Jak
   and Dexter}, \textit{Uncharted: Drake's Fortune} et
 \textit{QuantZ}. L'expérience acquise par les développeurs de ces jeux
 est très positive. On constate de manière unanime ces langages leurs
 ont fourni un environnement de développement dynamique et
 l'extensibilité du langage a jouer à l'avantage de ceux-ci. Ainsi,
-malgré la faible adoption de Scheme pour l'écriture de jeux vidéo
+malgré la faible adoption de \Schemelang pour l'écriture de jeux vidéo
 commerciaux par les compagnies de l'industrie, les équipes l'ayant
 utilisé semblent l'avoir beaucoup apprécier et surtout, l'utilisent
 toujours dans le développement de leurs jeux.
@@ -6255,14 +6178,12 @@ toujours dans le développement de leurs jeux.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Conclusion}
-
-
 L'expérience acquise lors du développement des jeux \si et \lr permet
 donc de faire le point sur les forces et les faiblesses de
 l'utilisation d'un langage de programmation fonctionnelle et dynamique
-tel que Scheme pour le développement de jeux vidéo.
+tel que \Schemelang pour le développement de jeux vidéo.
 
-L'expressivité du langage Scheme, notamment grâce aux fonctions de
+L'expressivité du langage \Schemelang, notamment grâce aux fonctions de
 première classes et aux macros procédurales, a permis de pouvoir
 développer un système de programmation orientée objet et l'intégrer
 directement au langage. Aussi, la réification de continuations a rendu
@@ -6275,7 +6196,7 @@ l'implantation de parties multi-joueurs grâce à l'utilisation de
 coroutines pour encapsuler les parties se déroulant en parallèle. Le
 coût de développement de tels modules, en utilisant des langages
 donnant accès à moins de puissance d'abstraction, aurait certainement
-rendu le développement de ceux-ci impossible et donc, Scheme s'est
+rendu le développement de ceux-ci impossible et donc, \Schemelang s'est
 révélé un langage très puissant pour le développement de ces outils
 indispensables.
 
@@ -6288,7 +6209,7 @@ sont signalées durant l'exécution du jeu, la résolution de celles-ci
 sont font très rapidement grâce à la possibilité d'introspection de
 l'état du programme et d'évaluation dynamique de code.
 
-Aussi, le langage Scheme a permis de facilement pouvoir expérimenter
+Aussi, le langage \Schemelang a permis de facilement pouvoir expérimenter
 sur le contrôle de flot des jeux en permettant de développer
 facilement des systèmes non-triviaux de simulations à événements
 discrets et de simulation par agents (coroutines). La modification du
@@ -6297,25 +6218,25 @@ grâce aux abstractions faites entre autre par le système d'objets.
 
 Bien sûr, la modularité de programmes apporte généralement des coût en
 performances pour ceux-ci. Ainsi, une difficulté d'utiliser un langage
-comme Scheme face à la programmation de jeux vidéo réside entre
+comme \Schemelang face à la programmation de jeux vidéo réside entre
 trouver le bon équilibre entre le niveau d'abstraction et la
 spécification de code (optimisations). Bien sûr cette balance varie
 grandement en fonction de l'architecture du matériel sur lequel le jeu
-sera déployé. S'il s'agit d'une plateforme au matériel très limité,
+sera déployé. S'il s'agit d'une plate-forme au matériel très limité,
 alors le coût d'abstraction pourrait peut-être s'avérer trop
 grand. Dans un tel cas, l'utilisation de langages de plus bas niveau,
 comme C++, semble plus appropriée afin de bâtir le moteur du jeu, mais
-Scheme pourrait alors être utilisé comme langage de script afin de
+\Schemelang pourrait alors être utilisé comme langage de script afin de
 permettre de développer dynamiquement le \textit{gameplay} du jeu. Par
-contre, s'il s'agit de plateforme performantes, comme c'est le cas
+contre, s'il s'agit de plate-forme performantes, comme c'est le cas
 pour les jeux développés dans le cadre de ce mémoire, alors la
 possibilité de modulariser le code est beaucoup plus grande et les
 performances deviennent moins critiques, face à la réutilisabilité
-potentielle du code écrit. Scheme devient alors un candidat idéal.
+potentielle du code écrit. \Schemelang devient alors un candidat idéal.
 
 Un problème potentiel qui n'a pas été adressé dans ce mémoire est
 relié à l'allocation et la gestion de mémoire automatique utilisée par
-le langage Scheme. En effet, puisque Scheme est un langage
+le langage \Schemelang. En effet, puisque \Schemelang est un langage
 fonctionnel, ce dernier effectue généralement beaucoup d'allocations
 mémoire. Ainsi, il est possible que sur des systèmes où le coût
 d'allocation mémoire est élevé, l'utilisation d'un tel langage
@@ -6327,7 +6248,7 @@ mémoire, puisqu'ils demeuraient trop simples.
 
 Ainsi, malgré le coût que peut apporter l'utilisation d'abstractions,
 nous croyons que le bénéfice résultant est bien supérieur à ce
-dernier, surtout sur des plateformes performantes. Les techniques de
+dernier, surtout sur des plate-formes performantes. Les techniques de
 programmations orientées objets développées nous ont permis de
 rapidement pouvoir développer un nouveau jeu en réutilisant plusieurs
 modules, dont notamment les modules de rendus graphiques et de
@@ -6337,7 +6258,6 @@ résolution de collisions.
 
 %%%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %chapter{Bibliographie}
-
 \setstretch{1}
 \bibliographystyle{unsrt} %% or maybe plain or abbrv
 \bibliography{memoire}

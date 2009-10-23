@@ -545,9 +545,9 @@ c'est aussi avec les artistes que les développeurs doivent s'accorder
 dans le but de concevoir un moteur de rendu répondant bien aux besoins
 de leurs créations. Celles-ci doivent être faites en respectant les
 contraintes imposées par le matériel où sera déployé le
-produit. Ainsi, le moteur de rendu doit être facilement
-extensible afin d'accommoder facilement les nouvelles idées
-et les nouveaux concepts à intégrer.
+produit. Ainsi, le moteur de rendu doit être facilement extensible
+afin d'accommoder les nouvelles idées et les nouveaux concepts à
+intégrer.
 
 Une composante multi-joueur, tout dépendant si elle implique des
 parties faites sur le réseau ou non, pourrait nécessiter une grande
@@ -702,8 +702,8 @@ La modularité du jeu aura un effet positif sur la malléabilité en
 permettant de modifier les mécanismes internes des composantes sans
 trop affecter le reste du programme. Par contre, un langage de
 programmation offrant une bonne puissance d'abstraction serait tout
-aussi efficace, car il permet d'ajouter facilement de
-nouvelles abstractions où les besoins de changement apparaissent.
+aussi efficace, car il permet d'ajouter de nouvelles abstractions où
+les besoins de changement apparaissent.
 
 
 \FloatBarrier
@@ -736,12 +736,12 @@ d'améliorer la réutilisation des composantes communes à plusieurs
 jeux. L'aspect de la malléabilité du code permet d'accélérer le
 prototypage du jeu.
 
-Il semble donc que le choix d'un langage permettant facilement de
-répondre à ces contraintes pourrait certainement faciliter le
-développement de jeux vidéo. Ainsi, des économies substantielles aux
-compagnies de l'industrie pourraient être engendrée, rendant plus
-accessible le développement de jeux aux plus petites compagnies
-possédant des budgets moins importants.
+Il semble donc que le choix d'un langage permettant de répondre à ces
+contraintes pourrait certainement faciliter le développement de jeux
+vidéo. Ainsi, des économies substantielles aux compagnies de
+l'industrie pourraient être engendrée, rendant plus accessible le
+développement de jeux aux plus petites compagnies possédant des
+budgets moins importants.
 
 
 \clearpage
@@ -808,8 +808,8 @@ récursives fut publié ultérieurement~\cite{LISP_ORIGINS}.
 
 Le langage fut aussitôt adopté par la communauté de recherche en
 intelligence artificielle, puisque l'utilisation de traitement
-symbolique permettait de facilement développer de nouveaux algorithmes
-dans ce domaine.
+symbolique permettait de développer de nouveaux algorithmes dans ce
+domaine.
 
 \lisp évolua par la suite en de nombreux dialectes différents, chacun
 apportant ses propres extensions au langage. Vers le début des années
@@ -881,10 +881,10 @@ terme. Entre autres, \Schemelang est un langage interprété et compilé,
 permettant de développer des applications très efficaces. Il en
 résulte que le code peut être développé de manière dynamique en
 utilisant une \textit{Read Eval Print Loop} (\textit{REPL}) afin de
-tester et corriger facilement un programme développé. La présence
-d'une \textit{REPL} permet aussi un mode de récupération d'erreurs
-très dynamique et donnant accès à l'évaluation d'expressions
-\Schemelang lorsqu'une erreur se produit dans une telle boucle.
+tester et corriger un programme développé. La présence d'une
+\textit{REPL} permet aussi un mode de récupération d'erreurs très
+dynamique et donnant accès à l'évaluation d'expressions \Schemelang
+lorsqu'une erreur se produit dans une telle boucle.
 
 
 \FloatBarrier
@@ -956,10 +956,10 @@ langage de haut niveau comme \Schemelang. On y spécifie que
 \Schemelang est un langage typé dynamiquement, \ie que les
 vérifications de types sont faites durant l'exécution d'un programme,
 et non durant la compilation. Cette particularité fait en sorte que
-\Schemelang est un langage qui peut être facilement interprété ou
-compilé. Les types de base du langage sont tous disjoints entre eux,
-\ie aucun objet ne peut appartenir à plus d'un de ces types. Ces types
-sont vérifiés par les prédicats \scheme{boolean?}, \scheme{pair?},
+\Schemelang est un langage qui peut être interprété ou compilé. Les
+types de base du langage sont tous disjoints entre eux, \ie aucun
+objet ne peut appartenir à plus d'un de ces types. Ces types sont
+vérifiés par les prédicats \scheme{boolean?}, \scheme{pair?},
 \scheme{symbol?}, \scheme{number?}, \scheme{char?}, \scheme{string?},
 \scheme{vector?}, \scheme{port?}, \scheme{procedure?} et
 \scheme{null?}. Chacun de ces types sont documentés et possèdent des
@@ -1312,8 +1312,8 @@ dans des conditions potentiellement problématiques.
 Bien que l'expansion de macro faite avec \scheme{define-macro} puisse
 impliquer des collisions de variables, elle permet une plus grande
 liberté d'écriture. En effet, parfois la collision de nom peut être
-intentionnelle. Aussi, le problème est facilement résolu avec
-l'utilisation de symboles uniques.
+intentionnelle. Aussi, le problème est résolu avec l'utilisation de
+symboles uniques.
 
 Un exemple plus convaincant d'une macro \Schemelang utilisant la
 puissance de calcul du langage est illustré dans la figure
@@ -1343,10 +1343,10 @@ intéressantes, sans toutefois perdre au niveau de l'élégance du
 code. Ce genre de macros mènent directement vers la construction de
 langages spécifiques au domaine (\textit{Domain Specific Languages} ou
 simplement \textit{DSL}). Ces derniers consistent en l'ajout de
-nouvelles constructions à \Schemelang permettant d'exprimer facilement
-des idées reliées à un concept précis de manière élégante, sans perte
-de performance. La macro \scheme{mask} pourrait constituer le pilier
-de base d'un \textit{DSL} effectuant la création et la manipulation de
+nouvelles constructions à \Schemelang permettant d'exprimer des idées
+reliées à un concept précis de manière élégante, sans perte de
+performance. La macro \scheme{mask} pourrait constituer le pilier de
+base d'un \textit{DSL} effectuant la création et la manipulation de
 masques binaires. La figure \ref{Scheme:macro-mini-dsl} illustre une
 deuxième macro effectuant durant l'expansion macro la combinaison de
 masques binaires. On obtient un petit langage pour la déclaration
@@ -1458,7 +1458,7 @@ implantations de \Schemelang car elle facilite l'implantation de
 l'optimisation d'appels terminaux. Ce style de programmation permet
 aussi d'utiliser de manière élégante la puissance d'abstraction des
 langages fonctionnels en permettant de diviser le calcul en petites
-parties facilement interchangeables et modulaires.
+parties interchangeables et modulaires.
 
 Le langage \Schemelang offre la possibilité de réifier automatiquement
 la continuation d'un calcul donné par l'entremise de la forme spéciale
@@ -1507,10 +1507,10 @@ dans la figure \ref{Scheme:fold} afin d'implanter un algorithme
 permettant de déterminer s'il existe au moins une valeur supérieure à
 10 dans une liste. En utilisant la fonctionnalité de traces qu'offre
 Gambit-C, on constate que malgré le fait que l'utilisation d'une
-fonction d'ordre supérieur permet d'implanter facilement cet
-algorithme, il en résulte du code inefficace, puisque l'appel à
-\scheme{foldl} passera sur tous les éléments de la liste, même après
-avoir trouvé une valeur supérieure à 10.
+fonction d'ordre supérieur permet d'implanter cet algorithme, il en
+résulte du code inefficace, puisque l'appel à \scheme{foldl} passera
+sur tous les éléments de la liste, même après avoir trouvé une valeur
+supérieure à 10.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1837,11 +1837,10 @@ puisque les types ne doivent pas nécessairement être corrects avant
 l'exécution. On peut ainsi évaluer les instructions les unes à la
 suite des autres dans un environnement global d'interprétation
 (\textit{toplevel}). Cette particularité infuse beaucoup de puissance
-au langage. En effet, cela permet de tester facilement les modules
-écrits de manière indépendante et interactive. Les cas extrêmes
-peuvent ainsi facilement être vérifiés et il est donc possible d'avoir
-une bonne assurance sur le fonctionnement correct des algorithmes
-utilisés.
+au langage. En effet, cela permet de tester les modules écrits de
+manière indépendante et interactive. Les cas extrêmes peuvent ainsi
+être vérifiés et il est donc possible d'avoir une bonne assurance sur
+le fonctionnement correct des algorithmes utilisés.
 
 En cas d'erreurs, le système est conçu afin de les détecter et
 diagnostiquer. Puisque l'environnement est dynamique, une grande
@@ -2146,43 +2145,43 @@ aux besoins des jeux vidéo.
 \chapter{Programmation orientée objet}\label{Chap:OO}
 \Schemelang est un langage offrant aux programmeurs beaucoup de ressources
 à l'état brut et leur permet de se bâtir des outils personnalisés pour
-mieux répondre leurs à besoins.
+mieux répondre à leurs besoins.
 
 Un paradigme qui n'est pas supporté directement par le langage
-\Schemelang est celui de la programmation orientée objet. Ce paradigme
+\Schemelang est celui de la programmation orientée objet. Celui-ci
 possède des structures de données hiérarchiques, les objets,
 favorisant la modularité et l'encapsulation de celles-ci. Cette
 modularité provient des abstractions résultantes de la hiérarchie des
-méta-objets appelés classes et l'encapsulation permet de cacher les
+méta-objets appelés classes. L'encapsulation permet de cacher les
 données qui devraient demeurer internes au module créé.  Le
 sous-typage résultant de la création de classes permet entre autres
-l'utilisation générique de fonctions (souvent appelées méthodes ou
-fonctions génériques).
+l'utilisation générique de fonctions souvent appelées méthodes ou
+fonctions génériques.
 
 Ces objets sont centrés sur la notion d'état qui évolue au fil de
 l'exécution du programme. Malgré le fait que la notion d'état d'un
 programme ne se marie pas bien avec la programmation fonctionnelle,
 l'utilisation d'objets pour représenter les entités dans un jeu est
 très naturelle et appropriée. En effet, ces entités possèdent des
-caractéristiques propres à elles et qui évoluent dans le temps. Par
-exemple, on peut imaginer une balle qui possède une vitesse de
-déplacement et une position.
+caractéristiques propres et qui évoluent dans le temps. Par exemple,
+on peut imaginer une balle qui possède une vitesse de déplacement et
+une position.
 
-De plus, l'utilisation de méthodes permet, d'une part, de facilement
-réutiliser des comportements communs à des objets d'une même
-hiérarchie de classe et, d'autre part, à facilement choisir un
-comportement approprié pour un objet donné, via le \textit{dispatch}
-de méthode qui sélectionne automatiquement la méthode la plus
-appropriée disponible pour un objet donné.
+De plus, l'utilisation de méthodes permet, d'une part, de réutiliser
+des comportements communs à des objets d'une même hiérarchie de classe
+et, d'autre part, de choisir un comportement approprié pour
+un objet donné, via le \textit{dispatch} de méthode qui sélectionne
+automatiquement la méthode la plus appropriée disponible pour un objet
+donné.
 
 Le SRFI-9~\cite{SRFI_9} (\textit{Scheme Request For Implementation})
 suggère un système très rudimentaire d'objets qui fut implémenté et
 étendu par le système Gambit-C~\cite{Gambit4}. Ce système permet la
 construction de manière générique d'objets typés avec héritage
-simple. L'exemple de la figure \ref{Scheme:deftype} illustre un
-exemple d'utilisation de ce système. L'accès aux membres des objets
-issus de la même hiérarchie est ainsi possible et donne accès à une
-polymorphisme minimal.
+simple. L'exemple de la figure \ref{Scheme:deftype} illustre
+l'utilisation de ce système. L'accès aux membres des objets issus de
+la même hiérarchie est ainsi possible et permet un polymorphisme
+minimal.
 
 Ainsi, le système Gambit-C nous permet d'utiliser des concepts de la
 programmation orientée objet de manière rudimentaire. Cette approche
@@ -2191,26 +2190,25 @@ sont au coeur du polymorphisme.
 
 L'approche plus traditionnelle quant à la déclaration de méthodes de
 classes est celle utilisée par le langage de programmation
-Java~\cite{JavaSpec}. Cette approche lie les méthodes à une et une
-classe et ses descendantes. Les appels de ces méthodes possèdent ainsi
-un argument caché (souvent nommé \textit{self} ou \textit{this}) qui
-se trouve à être une instance de cette classe. Le \textit{dispatch}
-dynamique s'effectue \emph{uniquement sur le type de ce premier
-  argument}. C'est l'approche appelée \textit{dispatch} simple
-(\textit{Single Dispatch}). Cette approche est bien adaptée pour une
-interaction centrée sur un seul objet à la fois, mais est très limitée
-pour des interactions \emph{génériques} sur de multiple objets
-différents. L'exemple de la figure \ref{OO:JavaDispatch} illustre la
-manière d'utiliser des méthodes traditionnelles pour effectuer du
-\textit{dispatch} multiple. On constate qu'une discrimination se fait
-implicitement sur l'objet instance de la classe associée à la méthode,
-mais que le \textit{dispatch} sur d'autres objets doit être fait
-explicitement. L'exemple illustré demeure encore très simple puisqu'il
-s'agit de \textit{dispatch} double sur deux types, mais pourrait
-devenir très complexe s'il s'agissait de faire une discrimination sur
-plus que deux objets.
+Java~\cite{JavaSpec}. Cette approche lie les méthodes à une classe et
+ses descendantes. Les appels de ces méthodes possèdent ainsi un
+argument caché (souvent nommé \textit{self} ou \textit{this}) qui se
+est une instance de cette classe. Le \textit{dispatch} dynamique
+s'effectue \emph{uniquement sur le type de ce premier argument}. C'est
+l'approche appelée \textit{dispatch} simple (\textit{Single
+  Dispatch}). Cette approche est bien adaptée pour une interaction
+centrée sur un seul objet à la fois, mais est très limitée pour des
+interactions génériques sur de multiples objets différents. L'exemple
+de la figure \ref{OO:JavaDispatch} illustre la manière d'utiliser des
+méthodes traditionnelles pour effectuer du \textit{dispatch}
+multiple. On constate qu'une discrimination se fait implicitement sur
+l'instance de la classe associée à la méthode, mais que le
+\textit{dispatch} sur d'autres objets doit être fait
+explicitement. L'exemple illustré est très simple puisqu'il s'agit de
+\textit{dispatch} double sur deux types, mais pourrait devenir très
+complexe s'il s'agissait de faire une discrimination sur plus de deux
+objets.
 
-% deplacee pcq trop grande... mise a la fin de la section
 \begin{figure}[h!]
   \begin{verbatim}
 class Toto {
@@ -2248,21 +2246,20 @@ t.add(b) = 3
 
 Le langage \clisp~\cite{CLISP} possède un système orienté objet, le
 Common Lisp Object System~\cite{CLOS} (CLOS), qui diverge beaucoup de
-l'approche traditionnelle. Entre autres, ce système offre une grande
-flexibilité de comportement et une riche introspection via un
-protocole de méta-objets~\cite{MOP} (\textit{Meta Object
-  Protocol}). Par contre, l'aspect le plus intéressant de ce système
-est l'utilisation de fonctions génériques, éliminant l'utilisation de
-méthodes traditionnelles. Une fonction générique est un ensemble de
-fonctions possédant le même nom et qui possèdent des spécifications
-optionnelles de types pour ses arguments. Lorsqu'un appel de fonction
-est fait sur une fonction générique, le système décide alors de
-l'instance de la fonction générique la plus appropriée à utiliser en
-fonction des arguments actuels passés dans l'appel, du type de ces
-arguments et de leur nombre. On obtient donc un système très dynamique
-effectuant du \textit{dispatch multiple}. La figure \ref{OO:CLOS_ex}
-contient la définition d'une fonction générique effectuant
-automatiquement le choix de la bonne instance en se basant
+l'approche traditionnelle. Ce système offre une grande flexibilité de
+comportement et une riche introspection via un protocole de
+méta-objets~\cite{MOP} (\textit{Meta Object Protocol}). L'aspect le
+plus intéressant de ce système est l'utilisation de fonctions
+génériques, éliminant l'utilisation de méthodes traditionnelles. Une
+fonction générique est un ensemble de fonctions possédant le même nom
+et ayant des spécifications optionnelles de types pour ses
+arguments. Lorsqu'un appel de fonction est fait sur une fonction
+générique, le système décide alors de l'instance la plus appropriée à
+utiliser dépendant des arguments actuels passés dans l'appel, du type
+de ces arguments et de leur nombre. On obtient donc un système très
+dynamique effectuant du \textit{dispatch multiple}. La figure
+\ref{OO:CLOS_ex} présente la définition d'une fonction générique
+effectuant automatiquement le choix de la bonne instance en se basant
 dynamiquement sur les types des arguments passés.
 
 \begin{figure}[h!]
@@ -2291,32 +2288,31 @@ interagissant avec leurs instances.
 
 La programmation orientée objet apporte ainsi beaucoup d'abstractions
 intéressantes. D'une part, les entités présentes dans un jeu vidéo
-sont aisément représentés par l'utilisation d'objets. En effet, la
-métaphore des objets possédant dans caractéristiques d'états se
-confond parfaitement à la perception d'entités de jeux qui possèdent
-elles aussi des états variant en fonction de l'évolution du
-jeu. D'autre part, une programmation orientée objet permettrait de
-facilement abstraire les comportements communs à plusieurs types
-d'entités présentes dans un jeu vidéo tout en gérant de manière
-générique leurs états.  L'utilisation de fonctions génériques
-permettrait ainsi de facilement modulariser ces comportements. Il
-serait donc très intéressant d'utiliser la programmation orientée
-objet afin d'écrire des jeux vidéo en \Schemelang de manière naturelle
-et modulaire.
+sont aisément représentées par l'utilisation d'objets. En effet, les
+objets possédant des caractéristiques d'états se confondent
+parfaitement à la perception d'entités de jeux qui possèdent elles
+aussi des états variant en fonction de l'évolution du jeu. D'autre
+part, une programmation orientée objet permet de faire abstraction des
+comportements communs à plusieurs types d'entités présentes dans un
+jeu vidéo tout en gérant de manière générique leurs états.
+L'utilisation de fonctions génériques permettrait ainsi de modulariser
+ces comportements. Il serait donc très intéressant d'utiliser la
+programmation orientée objet afin d'écrire des jeux vidéo en
+\Schemelang de manière naturelle et modulaire.
 
-Plusieurs système objets sont déjà disponible pour l'implantation de
-\Schemelang Gambit-C. La plupart sont inspirés de la puissance expressive
-du système CLOS. On retrouve entre autres le système orienté objet
-Meroon~\cite{MEROON}. Ce système impose plusieurs limitations dont le
-fait que la hiérarchie de classe est limitée à un héritage
-simple. Aussi, il n'est pas possible d'allouer des attributs de
-classes, communs à toutes les instances. OOPS~\cite{OOPS} est un autre
-système objet disponible pour Gambit-C. Celui-ci offre plus de
+Plusieurs systèmes objets sont déjà disponibles pour l'implantation de
+\Schemelang Gambit-C. La plupart sont inspirés de la puissance
+expressive du système CLOS. On retrouve entre autres le système
+orienté objet Meroon~\cite{MEROON}. Ce système impose plusieurs
+limitations dont le fait que la hiérarchie de classe est limitée à un
+héritage simple. Aussi, il n'est pas possible d'allouer des attributs
+de classes, communs à toutes les instances. OOPS~\cite{OOPS} est un
+autre système objet disponible pour Gambit-C. Celui-ci offre plus de
 fonctionnalités que Meroon, dont la possibilité de créer des classes
-avec héritage multiples. Cette fonctionnalité est très pertinente pour
+avec héritage multiple. Cette fonctionnalité est très pertinente pour
 l'écriture de logiciels, car elle permet l'agrégation de plusieurs
 modules de manière très élégante et offre beaucoup de flexibilité. Le
-tableau \ref{OO:fonct-comp} effectue une comparaison de ces systèmes
+tableau \ref{OO:fonct-comp} présente une comparaison de ces systèmes
 objets sur la présence de fonctionnalités utiles pour le développement
 de jeux vidéo.
 
@@ -2326,16 +2322,16 @@ de jeux vidéo.
     \hline
     Fonctionnalités désirées           & \scheme{define-type} & Meroon & OOPS\\
     \hline \hline
-    Héritage multiple                  &                      &         & X\\
-    Constructeurs génériques           &                      &         &  \\
-    membres d'instances                & X                    & X       & X\\
-    membres de classe                  &                      &         &  \\
-    fonctions génériques polymorphique &                      & X       & X\\
-    \textit{dispatch} sur des valeurs  &                      &         & X\\
+    Héritage multiple                   &                      &         & X\\
+    Constructeurs génériques            &                      &         &  \\
+    Membres d'instances                 & X                    & X       & X\\
+    Membres de classe                   &                      &         &  \\
+    Fonctions génériques polymorphiques &                      & X       & X\\
+    \textit{dispatch} sur des valeurs   &                      &         & X\\
     \hline
   \end{tabular}
   \caption{Comparaison de la présence des fonctionnalités désirées par
-    les implantation existantes de systèmes d'objets disponibles sur
+    les implantations existantes de systèmes d'objets disponibles sur
     Gambit-C}
   \label{OO:fonct-comp}
 \end{table}
@@ -2343,16 +2339,15 @@ de jeux vidéo.
 Le tableau \ref{OO:bench} de la section \ref{OO:bench-sect} illustre
 les performances de ces deux systèmes. On constate que les systèmes
 \textit{define-type} de Gambit-C et Meroon sont beaucoup plus
-performant que OOPS. Il en résulte donc qu'aucun de ces systèmes ne
+performants que OOPS. Il en résulte donc qu'aucun de ces systèmes ne
 semblent offrir de bonnes performances tout en donnant accès aux
-fonctionnalités de la programmation orientée objet de haut niveaux
-énoncés dans le tableau \ref{OO:fonct-comp}. Ainsi, afin d'obtenir un
+fonctionnalités de la programmation orientée objet de haut niveau
+énoncées dans le tableau \ref{OO:fonct-comp}. Ainsi, afin d'obtenir un
 compromis entre l'expressivité et les performances, un nouveau système
-d'objet a été développé. Ce dernier aura comme vocation de répondre le
-mieux possible aux besoins en efficacité d'un jeu vidéo, tout en
-apportant le plus d'outils et de puissance d'abstraction que
-possible. Ce dernier est décrit en détails dans le reste de ce
-chapitre.
+d'objet a été développé. Ce dernier aura comme vocation de répondre
+aux besoins en efficacité d'un jeu vidéo, tout en apportant le plus
+d'outils et de puissance d'abstraction que possible. Ce dernier est
+décrit en détails dans le reste de ce chapitre.
 
 
 
@@ -2839,11 +2834,11 @@ sont:
   instance et les valeur actuelles spécifiées.
 
 \item \scheme{(update! <instance> <class-name> <slot-name> <fun>)} :
-  Cette forme spéciale permet de modifier facilement la valeur d'un
-  attribut en fonction de sa valeur précédente. La fonction passée
-  doit prendre un seul argument en paramètre, qui est la valeur
-  courante de cet attribut. La valeur retournée par la fonction sera
-  alors utilisée comme nouvelle valeur de cet attribut.
+  Cette forme spéciale permet de modifier la valeur d'un attribut en
+  fonction de sa valeur précédente. La fonction passée doit prendre un
+  seul argument en paramètre, qui est la valeur courante de cet
+  attribut. La valeur retournée par la fonction sera alors utilisée
+  comme nouvelle valeur de cet attribut.
 
 \item \scheme{(set-fields! <instance> <class-name> ((<slot-name>
   <value>) ...))} : Cette forme spéciale permet de modifier de manière
@@ -3350,8 +3345,8 @@ polymorphe.
 Il serait maintenant très intéressant de modifier le système afin
 qu'il supporte un protocole de méta objets. Un tel protocole donnerait
 accès à une introspection très développée et permettrait aux
-utilisateurs de modifier facilement le comportement du système selon
-leurs besoins. 
+utilisateurs de modifier le comportement du système selon leurs
+besoins.
 
 Aussi, une modification du système afin de le rendre compatible avec
 des classes de manière inter-modulaire serait une grande amélioration
@@ -3754,7 +3749,7 @@ accès à de l'information sur ce dernier. il comprend les paramètres:
 
 \item \scheme{(timer)} : retourne l'objet d'abstraction du temps
   associé avec le système courant. La valeur actuelle du temps peut
-  être obtenue facilement en appellent plutôt la fonction
+  être obtenue en appellent plutôt la fonction
   \scheme{(current-sim-time)}.
 \end{itemize}
 
@@ -3792,15 +3787,14 @@ fonctions distinctes et une forme spéciale:
 \item \scheme{(recv (<pattern> <body>) ...)} : Cette forme spéciale
   permet la réception sélective de messages selon des patrons de
   filtrage par motifs (\textit{pattern matching}). Ces patrons
-  permettent de facilement exprimer la forme attendue du message et de
-  lier des variables locales à des parties du message reçu afin de les
-  utiliser dans le corps du patron. Lorsque plusieurs messages reçus
-  peuvent correspondre aux motifs donnés, la sélection du message se
-  fait en choisissant le premier message reçu qui correspond à au
-  moins un patron. Si plusieurs patrons peuvent correspondre à ce
-  message, le premier patron (selon l'ordre de définition) sera
-  utilisé. Ainsi l'ordre de spécification des motifs est important et
-  significatif.
+  permettent d'exprimer la forme attendue du message et de lier des
+  variables locales à des parties du message reçu afin de les utiliser
+  dans le corps du patron. Lorsque plusieurs messages reçus peuvent
+  correspondre aux motifs donnés, la sélection du message se fait en
+  choisissant le premier message reçu qui correspond à au moins un
+  patron. Si plusieurs patrons peuvent correspondre à ce message, le
+  premier patron (selon l'ordre de définition) sera utilisé. Ainsi
+  l'ordre de spécification des motifs est important et significatif.
 \end{itemize}
 
 Les valeurs de délai d'attente maximal spécifié pour la réception de
@@ -4425,11 +4419,11 @@ pourraient être effectuées afin d'améliorer cette performance.
 \FloatBarrier
 \section{Conclusion}
 Ainsi, un système de coroutine a été implanté qui fournit aux
-programmeurs de jeux vidéo une interface à un système permettant de
-facilement exprimer des problèmes de changements de contextes
-(notamment dans le cadre de jeux multi-joueurs), sans avoir à se
-soucier de synchroniser les coroutines pour éviter les problèmes de
-sections critiques.
+programmeurs de jeux vidéo une interface à un système permettant
+d'exprimer des problèmes de changements de contextes (notamment dans
+le cadre de jeux multi-joueurs), sans avoir à se soucier de
+synchroniser les coroutines pour éviter les problèmes de sections
+critiques.
 
 Ce système offre ainsi une interface similaire à celle offerte par le
 système Termite~\cite{Termite_paper}, orientée sur un calcul sériel au
@@ -4875,11 +4869,11 @@ cela implique de conserver deux parties du jeu en \emph{parallèle}, où
 une seule des deux avance à la fois. Avec un flot de contrôle sous
 forme de simulation par événements discrets, cela implique d'avoir
 deux simulations exécutées en parallèle. Puisque le système de
-simulation ne permet pas de facilement arrêter une simulation et d'en
-avoir une deuxième se produisant en même temps, une autre approche a
-été utilisée. Un système de coroutines dans lequel les simulations
-sont exécutées à l'intérieur de coroutines différentes a été développé
-et utilisé. Ainsi, le changement de contexte peut être manuellement
+simulation ne permet pas d'arrêter une simulation et d'en avoir une
+deuxième se produisant en même temps, une autre approche a été
+utilisée. Un système de coroutines dans lequel les simulations sont
+exécutées à l'intérieur de coroutines différentes a été développé et
+utilisé. Ainsi, le changement de contexte peut être manuellement
 utilisé lorsqu'un joueur meurt afin de réactiver la partie du prochain
 joueur.
 
@@ -4934,11 +4928,10 @@ partie du joueur actuel.
 Ainsi, l'écriture de cette première version de \si a permis
 d'identifier plusieurs problèmes reliés au développement de jeux vidéo
 (détection et résolution de collisions, parties multi-joueurs,
-etc...). En plus de permettre de facilement expérimenter sur le type
-de flot de contrôle utilisé pour développer ce jeu, \Schemelang a
-permis de faire rapidement plusieurs outils non triviaux pour
-l'implantation du jeu, dont un système de fontes et un petit système
-de coroutines.
+etc...). En plus de permettre d'expérimenter sur le type de flot de
+contrôle utilisé pour développer ce jeu, \Schemelang a permis de faire
+rapidement plusieurs outils non triviaux pour l'implantation du jeu,
+dont un système de fontes et un petit système de coroutines.
 
 Par contre, certains problèmes ne possèdent pas des solutions
 satisfaisantes. En effet, la résolution de collision est très
@@ -4986,8 +4979,8 @@ propre classe, on peut alors spécifier les valeurs des champs de
 classes pour chacune de celles-ci de manière simple et
 claire. L'utilisation de ces champs pourra être, par la suite, faite
 de manière complètement uniforme et transparente. La macro
-\scheme{setup-static-fields} a été écrite afin de permettre de
-facilement assigner les champs de classes pour les classes enfants de
+\scheme{setup-static-fields} a été écrite afin de permettre d'assigner
+les champs de classes pour les classes enfants de
 \scheme{game-object}.
 
 \begin{figure}[htb!]
@@ -5227,8 +5220,8 @@ collision , qui dépend du types des deux objets en question, a pu être
 génériques.
 
 L'expérimentation effectuée sur le flot de contrôle du jeu a permis de
-démontrer que l'architecture du moteur peut être facilement modifier
-afin de mettre à l'essai de nouvelles techniques de gestion du flot de
+démontrer que l'architecture du moteur peut être modifiée afin de
+mettre à l'essai de nouvelles techniques de gestion du flot de
 contrôle pour jeu. L'utilisation du système de coroutines permis
 d'implanter efficacement une version multi-joueurs du jeu, mais fut
 inappropriée pour effectuer la gestion complète du flot de contrôle du
@@ -5439,13 +5432,13 @@ de l'état actuel de l'entité.
   \label{Exp:cyclic-anim-dsl}
 \end{figure}
 
-Ainsi les animations du jeu peuvent être facilement définies en
-utilisant cette forme spéciale. La figure \ref{Exp:cyclic-anim-def}
-illustre la définition de l'animation de marche utilisée par les
-sous-classes de la classe \scheme{human-like}. On peut donc ainsi
-tirer profit du polymorphisme du système objet en plus du petit
-langage de définition d'animations afin de définir de manière claire
-et concise une animation cyclique.
+Ainsi les animations du jeu peuvent être définies en utilisant cette
+forme spéciale. La figure \ref{Exp:cyclic-anim-def} illustre la
+définition de l'animation de marche utilisée par les sous-classes de
+la classe \scheme{human-like}. On peut donc ainsi tirer profit du
+polymorphisme du système objet en plus du petit langage de définition
+d'animations afin de définir de manière claire et concise une
+animation cyclique.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5980,7 +5973,7 @@ d'illustrer l'utilisation des coroutines de ce jeu. On constate que le
 code conserve l'état de la variable \scheme{ii} qui se trouve a être,
 dans cet exemple, un compteur d'images rendues pour une animation
 nommée \scheme{idle}. L'utilisation de coroutine leur a permis de
-facilement conserver l'état du calcul en cours.
+conserver l'état du calcul en cours.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -6058,14 +6051,13 @@ problèmes.
 Aussi, la syntaxe sous formes de S-expressions des programmes
 \Schemelang a été utilisée à profit en créant un système d'analyse de
 code permettant d'extraire toutes les chaînes de caractères présente
-dans le jeu afin de créer facilement des outils
-d'internationalisation. Ces outils permettent entre autres la création
-automatique de fontes optimisées par langues, qui contiennent
-uniquement les caractères utilisées dans celles-ci. L'utilisation de
-la fonction \Schemelang \scheme{read} combinée à la récursivité du
-langage ont facilement permis d'écrire un analyseur de code. Cette
-tâche aurait été beaucoup plus complexe dans un autre langage de
-programmation.
+dans le jeu afin de créer des outils d'internationalisation. Ces
+outils permettent entre autres la création automatique de fontes
+optimisées par langues, qui contiennent uniquement les caractères
+utilisées dans celles-ci. L'utilisation de la fonction \Schemelang
+\scheme{read} combinée à la récursivité du langage ont facilement
+permis d'écrire un analyseur de code. Cette tâche aurait été beaucoup
+plus complexe dans un autre langage de programmation.
 
 Les fermetures disponible en \Schemelang ont été utilisées comme base d'un
 système d'interface graphique complet permettant la création de
@@ -6161,12 +6153,12 @@ sont signalées durant l'exécution du jeu, la résolution de celles-ci
 sont font très rapidement grâce à la possibilité d'introspection de
 l'état du programme et d'évaluation dynamique de code.
 
-Aussi, le langage \Schemelang a permis de facilement expérimenter sur
-le contrôle de flot des jeux en permettant de développer facilement
-des systèmes non-triviaux de simulations à événements discrets et de
-simulation par agents (coroutines). La modification du flot de
-contrôle du premier jeu a pu être fait sont trop d'efforts grâce aux
-abstractions faites entre autres par le système d'objets.
+Aussi, le langage \Schemelang a permis d'expérimenter sur le contrôle
+de flot des jeux en permettant de développer des systèmes non-triviaux
+de simulations à événements discrets et de simulation par agents
+(coroutines). La modification du flot de contrôle du premier jeu a pu
+être fait sont trop d'efforts grâce aux abstractions faites entre
+autres par le système d'objets.
 
 Bien sûr, la modularité de programmes apporte généralement des coût en
 performances pour ceux-ci. Ainsi, une difficulté d'utiliser un langage

@@ -2307,7 +2307,7 @@ orienté objet Meroon~\cite{MEROON}. Ce système impose plusieurs
 limitations dont le fait que la hiérarchie de classe est limitée à un
 héritage simple. Aussi, il n'est pas possible d'allouer des attributs
 de classes, communs à toutes les instances. OOPS~\cite{OOPS} est un
-autre système objet disponible pour Gambit-C. Celui-ci offre plus de
+autre système objets disponible pour Gambit-C. Celui-ci offre plus de
 fonctionnalités que Meroon, dont la possibilité de créer des classes
 avec héritage multiple. Cette fonctionnalité est très pertinente pour
 l'écriture de logiciels, car elle permet l'agrégation de plusieurs
@@ -2355,20 +2355,20 @@ décrit en détails dans le reste de ce chapitre.
 \section{Description du système}
 Le système de programmation orientée objet développé est fortement
 inspiré du Common Lisp Object System~\cite{CLOS} et possède la plupart
-des propriétés intéressantes de ce dernier. On retrouve entre autres de
-l'héritage multiple de classes, du polymorphisme d'instance de classes
-et surtout, des fonctions génériques à \textit{dispatch} multiple
-personnalisé. Malgré ces fonctionnalités de haut niveaux, une
+des propriétés intéressantes de ce dernier. On retrouve entre autres
+de l'héritage multiple de classes, du polymorphisme d'instance de
+classes et surtout, des fonctions génériques à \textit{dispatch}
+multiple personnalisé. Malgré ces fonctionnalités de haut niveau, une
 attention a été apportée aux performances, tout spécialement à l'accès
 aux membres d'instances, puisque ces opérations sont fréquentes dans
 un jeu vidéo. En effet, le développement préliminaire de \si (chapitre
-\ref{Chap:exp})nous laissait déjà sous-entendre que l'accès aux
+\ref{Chap:exp}) nous laissait déjà sous-entendre que l'accès aux
 membres d'instances est une opération très fréquente qui se doit
 d'être efficace afin de ne pas ralentir la cadence du jeu.
 
 Le reste de cette section fourni un API (\textit{Application
   Programming Interface}) au système, tout en motivant l'ajout des
-fonctionnalités clés de celui-ci et fournissant des exemples
+fonctionnalités clés de celui-ci et en fournissant des exemples
 d'utilisations.
 
 \FloatBarrier
@@ -2394,18 +2394,17 @@ classe sont donnés. Ces membres peuvent être un attribut d'instance
 \scheme{(class-slot: <slot-name>)} ou un constructeur d'instances
 \scheme{(constructor: <fun>)}.
 
-Cette forme spéciale, à la base, est très similaire avec la forme
-spéciale \scheme{define-type} fournie par Gambit-C et fut conçue pour
-que les fonctions utilitaires générées soient compatibles avec celles
-générées par \scheme{define-type}. Ainsi, une conversion d'un système
-basé sur les objets de \textit{define-type} est extrêmement simple, il
-ne suffit qu'à remplacer la définition du type par une définition de
-classe de notre système d'objets. Les figures \ref{Scheme:deftype} et
-\ref{OO:defclass-simple} illustrent la conversion de code nécessaire
-pour passer d'une forme \scheme{define-type} à notre système
-objet. Aussi, le choix d'utiliser des fonctions compatibles à
-\scheme{define-type} rend la base du système d'objets triviale à
-utiliser par des nouveaux utilisateurs déjà familier Gambit-C.
+Cette forme spéciale est très similaire à \scheme{define-type} fournie
+par Gambit-C et fut conçue pour que les fonctions utilitaires générées
+soient compatibles avec celles créées par \scheme{define-type}. Ainsi,
+une conversion d'un système basé sur les objets de
+\textit{define-type} est extrêmement simple. Il ne suffit qu'à
+remplacer la définition du type par une définition de classe de notre
+système d'objets. Les figures \ref{Scheme:deftype} et
+\ref{OO:defclass-simple} illustrent cette conversion. Aussi, le choix
+d'utiliser des fonctions compatibles à \scheme{define-type} rend la
+base du système d'objets triviale à utiliser par des nouveaux
+utilisateurs déjà familier avec Gambit-C.
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2416,8 +2415,8 @@ utiliser par des nouveaux utilisateurs déjà familier Gambit-C.
 (add (make-point 1 2) (make-circle 3 4 5)) => \schemeresult{\#(<class-desc> 4 6)}
 (if (circle? (make-point 1 2)) 'ok 'no)    => \schemeresult{no}
   \end{schemecode}
-  \caption{Utilisation simple du système objets pour une utilisation
-    similaire à celle pouvant être fait avec la forme \scheme{define-type}.}
+  \caption{Utilisation simple du système objets compatible avec la
+    forme \scheme{define-type}.}
   \label{OO:defclass-simple}
 \end{figure}
 
@@ -2443,24 +2442,22 @@ sont:
 \item \scheme{(point? <any-value>)} : Prédicat de type de la classe
   \scheme{point}. Cette fonction retourne la valeur \scheme{\#t} si la
   valeur passée est une instance de la classe \scheme{point} ou de
-  n'importe qu'elle sous-classe de celle-ci. La fonction retourne
-  \scheme{\#f} sinon.
+  n'importe quelle sous-classe de celle-ci. Sinon, cette fonction
+  retourne \scheme{\#f}.
 \end{itemize}
 
 En plus de définir des attributs d'instances, il est possible de
-définir des attributs de classes, communs à toutes les instances de la
-classe. Ainsi les informations communes à toutes les instances peuvent
-être factorisées, tout en conservant l'encapsulation de l'information
-dans l'objet. Il est important de noter qu'après la déclaration de la
-classe, tous les attributs de classes se retrouvent dans un état
-non-initialisé et doivent donc être initialisés avant d'être
-utilisés. L'héritage d'attributs de classe fait en sorte que chaque
-sous-classe possède sa propre version de l'attribut, permettant ainsi
-des personnalisations de chacune de ces sous-classes avec cet
-attribut.
+définir des attributs de classe, communs à toutes les instances de
+celle-ci. Ainsi, les informations communes à toutes les instances
+peuvent être factorisées, tout en conservant l'encapsulation de
+l'information dans l'objet. Il est important de noter qu'après la
+déclaration de la classe, tous les attributs de classe se retrouvent
+dans un état non-initialisé. Ils doivent donc être initialisés avant
+d'être utilisés. L'héritage d'attributs de classe fait en sorte que
+chaque sous-classe possède sa propre version de l'attribut.
 
 Puisque ces attributs sont communs à toutes les instances, ils ne
-nécessitent pas de ces dernières pour être accédés ou modifiés.
+nécessitent pas ces dernières pour être accédés ou modifiés.
 Toutefois, ces fonctions d'accès ou de modification de valeur
 d'attributs de classes permettent de prendre optionnellement une
 instance afin d'utiliser ces fonctions de manière polymorphique. La
@@ -2479,26 +2476,26 @@ figure \ref{OO:class-slot} illustre ce processus.
 (toto-t-set! (make-blub) 'salut) 
 (toto-t (make-blub)) => \schemeresult{salut}
   \end{schemecode}
-  \caption{Exemple d'utilisation dynamique d'attributs de classes.}
+  \caption{Exemple d'utilisation dynamique d'attributs de classe}
   \label{OO:class-slot}
 \end{figure}
 
 
 En plus des créateurs d'instances à la \scheme{define-type}, le
-système objet permet la définition d'un ou de plusieurs constructeurs
-pour la création de nouvelles instances simplifiées. Ces constructeurs
-sont plutôt des fonctions d'initialisation de nouvelles
-instances. Elles \emph{doivent} avoir un premier argument
-correspondant à l'instance à initialiser et peuvent posséder un nombre
-arbitraire d'arguments supplémentaires. Ces constructeurs sont en fait
-utilisés pour créer une nouvelle instance de la fonction générique
-\scheme{init!}, et donc, il est également possible d'utiliser la
-discrimination de type faite par les fonctions générique, comme décrit
-dans la section \ref{OO:genfun}. L'accès aux constructeurs se fait par
-la forme spéciale \scheme{new} qui s'occupe de créer la nouvelle
-instance de l'objet et d'appeler la fonction générique
-\scheme{init!}. La figure \ref{OO:constructeurs} illustre
-l'utilisation de constructeurs génériques d'objets.
+système objets permet de définir un ou plusieurs constructeurs pour la
+création d'instances simplifiées. Ces constructeurs sont plutôt des
+fonctions d'initialisation de nouvelles instances. Elles
+\emph{doivent} avoir un premier argument correspondant à l'instance à
+initialiser et peuvent posséder un nombre arbitraire d'arguments
+supplémentaires. Ces constructeurs sont en fait utilisés pour créer
+une nouvelle instance de la fonction générique \scheme{init!}.  Donc,
+il est également possible d'utiliser la discrimination de type faite
+par les fonctions génériques, comme décrit dans la section
+\ref{OO:genfun}. L'accès aux constructeurs se fait par la forme
+spéciale \scheme{new} qui s'occupe de créer la nouvelle instance de
+l'objet et d'appeler la fonction générique \scheme{init!}. La figure
+\ref{OO:constructeurs} illustre l'utilisation de constructeurs
+génériques d'objets.
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2517,53 +2514,22 @@ l'utilisation de constructeurs génériques d'objets.
   \label{OO:constructeurs}
 \end{figure}
 
-Finalement, l'utilisation de \textit{hooks} sur les fonctions
-accesseur et de mutation d'attributs est possible en ajoutant des mots
-clés appropriés à l'intérieur des déclarations attributs en
-question. Il est possible de définir des \textit{hooks} en lecture ou
-en écriture avec respectivement les mots clés \scheme{read-hooks:} et
-\scheme{write-hooks:}. La figure \ref{OO:hooks} illustre l'utilisation
-de ceux-ci.
-
-\begin{figure}[h!]
-  \begin{schemecode}
-(define-class hooked ()
-  (slot: s
-    (read-hooks:  (lambda (obj x) (display "r") (display x)))
-    (write-hooks: (lambda (obj x) (display "w") (display x))))
-  (class-slot: cs
-    (read-hooks:  (lambda (x) (display "r") (display x)))
-    (write-hooks: (lambda (x) (display "w") (display x)))))
-(let ((o (make-hooked 1))) 
-  (hooked-cs-set! 'allo)   => \schemeresult{wallo}
-  (hooked-s o)             => \schemeresult{r1}
-  (hooked-s-set! o 2)      => \schemeresult{w2}
-  (hooked-s o)             => \schemeresult{r2}
-  (hooked-cs)              => \schemeresult{rallo}
-  (hooked-cs-set! 'salut)  => \schemeresult{wsalut}
-  (hooked-cs))             => \schemeresult{rsalut}
-  \end{schemecode}
-  \caption{Exemple d'utilisation de \textit{hooks} sur des membres
-    d'instances et de classes}
-  \label{OO:hooks}
-\end{figure}
-
 
 \FloatBarrier
 \subsection{Définition de fonctions génériques} \label{OO:genfun}
-Toujours avec une forte inspiration du modèle éprouvé du système
-objets de \clisp~\cite{CLOS}, le système d'objet développé possède des
-fonctions génériques permettant de faire du \textit{dispatch} multiple
-sur les arguments de celles-ci. Le choix d'adhérer à la philosophie de
-\lisp s'explique non seulement par le fait que nous souhaitons que
-notre système objet puisse offrir le plus de puissance expressive que
-possible aux programmeurs de jeux vidéo, mais surtout puisque
-plusieurs problèmes se retrouvant dans le développement de jeux vidéo
-peuvent être exprimés de manières très concise avec des fonctions
-génériques. Par exemple, la résolution de collision est un
-comportement qui dépend des deux entités impliquées et donc
-l'utilisation d'une fonction générique pour effectuer la résolution du
-travail à accomplir se fait de manière très naturelle.
+Toujours inspiré fortement du modèle éprouvé du système objets de
+\clisp~\cite{CLOS}, le système objets développé possède des fonctions
+génériques permettant de faire du \textit{dispatch} multiple sur les
+arguments de celles-ci. Le choix d'adhérer à la philosophie de \lisp
+s'explique non seulement par le fait que nous souhaitons que notre
+système objets puisse offrir le plus de puissance expressive possible
+aux programmeurs de jeux vidéo. En effet, plusieurs problèmes se
+retrouvant dans le développement de jeux vidéo peuvent être exprimés
+de manière très concise avec des fonctions génériques. Par exemple, la
+résolution de collision est un comportement qui dépend des deux
+entités impliquées et donc l'utilisation d'une fonction générique pour
+effectuer la résolution du travail à accomplir se fait de manière très
+naturelle.
 
 La déclaration d'une nouvelle fonction générique se fait par le biais
 de la forme spéciale
@@ -2581,22 +2547,21 @@ forme spéciale
 \noindent
 qui possède une syntaxe similaire à une définition de fonction, mais
 où la syntaxe des arguments a été étendue. Une description d'argument
-est généralement une liste de la forme \scheme{(<arg-name> <arg-type>)},
-où le premier élément est le nom de la variable et le deuxième le type
-de celle-ci. Le type est normalement le nom de la classe à laquelle
-l'instance peut appartenir (incluant le polymorphisme).
-
-Une description d'argument peut être uniquement un symbole qui sera le
-nom de la variable liée à la valeur passée en argument. Puisque dans
-un tel cas, aucune information n'est donnée sur l'argument à recevoir,
-aucune discrimination d'instance ne sera fait en utilisant cet
-argument, outre le fait qu'il s'agit d'un argument de plus. Le type de
-l'argument sera implicitement \scheme{*} et donc, une telle
-déclaration est strictement équivalente à \scheme{(<arg-name> *)}. La
-figure \ref{OO:genfun-ex} présente un exemple de déclarations et
-d'utilisations d'instances d'une fonction générique effectuant des
-additions sur des objets s'étalant sur plusieurs types et avec un
-nombre variable de paramètres.
+est généralement une liste de la forme \scheme{(<arg-name>
+  <arg-type>)}, où le premier élément est le nom de la variable et le
+deuxième le type de celle-ci. Le type est normalement le nom de la
+classe à laquelle l'instance peut appartenir (incluant le
+polymorphisme). Une description d'argument peut aussi être un symbole
+unique qui sera le nom de la variable liée à la valeur passée en
+argument. Puisque dans un tel cas aucune information n'est donnée sur
+l'argument à recevoir, aucune discrimination d'instance ne sera faite
+en utilisant cet argument, outre le fait qu'il s'agit d'un argument de
+plus. Le type de l'argument sera implicitement \scheme{*} et donc, une
+telle déclaration est strictement équivalente à \scheme{(<arg-name>
+  *)}. La figure \ref{OO:genfun-ex} présente un exemple de
+déclarations et d'utilisations d'instances d'une fonction générique
+effectuant des additions sur des objets s'étalant sur plusieurs types
+et ayant un nombre variable de paramètres.
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2618,13 +2583,13 @@ nombre variable de paramètres.
     (add p l))          => \schemeresult{6}
   \end{schemecode}
   \caption{Exemple de déclarations et d'utilisations d'une fonction
-    générique.}
+    générique}
   \label{OO:genfun-ex}
 \end{figure}
 
 \FloatBarrier
 
-Le type d'un argument d'une méthode, peut être membre d'une syntaxe
+Le type d'un argument de méthode peut être membre d'une syntaxe
 étendue permettant de faire de la discrimination d'instances de
 fonctions génériques sur la \emph{valeur} des paramètres passés. Cette
 syntaxe est l'une parmi:
@@ -2642,7 +2607,7 @@ syntaxe est l'une parmi:
   est considérée constante.
 
 \item \scheme{(or <match1> ...)} : La valeur du paramètre doit
-  correspondre à \emph{au moins une} des clause \scheme{<match>} pour
+  correspondre à \emph{au moins une} des clauses \scheme{<match>} pour
   discriminer l'instance de la fonction générique correspondante. Les
   clauses \scheme{<match>} doivent être une déclaration de type
   correcte. On peut retrouver ainsi un nom de classe ou l'une de ces
@@ -2656,12 +2621,12 @@ syntaxe est l'une parmi:
   quatre clauses spéciales.
 \end{itemize}
 
-Un exemple simple de discrimination par valeur de paramètre est donné
+Un exemple simple de discrimination par valeur de paramètres est donné
 dans la figure \ref{OO:genfun-val-dispatch}. Il est important de noter
 que la discrimination fonctionne bien lorsque les instances effectuent
 de la discrimination orthogonale, \ie que les possibilités ne se
 recoupent pas entre elles. Une discrimination arbitraire pourrait se
-produire si plusieurs instances peuvent être discriminées de manières
+produire si plusieurs instances peuvent être discriminées de manière
 équivalentes pour un même appel.
 
 \begin{figure}[h!]
@@ -2684,8 +2649,8 @@ produire si plusieurs instances peuvent être discriminées de manières
 (div (new point 1 2) 0)                    => \schemeresult{division-by-zero!}
 (eq? (div (new point 0 0) 5) (point-zero)) => \schemeresult{\#t}
   \end{schemecode}
-  \caption{Exemple de discrimination d'instance de fonctions
-    génériques par la valeur des arguments.}
+  \caption{Exemple de discrimination d'instances de fonctions
+    génériques par la valeur des arguments}
   \label{OO:genfun-val-dispatch}
 \end{figure}
 
@@ -2695,29 +2660,28 @@ est que les instances discriminant sur une classe données doivent
 apparaître \emph{après} la déclaration de celle-ci, sinon le
 comportement du système est indéterminé.
 
-Puisque le système d'objet supporte de l'héritage multiple, il est
+Puisque le système objets supporte de l'héritage multiple, il est
 possible qu'une fonction générique possède uniquement deux instances
 correspondant à des super classes d'une classe donnée, comme c'est le
 cas dans la figure \ref{OO:discrimination}. Les classes
 \scheme{colored} et \scheme{circle} sont toutes deux des super classes
 de \scheme{colored-circle} et il n'existe pas d'instance de la
 fonction générique \scheme{test} discriminant directement sur le type
-\scheme{colored-circle}, ainsi le système doit choisir entre les deux
-instances disponibles puisque ces deux dernières sont utilisables pour
-une instance de la classe \scheme{colored-circle}. L'algorithme
-discrimine alors comme suit: il considère que l'instance de la
-fonction générique qui possède \emph{la plus profonde hiérarchie de
-  classe} est la plus spécifique. Cette profondeur est approximée par
-la somme du nombre de super classe que possède chacun des arguments de
-l'instance de la fonction générique en question. Ainsi, l'instance
-\scheme{(test (x colored))} obtient une valeur de 0, puisque
-\scheme{colored} ne possède aucune super classe et l'instance
-\scheme{(test (x circle))} obtient une valeur de 1, puisque la classe
-\scheme{circle} est une sous-classe de \scheme{point}. C'est donc
-l'instance utilisant un objet de type \scheme{circle} qui est
-utilisée. Si les valeurs de discrimination sont égales pour plusieurs
-instances, alors c'est la méthode définie en dernier qui sera
-utilisée.
+\scheme{colored-circle}. Ainsi, le système doit choisir entre les deux
+instances disponibles puisque ces dernières sont utilisables pour une
+instance de la classe \scheme{colored-circle}. L'algorithme discrimine
+alors comme suit: il considère que l'instance de la fonction générique
+qui possède \emph{la plus profonde hiérarchie de classe} est la plus
+spécifique. Cette profondeur est approximée par la somme du nombre de
+super classe que possède chacun des arguments de l'instance de la
+fonction générique en question. Ainsi, l'instance \scheme{(test (x
+  colored))} obtient une valeur de 0, puisque \scheme{colored} ne
+possède aucune super classe et l'instance \scheme{(test (x circle))}
+obtient une valeur de 1, puisque la classe \scheme{circle} est une
+sous-classe de \scheme{point}. C'est donc l'instance discriminant sur
+un objet de type \scheme{circle} qui est choisie. Si les valeurs de
+discrimination sont égales pour plusieurs instances, alors c'est la
+méthode définie en dernier qui sera utilisée.
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2732,7 +2696,7 @@ utilisée.
 (test (new colored-circle 1 2 3 'red)) => \it{circle}
   \end{schemecode}
   \caption{Exemple illustrant l'algorithme de sélection d'instances de
-    fonctions génériques.}
+    fonctions génériques}
   \label{OO:discrimination}
 \end{figure}
 
@@ -2787,7 +2751,7 @@ est finalement retourné.
 \subsection{Fonctions et formes spéciales utilitaires}
 Plusieurs fonctions et formes spéciales utilitaires sont disponibles
 afin de simplifier les tâches répétitives ou bien de permettre une
-introspection limitée avec le système objet. On retrouve plusieurs
+introspection limitée avec le système objets. On retrouve plusieurs
 fonctions permettant d'obtenir de l'information sur les types
 d'instances ou de classes. Parmi celles-ci, les principales sont:
 
@@ -2864,7 +2828,7 @@ formes spéciales.
   (point-x p)) => \schemeresult{2}
   \end{schemecode}
   \caption{Exemple d'utilisation des formes spéciales fournies par le
-    système objet.}
+    système objets.}
   \label{OO:specform}
 \end{figure}
 
@@ -2872,7 +2836,7 @@ formes spéciales.
 
 \FloatBarrier
 \section{Implantation}
-Afin d'implanter ce système objet comme une extension directe du
+Afin d'implanter ce système objets comme une extension directe du
 langage \Schemelang, les macros \Schemelang ont dû être utilisées. Il
 en résulte donc en l'ajout d'un langage spécifique au domaine de la
 programmation orientée objet.
@@ -2883,7 +2847,7 @@ possible durant cette expansion afin d'obtenir de bonnes performances
 lors de l'exécution. Par contre, afin d'effectuer beaucoup de travail
 lors de cette expansion, beaucoup d'informations doivent être
 disponibles de manière statique, ce qui brime la philosophie dynamique
-du système objet. Ainsi, nous avons opté pour un compromis entre la
+du système objets. Ainsi, nous avons opté pour un compromis entre la
 division du travail effectué lors de la compilation et de celui fait
 lors de l'exécution du système d'objets.
 
@@ -2898,7 +2862,7 @@ ces deux types de structures, les préfixes \scheme{mt} (\textit{macro
 le code source.
 
 Les sections qui suivent expliquent les grandes lignes de
-l'implantation de ce système objet et justifient les choix
+l'implantation de ce système objets et justifient les choix
 d'implantations qui ont dû être faits.
 
 
@@ -3095,7 +3059,7 @@ vecteur est une opération efficace en \Schemelang, nous avons préféré opté
 pour la présence du polymorphisme qui apporte beaucoup en terme de
 puissance expressive.
 
-Puisque le système objet est implanté en utilisant l'expanseur de
+Puisque le système objets est implanté en utilisant l'expanseur de
 macro \scheme{define-macro} de Gambit-C, les données conservées sur
 les classes définies durant cette expansion sont perdues lorsque
 l'expansion est terminée. Il en résulte ainsi qu'il n'est pas possible
@@ -3104,7 +3068,7 @@ fichier) dans un autre module. Par exemple, une classe \scheme{Alpha}
 définie dans un fichier \scheme{A} ne pourrait pas être sous-classée
 dans un autre fichier \scheme{B}. Toutefois, il est possible de créer
 et d'utiliser les hiérarchies de classes créées dans un autre
-module. L'implantation du support intermodulaire du système objet n'a
+module. L'implantation du support intermodulaire du système objets n'a
 pas été abordé dû à la complexité de la tâche et à la potentielle
 baisse de performance qui pourrait être apporté par un tel support.
 
@@ -3265,7 +3229,7 @@ les performances du systèmes par rapports aux autres afin de confirmer
 l'obtention du résultat désiré. Ces résultats sont présentés dans le
 tableau \ref{OO:bench}. Ces derniers correspondent aux temps
 nécessaire à $500 000$ exécutions de chacunes des opérations
-principales du système objet. Les systèmes objets
+principales du système objets. Les systèmes objets
 Meroon~\cite{MEROON}, OOPS~\cite{OOPS} ainsi que les objets obtenus
 avec l'utilisation de la forme spéciale \scheme{define-type} de
 Gambit-C ont été utilisés pour effectuer cette comparaison. Le tableau
@@ -3307,7 +3271,7 @@ meilleur temps d'exécution du test pour chaque opération vérifiée.
     \hline
   \end{tabular}
   \caption{Comparaison de performances relative au système le plus
-    rapide (1.0) pour chaque opérations du système objet.}
+    rapide (1.0) pour chaque opérations du système objets.}
   \label{OO:bench-rel}
 \end{table}
 
@@ -3325,9 +3289,9 @@ d'objets performants disponibles pour Gambit-C.
 
 \FloatBarrier
 \section{Conclusion}
-Ainsi un système objet complet a été développé dans le but d'étendre
+Ainsi un système objets complet a été développé dans le but d'étendre
 le langage \Schemelang et d'y inclure le paradigme de la programmation
-orientée objet. Ce système objet permet la déclaration de classes avec
+orientée objet. Ce système objets permet la déclaration de classes avec
 héritage multiple, polymorphisme et fonctions génériques effectuant du
 \textit{dispatch} multiple. Ces choix de caractéristiques ont été
 faits dans le but de donner le plus de liberté aux programmeurs de
@@ -4540,14 +4504,14 @@ première version est décrit dans la section \ref{Exp:sp1}.
 
 Par la suite, une deuxième version fut écrite afin de répondre à
 certaines lacunes que présentait la première version du jeu. Pour ce
-faire, le développement du système objet présenté dans le chapitre
+faire, le développement du système objets présenté dans le chapitre
 \ref{Chap:OO} fut entrepris. Cette démarche d'amélioration du jeu est
 décrite dans la section \ref{Exp:sp2}.
 
 Finalement, une version expérimentale fut développée. Cette version
 tentait de s'éloigner de l'architecture classique de jeu vidéo où une
 boucle principale (\textit{main loop}) gère l'état du système en
-entier. L'idée était de tenter de fusionner le système objet et le
+entier. L'idée était de tenter de fusionner le système objets et le
 système de coroutine afin que tous les objets du jeu soient eux-mêmes
 des coroutines, en espérant ainsi simplifier l'écriture d'entités du
 jeu. En expérimentant ainsi sur le contrôle de flot du jeu, il est
@@ -5436,7 +5400,7 @@ Ainsi les animations du jeu peuvent être définies en utilisant cette
 forme spéciale. La figure \ref{Exp:cyclic-anim-def} illustre la
 définition de l'animation de marche utilisée par les sous-classes de
 la classe \scheme{human-like}. On peut donc ainsi tirer profit du
-polymorphisme du système objet en plus du petit langage de définition
+polymorphisme du système objets en plus du petit langage de définition
 d'animations afin de définir de manière claire et concise une
 animation cyclique.
 
@@ -5873,7 +5837,7 @@ lorsque cette intégration est faite sur des plate-formes au matériel
 plus limité comme des consoles portables. Lua contient certains
 éléments de la programmation dite de haut niveau dont les fermetures,
 une gestion de mémoire automatique, l'optimisation d'appels terminaux
-et un système de coroutines. Il fourni aussi un système objet limité à
+et un système de coroutines. Il fourni aussi un système objets limité à
 la Javascript~\cite{ECMA-262}, basé sur le prototypage d'objets.
 
 Ainsi, malgré le fait que ce dernier contient plusieurs aspects de la
@@ -5952,7 +5916,7 @@ cette compagnie a écrits plusieurs jeux sur la \textit{PlayStation 2}
 en utilisant le compilateur \textit{GOAL}/\textit{Game Oriented
   Assembly Lisp}, un système maison uniquement compilé vers du code
 machine pour le \textit{PlayStation 2} qui comprenait entre autres un
-système objet. Ce dernier fut utilisé pour développer entièrement de
+système objets. Ce dernier fut utilisé pour développer entièrement de
 nombreux jeux sur la console dont les jeux \textit{Crash Bandicoot} et
 \textit{Jak and Dexter}.
 

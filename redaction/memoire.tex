@@ -232,10 +232,10 @@ Ce mémoire de maîtrise vise à répondre à la problématique suivante:
 
 \FloatBarrier
 \section{Méthodologie}
-Afin de pouvoir répondre à la problématique posée, nous avons étudié
-les caractéristiques de \Schemelang et du compilateur Gambit-C, ainsi
-que les besoins au niveau du développement de jeux vidéo. Par la
-suite, deux jeux ont été développés en utilisant à profit ces
+Afin de répondre à la problématique posée, nous avons étudié les
+caractéristiques de \Schemelang et du compilateur Gambit-C, ainsi que
+les besoins au niveau du développement de jeux vidéo. Par la suite,
+deux jeux ont été développés en utilisant à profit ces
 caractéristiques dans le but de raffiner nos approches et les évaluer
 dans un contexte pratique.
 
@@ -302,7 +302,7 @@ produits.
 L'histoire des jeux vidéo possède déjà un demi-siècle de créations de
 tous genres qui ont contribué à générer l'engouement actuel pour ces
 derniers. Un bref historique des jeux vidéo est présenté dans ce
-chapitre afin de pouvoir illustrer l'évolution de ceux-ci et de situer
+chapitre afin d'illustrer l'évolution de ceux-ci et de situer
 dans le temps les jeux développés pour ce mémoire.
 
 L'industrie du jeu vidéo actuelle est le moteur qui permet aux jeux
@@ -310,8 +310,8 @@ vidéo de continuer à évoluer et se raffiner. Un aperçu global de cette
 industrie est ainsi donné dans ce chapitre.
 
 Finalement, les besoins au niveau de la programmation de jeux vidéo
-sont énoncés afin de pouvoir cerner les composantes importantes pour
-un langage de programmation utilisé pour le développement de jeux.
+sont énoncés afin de cerner les composantes importantes pour un
+langage de programmation utilisé pour le développement de jeux.
 
 
 \FloatBarrier
@@ -545,8 +545,8 @@ c'est aussi avec les artistes que les développeurs doivent s'accorder
 dans le but de concevoir un moteur de rendu répondant bien aux besoins
 de leurs créations. Celles-ci doivent être faites en respectant les
 contraintes imposées par le matériel où sera déployé le
-produit. Ainsi, le moteur de rendu doit pouvoir être facilement
-extensible afin de pouvoir accommoder facilement les nouvelles idées
+produit. Ainsi, le moteur de rendu doit être facilement
+extensible afin d'accommoder facilement les nouvelles idées
 et les nouveaux concepts à intégrer.
 
 Une composante multi-joueur, tout dépendant si elle implique des
@@ -702,7 +702,7 @@ La modularité du jeu aura un effet positif sur la malléabilité en
 permettant de modifier les mécanismes internes des composantes sans
 trop affecter le reste du programme. Par contre, un langage de
 programmation offrant une bonne puissance d'abstraction serait tout
-aussi efficace, car il permet de pouvoir ajouter facilement de
+aussi efficace, car il permet d'ajouter facilement de
 nouvelles abstractions où les besoins de changement apparaissent.
 
 
@@ -748,38 +748,37 @@ possédant des budgets moins importants.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Le langage \Schemelang} \label{Chap:Scheme}
-Dans le cadre d'un projet donné, le choix d'un langage de
-programmation a beaucoup d'influence sur la structure du code écrit
-pour sa réalisation. Plusieurs facteurs influencent ces
-différences. Par exemple, un langage à typage statique résultera en du
-code qui a une structure adaptée aux besoins du moment, mais qui sera
-beaucoup moins malléable par la suite. Ainsi, afin d'optimiser les
-efforts de développement pour un projet, une bonne analyse des besoins
-exprimés par le projet est de rigueur pour pouvoir faire le choix d'un
-langage répondant le mieux possible à ceux-ci.
+Pour la réalisation d'un projet donné, le choix d'un langage de
+programmation a beaucoup d'influence sur la structure du code
+écrit. Plusieurs facteurs influencent ces différences. Par exemple, un
+langage à typage statique résultera en du code qui a une structure
+adaptée aux besoins du moment, mais qui sera beaucoup moins malléable
+par la suite. Ainsi, afin d'optimiser les efforts de développement
+pour un projet, une bonne analyse des besoins est de rigueur afin de
+choisir un langage répondant le mieux possible à ceux-ci.
 
 En se basant sur les besoins et les contraintes énoncés dans le
 chapitre \ref{Chap:JV}, nous proposons l'utilisation du langage de
-programmation \Schemelang comme outil principal de développement de jeux
-vidéo. Il s'agit d'un langage de très haut niveau qui semble être un
-candidat idéal pour de permettre un développement efficace de jeux
-vidéo. En effet, en plus de posséder plusieurs implantations très
-performantes, ce langage offre une très grande quantité de concepts de
-programmation de très haut niveau. Parmi ceux-ci, l'on retrouve entre
-autre les concepts de la programmation fonctionnelle qui offre un
-grand potentiel d'abstractions au niveau de la structure du code, un
-système de macro évolué qui permet d'augmenter \Schemelang avec des
-langages spécifiques au domaine, l'accès aux continuations du calculs
-qui permettent une manipulation très puissante du flot de contrôle du
+programmation \Schemelang comme outil principal de développement de
+jeux vidéo. Il s'agit d'un langage de très haut niveau qui semble être
+un candidat idéal pour permettre un développement efficace de jeux
+vidéo. En plus de posséder plusieurs implantations très performantes,
+ce langage offre une grande quantité de concepts de programmation de
+haut niveau. Parmi ceux-ci, on retrouve entre autres les concepts de
+la programmation fonctionnelle qui offrent un grand potentiel
+d'abstraction au niveau de la structure du code, un système de macro
+évolué qui permet d'augmenter \Schemelang avec des langages
+spécifiques au domaine, l'accès aux continuations du calcul qui
+permettent une manipulation très puissante du flot de contrôle du
 programme et un système de gestion mémoire automatique.
 
-Ce chapitre donne un historique du langage \Schemelang afin de mettre en
-situation le langage et donner un aperçu de son origine. Par la suite,
+Ce chapitre donne un bref historique du langage \Schemelang afin de le
+mettre en situation et donner un aperçu de son origine. Par la suite,
 une brève explication des concepts de base du langage est donnée dans
-le but d'illustrer la simplicité du langage \Schemelang. Plus
-d'informations sur les bases de \Schemelang peuvent être obtenues dans la
+le but d'illustrer la simplicité de celui-ci. Plus d'informations sur
+les bases de \Schemelang peuvent être obtenues dans la
 littérature~\cite{R5RS}~\cite{SICP}. Finalement, les particularités du
-langage sont mises en lumière pour rendre plus clair l'ampleur de
+langage sont mises en lumière afin de mettre en évidence l'ampleur de
 celles-ci dans le contexte du développement de jeux vidéo.
 
 
@@ -789,8 +788,8 @@ Le langage \Schemelang est une forme épurée du tout premier langage de
 programmation de haut niveau, le langage \lisp. Ainsi, pour illustrer
 les origines de \Schemelang, une courte histoire du langage \lisp est
 présentée. Par la suite, les langages de programmation qui furent
-inspirés du langage \Schemelang sont mentionnés en expliquant brièvement
-leurs racines commune à \Schemelang et leurs principales disparités.
+inspirés du langage \Schemelang sont mentionnés en expliquant
+brièvement leur racine commune et leurs principales disparités.
 
 
 \FloatBarrier
@@ -800,69 +799,66 @@ niveau qui fut conçu et est le deuxième plus vieux langage de
 programmation toujours utilisé. Sa première implantation fut réalisée
 en 1958 dans un laboratoire d'intelligence artificielle du MIT
 (\textit{Massachusetts Institute of Technology}) sous la direction de
-John McCarthy. Le langage original était relativement du \lisp
-d'aujourd'hui mais introduisait déjà des concepts fondamentaux comme
-l'utilisation de listes pour représenter du code, de la programmation
-fonctionnelle ainsi que le concept de gestion de mémoire
-automatique. Un article décrivant le langage \lisp comme un langage de
-programmation ainsi que comme un formalisme de définition de fonctions
-récursives fut publié un peu plus tard~\cite{LISP_ORIGINS}.
+John McCarthy. Le langage original introduisait déjà des concepts
+fondamentaux comme l'utilisation de listes pour représenter du code,
+la programmation fonctionnelle ainsi que le concept de gestion de
+mémoire automatique. Un article décrivant le langage \lisp comme un
+langage de programmation et de formalisme de définition de fonctions
+récursives fut publié ultérieurement~\cite{LISP_ORIGINS}.
 
 Le langage fut aussitôt adopté par la communauté de recherche en
 intelligence artificielle, puisque l'utilisation de traitement
-symbolique permettait de pouvoir facilement développer de nouveaux
-algorithmes dans ce domaine.
+symbolique permettait de facilement développer de nouveaux algorithmes
+dans ce domaine.
 
 \lisp évolua par la suite en de nombreux dialectes différents, chacun
 apportant ses propres extensions au langage. Vers le début des années
-1980, un comité d'unification de ces multiples dialectes est formé
+1980, un comité d'unification de ces multiples dialectes fut formé
 pour donner naissance au standard \clisp. En 1984, Guy Steele publia
 un livre~\cite{CLISP} donnant une description détaillée du standard
-établi par la communauté \lisp. Ce standard fut par la suite la
-fondation d'une standardisation officielle créé pour le langage
-\clisp~\cite{ANSI_CLISP}. Il en résulte donc une spécification très
-complexe du langage qui s'est trouvé gonflée par les multiples
+établi par la communauté \lisp. Il en résulte donc une spécification
+très complexe du langage qui s'est trouvé gonflée par les multiples
 dialectes lui ayant donné naissance. Ainsi, \clisp possède beaucoup de
-bagages, et il devient difficile pour un programmeur de pouvoir
-maîtriser tous les concepts de ce langage.
+bagage, et il devient difficile pour un programmeur de maîtriser tous
+les concepts de ce langage.
 
 
 \FloatBarrier
 \subsection{Avènement de \Schemelang}
 Peu avant la standardisation de \clisp, Guy Steele et Gerald
 J. Sussman conçurent la spécification d'un nouveau dialecte du langage
-\lisp appelé \Schemelang~\cite{SCHEME_ORIGINS}. L'origine du développement
-de \Schemelang provient de la tentative de compréhension d'un formalisme
-modulaire d'agents en intelligence
+\lisp appelé \Schemelang~\cite{SCHEME_ORIGINS}. L'origine du
+développement de \Schemelang provient de la tentative de compréhension
+d'un formalisme modulaire d'agents en intelligence
 artificielle~\cite{ACTOR}~\cite{Scheme-History}. Ils ont donc bâti un
-interprète minimaliste basé sur \lisp afin de pouvoir comprendre ce
-formalisme qui s'exprimait mal avec les langages disponibles à
-l'époque. Ce petit interprète supportait ainsi une portée statique
-appropriée pour la description d'acteurs, divergeant ainsi de \lisp en
-remplaçant de simples fonctions récursives par les fermetures du
-lambda calcul. Les deux auteurs furent très surpris de constater que
-le langage expérimental créé répondait parfaitement à leurs besoins et
-se trouvait à être très simple, beaucoup plus simple que ce qu'ils
-avaient anticipé. 
+interprète minimaliste basé sur \lisp afin de comprendre ce formalisme
+qui s'exprimait mal avec les langages disponibles à l'époque. Ce petit
+interprète supportait ainsi une portée statique appropriée pour la
+description d'acteurs, divergeant ainsi de \lisp en remplaçant de
+simples fonctions récursives par les fermetures du lambda calcul. Les
+deux auteurs furent très surpris de constater que le langage
+expérimental créé répondait parfaitement à leurs besoins et s'avérait
+beaucoup plus simple que ce qu'ils avaient anticipé.
 
 \Schemelang devint ainsi populaire et est présentement l'un des deux
 dialectes les plus utilisés de \lisp, en concurrence avec \clisp. Même
-après avoir subi 5 révisions, le langage \Schemelang demeure très simple
-avec un standard ne comptant qu'environ une trentaine de
+après avoir subi cinq révisions, le langage \Schemelang demeure très
+simple avec un standard ne comptant qu'environ une trentaine de
 pages~\cite{R5RS}. Il en résulte qu'on ne retrouve actuellement pas
 moins d'une cinquantaine d'implantations disponibles, dont une
-douzaine sont considérées comme étant des implantations majeures. Ces
-implantations majeures offrent non seulement plusieurs extensions du
+douzaine sont considérées comme étant des implantations
+majeures. Celles-ci offrent non seulement plusieurs extensions du
 langage, mais aussi de bonnes performances grâce à l'implantation
 d'optimisations de compilation avancées.
 
 Le langage \Schemelang impose une philosophie de minimalisme à ces
 programmeurs en ne leur fournissant que la base dans le
 standard. Cette philosophie est souvent appréciée car elle mène à
-utiliser ce qui est vraiment nécessaire et faire soi même ce qui n'est
-pas disponible, créant ainsi une bonne autonomie chez les programmeurs
-\Schemelang. De plus, le langage est accompagné d'une centaine librairies
-externes de traitement générique dénommées \textit{Scheme Request For Implementation} (SRFI~\cite{SRFI}).
+utiliser ce qui est vraiment nécessaire et à faire soi-même ce qui
+n'est pas disponible, créant ainsi une bonne autonomie chez les
+programmeurs \Schemelang. De plus, le langage est accompagné d'une
+centaine de librairies externes de traitement générique dénommées
+\textit{Scheme Request For Implementation} (SRFI~\cite{SRFI}).
 
 
 \FloatBarrier
@@ -870,24 +866,24 @@ externes de traitement générique dénommées \textit{Scheme Request For Implem
 Plusieurs langages de programmation récents furent inspirés des
 langages \lisp. Pour la plupart, il s'agit de langages de script comme
 JavaScript~\cite{ECMA-262}, Ruby~\cite{RUBY} ou Perl~\cite{PERL}. Ces
-langages s'inspirent notamment de l'aspect dynamique de \lisp afin de
-pouvoir être interprétés. Ils utilisent aussi une gestion de mémoire
+langages s'inspirent notamment de l'aspect dynamique de \lisp afin
+d'être interprétés. Ils utilisent aussi une gestion de mémoire
 automatique afin de simplifier leur utilisation. Finalement, certains
 d'entre eux offrent des fonctions en tant que données de première
 classe, permettant ainsi l'utilisation de la programmation
 fonctionnelle.
 
-Ces langages demeurent par contre toujours des sous-ensembles, en
-terme de fonctionnalités, des langages \lisp. Ils sont devenus
-populaires pour leur simplicité d'utilisation, mais un bon
-apprentissage de \Schemelang pourrait certainement être plus bénéfique à
-long terme. Entre autre, \Schemelang est un langage interprété et compilé,
+Par contre, ces langages demeurent toujours des sous-ensembles de
+\Schemelang en terme de fonctionnalités. Ils sont devenus populaires
+pour leur simplicité d'utilisation, mais un bon apprentissage de
+\Schemelang pourrait certainement être plus bénéfique à long
+terme. Entre autres, \Schemelang est un langage interprété et compilé,
 permettant de développer des applications très efficaces. Il en
 résulte que le code peut être développé de manière dynamique en
 utilisant une \textit{Read Eval Print Loop} (\textit{REPL}) afin de
-pouvoir tester et corriger facilement un programme développé. La
-présence d'une \textit{REPL} permet aussi un mode de récupération
-d'erreurs très dynamique et donnant accès à l'évaluation d'expressions
+tester et corriger facilement un programme développé. La présence
+d'une \textit{REPL} permet aussi un mode de récupération d'erreurs
+très dynamique et donnant accès à l'évaluation d'expressions
 \Schemelang lorsqu'une erreur se produit dans une telle boucle.
 
 
@@ -895,18 +891,18 @@ d'erreurs très dynamique et donnant accès à l'évaluation d'expressions
 \section{Introduction au langage}
 Tout en bénéficiant du riche héritage des langages \lisp, \Schemelang
 demeure un langage épuré et très simple. Cette section vise à
-présenter les bases du langage \Schemelang et de son implantation par le
-système Gambit-C~\cite{Gambit4} afin de familiariser le lecteur avec
-non seulement la syntaxe du langage, mais aussi les fonctionnalités de
-base et les extensions au langage fournies par Gambit-C.
+présenter les bases du langage \Schemelang et de son implantation par
+le système Gambit-C~\cite{Gambit4}, afin de familiariser le lecteur
+avec la syntaxe du langage ainsi que les fonctionnalités de base et
+les extensions au langage fournies par Gambit-C.
 
 
 \FloatBarrier
 \subsection{Syntaxe}
-Les langages de la famille \lisp dont \Schemelang fait parti adoptent une
-notation préfixe parenthésée. Il en résulte que la syntaxe du langage
-est consistante et simple. La figure \ref{Scheme:simple-ex} illustre
-un exemple simple de calcul arithmétique.
+Les langages de la famille \lisp adoptent une notation préfixe
+parenthésée. Il en résulte que la syntaxe du langage est consistante
+et simple. La figure \ref{Scheme:simple-ex} illustre un exemple simple
+de calcul arithmétique.
 
 \begin{figure}[htb]
   \begin{schemecode}
@@ -920,20 +916,20 @@ Cette syntaxe apporte plusieurs bénéfices au langage. Puisque chaque
 appel de fonction (ou de forme spéciale) est parenthésé, il en résulte
 qu'un programme \Schemelang est très structuré et peut être manipulé
 efficacement en utilisant des outils de développement performant tel
-\textit{VI} ou \textit{Gnu Emacs}. De plus, \Schemelang utilise \emph{la
-  même syntaxe} pour les données d'un programme que pour le programme
-en lui même. Il devient ainsi possible concevoir des programmes qui
-créent des programmes \Schemelang. C'est ce qui constitue la base du
-système de macro de \Schemelang. On dit ainsi qu'un programme \Schemelang est
+\textit{VI} ou \textit{Gnu Emacs}. De plus, \Schemelang utilise la
+même syntaxe pour les données d'un programme que pour le programme. Il
+devient ainsi possible de concevoir des programmes qui créent des
+programmes \Schemelang. C'est ce qui constitue la base du système de
+macro de \Schemelang. On dit ainsi qu'un programme \Schemelang est
 représenté par des expressions symboliques, fréquemment appelées
-S-expression. La distinction dans un programme \Schemelang entre une donnée
-et le programme se fait par l'entremise des formes spéciales
-\scheme{quote} et \scheme{quasiquote} spécifient respectivement que
-l'expression doit être entièrement ou en partie traité comme une
-donnée et donc, ne doit pas être évaluée comme un programme. La figure
+S-expression. La distinction entre une donnée et les instructions d'un
+programme se fait par l'entremise des formes spéciales \scheme{quote}
+et \scheme{quasiquote} qui spécifient respectivement que l'expression
+doit être entièrement ou en partie traitée comme une donnée et donc,
+ne doit pas être évaluée comme un programme. La figure
 \ref{Scheme:s-quote-ex} donne deux exemples d'utilisation de ces
 formes spéciales. Le premier exemple illustre l'utilisation de
-\scheme{quote} qui fait en sorte que la liste spécifié est considérée
+\scheme{quote} qui fait en sorte que la liste spécifiée est considérée
 comme une donnée et non un appel de la fonction \scheme{abc}. Le
 deuxième exemple utilise la forme \scheme{quasiquote} qui permet de
 spécifier des données dont certaines parties peuvent être évaluées à
@@ -953,24 +949,25 @@ aussi utilisées en utilisant les caractères respectifs \scheme{'},
 
 
 \FloatBarrier
-\subsection{Aperçu des fonctionnalités requise par le standard}
-Le standard du langage \Schemelang~\cite{R5RS} est très minimaliste, mais
-requiert toutes les fonctionnalités de base requises par un langage de
-haut niveau comme \Schemelang. On y spécifie que \Schemelang est un langage typé
-dynamiquement, \ie que les vérifications de types sont faites durant
-l'exécution d'un programme, et non durant la compilation. Cette
-particularité fait en sorte que \Schemelang est un langage qui peut être
-facilement interprété ou compilé. Les types de base du langage sont
-tous disjoints entre eux (aucun objet ne peut appartenir a plus d'un
-de ces types). Ces types sont vérifiés par les prédicats
-\scheme{boolean?}, \scheme{pair?}, \scheme{symbol?}, \scheme{number?},
-\scheme{char?}, \scheme{string?}, \scheme{vector?}, \scheme{port?},
-\scheme{procedure?} et \scheme{null?}. Chacun de ces types sont
-documentés et possèdent des fonctions standards de création et
-d'utilisation. Entre autre, la forme spéciale \scheme{lambda} permet
-la création de fermeture telle qu'elles existent dans le lambda
-calcul. La figure \ref{Scheme:basic-ex} illustre l'utilisation des
-quelques uns parmi ces types de base.
+\subsection{Aperçu des fonctionnalités requises par le standard}
+Le standard du langage \Schemelang~\cite{R5RS} est très minimaliste,
+mais possède toutes les fonctionnalités de base requises par un
+langage de haut niveau comme \Schemelang. On y spécifie que
+\Schemelang est un langage typé dynamiquement, \ie que les
+vérifications de types sont faites durant l'exécution d'un programme,
+et non durant la compilation. Cette particularité fait en sorte que
+\Schemelang est un langage qui peut être facilement interprété ou
+compilé. Les types de base du langage sont tous disjoints entre eux,
+\ie aucun objet ne peut appartenir à plus d'un de ces types. Ces types
+sont vérifiés par les prédicats \scheme{boolean?}, \scheme{pair?},
+\scheme{symbol?}, \scheme{number?}, \scheme{char?}, \scheme{string?},
+\scheme{vector?}, \scheme{port?}, \scheme{procedure?} et
+\scheme{null?}. Chacun de ces types sont documentés et possèdent des
+fonctions standards de création et d'utilisation. Entre autres, la
+forme spéciale \scheme{lambda} permet la création de fermetures telles
+qu'elles existent dans le lambda calcul. La figure
+\ref{Scheme:basic-ex} illustre l'utilisation des quelques-uns parmi
+ces types de base.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -981,24 +978,24 @@ quelques uns parmi ces types de base.
            0 
            3) => \schemeresult{"all"}
   \end{schemecode}
-  \caption{Exemples d'utilisation des type de bases de \Schemelang}
+  \caption{Exemples d'utilisation des type de base de \Schemelang}
   \label{Scheme:basic-ex}
 \end{figure}
 
 
 \FloatBarrier
 \section{Programmation fonctionnelle}
-Le langage \Schemelang est à la base un langage fonctionnel. Cette famille
-de langage de programmation est caractérisée par une programmation
+Le langage \Schemelang est un langage fonctionnel. Cette famille de
+langage de programmation est caractérisée par une programmation
 centrée sur l'appel de fonctions dites avec une transparence
 référentielle, où la valeur de retour d'une fonction dépend uniquement
 des paramètres et non de l'état du système. Ce type de programmation
-fait contraste à la programmation impérative qui est centrée sur la
-notion d'état et de mutation de l'état de l'exécution d'un
-programme. Les programmes écrits en utilisant des langages sont
-généralement beaucoup plus faciles à comprendre, ce qui attire un
-grand nombre de chercheurs à contribuer au développement et
-l'utilisation de tels langages dans le milieu commercial.
+fait contraste à la programmation impérative, qui est centrée sur la
+mutation de l'état d'un programme. Les programmes écrits en utilisant
+ces langages sont généralement beaucoup plus faciles à comprendre, ce
+qui encourage un grand nombre de chercheurs à contribuer au
+développement et l'utilisation de tels langages dans le milieu
+commercial.
 
 
 \FloatBarrier
@@ -1006,15 +1003,17 @@ l'utilisation de tels langages dans le milieu commercial.
 Une programmation dite purement fonctionnelle respecte de manière
 stricte le paradigme de la programmation fonctionnelle, \ie que les
 fonctions sont des entités mathématique qui ne sont pas affectées par
-l'état du système. Ce type de programmation est originaire d'avant
-même l'apparition des premiers ordinateurs. C'est dans les années 1936
-qu'Alonzo Church a introduit le formalisme mathématique de définition
-de fonctions mathématique dénommé lambda calcul non
-typé~\cite{LAMBDA_CALCULUS}. Ce formalisme introduit un formalisme de
+l'état du système. L'origine de ce type de programmation se situe
+avant même l'apparition des premiers ordinateurs. C'est dans les
+années 1936 qu'Alonzo Church a introduit le formalisme mathématique de
+définition de fonctions mathématique dénommé lambda calcul non
+typé~\cite{LAMBDA_CALCULUS}. Ce dernier introduit un formalisme de
 définition de fonctions qui sert de base aux langages de programmation
 fonctionnels. La figure \ref{FIG:lambda-calcul} illustre la définition
-de la fonction \scheme{flip} définie en \Schemelang dans la figure
-\ref{FIG:hof}.
+de la fonction \scheme{flip}. Cette dernière reçoit en paramètre une
+fonction \scheme{f} et deux valeurs (\scheme{y} et \scheme{x}) et
+s'occupe d'appliquer la fonction reçue aux paramètres dans l'ordre
+inverse.
 
 \begin{figure}[htb!]
   \center
@@ -1024,21 +1023,21 @@ de la fonction \scheme{flip} définie en \Schemelang dans la figure
   \label{FIG:lambda-calcul}
 \end{figure}
 
-Ces fonctions sont considérées comme pures car elles sont exemptes de
+Ces fonctions sont considérées pures car elles sont exemptes de
 mutations de l'état du calcul. Ainsi, le résultat de l'application
 d'une fonction (appellée $\beta$-reduction en lambda calcul) ne dépend
 que des paramètres de ces dernières.
 
 Une caractéristique importante présente dans le lambda calcul est la
 présence de fonctions de première classe, \ie que les fonctions sont
-des objets appartenant aux valeurs du langages. Elles peuvent donc
-être créées et manipulées comme tout autre valeurs. Ces fonctions sont
+des objets appartenant aux valeurs du langage. Elles peuvent donc être
+créées et manipulées comme toutes autres valeurs. Ces fonctions sont
 aussi appelées fermetures, car elles implantent une portée statique de
-variable, \ie qu'elles conservent l'environnement d'exécution dans
+variables, \ie qu'elles conservent l'environnement d'exécution dans
 lequel elles se trouvaient lors de leur création. Cette capacité de
 retenir l'environnement est très puissante et permet l'utilisation de
 fermeture comme structure de données. Par exemple, la figure
-\ref{Scheme:lambda-pairs} illustre l'implantation de paires similaire
+\ref{Scheme:lambda-pairs} illustre l'implantation de paires similaires
 à celles retrouvées dans \Schemelang en lambda calcul.
 
 \begin{figure}[htb]
@@ -1058,16 +1057,16 @@ Comme déjà mentionné dans la section \ref{Scheme:hist}, le lambda
 calcul a donné naissance à une famille de langages dont la racine est
 le langage \lisp. Dans cette famille, les langages ML~\cite{SML} et
 Haskell~\cite{HASKELL} sont parmi les plus connus de ceux qui adhèrent
-fidèlement au modèle de calcul de Alonzo Church. Le langage \Schemelang est
-lui aussi un langage fonctionnel, mais il n'est pas considéré comme
-étant pur puisque les mutations de l'état du programme sont
-permises. En effet, des opérateurs tels que \scheme{set!},
-\scheme{set-car!} ou encore \scheme{vector-set!}  permettent la
-modification de liaison ou du contenu de cellules mémoires. Ainsi,
-\Schemelang partage le meilleur des deux mondes en laissant la liberté au
-programmeur de choisir le paradigme de programmation qui lui apparaît
-le plus approprié. Par contre, un abus de mutation est considéré comme
-étant de très mauvais style en \Schemelang.
+fidèlement au modèle de calcul d'Alonzo Church. Le langage \Schemelang
+est lui aussi un langage fonctionnel, mais il n'est pas considéré pur
+puisque les mutations de l'état du programme sont permises. En effet,
+des opérateurs tels que \scheme{set!}, \scheme{set-car!} ou encore
+\scheme{vector-set!}  permettent la modification de liaison ou du
+contenu de cellules mémoires. Ainsi, \Schemelang partage le meilleur
+des deux mondes en laissant la liberté au programmeur de choisir le
+paradigme de programmation qui lui apparaît le plus approprié. Par
+contre, un abus de mutations est considéré comme étant de très mauvais
+style en \Schemelang.
 
 
 \FloatBarrier
@@ -1079,12 +1078,10 @@ nouvelles. La figure \ref{FIG:hof} illustre un exemple d'écriture et
 d'utilisation de fonctions d'ordre supérieur. La première fonction
 définie prend une fonction en paramètre et applique cette fonction sur
 chacun des éléments de la liste passée comme deuxième paramètre. La
-deuxième fonction prend une fonction à deux paramètres comme premier
-argument et prend le deuxième paramètre à appliquer à cette fonction
-en deuxième argument, dans le but de faire une application partielle
-de cet argument à cette fonction. L'exemple utilise ensuite ces deux
-fonctions afin de soustraire un à chaque élément de la liste
-spécifiée.
+deuxième fonction est une version \Schemelang de \scheme{flip}
+présentée dans la figure \ref{FIG:lambda-calcul}. L'exemple utilise
+ensuite ces deux dernières afin de soustraire 1 à chaque élément de la
+liste spécifiée.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1096,8 +1093,8 @@ spécifiée.
     (lambda (x) (f x y)))
 (map (flip - 1) '(1 2 3 4 5)) => \schemeresult{(0 1 2 3 4)}
   \end{schemecode}
-  \caption{Exemple de création et d'utilisation de fonctions d'ordres
-    supérieures.}
+  \caption{Exemple de création et d'utilisation de fonctions d'ordre
+    supérieure.}
   \label{FIG:hof}
 \end{figure}
 
@@ -1122,24 +1119,25 @@ liste.
   \label{Scheme:fold}
 \end{figure}
 
-Ainsi, l'utilisation de fonctions en tant que données de premières
-classes permet la création de puissantes abstractions
+Ainsi, l'utilisation de fonctions en tant que données de première
+classe permet la création de puissantes abstractions
 algorithmiques. De plus, l'utilisation des paradigmes de programmation
 fonctionnelle facilite beaucoup la modularisation du logiciel. En
 effet, puisque peu ou pas de mutations d'état sont utilisées, il
-devient alors facile de pouvoir combiner différents modules, sans
-avoir d'interférences dans l'état du programme, ce qui n'est pas
+devient alors facile de combiner différents modules, sans avoir
+d'interférences dans l'état du programme, ce qui n'est pas
 nécessairement le cas avec des modules impératifs dépendant
 directement de l'état du programme pour leur exécution.
 
-De plus, il est possible en \Schemelang de créer des fermetures n'attendant
-aucun arguments. Ces dernières sont généralement appelées
-\textit{thunk} de manière historique. Elle sont généralement utilisée
-afin de retarder l'évaluation de code dans le but de faire de
-l'évaluation paresseuse et encore d'encapsuler un comportement. La
-figure \ref{Scheme:thunk} illustre l'utilisation d'un \textit{thunk}
-avec le système de \textit{threads} de Gambit-C afin de suspendre
-l'évaluation du corps du processus léger créé jusqu'à ce que ce dernier soit démarré.
+De plus, il est possible en \Schemelang de créer des fermetures
+n'attendant aucun argument. Ces dernières sont généralement appelées
+\textit{thunk} de manière historique. Elle sont utilisées afin de
+retarder l'évaluation de code dans le but de faire de l'évaluation
+paresseuse ou d'encapsuler un comportement. La figure
+\ref{Scheme:thunk} illustre l'utilisation d'un \textit{thunk} avec le
+système de \textit{threads} de Gambit-C afin de suspendre l'évaluation
+du corps du processus léger créé jusqu'à ce que ce dernier soit
+démarré.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1162,13 +1160,11 @@ macro peut être implanté sous la forme d'un pré-processeur de code qui
 ne fait que du remplacement de patrons par une expansion textuelle
 directe. C'est ce genre de système de macro que l'on retrouve entre
 autres dans le langage C. Ce type de macro, quoique très simple,
-permet de faire déjà beaucoup d'abstractions allant des abstractions
-d'optimisations à des expansions conditionnelles de code permettant de
-développer des librairies sur plusieurs plates-formes. La figure
-\ref{Scheme:c-macros} illustre des exemples de macros C. Dans cet
+permet de faire déjà beaucoup d'abstractions. La figure
+\ref{Scheme:c-macros} illustre un exemple de macros C. Dans cet
 exemple, on défini la macro \scheme{swap} qui interchange la valeur de
 deux variables entre elles. Le résultat de l'expansion sera donné par
-la substitution de l'appel de la macro par sont corps où les
+la substitution de l'appel de la macro par son corps où les
 occurrences des paramètres sont intégralement substitués par les
 paramètres actuels, soient \texttt{a} et \texttt{b}.
 
@@ -1181,43 +1177,43 @@ int main(){
   return a - (b<<1);
 }
   \end{verbatim}
-  \caption{Exemple de macro C avec expansion conditionnelle.}
+  \caption{Exemple de macro textuelle en C}
   \label{Scheme:c-macros}
 \end{figure}
 
 De telles macros comportent beaucoup de problèmes potentiels. Non
-seulement, elle ne sont limitées qu'a faire des remplacements
-syntaxiques très primitifs, mais aussi sont souvent la source de
-problèmes reliés au changement du contexte syntaxique des arguments de
-la macro ou à une expansion dans un contexte qui n'était pas
-prévu. Ces problèmes sont souvent très difficiles à trouver car ils ne
-surviennent uniquement lorsque le programme est compilé, bien après
-l'expansion des macros. Il en résulte que le code compilé ne contient
-aucune trace des appels macros et donc le compilateur donne souvent
-des erreurs qui ne sont pas reliées avec la vraie source du problème,
-soit la définition de la macro en question.
+seulement, elles sont limitées à faire des remplacements syntaxiques
+très primitifs, mais aussi elles sont souvent la source de problèmes
+reliés au changement du contexte syntaxique des arguments de la macro
+ou à une expansion dans un contexte qui n'était pas prévu. Ces
+problèmes sont difficiles à trouver car ils surviennent uniquement
+lorsque le programme est compilé, bien après l'expansion des
+macros. Il en résulte que le code compilé ne contient aucune trace des
+appels macros et donc le compilateur donne souvent des erreurs qui ne
+sont pas reliées avec la vraie source du problème, soit la définition
+de la macro en question.
 
 L'utilisation d'expressions symboliques pour représenter de la même
 manière les données d'un programme et le code source de celui-ci en
-\Schemelang la porte à l'implanter un système de macro très puissant, un
-système de macro procédural. Plusieurs de ces systèmes d'expansion de
-macro sont disponibles en \Schemelang. Le plus simple d'entre eux est celui
-qui provient directement de \lisp, soit la forme spéciale
-\scheme{define-macro}. Avec cet expanseur, une macro \Schemelang est une
-fonction dont les paramètres \emph{ne sont pas évalués} avant d'être
-passés au corps de la fonction. Il en résulte ainsi que le code étant
-en position d'argument est considéré par la macro comme étant des
-données \Schemelang (listes, symboles, nombres, etc...). Puisque la macro
-\Schemelang est une fonction, elle possède toute la puissance du langage à
-sa disposition. La S expression retournée par la macro sera le
-résultat de l'expansion de celle-ci et sera donc évalué durant
-l'exécution du programme à l'endroit où l'appel de la macro se
+\Schemelang permet l'implantation d'un système de macro très puissant,
+dit procédural. Plusieurs de ces systèmes d'expansion de macros sont
+disponibles en \Schemelang. Le plus simple d'entre eux est celui qui
+provient directement de \lisp, soit la forme spéciale
+\scheme{define-macro}. Avec cet expanseur, une macro \Schemelang est
+une fonction dont les paramètres \emph{ne sont pas évalués} avant
+d'être passés au corps de la fonction. Il en résulte ainsi que le code
+étant en position d'argument est considéré par la macro comme étant
+des données \Schemelang (listes, symboles, nombres, etc...). Puisque
+la macro \Schemelang est une fonction, elle possède toute la puissance
+du langage à sa disposition. La S-expression retournée par la macro
+sera le résultat de l'expansion de celle-ci et sera donc évaluée
+durant l'exécution du programme à l'endroit où l'appel de la macro se
 retrouvait. Un exemple simple de macro tirant profit du fait que
 l'argument est passé par nom est illustré dans la figure
 \ref{Scheme:macro-ex2}. Cette macro très simple utilise le passage par
 nom pour permettre d'incrémenter la valeur d'une variable, ce qui ne
-serait pas possible autrement en \Schemelang puisque le passage d'argument
-se fait normalement par valeur.
+serait pas possible autrement en \Schemelang puisque le passage
+d'argument se fait normalement par valeur.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1226,7 +1222,7 @@ se fait normalement par valeur.
     (inc! x)
     x) => \schemeresult{2}
   \end{schemecode}
-  \caption{Exemple simple de macro utilisant le passage par nom à profit.}
+  \caption{Exemple simple de macro utilisant le passage par nom à profit}
   \label{Scheme:macro-ex2}
 \end{figure}
 
@@ -1235,7 +1231,7 @@ Un autre exemple de macro utilisant le passage par nom est donné dans
 la figure \ref{Scheme:macro-ex3}. Cette macro permet d'augmenter le
 langage \Schemelang d'une nouvelle forme spéciale qui correspond à une
 forme simple d'itération comme l'on retrouve souvent dans les langages
-impératifs. L'expansion de l'appel à cette macro illustré dans la
+impératifs. L'expansion de l'appel à cette macro illustrée dans la
 figure \ref{Scheme:macro-ex3} est présentée dans la figure
 \ref{Scheme:macro-ex3-exp}.
 
@@ -1251,7 +1247,7 @@ figure \ref{Scheme:macro-ex3} est présentée dans la figure
   (for x 0 5 (vector-set! v x x))
   v) => \schemeresult{\#(0 1 2 3 4)}
   \end{schemecode}
-  \caption{Exemple de macro ajoutant une nouvelle forme spéciale au langage.}
+  \caption{Exemple de macro ajoutant une nouvelle forme spéciale au langage}
   \label{Scheme:macro-ex3}
 \end{figure}
 
@@ -1270,17 +1266,17 @@ figure \ref{Scheme:macro-ex3} est présentée dans la figure
 
 Ces macros demeurent très simples et se rapprochent de ce qui peut
 être exprimé à l'aide de macro C. Toutefois, la macro \scheme{for}
-comporte plusieurs problèmes. L'un d'entre eux est relié à
-l'introduction de la variable \scheme{loop}. L'ajout de cette variable
-peut causer le problème connu sous le nom de \emph{Capture de
-  noms}. En effet, la macro n'aura pas le comportement escompté si
-l'un de ses paramètres possède une référence à une variable déjà
-existante nommée \scheme{loop}. Le problème de capture de variables
-était tout aussi présent dans les macro de C et constituait pour ce
-type de macro un problème insolvable. Par contre, il est possible
-d'éviter ce problème en \Schemelang en générant un nom de variable pour
-\scheme{loop} qui est assurément unique. L'implantation Gambit-C offre
-la fonction \scheme{gensym} pour ces besoins.
+comporte un problème. Celui-ci est relié à l'introduction de la
+variable \scheme{loop}. L'ajout de cette variable peut causer le
+problème connu sous le nom de \emph{Capture de noms}. En effet, la
+macro n'aura pas le comportement escompté si l'un de ses paramètres
+possède une référence à une variable déjà existante nommée
+\scheme{loop}. Le problème de capture de variables était tout aussi
+présent dans les macro de C et constituait pour ce type de macro un
+problème insolvable. Par contre, il est possible d'éviter ce problème
+en \Schemelang en générant un nom de variable pour \scheme{loop} qui
+est assurément unique. L'implantation Gambit-C offre la fonction
+\scheme{gensym} pour ces besoins.
 
 Le problème de capture de nom est associé au phénomène appelé hygiène
 des macros. Ce problème peut être résolu manuellement comme suggéré,
@@ -1313,22 +1309,22 @@ dans des conditions potentiellement problématiques.
   \label{Scheme:macro-ex4}
 \end{figure}
 
-Bien que fait que l'expansion de macro faite avec
-\scheme{define-macro} puisse impliquer des collisions de variables,
-elle permet une plus grande liberté d'écriture. En effet, parfois la
-collision de nom peut, être intentionnelle. Aussi, le problème est
-facilement résolu avec l'utilisation de symboles uniques.
+Bien que l'expansion de macro faite avec \scheme{define-macro} puisse
+impliquer des collisions de variables, elle permet une plus grande
+liberté d'écriture. En effet, parfois la collision de nom peut être
+intentionnelle. Aussi, le problème est facilement résolu avec
+l'utilisation de symboles uniques.
 
-Un exemple plus convaincant d'une macro \Schemelang utilisant la puissance
-de calcul du langage est illustré dans la figure
+Un exemple plus convaincant d'une macro \Schemelang utilisant la
+puissance de calcul du langage est illustré dans la figure
 \ref{Scheme:macro-ex1}. Cette macro résulte en la création d'un masque
 binaire ayant les bits des puissances de deux spécifiées en
-argument. Ainsi, l'expansion de l'appel \scheme{(mask 1 3 8)} résulte
-à être directement \scheme{266}. Il est intéressant de noter qu'un
-appel à cette macro tel que \scheme{(mask 1 (+ 1 2))}, est une
-erreur. En effet, puisque la macro s'attend à avoir un nombre en
-paramètre, mais elle reçoit plutôt de ce cas ci la liste \scheme{(+ 1
-  2)}, puisque les arguments de macros ne sont pas évalués.
+argument. Ainsi, l'expansion de l'appel \scheme{(mask 1 3 8)} est
+directement \scheme{266}. Il est intéressant de noter qu'un appel à
+cette macro tel que \scheme{(mask 1 (+ 1 2))}, est une erreur. En
+effet, la macro s'attend à avoir un nombre en paramètre, mais elle
+reçoit plutôt dans ce cas-ci la liste \scheme{(+ 1 2)}, puisque les
+arguments de macros ne sont pas évalués.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1341,20 +1337,20 @@ paramètre, mais elle reçoit plutôt de ce cas ci la liste \scheme{(+ 1
   \label{Scheme:macro-ex1}
 \end{figure}
 
-Le calcul de la somme des puissance de deux se fait donc durant la
+Le calcul de la somme des puissances de deux se fait donc durant la
 compilation du programme, donnant accès à des optimisations
 intéressantes, sans toutefois perdre au niveau de l'élégance du
 code. Ce genre de macros mènent directement vers la construction de
 langages spécifiques au domaine (\textit{Domain Specific Languages} ou
-simplement \textit{DSL}). Ces derniers constituent l'ajout de
-nouvelles constructions à \Schemelang permettant d'exprimer facilement des
-idées relié à un concept précis de manière élégante, sans perte de
-performances. La macro \scheme{mask} pourrait constituer le pilier de
-base d'un \textit{DSL} effectuant la création et la manipulation de
+simplement \textit{DSL}). Ces derniers consistent en l'ajout de
+nouvelles constructions à \Schemelang permettant d'exprimer facilement
+des idées reliées à un concept précis de manière élégante, sans perte
+de performance. La macro \scheme{mask} pourrait constituer le pilier
+de base d'un \textit{DSL} effectuant la création et la manipulation de
 masques binaires. La figure \ref{Scheme:macro-mini-dsl} illustre une
 deuxième macro effectuant durant l'expansion macro la combinaison de
 masques binaires. On obtient un petit langage pour la déclaration
-efficace de tels masques. 
+efficace de tels masques.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1369,42 +1365,41 @@ efficace de tels masques.
 
 On peut maintenant imaginer de tels langages spécifiques au domaine
 pour n'importe quel problème associé aux jeux vidéo. Par exemple, une
-macro pour être écrite pour la description détaillée d'un modèle
-tridimensionnel et une autre pour la combinaison de ces
-dernières. Ainsi, ces macros pourraient permettre de décrire le modèle
-d'une manière simple pour les artistes, en utilisant un syntaxe près
-de d'un langage naturel et, durant l'expansion, transformer ces
-déclaration et combinaisons, en des structures de données efficaces
-tant en utilisation mémoire qu'en rapidité d'accès et de
+macro peut être écrite pour la description détaillée de modèles
+tridimensionnels et une autre pour la combinaison de ces
+derniers. Ainsi, ces macros pourraient permettre de décrire le modèle
+d'une manière simple pour les artistes, en utilisant une syntaxe près
+d'un langage naturel. Durant l'expansion, celles-ci transformeraient
+ces déclarations et combinaisons en des structures de données
+efficaces tant en utilisation mémoire qu'en rapidité d'accès et de
 manipulation. Un autre exemple pourrait être la création d'un système
-de programmation orienté objet à l'aide de macros \Schemelang. La puissance
-de calcul disponible durant l'expansion pourrait ainsi servir à la
-création des fonctions auxiliaire d'accès aux membres, à la
-détermination des membres hérités, etc...
+de programmation orienté objet à l'aide de macros \Schemelang. La
+puissance de calcul disponible durant l'expansion pourrait ainsi
+servir à la création des fonctions auxiliaires d'accès aux membres, à
+la détermination des membres hérités, etc...
 
 En conclusion, les macros \Schemelang donnent accès à une très grande
 puissance expressive en permettant l'utilisation de la puissance
 complète du langage durant l'expansion de ces dernières. Cette
-puissance de calcul et cette simplicité provient du fait que le code
-source de \Schemelang et les données du langage \Schemelang utilisent la même
-syntaxe, soit les S-expressions. Ainsi, en utilisant ce système de
-macros, il est possible d'ajouter des nouvelles formes spéciales au
-langages et ainsi créer des langages spécifiques au domaine
-(\textit{Domain specific languages}). Ces derniers sont créés au
-dessus de \Schemelang dans le but de résoudre un problème précis de manière
-efficace, tout en offrant une syntaxe facilitant leur utilisation.
+puissance de calcul et cette simplicité proviennent du fait que le
+code source et les données utilisent la même syntaxe, soit les
+S-expressions. Ainsi, en utilisant ce système de macros, il est
+possible d'ajouter de nouvelles formes spéciales au langages et créer
+des langages spécifiques au domaine (\textit{Domain specific
+  languages}).
 
 
 \FloatBarrier
 \section{Continuations}
 La forme d'écriture de code appelée CPS (\textit{Continuation Passing
   Style}) est un style d'écriture utilisé dans les langages
-fonctionnels qui permet d'expliciter la suite du calcul d'une fonction
+fonctionnels qui permet d'écrire la suite du calcul d'une fonction
 explicitement. La figure \ref{Scheme:fact} illustre une implantation
-simple de la fonction factoriel. La suite du calcul effectuée après un
-appel à la fonction \scheme{fact} est implicite dans l'écriture de son
-appel. Dans l'exemple d'appel présent dans cette figure, on constate
-que la suite de ce calcul sera l'addition de un au résultat obtenu.
+simple de la fonction factorielle. La suite du calcul effectué après
+un appel à la fonction \scheme{fact} est implicite à l'endroit où
+celui-ci se retrouve. Dans l'exemple d'appel à \scheme{fact} présenté
+dans cette figure, on constate que la suite de ce calcul sera
+l'addition de 1 au résultat obtenu.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1415,7 +1410,7 @@ que la suite de ce calcul sera l'addition de un au résultat obtenu.
 
 (+ (fact 10) 1) => \schemeresult{3628801}
   \end{schemecode}
-  \caption{Implantation simple de la fonction factoriel}
+  \caption{Implantation simple de la fonction factorielle}
   \label{Scheme:fact}
 \end{figure}
 
@@ -1426,17 +1421,17 @@ suivante: un appel terminal est un appel qui termine l'exécution d'une
 fonction et un appel non-terminal est tel que le résultat de cet appel
 nécessitera du traitement ultérieur dans la fonction avant que
 celle-ci termine. Ainsi, seul l'appel à la fonction \scheme{*} est
-terminal dans la fonction \scheme{fact}. Le standard du langage \Schemelang
-requiert l'implantation de l'optimisation d'appels terminaux. Cette
-dernière fait en sorte que le résultat d'un appel terminal est passé
-directement à la continuation de l'appel à la fonction en question. Il
-en résulte que le résultat d'un appel terminal ne sera pas attendu par
-la fonction qui le contient. Il est ainsi possible de pouvoir
-effectuer des itérations à l'aide d'appels terminaux de fonctions.
+terminal dans la fonction \scheme{fact}. Le standard du langage
+\Schemelang requiert l'implantation de l'optimisation d'appels
+terminaux. Cette dernière fait en sorte que le résultat d'un appel
+terminal est passé directement à la continuation de l'appel à la
+fonction en question. Le résultat d'un appel terminal ne sera donc pas
+attendu par la fonction qui le contient. Il est ainsi possible
+d'effectuer des itérations à l'aide d'appels terminaux de fonctions.
 
 La transformation de cette fonction en style CPS est donnée dans la
 figure \ref{Scheme:cps-fact}. Dans cette nouvelle version, la suite de
-l'exécution d'un appel est explicite, il s'agit d'un appel à la
+l'exécution d'un appel est explicite. Il s'agit d'un appel à la
 continuation passée en paramètre, nommée \scheme{k}.
 
 \begin{figure}[htb!]
@@ -1452,7 +1447,7 @@ continuation passée en paramètre, nommée \scheme{k}.
 
 (factk 10 (lambda (x) x)) => \schemeresult{3628800}
   \end{schemecode}
-  \caption{Forme CPS de la fonction factoriel}
+  \caption{Forme CPS de la fonction factorielle}
   \label{Scheme:cps-fact}
 \end{figure}
 
@@ -1465,22 +1460,22 @@ aussi d'utiliser de manière élégante la puissance d'abstraction des
 langages fonctionnels en permettant de diviser le calcul en petites
 parties facilement interchangeables et modulaires.
 
-Le langage \Schemelang offre la possibilité de réifier automatiquement la
-continuation d'un calcul donné par l'entremise de la forme spéciale
+Le langage \Schemelang offre la possibilité de réifier automatiquement
+la continuation d'un calcul donné par l'entremise de la forme spéciale
 \scheme{call-with-current-continuation} souvent nommée aussi
-\scheme{call/cc}. Cette forme spéciale s'attend à recevoir une
-fermeture en argument, cette dernière n'attendant qu'un seul
-paramètre: la continuation réifiée du calcul au point d'appel de
-\scheme{call/cc}. La figure \ref{Scheme:cont-ex} donne un exemple de
-la réification d'un calcul simple. La mutation de la variable
-\scheme{k} est utilisée afin de permettre une sauvegarde de la
-continuation et dans le but de la réutiliser plus tard.
+\scheme{call/cc}. Cette dernière s'attend à recevoir une fermeture en
+argument, celle-ci n'attendant qu'un seul paramètre: la continuation
+réifiée du calcul au point d'appel de \scheme{call/cc}. La figure
+\ref{Scheme:cont-ex} donne un exemple de la réification d'un calcul
+simple. La mutation de la variable \scheme{k} est utilisée afin de
+permettre une sauvegarde de la continuation dans le but de la
+réutiliser plus tard.
 
 \begin{figure}[htb!]
   \begin{schemecode}
 (define k \#f)
 (define f (lambda (x y) (* x y)))
-(+ 3 (- (call/cc (lambda (cont) (set! k cont) [f 5 6])) 2)) => \schemeresult{31}
+(+ 3 (- (call/cc (lambda (cont) (set! k cont) (f 5 6))) 2)) => \schemeresult{31}
 (k 10) => \schemeresult{11}
   \end{schemecode}
   \caption{Réification d'une continuation à l'aide \scheme{call/cc}}
@@ -1500,22 +1495,22 @@ d'entrevoir les possibilités qu'offre cet aspect de \Schemelang.
 
 
 \FloatBarrier
-\subsubsection{Échappement au flux de contrôle}
-Un exemple simple d'utilisation de continuation est pour l'échappement
-au contrôle d'une fonction. Bien sûr, un programmeur a toujours le
-contrôle du programme qu'il écrit, mais il peut y avoir des situation
-qui exigent l'utilisation de fonctions externes dont on ne peut pas
-modifier le contenu. De telles situations peuvent mener à des
-inefficacités algorithmiques. La figure \ref{Scheme:bad-fold} illustre
-une utilisation de la fonction d'ordre supérieur \scheme{foldl}
-présentée dans la figure \ref{Scheme:fold} afin d'implanter un
-algorithme permettant de déterminer s'il existe au moins une valeur
-supérieure à 10 dans une liste. En utilisant la fonctionnalité de
-traces qu'offre Gambit-C, on constate que malgré le fait que
-l'utilisation d'une fonction d'ordre supérieur permet d'implanter
-facilement cet algorithme, il en résulte en du code inefficace,
-puisque l'appel à \scheme{foldl} va analyser tous les éléments de la
-lite, même après avoir trouvé une valeur supérieure à 10.
+\subsubsection{Échappement au flot de contrôle}
+Un exemple simple d'utilisation de continuation est l'échappement au
+contrôle d'une fonction. Un programmeur a toujours le contrôle du
+programme qu'il écrit, mais il peut y avoir des situations qui exigent
+l'utilisation de fonctions externes dont on ne peut pas modifier le
+contenu. De telles situations peuvent mener à des inefficacités
+algorithmiques. La figure \ref{Scheme:bad-fold} illustre une
+utilisation de la fonction d'ordre supérieur \scheme{foldl} présentée
+dans la figure \ref{Scheme:fold} afin d'implanter un algorithme
+permettant de déterminer s'il existe au moins une valeur supérieure à
+10 dans une liste. En utilisant la fonctionnalité de traces qu'offre
+Gambit-C, on constate que malgré le fait que l'utilisation d'une
+fonction d'ordre supérieur permet d'implanter facilement cet
+algorithme, il en résulte du code inefficace, puisque l'appel à
+\scheme{foldl} passera sur tous les éléments de la liste, même après
+avoir trouvé une valeur supérieure à 10.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1542,19 +1537,19 @@ lite, même après avoir trouvé une valeur supérieure à 10.
 \end{figure}
 
 On doit donc ré-écrire le méta comportement offert par \scheme{foldl}
-afin de pouvoir arrêter la recherche aussitôt qu'une valeur supérieure
-à 10 est trouvée. Cela vient à l'encontre du principe d'abstraction
-mène à une mauvaise maintenabilité du code. 
+afin d'arrêter la recherche aussitôt qu'une valeur supérieure à 10 est
+trouvée. Cela vient à l'encontre du principe d'abstraction et mène à
+une maintenance difficile du code.
 
-Les continuations nous offres par contre la possibilité d'utiliser la
-méta fonction \scheme{foldl}, sans perte de performances. La figure
+Les continuations nous offrent par contre la possibilité d'utiliser la
+méta fonction \scheme{foldl}, sans perte de performance. La figure
 \ref{Scheme:better-foldl} indique comment s'y prendre. En réifiant la
 continuation au début du calcul de la fonction
-\scheme{exists-greater-than}, cette continuation capture le reste du
-calcul à faire après cet appel de fonction et donc, lorsque cette
-continuation, liée à la variable \scheme{return}, est appelée, il en
-résulte que le flot de contrôle branche vers la suite du calcul en
-prenant comme valeur de retour la valeur trouvée.
+\scheme{exists-greater-than}, on obtient une fonction qui permet le
+branchement direct vers la suite du calcul à l'appel de
+\scheme{exists-greater-than}. On peut ainsi utiliser cette dernière
+afin d'échapper le corps de la fonction lorsqu'une valeur clé est
+trouvée.
 
 \begin{figure}[htb!]
 \begin{schemecode}
@@ -1582,8 +1577,8 @@ prenant comme valeur de retour la valeur trouvée.
 
 \FloatBarrier
 \subsubsection{Recherche par retour arrière}
-Un autre exemple d'utilisation intéressant de continuations est dans
-la création d'un système de recherche par retour arrière
+Un autre exemple d'utilisation intéressant de continuations est la
+création d'un système de recherche par retour arrière
 (\textit{backtracking}). La figure \ref{Scheme:backtrack} illustre un
 exemple simple de recherche d'un triplet de nombres entiers tel que
 $x^2 = y^2+z^2$.
@@ -1613,8 +1608,8 @@ $x^2 = y^2+z^2$.
   \label{Scheme:backtrack}
 \end{figure}
 
-Dans cet exemple simple, la fonction \scheme{fail} représente une
-liste chaînée de retour arrières permettant de revenir à une étape de
+Dans cet exemple, la fonction \scheme{fail} représente une liste
+chaînée de retour arrières permettant de revenir à une étape de
 décision précédente et de poursuivre le calcul en prenant une nouvelle
 décision à cet endroit. Cet exemple illustre bien l'élégance qui peut
 résulter de l'utilisation judicieuse de la forme spéciale
@@ -1623,14 +1618,14 @@ résulter de l'utilisation judicieuse de la forme spéciale
 
 \FloatBarrier
 \subsection{Conclusion}
-Ainsi, la réification de continuation implicites ou encore
-l'utilisation d'un style CPS utilisant des continuation explicites
+Ainsi, la réification de continuations implicites ou encore
+l'utilisation d'un style CPS utilisant des continuations explicites
 apporte beaucoup de puissance au langage \Schemelang. L'utilisation de
-continuation permet la sauvegarde de l'état d'un calcul en cours dans
+continuations permet la sauvegarde de l'état d'un calcul en cours dans
 une fermeture et permet sa réutilisation ultérieure. On peut ainsi
 créer sans trop d'efforts des systèmes d'exceptions, de retour arrière
-ou même de coroutines, systèmes qui seraient tous pertinent à utiliser
-dans le cadre de la programmation de jeux vidéo.
+ou même de coroutines, systèmes qui seraient tous pertinents à
+utiliser dans le cadre de la programmation de jeux vidéo.
 
 
 
@@ -1640,45 +1635,44 @@ dans le cadre de la programmation de jeux vidéo.
 L'écriture de code effectuant la gestion de la mémoire d'un programme
 a toujours été une partie délicate du développement d'un logiciel. Non
 seulement, il est très facile de faire des erreurs, mais ces erreurs
-sont très difficiles à détecter et à être trouvées. Les problèmes
-reliés à une mauvaise gestion de la mémoire sont classifiés en deux
-catégories: des fuites de mémoire ou des pointeurs fous. Les fuites de
-mémoire sont causées par la rétention de mémoire par des objets qui ne
-sont plus utilisés par le programme et les pointeurs fous sont des
-pointeurs toujours accessibles par le programme, mais dont l'espace
-mémoire correspondant a été récupéré par le système
-d'exploitation. Ces erreurs sont souvent les conséquence d'un problème
-plus difficile encore, le problème de modularité. En effet, la durée
-de vie d'un objet en mémoire est normalement facile à déterminer à
-petite échelle. Par contre, lorsque le code est écrit de manière
-modulaire, il est difficile de prévoir toutes les utilisations des
-objets et souvent la responsabilité de la désallocation des objets est
-difficile à déterminer.
+sont très difficiles à détecter et à trouver. Les problèmes reliés à
+une mauvaise gestion de la mémoire sont classifiés en deux catégories:
+des fuites de mémoire ou des pointeurs fous. Les fuites de mémoire
+sont causées par la rétention de mémoire par des objets qui ne sont
+plus utilisés par le programme. Les pointeurs fous sont des pointeurs
+toujours accessibles par le programme, mais dont l'espace mémoire
+correspondant a été récupéré par le système d'exploitation. Ces
+erreurs sont souvent les conséquences d'un problème plus difficile,
+soit le problème de modularité. En effet, la durée de vie d'un objet
+en mémoire est normalement facile à déterminer à petite échelle. Par
+contre, lorsque le code est écrit de manière modulaire, il est
+difficile de prévoir toutes les utilisations des objets et souvent la
+responsabilité de la désallocation des objets est difficile à
+déterminer.
 
 Ces erreurs sont très problématiques. C'est sans doute pour cette
-raison que déjà très tôt, cette gestion a été automatisée par des
-systèmes de gestions automatiques de mémoire. Les premiers systèmes de
-gestion de mémoires automatiques, appellés aussi ramasses miettes,
-apparurent avec le langage \lisp. Le principe de base est simple, il
-s'agit de parcourir la mémoire utilisée par le programme en partant
-des \emph{racines} de celui-ci. Les racines sont tous les points
-d'accès aux données accessibles, comme par exemple les variables
-globales ou locales d'une fonction en cours d'exécution. Lorsque la
-mémoire est parcourue, on garde trace des zones accessibles. Après
-avoir parcouru toute la mémoire accessible, il ne suffit que de
-récupérer automatiquement les zones qui ne sont plus accessibles par
-le programme.
+raison que déjà très tôt, des systèmes de gestions automatiques de
+mémoire ont été développés. Les premiers systèmes de gestion de
+mémoires automatiques, appelés aussi ramasses miettes, apparurent avec
+le langage \lisp. Le principe de base est simple, il s'agit de
+parcourir la mémoire utilisée par le programme en partant des
+\emph{racines} de celui-ci. Les racines comprennent tous les liens aux
+données accessibles, comme les variables globales ou locales d'une
+fonction en cours d'exécution. Lorsque la mémoire est parcourue, on
+garde trace des zones accessibles. Après avoir parcouru toute la
+mémoire utilisée, il ne suffit que de récupérer automatiquement les
+zones qui ne sont plus accessibles par le programme.
 
 Bien sûr, la gestion de mémoire automatique se fait avec un certain
-\emph{coût en temps de calcul}. La répartition de ce temps dépend
-grandement de la technique de gestion utilisée. Aussi, les algorithmes
-de gestion de mémoire se doivent d'être \emph{conservateurs} dans la
+coût en temps de calcul. La répartition de ce temps dépend grandement
+de la technique de gestion utilisée. Aussi, les algorithmes de gestion
+de mémoire se doivent d'être \emph{conservateurs} dans la
 désallocation d'objets puisque la détermination de la vivacité d'un
 objet est, dans la généralité du problème, indécidable. Ainsi, il peut
 y avoir des cas où le système de gestion pense qu'un pointeur est
 toujours accessible, alors qu'en réalité, il ne sera plus jamais
 utilisé par le programme créant ainsi des fuites de mémoires. Ces
-fuites sont toutefois beaucoup plus difficile à créer que celles
+fuites sont toutefois beaucoup plus difficiles à créer que celles
 obtenues lorsqu'une gestion manuelle de mémoire est utilisée.
 
 
@@ -1687,9 +1681,8 @@ obtenues lorsqu'une gestion manuelle de mémoire est utilisée.
 Plusieurs techniques de gestion de mémoire automatiques ont été
 développées au cours des années. Cette section effectue un bref survol
 de ces différentes techniques. Plusieurs articles effectuant une revue
-des techniques sont disponibles pour fournir plus de détails sur ces
-techniques sur le
-sujet~\cite{GC_REVIEW1}~\cite{GC_REVIEW2}~\cite{GC_REVIEW3}. 
+des techniques existantes sont
+disponibles~\cite{GC_REVIEW1}~\cite{GC_REVIEW2}~\cite{GC_REVIEW3}.
 
 
 \FloatBarrier
@@ -1697,13 +1690,12 @@ sujet~\cite{GC_REVIEW1}~\cite{GC_REVIEW2}~\cite{GC_REVIEW3}.
 Une des techniques la plus simple de gestion de mémoire automatique
 est le \textit{Mark And Sweep}~\cite{LISP_ORIGINS}. Cette technique
 consiste à traverser la mémoire à partir des racines et à marquer
-chacun des espaces mémoire rencontrés lors du parcours. Ensuite, tout
-les espaces mémoires alloués sont parcourus et tout ceux qui ne sont
-pas marqués sont récupérés. Cette technique est très simple, mais
-telle quelle, peut mener à des problèmes de fragmentations de la
-mémoire. De plus, elle requiert de traverser toute la mémoire utilisée
-par deux fois, impliquant donc un certaine pause dans l'exécution du
-programme.
+chacun des espaces mémoire rencontrés lors du parcours. Ensuite, tous
+les espaces mémoires alloués sont parcourus et tous ceux qui ne sont
+pas marqués sont récupérés. Cette technique est très simple, mais peut
+mener à des problèmes de fragmentations de la mémoire. De plus, elle
+requiert de traverser toute la mémoire utilisée par deux fois,
+impliquant donc une pause considérable dans l'exécution du programme.
 
 
 \FloatBarrier
@@ -1717,76 +1709,74 @@ les allocations sont effectuées et l'autre demeure réservée. Lorsque
 le ramasse miettes atteint un objet en mémoire, il le copie vers la
 nouvelle zone réservée et laisse une indication de sa nouvelle
 position dans son ancien emplacement. Toutes les zones mémoires sont
-ainsi copiées et compactées et donc, les allocations subséquentes sont
-par la suite dans la nouvelle zone mémoire, résultant en une
-désallocation implicite des espaces inutilisés dans la zone
+ainsi copiées et compactées. Donc, les allocations subséquentes sont
+par la suite effectuées dans la nouvelle zone mémoire, résultant en
+une désallocation implicite des espaces inutilisés dans la zone
 précédente. Cette technique est légèrement plus efficace que le
 \textit{Mark And Sweep} traditionnel, mais nécessite le double
-d'espace mémoire pour faire la gestion de la mémoire. Cette technique
-est utilisée dans l'implantation \Schemelang Gambit-C.
+d'espace pour faire la gestion de la mémoire. Le \textit{Stop And
+  Copy} est utilisé dans l'implantation \Schemelang Gambit-C.
 
 
 \FloatBarrier
 \subsubsection{Gestionnaires générationnels}
 Une amélioration notable de la technique du \textit{Mark And Sweep} a
 donné naissance aux ramasses miettes
-générationnels~\cite{GEN_GC}. Sans entrer dans les détails, cette
-technique divise la mémoire en plusieurs générations. Les objets
-récemment alloués sont conservés dans la pouponnière puis, lorsque
-ceux-ci sont conservés plus longtemps, sont déplacés vers une
-génération plus ancienne, et ainsi de suite. Seul la pouponnière est
-parcourue lors de chaque récupération et lorsque celle-ci devient
-remplie, elle déclenche une récupération dans la génération au dessus
-d'elle. Ainsi, cet algorithme est beaucoup plus mieux adapté aux cas
-d'utilisations les plus fréquents, car les objets récemment alloués
-ont souvent une courte durée de vie moyenne, contrairement aux objets
-déjà retenus qui eux possèdent une meilleur chance d'être
-retenus. 
+générationnels~\cite{GEN_GC}. Brièvement, cette technique divise la
+mémoire en plusieurs générations. Les objets récemment alloués sont
+conservés dans la pouponnière puis, lorsque ceux-ci sont retenus plus
+longtemps, ils sont déplacés vers une génération plus ancienne, et
+ainsi de suite. Seul la pouponnière est parcourue lors de chaque
+récupération et lorsque celle-ci est remplie, elle déclenche une
+récupération dans la génération au-dessus d'elle. Ainsi, cet
+algorithme est mieux adapté aux cas d'utilisations les plus fréquents,
+car les objets récemment alloués ont souvent une courte durée de vie
+moyenne, contrairement aux objets déjà retenus, qui eux possèdent une
+meilleur chance d'être conservés à long terme.
 
 Tout comme les deux techniques précédentes, les ramasses miettes
 générationnels nécessitent l'arrêt du programme durant l'opération
-récupération, qui peu, dans le pire cas, s'effectuer sur toute la
+récupération, qui peut, dans le pire des cas, s'effectuer sur toute la
 mémoire. Ainsi, les gestionnaires de mémoires générationnels
-améliorent les performances du temps de récupération moyen, en
-augmentant le temps de récupération de toute la mémoire (pire cas).
+améliorent les performances du temps de récupération moyen, au
+détriment du temps de récupération de toute la mémoire (pire cas).
 
 
 \FloatBarrier
 \subsubsection{Gestionnaires incrémentaux}
 Afin de remédier au problème d'arrêt complet de l'exécution du
-programme, d'un nouveaux types de ramasses miettes a été développé:
-des gestionnaires de mémoires incrémentaux ou temps
+programme, un nouveau type de ramasse miettes a été développé: des
+gestionnaires de mémoires incrémentaux ou temps
 réels~\cite{INCR_BAKER}. Ceux-ci peuvent utiliser un algorithme
-générique de marquage à trois couleurs~\cite{dijkstra-tricolour} de la
-mémoire afin d'effectuer partiellement le travail de récupération et
-de poursuivre l'application dans le but de continuer
-ultérieurement. Cet algorithme fonctionne en subdivisant la mémoire en
-trois ensemble: l'ensemble blanc, l'ensemble gris et l'ensemble
-noir. Initialement toutes les zones sont blanches, à l'exception des
-racines qui sont marquées comme grises. Ensuite, pour chaque élément
-de l'ensemble gris, l'algorithme marque chacune des zones accessibles
-par ceux-ci comme gris et marque finalement l'élément gris comme
-noir. À la fin, les zones mémoire toujours blanches sont inaccessibles
-et donc récupérées.  Le travail de marquage peut être fait en séparant
-le travail en ne traversant qu'un nombre fini de noeuds. Il en résulte
-donc que les pauses dues à la récupération peuvent être bornées
-supérieurement.
+générique de marquage à trois couleurs de la
+mémoire~\cite{dijkstra-tricolour} afin d'effectuer partiellement le
+travail de récupération et de poursuivre l'application. Cet algorithme
+fonctionne en subdivisant la mémoire en trois ensembles: l'ensemble
+blanc, l'ensemble gris et l'ensemble noir. Initialement, toutes les
+zones sont blanches, à l'exception des racines qui sont marquées comme
+grises. Ensuite, pour chaque élément de l'ensemble gris, l'algorithme
+marque chacune des zones accessibles par ceux-ci comme gris et marque
+finalement l'élément gris comme noir. À la fin, les zones mémoire
+toujours blanches sont inaccessibles et donc récupérées.  Le travail
+de marquage peut être fait en étant subdivisé de manière à traverser
+un nombre fini de noeuds. Il en résulte donc que les pauses dues à la
+récupération peuvent être bornées supérieurement.
 
-Afin de pouvoir entremêler le travail du récupérateur de mémoire et du
+Afin d'entremêler le travail du récupérateur de mémoire et du
 programme exécuté (nommé le mutateur), certaines précautions doivent
-être prises afin d'éviter que le mutateur modifie des pointeurs en
-mémoire tel qu'il serait possible d'accéder à des espaces marqués
-comme étant non-accessibles (et donc qui seront ultérieurement
-récupérés). Deux approches sont alors envisageables, des barrières de
+être prises. Pour ce faire, on doit éviter que le mutateur modifie des
+pointeurs en mémoire tel qu'il serait possible d'accéder à des espaces
+marqués comme étant non-accessibles et donc qui seront ultérieurement
+récupérés. Deux approches sont alors envisageables: des barrières de
 lectures ou d'écriture sur les zones mémoires. Les barrières de
-lectures assurent que seuls de pointeurs noirs sont retournés. Ces
-dernières sont généralement très coûteuse car les accès mémoire
+lectures assurent que seuls des pointeurs noirs sont retournés. Ces
+dernières sont généralement très coûteuses car les accès mémoire
 constituent environ 15\% des
 instructions~/cite{Zorn90barriermethods}. Par contre, celles-ci
-doivent être utilisés pour des récupérateurs incrémentaux copiant, tel
-un \textit{Stop And Copy} incrémental. Les barrières en écritures
+doivent être utilisées pour des récupérateurs incrémentaux copiants,
+tel un \textit{Stop And Copy} incrémental. Les barrières en écritures
 possèdent plusieurs variantes qui effectuent des compromis entre
-l'efficacité algorithmique et l'efficacité de récupération. 
+l'efficacité algorithmique et l'efficacité de récupération.
 
 
 \FloatBarrier
@@ -1795,17 +1785,14 @@ Malgré que les techniques de récupération automatique de mémoire
 impliquent des coût supplémentaires en utilisation du processeur et de
 la mémoire, le gain en productivité pour le développement est
 tellement supérieur qu'ils sont devenus adoptés par presque tous les
-nouveaux langages de programmations.
-
-Le fait que l'exécution du programme puisse être arrêté durant le
-moment de la récupération est potentiellement problématique pour
-l'écriture de jeux vidéo, car ceux-ci se doivent d'avoir des bonnes
-performances et ce, de manière continue. 
-
-Les algorithmes de gestion de mémoire incrémentaux améliorent le pire
-cas du temps de récupération en augmentant le coût moyen. Ainsi, les
-coûts apportés à l'exécution du programme doivent être
-considérés. Ainsi, l'utilisation de récupérateurs générationnels
+nouveaux langages de programmation. Le fait que l'exécution du
+programme puisse être arrêtée durant le moment de la récupération est
+potentiellement problématique pour l'écriture de jeux vidéo, car
+ceux-ci se doivent d'avoir des bonnes performances et ce, de manière
+continue. Les algorithmes de gestion de mémoire incrémentaux
+améliorent le pire cas du temps de récupération en augmentant le coût
+moyen. Ainsi, les coûts apportés à l'exécution du programme doivent
+être considérés. Donc, l'utilisation de récupérateurs générationnels
 semblent un bon choix pour la programmation de jeux vidéo car ils
 offrent de bonnes performances pour les utilisations normales de la
 mémoire, comme c'est généralement le cas pour des jeux vidéo.
@@ -1813,104 +1800,82 @@ mémoire, comme c'est généralement le cas pour des jeux vidéo.
 
 \FloatBarrier
 \section{Dynamisme du langage}
-Le langage \Schemelang est un langage à typage dynamique, faisant ainsi
-contraste aux langages fonctionnels de la famille \textit{ML}. Un
-typage dynamique se distingue par des vérifications de types
-effectuées durant l'exécution d'un programme. Un typage statique,
-quant à lui, effectuera les vérifications de types durant la
+Le langage \Schemelang est un langage à typage dynamique, faisant
+ainsi contraste aux langages fonctionnels de la famille
+\textit{ML}. Un typage dynamique se distingue par des vérifications de
+types effectuées durant l'exécution d'un programme. Un typage
+statique, quant à lui, effectuera les vérifications de types durant la
 compilation. Ainsi, une importante différence entre les deux approches
 est le moment où les erreurs de programmation apparaissent. D'autre
 part, dû à la nature beaucoup plus stricte du typage statique, la
 récupération d'erreurs est beaucoup plus difficile, car elle dépend
-uniquement d'informations connues statiquement.
+uniquement d'informations connues statiquement. 
 
-Un typage statique fournira des erreurs de types beaucoup plus tôt
-dans le processus de développement et permettent de pouvoir exécuter
-un code libre de toutes vérifications de types. Une particularité des
-systèmes typés statiquement consiste à avoir des structures de code
-plus rigides, demandant possiblement beaucoup d'efforts pour être
-modifiées. 
+Un typage statique trouve des erreurs de types beaucoup plus tôt dans
+le processus de développement et permet d'exécuter un code libre de
+toutes vérifications de types. Une particularité des systèmes typés
+statiquement consiste à avoir des structures de code plus rigides,
+demandant possiblement beaucoup d'efforts pour être modifiées.
 
 Pour un typage dynamique, les erreurs ne surviendront que durant
-l'exécution du programme et, pourraient ne jamais se produire, ou
-difficilement se produire. De plus, un typage dynamique implique des
-pertes de performances puisque les vérifications de types sont
-effectuées pendant l'exécution du programme. Par contre, des erreurs
-apparaissant durant l'exécution peuvent être beaucoup plus faciles à
-corriger si l'implantation est muni de bon système de
-déboggage. Aussi, un typage dynamique rend plus accessible la
-possibilité d'interpréter le langage en plus de pouvoir le
-compiler. L'interprétation permet un développement rapide et facilite
-le prototypage grâce à la possibilité de faire de la programmation en
-direct (\textit{live coding}).
-
-Les deux systèmes de typages peuvent être comparés à l'aide de
-métaphores simples. Des programmes écrits dans des langages typés
-statiquement peuvent être considérés comme des murs de briques. Les
-types agissent comme du ciment entre les fonctions et donc la
-modification de la structure nécessite des efforts pour la
-refaire. Par contre, lorsque ces bases sont stables et solides, le
-typage statique assure un adhération parfaite entre les blocs.  En
-opposition, le typage dynamique peut être vu comme un système de
-plantes vivantes, où les feuilles sont des fonctions ou des
-modules. Le système permet une grande flexibilité d'évolution en
-s'adaptant plus facilement aux changements et permet de pouvoir être
-facilement modifié en cours de route pour donner le résultat
-escompté. Un entretient régulier doit être par contre fait par la
-suite pour éviter une évolution qui pourrait aller dans une mauvaise
-direction.
+l'exécution du programme et ne pourraient jamais ou difficilement se
+produire. De plus, un typage dynamique implique des pertes de
+performance puisque les vérifications de types sont effectuées pendant
+l'exécution du programme. Par contre, des erreurs apparaissant durant
+l'exécution peuvent être beaucoup plus faciles à corriger si
+l'implantation est munie d'un bon système de déboggage. Aussi, un
+typage dynamique rend plus accessible la possibilité d'interpréter le
+langage en plus de le compiler. L'interprétation permet un
+développement rapide et facilite le prototypage grâce à la possibilité
+de faire de la programmation en direct (\textit{live coding}).
 
 
 \FloatBarrier
 \subsection{Interprétation et débuggage efficace}
-Un langage typé dynamiquement à la possibilité d'être interprété
-puisque les types ne doivent pas nécessairement être correct avant
-l'exécution. On peut ainsi évaluer les instruction les unes à la suite
-des autres dans un environnement global d'interprétation
+Un langage typé dynamiquement a la possibilité d'être interprété
+puisque les types ne doivent pas nécessairement être corrects avant
+l'exécution. On peut ainsi évaluer les instructions les unes à la
+suite des autres dans un environnement global d'interprétation
 (\textit{toplevel}). Cette particularité infuse beaucoup de puissance
-au langage. En effet, cela permet de pouvoir tester facilement les
-modules écrits de manière indépendante et interactive. Les cas
-extrêmes peuvent ainsi facilement être vérifiés et donc il est
-possible d'avoir une bonne assurance sur le fonctionnement correct des
-algorithmes utilisés.
+au langage. En effet, cela permet de tester facilement les modules
+écrits de manière indépendante et interactive. Les cas extrêmes
+peuvent ainsi facilement être vérifiés et il est donc possible d'avoir
+une bonne assurance sur le fonctionnement correct des algorithmes
+utilisés.
 
-En cas d'erreur, le système est conçu afin de permettre de détecter
-les erreurs et de pouvoir les diagnostiquer. Puisque l'environnement
-est dynamique, une grande puissance d'introspection et d'analyse est
-disponible. Le système Gambit-C permet de pouvoir non seulement
-inspecter la pile de continuations courantes lors d'une exception,
-mais permet l'introspection d'environnement de fermetures et la
-possibilité de rétablir ces environnement et de pouvoir exécuter du
-code arbitraire dans ceux-ci dans le but de pouvoir trouver la source
-de l'erreur.
-
-\todo{Exemple de debuggage??}
+En cas d'erreurs, le système est conçu afin de les détecter et
+diagnostiquer. Puisque l'environnement est dynamique, une grande
+puissance d'introspection et d'analyse est disponible. Le système
+Gambit-C permet non seulement d'inspecter la pile de continuations
+courantes lors d'une exception, mais permet aussi l'introspection
+d'environnements de fermetures et la possibilité de rétablir ces
+environnements et d'exécuter du code arbitraire dans ceux-ci dans le
+but de trouver la source de l'erreur.
 
 De plus, le dynamisme du langage peut pousser la puissance de
 récupération d'erreurs encore plus loin en combinant le système de
 débuggage de Gambit-C avec un protocole établi sur \textit{TCP-IP}
-permettant de pouvoir faire du dégoggage à distance. On peut ainsi
-analyser une erreur s'étant produite sur un processus distant, qui
-pourrait potentiellement être exécuté sur un système embarqué ou un
-appareil ne disposant pas d'interface permettant la récupération
-d'erreurs. Par exemple, ce système a été utilisé afin de pouvoir
-débugger des processus \Schemelang exécutés sur un téléphone mobile.
+permettant de faire du dégoggage à distance. On peut ainsi analyser
+une erreur s'étant produite sur un processus distant, qui pourrait
+potentiellement être exécuté sur un système embarqué ou un appareil ne
+disposant pas d'interface permettant la récupération d'erreurs. Par
+exemple, ce système a été utilisé afin de débugger des processus
+\Schemelang exécutés sur un téléphone cellulaire.
 
 Il en résulte donc que malgré un faible coût en performance lors de
 l'exécution d'un programme, un système utilisant le typage dynamique
-apporte beaucoup de puissance aux programmeurs et leurs fourni des
+apporte beaucoup de flexibilité aux programmeurs et leur fourni des
 outils efficaces pour le développement de logiciels.
 
-\todo{ajouter ref pour tcpip?}
 
 
 \FloatBarrier
 \section{Extension utiles}
-Cette section présente un recueil des extension du langage \Schemelang qui
-sont utilisées dans les chapitres suivant de ce mémoire. Ces dernière
-ne constituent pas nécessairement un atout précis quand à la
-programmation de jeu vidéo, mais apporteront plutôt une meilleure
-compréhension des exemples de codes fournis dans ce mémoire.
+Cette section présente un recueil des extensions du langage
+\Schemelang qui sont utilisées dans les chapitres suivants de ce
+mémoire. Ces dernières ne constituent pas nécessairement un atout
+précis quant à la programmation de jeux vidéo, mais apporteront plutôt
+une meilleure compréhension des exemples de codes fournis.
 
 
 \FloatBarrier
@@ -1919,7 +1884,7 @@ Le système Gambit-C permet la définition de paramètres avec
 l'utilisation de mots clés. La figure \ref{Scheme:fun-key} illustre un
 exemple de définition d'une telle fonction avec quelques appels à
 celle-ci. On constate qu'il est alors possible de définir des valeurs
-optionnelles qui peuvent posséder une valeur par défaut.
+optionnelles qui possèdent une valeur par défaut.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1929,12 +1894,12 @@ optionnelles qui peuvent posséder une valeur par défaut.
 (f 1 2 z: 'allo)             => \schemeresult{(1 2 allo 3)}
 (f 1 2 z: 'allo sum: 'salut) => \schemeresult{(1 2 allo salut)}
   \end{schemecode}
-  \caption{Utilisation du passage de paramètre par mots clés}
+  \caption{Utilisation du passage de paramètres par mots clés}
   \label{Scheme:fun-key}
 \end{figure}
 
 La syntaxe des fonctions a aussi été étendue de manière à permettre la
-spécification d'un nombre de paramètre arbitraire. Pour ce faire, le
+spécification d'un nombre de paramètres arbitraires. Pour ce faire, le
 mot clé \scheme{\#!rest} ou encore le point (\scheme{.}) est utilisé
 pour délimiter les paramètres normaux du paramètre reste, qui
 contiendra une liste de tous les paramètres supplémentaires
@@ -1951,9 +1916,9 @@ d'utilisation du paramètre reste.
   \label{Scheme:rest-ex}
 \end{figure}
 
-Lorsqu'une fonction prends plusieurs arguments, il est possible
-d'utiliser la procédure \scheme{apply} afin de pouvoir utiliser cette
-fonction avec \emph{une liste} d'arguments. Cette fonction attend une
+Lorsqu'une fonction reçoit plusieurs arguments, il est possible
+d'utiliser la procédure \scheme{apply} afin d'appliquer la fonction en
+question à \emph{une liste} d'arguments. Cette fonction attend une
 fonction comme premier argument et un nombre arbitraire d'arguments
 par la suite. Le dernier argument passé doit être une liste. Le
 contenu de cette liste sera inséré dans un appel à la fonction
@@ -1966,7 +1931,7 @@ de la procédure \scheme{apply}.
 (apply + 1 2 '(3 4 5))                  => \schemeresult{15}
 (apply + (map (flip + 1) '(1 2 3 4 5))) => \schemeresult{20}
   \end{schemecode}
-  \caption{Exemple d'utilisation de la fonction \scheme{apply}}
+  \caption{Exemples d'utilisations de la fonction \scheme{apply}}
   \label{Scheme:apply}
 \end{figure}
 
@@ -1979,30 +1944,30 @@ hachages. Ces dernières peuvent être créées par la fonction
 inspectées avec les fonctions \scheme{(table-set! <table> <key>
   <value>)} et \scheme{(table-ref <table> <key>
   [<default-value>])}. Il est aussi possible de spécialiser ces tables
-afin d'être plus efficaces pour des clés étant des symboles ou des
-chaînes de caractères.
+afin qu'elles soient plus efficaces pour des clés étant des symboles
+ou des chaînes de caractères.
 
 
 \FloatBarrier
 \subsection{Tests d'égalité et opérations conditionnelles}
-L'égalité en \Schemelang entre deux objets appartenant aux types de base du
-langage peut toujours être vérifiée par la fonction
+L'égalité en \Schemelang entre deux objets appartenant aux types de
+base du langage peut toujours être vérifiée par la fonction
 \scheme{equal?}. Cette dernière supporte ainsi la vérification
 d'égalité sur plusieurs types d'objets et se trouve ainsi peu
 efficace. La fonction \scheme{eq?} permet la vérification d'égalité
-sur des pointeurs et puisque, en \Schemelang, un symbole ou un mot clé ne
-possède qu'un instance unique, ce prédicat peut être également utilisé
-pour distinguer ces derniers types.
+sur des pointeurs et puisqu'en \Schemelang un symbole ou un mot clé ne
+possède qu'une instance unique, ce prédicat peut être également
+utilisé pour distinguer ces derniers types.
 
-L'opération conditionnelle de base en \Schemelang est effectué par la forme
-spéciale \scheme{(if <cond> <true> [<false>])}. Plusieurs formes
-spéciales dérivent de cette dernière afin de pouvoir exprimer plus
-facilement certains cas typiques. Par exemple, lorsque plusieurs
-conditions sont imbriquées les unes dans les autres, la forme spéciale
-\scheme{(cond (<pred> <body>) ... [(else <body>)])} peut être
-utilisée. Cette dernière permet aussi de pouvoir récupérer la valeur
-retournée par un prédicat s'évaluant à vrai en ajoutant \scheme{=>}
-tel qu'illustré dans la figure \ref{Scheme:cond}.
+L'opération conditionnelle de base en \Schemelang est effectuée par la
+forme spéciale \scheme{(if <cond> <true> [<false>])}. Plusieurs formes
+spéciales dérivent de cette dernière afin d'exprimer plus facilement
+certains cas typiques. Par exemple, lorsque plusieurs conditions sont
+imbriquées les unes dans les autres, la forme spéciale \scheme{(cond
+  (<pred> <body>) ... [(else <body>)])} peut être utilisée. Cette
+dernière permet aussi de récupérer la valeur retournée par un prédicat
+s'évaluant à vrai en ajoutant \scheme{=>} tel qu'illustré dans la
+figure \ref{Scheme:cond}.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -2035,7 +2000,7 @@ forme spéciale
 \noindent
 Celle-ci effectue la création de fonctions d'accès et de modification
 de membres, de création d'instances et de vérification de
-type. L'utilisation du mot clé \scheme{extender:} permet aussi la
+types. L'utilisation du mot clé \scheme{extender:} permet aussi la
 création d'une nouvelle forme spéciale (au nom spécifié) qui permet la
 définition de sous-types héritant des membres de la classe en
 question, implantant ainsi un héritage simple. La figure
@@ -2050,21 +2015,21 @@ question, implantant ainsi un héritage simple. La figure
 (add (make-point 1 2) (make-circle 3 4 5)) => \schemeresult{\#\textless point \#4 x: 1 y: 1\textgreater}
 (if (circle? (make-point 1 2)) 'ok 'no)    => \schemeresult{no}
   \end{schemecode}
-  \caption{Exemle de création d'objets dans Gambit-C}
+  \caption{Exemple de création d'objets dans Gambit-C}
   \label{Scheme:deftype}
 \end{figure}
 
 
 \FloatBarrier
 \subsection{Affichage de résultats}
-Plusieurs fonctions sont disponible en \Schemelang afin d'effectuer
+Plusieurs fonctions sont disponibles en \Schemelang afin d'effectuer
 l'affichage du résultat de l'évaluation d'une expression. Le standard
-\Schemelang fourni entre autre les fonctions \scheme{write} et
+\Schemelang fourni entre autres les fonctions \scheme{write} et
 \scheme{display} qui permettent un affichage bas niveau de données
 \Schemelang. Le système Gambit-C offre aussi les fonctions
 \scheme{pretty-print} (ou \scheme{pp}) afin de faire un affichage
 enjolivé d'une sortie de \scheme{write}. La fonction \scheme{println}
-afin de permettre l'affichage d'expressions composées. La figure
+permet l'affichage d'expressions composées. La figure
 \ref{Scheme:print} illustre des exemples d'utilisations de ces
 fonctions.
 
@@ -2075,7 +2040,7 @@ fonctions.
     \schemeresult{(1 a "a")\textbackslash~n} (println "Bonjour " (+ 1
     2) (map (flip + 1) '(1 2 3))) => \schemeresult{Bonjour 3234}
   \end{schemecode}
-  \caption{Exemples d'utilisation de fonctions d'affichage}
+  \caption{Exemples d'utilisations de fonctions d'affichage}
   \label{Scheme:print}
 \end{figure}
 
@@ -2085,7 +2050,7 @@ fonctions.
 Une interfaces aux fonctions étrangères (\textit{Foreign Function
   Interface} ou FFI) est disponible dans le système Gambit-C. D'une
 part, cette dernière permet l'importation et l'utilisation de
-fonctions C ou C++ présentent dans de librairies. La figure
+fonctions C ou C++ présentes dans des librairies. La figure
 \ref{Scheme:FFI} illustre une interface minimaliste à la librairie C
 OpenGL et une utilisation de cette interface. On constate donc qu'une
 fois importées, les fonctions de cette dernière peuvent être utilisées
@@ -2109,7 +2074,7 @@ comme n'importe qu'elle fonction \Schemelang.
 (glEnd)
   \end{schemecode}
   \caption{Exemple d'utilisation de l'interface à des fonctions
-    étrangère de Gambit-C}
+    étrangères de Gambit-C}
   \label{Scheme:FFI}
 \end{figure}
 
@@ -2151,30 +2116,29 @@ de cette dernière.
 
 \FloatBarrier
 \section{Conclusion}
-Cet aperçu des particularités du langage fonctionnel \Schemelang démontrent
-clairement que le langage répond grandement aux besoins établis par
-les jeux vidéo. Notamment, la puissance d'abstraction provenant de
-l'aspect de programmation fonctionnel du langage permettrait d'obtenir
-une bonne modularisation du code source. Aussi son système de macro
-ajoute la possibilité de créer de langages spécifiques aux domaines
-répondant à des problèmes précis pour l'écriture de jeux vidéo. Le
-dynamisme du langage apporte des outils de développement puissant,
-comme un interprète et un déboggeur à distance, mais aussi permet de
-faciliter le développement itératif avec un approche par
-prototypage. La présence d'un gestionnaire automatique de mémoire
-évite la présence potentielle de beaucoup d'erreurs reliées à la
-gestion de mémoire, mais pourrait causer des problèmes de
+Cet aperçu des particularités du langage fonctionnel \Schemelang
+démontre clairement que le langage répond grandement aux besoins
+établis par les jeux vidéo. Notamment, la puissance d'abstraction
+provenant de l'aspect de programmation fonctionnelle du langage permet
+d'obtenir une bonne modularité du code source. Aussi, son système de
+macros procédurales ajoute la possibilité de créer des langages
+spécifiques aux domaines répondant à des problèmes précis pour
+l'écriture de jeux vidéo. Le dynamisme du langage apporte des outils
+de développement puissants, comme un interprète et un déboggeur à
+distance, mais aussi permet de faciliter le développement itératif
+avec une approche par prototypage. Le gestionnaire automatique de
+mémoire évite la présence potentielle de beaucoup d'erreurs reliées à
+la gestion de mémoire, mais pourrait causer des problèmes de
 ralentissement lors de l'exécution de jeux. Finalement, la possibilité
-de pouvoir réifier les continuations d'un programme en cours
-d'exécution offre beaucoup de puissance expressive au programmeur.
+de réifier les continuations d'un programme en cours d'exécution offre
+beaucoup de puissance expressive au programmeur.
 
-Le langage \Schemelang étant très simple à la base, il est essentiel de
-développer des extensions de ce langage afin de pouvoir développer sur
-une base solide créée pour les besoins spécifiques du types
-d'application développé. L'expressivité du langage rend cette tâche
-facile. Ainsi, deux extensions au langages \Schemelang ont été développées
-dans le but de pouvoir répondre spécifiquement aux besoins des jeux
-vidéo.
+Le langage \Schemelang étant très simple, il est essentiel de créer
+des extensions de ce langage afin de bâtir un jeu vidéo sur une base
+solide pour répondre aux besoins spécifiques. L'expressivité du
+langage rend cette tâche facile. Ainsi, deux extensions au langages
+\Schemelang ont été développées dans le but de répondre spécifiquement
+aux besoins des jeux vidéo.
 
 \clearpage
 
@@ -2184,15 +2148,16 @@ vidéo.
 à l'état brut et leur permet de se bâtir des outils personnalisés pour
 mieux répondre leurs à besoins.
 
-Un paradigme qui n'est pas supporté directement par le langage \Schemelang
-est celui de la programmation orientée objet. Ce paradigme possède des
-structures de données hiérarchiques, les objets, favorisant la
-modularité et l'encapsulation de celles-ci. Cette modularité provient
-des abstractions résultantes de la hiérarchie des méta-objets appelés
-classes et l'encapsulation permet de pouvoir cacher les données qui
-devraient demeurer internes au module créé.  Le sous-typage résultant
-de la création de classes permet entre autre l'utilisation générique
-de fonctions (souvent appelées méthodes ou fonctions génériques).
+Un paradigme qui n'est pas supporté directement par le langage
+\Schemelang est celui de la programmation orientée objet. Ce paradigme
+possède des structures de données hiérarchiques, les objets,
+favorisant la modularité et l'encapsulation de celles-ci. Cette
+modularité provient des abstractions résultantes de la hiérarchie des
+méta-objets appelés classes et l'encapsulation permet de cacher les
+données qui devraient demeurer internes au module créé.  Le
+sous-typage résultant de la création de classes permet entre autres
+l'utilisation générique de fonctions (souvent appelées méthodes ou
+fonctions génériques).
 
 Ces objets sont centrés sur la notion d'état qui évolue au fil de
 l'exécution du programme. Malgré le fait que la notion d'état d'un
@@ -2203,12 +2168,12 @@ caractéristiques propres à elles et qui évoluent dans le temps. Par
 exemple, on peut imaginer une balle qui possède une vitesse de
 déplacement et une position.
 
-De plus, l'utilisation de méthodes permet, d'une part, de pouvoir
-facilement réutiliser des comportements communs à des objets d'une
-même hiérarchie de classe et, d'autre part, à pouvoir facilement
-choisir un comportement approprié pour un objet donné, via le
-\textit{dispatch} de méthode qui sélectionne automatiquement la
-méthode la plus appropriée disponible pour un objet donné.
+De plus, l'utilisation de méthodes permet, d'une part, de facilement
+réutiliser des comportements communs à des objets d'une même
+hiérarchie de classe et, d'autre part, à facilement choisir un
+comportement approprié pour un objet donné, via le \textit{dispatch}
+de méthode qui sélectionne automatiquement la méthode la plus
+appropriée disponible pour un objet donné.
 
 Le SRFI-9~\cite{SRFI_9} (\textit{Scheme Request For Implementation})
 suggère un système très rudimentaire d'objets qui fut implémenté et
@@ -2283,7 +2248,7 @@ t.add(b) = 3
 
 Le langage \clisp~\cite{CLISP} possède un système orienté objet, le
 Common Lisp Object System~\cite{CLOS} (CLOS), qui diverge beaucoup de
-l'approche traditionnelle. Entre autre, ce système offre une grande
+l'approche traditionnelle. Entre autres, ce système offre une grande
 flexibilité de comportement et une riche introspection via un
 protocole de méta-objets~\cite{MOP} (\textit{Meta Object
   Protocol}). Par contre, l'aspect le plus intéressant de ce système
@@ -2334,14 +2299,14 @@ jeu. D'autre part, une programmation orientée objet permettrait de
 facilement abstraire les comportements communs à plusieurs types
 d'entités présentes dans un jeu vidéo tout en gérant de manière
 générique leurs états.  L'utilisation de fonctions génériques
-permettrait ainsi de pouvoir facilement modulariser ces
-comportements. Il serait donc très intéressant de pouvoir utiliser la
-programmation orientée objet afin de pouvoir écrire des jeux vidéo en
-\Schemelang de manière naturelle et modulaire.
+permettrait ainsi de facilement modulariser ces comportements. Il
+serait donc très intéressant d'utiliser la programmation orientée
+objet afin d'écrire des jeux vidéo en \Schemelang de manière naturelle
+et modulaire.
 
 Plusieurs système objets sont déjà disponible pour l'implantation de
 \Schemelang Gambit-C. La plupart sont inspirés de la puissance expressive
-du système CLOS. On retrouve entre autre le système orienté objet
+du système CLOS. On retrouve entre autres le système orienté objet
 Meroon~\cite{MEROON}. Ce système impose plusieurs limitations dont le
 fait que la hiérarchie de classe est limitée à un héritage
 simple. Aussi, il n'est pas possible d'allouer des attributs de
@@ -2395,7 +2360,7 @@ chapitre.
 \section{Description du système}
 Le système de programmation orientée objet développé est fortement
 inspiré du Common Lisp Object System~\cite{CLOS} et possède la plupart
-des propriétés intéressantes de ce dernier. On retrouve entre autre de
+des propriétés intéressantes de ce dernier. On retrouve entre autres de
 l'héritage multiple de classes, du polymorphisme d'instance de classes
 et surtout, des fonctions génériques à \textit{dispatch} multiple
 personnalisé. Malgré ces fonctionnalités de haut niveaux, une
@@ -2487,17 +2452,17 @@ sont:
   \scheme{\#f} sinon.
 \end{itemize}
 
-En plus de pouvoir définir des attributs d'instances, il est possible
-de définir des attributs de classes, communs à toutes les instances de
-la classe. Ainsi les informations communes à toutes les instances
-peuvent être factorisées, tout en conservant l'encapsulation de
-l'information dans l'objet. Il est important de noter qu'après la
-déclaration de la classe, tous les attributs de classes se retrouvent
-dans un état non-initialisé et doivent donc être initialisés avant de
-pouvoir être utilisés. L'héritage d'attributs de classe fait en sorte
-que chaque sous-classe possède sa propre version de l'attribut,
-permettant ainsi des personnalisations de chacune de ces sous-classes
-avec cet attribut.
+En plus de définir des attributs d'instances, il est possible de
+définir des attributs de classes, communs à toutes les instances de la
+classe. Ainsi les informations communes à toutes les instances peuvent
+être factorisées, tout en conservant l'encapsulation de l'information
+dans l'objet. Il est important de noter qu'après la déclaration de la
+classe, tous les attributs de classes se retrouvent dans un état
+non-initialisé et doivent donc être initialisés avant d'être
+utilisés. L'héritage d'attributs de classe fait en sorte que chaque
+sous-classe possède sa propre version de l'attribut, permettant ainsi
+des personnalisations de chacune de ces sous-classes avec cet
+attribut.
 
 Puisque ces attributs sont communs à toutes les instances, ils ne
 nécessitent pas de ces dernières pour être accédés ou modifiés.
@@ -2672,8 +2637,8 @@ syntaxe est l'une parmi:
 \begin{itemize}
 \item \scheme{(match-value: <value>)} : La valeur du paramètre actuel
   doit être égal (selon \scheme{equal?}) à \scheme{<value>} pour
-  pouvoir discriminer ce paramètre d'une fonction
-  générique. L'expression \scheme{<value>} est considérée constante.
+  discriminer ce paramètre d'une fonction générique. L'expression
+  \scheme{<value>} est considérée constante.
 
 \item \scheme{(match-member-value: <class> <slot-name> <value>)} : Le
   paramètre actuel doit être une sous-classe de \scheme{<class>} et la
@@ -2683,17 +2648,17 @@ syntaxe est l'une parmi:
 
 \item \scheme{(or <match1> ...)} : La valeur du paramètre doit
   correspondre à \emph{au moins une} des clause \scheme{<match>} pour
-  pouvoir discriminer l'instance de la fonction générique
-  correspondante. Les clauses \scheme{<match>} doivent être une
-  déclaration de type correcte. On peut retrouver ainsi un nom de
-  classe ou l'une de ces quatre clauses spéciales.
+  discriminer l'instance de la fonction générique correspondante. Les
+  clauses \scheme{<match>} doivent être une déclaration de type
+  correcte. On peut retrouver ainsi un nom de classe ou l'une de ces
+  quatre clauses spéciales.
 
 \item \scheme{(and <match1> ...)} : La valeur du paramètre doit
   correspondre à \emph{toutes} les clauses \scheme{<match>} pour
-  pouvoir discriminer l'instance de la fonction générique
-  correspondante. Les clauses \scheme{<match>} doivent être une
-  déclaration de type correcte. On peut retrouver ainsi un nom de
-  classe ou l'une de ces quatre clauses spéciales.
+  discriminer l'instance de la fonction générique correspondante. Les
+  clauses \scheme{<match>} doivent être une déclaration de type
+  correcte. On peut retrouver ainsi un nom de classe ou l'une de ces
+  quatre clauses spéciales.
 \end{itemize}
 
 Un exemple simple de discrimination par valeur de paramètre est donné
@@ -2786,11 +2751,11 @@ la figure \ref{OO:cast}. Les arguments de la fonction générique
 \scheme{init!} sont d'abord évalués. Il en résulte qu'une instance non
 initialisée de la classe \scheme{container} est créée ainsi qu'une
 instance de la classe \scheme{circle}. Le constructeur de la classe
-\scheme{circle} utilise un \textit{cast} afin de pouvoir utiliser
-également le constructeur de la classe \scheme{point}. Ensuite,
-l'objet conteneur est initialisé en choisissant explicitement le
-constructeur attendant un argument de type \scheme{point}. L'objet
-correctement initialisé est finalement retourné.
+\scheme{circle} utilise un \textit{cast} afin d'utiliser également le
+constructeur de la classe \scheme{point}. Ensuite, l'objet conteneur
+est initialisé en choisissant explicitement le constructeur attendant
+un argument de type \scheme{point}. L'objet correctement initialisé
+est finalement retourné.
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2859,7 +2824,7 @@ d'instances ou de classes. Parmi celles-ci, les principales sont:
 Ainsi, l'introspection demeure limitée en comparaison à celle rendue
 disponible par le protocole de méta objet de CLOS, mais elle demeure
 tout de même fonctionnelle. Une meilleure introspection permettrait de
-pouvoir développer des classes encore plus génériques, mais cette
+développer des classes encore plus génériques, mais cette
 fonctionnalité n'est pas nécessaire pour le développement de jeu.
 
 
@@ -2883,7 +2848,7 @@ sont:
 \item \scheme{(set-fields! <instance> <class-name> ((<slot-name>
   <value>) ...))} : Cette forme spéciale permet de modifier de manière
   plus concise la valeur de plusieurs attributs en même temps. Elle
-  est entre autre très utile dans l'écriture de constructeurs
+  est entre autres très utile dans l'écriture de constructeurs
   d'instances.
 \end{itemize}
 
@@ -2912,15 +2877,15 @@ formes spéciales.
 
 \FloatBarrier
 \section{Implantation}
-Afin de pouvoir implanter ce système objet comme une extension directe
-du langage \Schemelang, les macros \Schemelang ont dû être utilisées. Il en
-résulte donc en l'ajout d'un langage spécifique au domaine de la
+Afin d'implanter ce système objet comme une extension directe du
+langage \Schemelang, les macros \Schemelang ont dû être utilisées. Il
+en résulte donc en l'ajout d'un langage spécifique au domaine de la
 programmation orientée objet.
 
-Puisque l'expansion de macros \Schemelang se fait lors de la compilation,
-il devient très avantageux de faire le plus de travail possible durant
-cette expansion afin de pouvoir obtenir de bonnes performances lors de
-l'exécution. Par contre, afin de pouvoir effectuer beaucoup de travail
+Puisque l'expansion de macros \Schemelang se fait lors de la
+compilation, il devient très avantageux de faire le plus de travail
+possible durant cette expansion afin d'obtenir de bonnes performances
+lors de l'exécution. Par contre, afin d'effectuer beaucoup de travail
 lors de cette expansion, beaucoup d'informations doivent être
 disponibles de manière statique, ce qui brime la philosophie dynamique
 du système objet. Ainsi, nous avons opté pour un compromis entre la
@@ -2932,10 +2897,10 @@ souvent nécessaire au fonctionnement du système lors de son exécution
 et donc, un passage d'informations entre ces deux mondes doit être
 fait. Afin d'y arriver, les structures correspondantes (descripteurs
 de classes, descripteurs de fonction génériques, etc...) sont recréés
-durant l'exécution. Afin de pouvoir faire plus facilement la
-distinction entre ces deux types de structures, les préfixes
-\scheme{mt} (\textit{macro expansion time} et \scheme{rt}
-(\textit{runtime}) sont utilisés dans le code source.
+durant l'exécution. Afin de faire plus facilement la distinction entre
+ces deux types de structures, les préfixes \scheme{mt} (\textit{macro
+  expansion time} et \scheme{rt} (\textit{runtime}) sont utilisés dans
+le code source.
 
 Les sections qui suivent expliquent les grandes lignes de
 l'implantation de ce système objet et justifient les choix
@@ -3020,19 +2985,18 @@ Ces structures de données sont implantées en utilisant des vecteurs
 aux attributs de ces derniers.
 
 Lorsque la forme spéciale \scheme{define-class} est expansée,
-plusieurs informations sont extraites et traitées afin de pouvoir
-générer correctement les fonctions de création et d'accès aux
-attributs. Entre autre, il faut obtenir la liste complète de tous les
-attributs hérités par les classes parents à la classe définie. Cette
-information est stockée dans une table de hachage globale à
-l'expansion macro nommée \scheme{mt-class-table} qui conserve
-l'information disponible pour chaque classe déjà créées. Cette
-information, stockée sous forme de \emph{méta descripteurs de
-  classes}, n'est disponible que pour l'expansion macro. Ces
-descripteurs gardent trace du nom des classes créées, de leurs
-hiérarchie et des positions relatives aux descripteurs de classes de
-l'exécution indiquant où trouver les indexes d'indirection associés à
-leurs attributs. 
+plusieurs informations sont extraites et traitées afin de générer
+correctement les fonctions de création et d'accès aux attributs. Entre
+autres, il faut obtenir la liste complète de tous les attributs
+hérités par les classes parents à la classe définie. Cette information
+est stockée dans une table de hachage globale à l'expansion macro
+nommée \scheme{mt-class-table} qui conserve l'information disponible
+pour chaque classe déjà créées. Cette information, stockée sous forme
+de \emph{méta descripteurs de classes}, n'est disponible que pour
+l'expansion macro. Ces descripteurs gardent trace du nom des classes
+créées, de leurs hiérarchie et des positions relatives aux
+descripteurs de classes de l'exécution indiquant où trouver les
+indexes d'indirection associés à leurs attributs.
 
 Lorsque les nouveaux attributs (attributs non-hérités) sont inclus
 dans descripteurs de classe de l'exécution, un compteur global
@@ -3239,12 +3203,12 @@ travail sans avoir à subir des pertes de performances.
 
 \FloatBarrier
 \subsection{Implantation de define-method}
-L'expansion de la macro \scheme{define-method} est très simple, elle 
+L'expansion de la macro \scheme{define-method} est très simple, elle
 consiste en la création d'une structure de donnée qui contient le
 corps de l'instance définie, ainsi que les types associés aux
 arguments attendus. Cette structure existera durant l'expansion et
-sera recréée lors de l'exécution du programme afin de pouvoir être
-appelée par la fonction de \textit{dispatch}.
+sera recréée lors de l'exécution du programme afin d'être appelée par
+la fonction de \textit{dispatch}.
 
 
 \FloatBarrier
@@ -3301,11 +3265,11 @@ manière constante.
 Une comparaison pratique de performances a été effectués avec d'autres
 systèmes objets disponibles pour Gambit-C afin d'avoir une meilleure
 idée des constantes cachées dans la complexité des opération
-effectuées durant l'exécution. Il est aussi intéressant de pouvoir
-comparer les performances du systèmes par rapports aux autres afin de
-pouvoir confirmer l'obtention du résultat désiré. Ces résultats sont
-présentés dans le tableau \ref{OO:bench}. Ces derniers correspondent
-aux temps nécessaire à $500 000$ exécutions de chacunes des opérations
+effectuées durant l'exécution. Il est aussi intéressant de comparer
+les performances du systèmes par rapports aux autres afin de confirmer
+l'obtention du résultat désiré. Ces résultats sont présentés dans le
+tableau \ref{OO:bench}. Ces derniers correspondent aux temps
+nécessaire à $500 000$ exécutions de chacunes des opérations
 principales du système objet. Les systèmes objets
 Meroon~\cite{MEROON}, OOPS~\cite{OOPS} ainsi que les objets obtenus
 avec l'utilisation de la forme spéciale \scheme{define-type} de
@@ -3378,10 +3342,10 @@ sur processeur qu'en utilisation de la mémoire.
 Pour y arriver, les structures de données utilisées pour
 l'implantation d'instances de classes ne possèdent pas d'espaces
 inutilisés, et ne requièrent que trois indirection vectorielles afin
-de pouvoir accéder aux champs de celles-ci. De même, les fonctions
-génériques utilisent des mécanismes de tri pré-calculé afin
-d'accélérer le \textit{dispatch} d'instances de fonctions génériques
-de manière polymorphe. 
+d'accéder aux champs de celles-ci. De même, les fonctions génériques
+utilisent des mécanismes de tri pré-calculé afin d'accélérer le
+\textit{dispatch} d'instances de fonctions génériques de manière
+polymorphe.
 
 Il serait maintenant très intéressant de modifier le système afin
 qu'il supporte un protocole de méta objets. Un tel protocole donnerait
@@ -3404,11 +3368,11 @@ respecter la philosophie de base de ce système.
 Les \textit{threads} constituent un outil de programmation important
 permettant l'exécution parallèle matérielle ou logicielle de
 code. L'utilisation de \textit{threads} dans un jeu vidéo peut être
-très pertinente et permettrait de pouvoir exprimer de manière concise
-beaucoup de concepts clés. Par exemple l'implantation de parties
-multi-joueurs où ces derniers jouent à tours de rôles se représente
-bien par un modèle parallèle, puisqu'il s'agit vraiment de deux
-parties distinctes qui sont jouées en même temps. 
+très pertinente et permettrait d'exprimer de manière concise beaucoup
+de concepts clés. Par exemple l'implantation de parties multi-joueurs
+où ces derniers jouent à tours de rôles se représente bien par un
+modèle parallèle, puisqu'il s'agit vraiment de deux parties distinctes
+qui sont jouées en même temps.
 
 Le langage \Schemelang tel que décrit par le standard~\cite{R5RS} ne fourni
 pas de système de \textit{threads}. Par contre, le document SRFI
@@ -3439,8 +3403,8 @@ dans le jeu. La figure \ref{Corout:usecase} illustre de manière
 générique cette idée. Dans ce schéma, les carrés noirs représentent
 des système de coroutines et les coroutines sont représentées avec des
 lignes pointillées. L'utilisation systèmes imbriqués permettrait ainsi
-de pouvoir exprimer chaque concept de manière modulaire de manière
-complètement transparente.
+d'exprimer chaque concept de manière modulaire de manière complètement
+transparente.
 
 \begin{figure}[htb!]
   \center
@@ -3621,8 +3585,8 @@ nécessaire.
   \label{Corout:boot}
 \end{figure}
 
-Le système de coroutine a été conçu de manière à pouvoir permettre de
-créer des systèmes de coroutines de manière cascadée, \ie de créer des
+Le système de coroutine a été conçu de manière à permettre de créer
+des systèmes de coroutines de manière cascadée, \ie de créer des
 coroutines qui sont elles-mêmes des systèmes de coroutines. De tels
 systèmes récursifs comportent de nombreux avantages. En effet,
 l'utilisation de tels systèmes facilite grandement la modularité de
@@ -3631,7 +3595,7 @@ de modulariser les différents aspects d'utilisations dans leurs
 propres systèmes. Par exemple, dans le cadre de jeux simples, on peut
 implanter des parties multi-joueurs en utilisant une coroutine par
 partie. Ces coroutine peuvent alors elle-même contenir un système de
-coroutine utilisé par la partie en elle-même. 
+coroutine utilisé par la partie en elle-même.
 
 La procédure de création de ces derniers est simple, il suffit de
 démarrer un nouveau système de coroutine à l'intérieur d'une coroutine
@@ -3714,10 +3678,10 @@ actuelle sera placée dans une file d'attente séparée et ne sera
 réenfilée dans la file de coroutines prêtes uniquement lorsque le
 délais prescrit sera dépassé. Cela n'implique pas que la coroutine
 sera exécutée à ce moment là, car si cette file contient déjà des
-coroutines en attentes, elle devra attendre sont tour pour pouvoir
-poursuivre son exécution. Puisqu'une telle attente peu varier en
-fonction de la plate-forme utilisée, elle introduit un certain
-indéterminisme dans le système.
+coroutines en attentes, elle devra attendre son tour pour poursuivre
+son exécution. Puisqu'une telle attente peu varier en fonction de la
+plate-forme utilisée, elle introduit un certain indéterminisme dans le
+système.
 
 Il est également possible pour une coroutine d'ajouter de nouvelles
 coroutines dans le système en utilisant les fonctions:
@@ -3736,22 +3700,21 @@ la fonction spécifiée comme corps avant d'ajouter cette dernière dans
 le système.
 
 Dans le cadre de l'écriture de jeux vidéo, la modularité des
-coroutines est très importante. Afin de pouvoir facilité l'écriture
-modulaire de corps des coroutines, des formes spéciales permettant
-d'utiliser un style CPS ont été ajoutées. Ces dernière permettent
-l'altération le fil d'exécution d'une coroutine en modifiant la
-continuation de son calcul par celui d'une autre coroutine ou d'un
-\textit{thunk}. Ainsi, un appel à la forme spéciale
-\scheme{(continue-with <corout>)} fera en sorte que la continuation de
-la coroutine devienne celle de cette autre coroutine. De manière
-similaire, \scheme{(continue-with-thunk!  <thunk>)} utilisera la
-fonction passée comme continuation du calcul. La figure
-\ref{Corout:cont-mod} présente un exemple utilisant ces deux formes
-spéciales. Lorsque la coroutine \scheme{c1} s'exécute, sa continue
-change pour celle de \scheme{c2} qui change à sont tour pour la
-fonction \scheme{t}. Ainsi, la fin du corps des coroutines \scheme{c1}
-et \scheme{c2} ne sera jamais exécutée puisque leurs continuation ont
-été altérées.
+coroutines est très importante. Afin de faciliter l'écriture modulaire
+de corps des coroutines, des formes spéciales permettant d'utiliser un
+style CPS ont été ajoutées. Ces dernière permettent l'altération le
+fil d'exécution d'une coroutine en modifiant la continuation de son
+calcul par celui d'une autre coroutine ou d'un \textit{thunk}. Ainsi,
+un appel à la forme spéciale \scheme{(continue-with <corout>)} fera en
+sorte que la continuation de la coroutine devienne celle de cette
+autre coroutine. De manière similaire, \scheme{(continue-with-thunk!
+  <thunk>)} utilisera la fonction passée comme continuation du
+calcul. La figure \ref{Corout:cont-mod} présente un exemple utilisant
+ces deux formes spéciales. Lorsque la coroutine \scheme{c1} s'exécute,
+sa continue change pour celle de \scheme{c2} qui change à sont tour
+pour la fonction \scheme{t}. Ainsi, la fin du corps des coroutines
+\scheme{c1} et \scheme{c2} ne sera jamais exécutée puisque leurs
+continuation ont été altérées.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4037,8 +4000,8 @@ doit retourner dans la file d'attente des coroutine prêtes. La figure
 \ref{Corout:state-diag} illustre les états possibles contenus dans
 \scheme{sleeping?}.
 
-Afin de pouvoir déterminer si la coroutine possède ou non une valeur
-de retour, un symbole unique connu est utilisé afin d'initialiser la
+Afin de déterminer si la coroutine possède ou non une valeur de
+retour, un symbole unique connu est utilisé afin d'initialiser la
 valeur de retour d'une coroutine. Lorsque l'utilisateur demande à
 obtenir la valeur de retour d'une coroutine, le contenu du membre
 \scheme{result} est comparé à ce symbole afin de savoir si une valeur
@@ -4242,10 +4205,10 @@ cette dernière est remise en action dans l'ordonnanceur. La figure
 \ref{Corout:!} illustre ce procédé d'acheminement de
 message. Puisqu'il est possible de spécifier une valeur d'attente
 maximale de messages, la coroutine en attente pourrait se retrouver
-dans la file d'attente sur le temps des coroutines. Afin de pouvoir
-distinguer une telle attente bornée d'un appel à \scheme{sleep-for},
-l'état \scheme{interruptible?} du champs \scheme{sleeping?} d'une
-coroutine est utilisé.
+dans la file d'attente sur le temps des coroutines. Afin de distinguer
+une telle attente bornée d'un appel à \scheme{sleep-for}, l'état
+\scheme{interruptible?} du champs \scheme{sleeping?} d'une coroutine
+est utilisé.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4320,11 +4283,11 @@ conforme à un des patrons de filtrage sera retenu. La figure
  en veille pour une seconde et pourrait être interrompue par l'arrivée
  d'un nouveau message. Il est intéressant de noter que lorsqu'un
  message est trouvé dans la boîte aux lettres d'une coroutine, un
- deuxième appel à la macro \scheme{match} est fait afin de pouvoir
- exécuter le corps du patron dans un environnement effectuant les
- liaisons déclarées dans le motif du patron. Il en résulte ainsi une
- légère perte de performances, mais l'optimisation de cette double
- recherche du motif est complexe~\cite{Marc-Erlang}. Ainsi, puisque
+ deuxième appel à la macro \scheme{match} est fait afin d'exécuter le
+ corps du patron dans un environnement effectuant les liaisons
+ déclarées dans le motif du patron. Il en résulte ainsi une légère
+ perte de performances, mais l'optimisation de cette double recherche
+ du motif est complexe~\cite{Marc-Erlang}. Ainsi, puisque
  l'utilisation de cette forme spéciale a été mise de côté vers la fin
  de la recherche effectuée pour ce mémoire, cette optimisation a été
  omise pour des fins de simplicité.
@@ -4490,7 +4453,7 @@ entités~\cite{yampa}.
 
 Il serait maintenant intéressant d'ajouter un mécanisme de profilage
 de coroutine au système développé. Un tel mécanisme permettrait
-d'avoir, entre autre, une meilleur idée du temps moyen que prend une
+d'avoir, entre autres, une meilleur idée du temps moyen que prend une
 coroutine donnée avant de céder le contrôle dans le but de mieux
 balancer ou d'optimiser ces dernières.
 
@@ -4498,12 +4461,12 @@ balancer ou d'optimiser ces dernières.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Évaluation et expériences}\label{Chap:exp}
-Afin de pouvoir déterminer les forces et les faiblesses du
-développement de jeux vidéo en \Schemelang, des jeux doivent être
-développés en augmentant graduellement la complexité de ceux-ci pour
-permettre de trouver et résoudre de manière itérative les problèmes
-reliés à leur développement. Un jeu simple comprend les problèmes les
-plus fondamentaux qu'un jeu puisse avoir: détection de collisions,
+Afin de déterminer les forces et les faiblesses du développement de
+jeux vidéo en \Schemelang, des jeux doivent être développés en
+augmentant graduellement la complexité de ceux-ci pour permettre de
+trouver et résoudre de manière itérative les problèmes reliés à leur
+développement. Un jeu simple comprend les problèmes les plus
+fondamentaux qu'un jeu puisse avoir: détection de collisions,
 animations, concept de niveaux, etc... Ainsi, ces problèmes peuvent
 être adressés dans un premier temps, puis de nouveaux problèmes
 peuvent être entrepris par la suite en développant un jeu plus
@@ -4543,7 +4506,7 @@ et techniques déjà développés ont toute fois permis d'aisément
 résoudre ces derniers.
 
 Ainsi, ce chapitre a pour but d'expliquer le cheminement du travail
-nécessaire à l'écriture de ces deux jeux afin de pouvoir répondre à la
+nécessaire à l'écriture de ces deux jeux afin de répondre à la
 problématique de base traité par ce document.
 
 
@@ -4603,9 +4566,9 @@ dans la section \ref{Exp:sp3}
 \subsection{Version initiale} \label{Exp:sp1}
 Dans un premier temps, l'analyse de la version arcade du jeu
 disponible sur l'émulateur MAME~\cite{MAME}. Ce dernier est un système
-émulant plusieurs architectures de machines arcades et permet de
-pouvoir jouer sur PC aux versions originales de ces jeux. Plusieurs
-problèmes potentiels ont alors été identifiés:
+émulant plusieurs architectures de machines arcades et permet de jouer
+sur PC aux versions originales de ces jeux. Plusieurs problèmes
+potentiels ont alors été identifiés:
 
 \begin{itemize}
 \item Rendu graphique du jeu
@@ -4619,13 +4582,13 @@ problèmes potentiels ont alors été identifiés:
 
 \FloatBarrier
 \subsubsection{Rendu graphique}
-Afin de pouvoir effectuer le rendu graphique du jeu, une librairie de
-lecture et chargement d'images a dû être écrite. Plutôt que d'utiliser
-une librairie C déjà existante pour faire ce travail, le choix de
+Afin d'effectuer le rendu graphique du jeu, une librairie de lecture
+et chargement d'images a dû être écrite. Plutôt que d'utiliser une
+librairie C déjà existante pour faire ce travail, le choix de
 l'écriture de cette librairie visait à limiter les dépendances
-externes et d'avoir autant que possible de code en \Schemelang. Par contre,
-les librairie SDL~\cite{SDL} et \textit{OpenGL}~\cite{OpenGL} ont été
-utilisées afin de pouvoir simplifier la gestion d'entrées/sorties, du
+externes et d'avoir autant que possible de code en \Schemelang. Par
+contre, les librairie SDL~\cite{SDL} et \textit{OpenGL}~\cite{OpenGL}
+ont été utilisées afin de simplifier la gestion d'entrées/sorties, du
 fenêtrage et du rendu de l'application. L'utilisation des interfaces
 aux fonctions étrangères (\textit{Foreign Function Interface}) du
 système Gambit-C ont fait en sorte que la tâche d'accès et
@@ -4908,17 +4871,17 @@ très facile d'introduire des erreurs.
 \subsubsection{Parties multi-joueurs}
 Les parties multi-joueurs de \si sont très simples. Chaque joueur joue
 en alternance jusqu'à se que son vaisseau se fasse détruire. Ainsi,
-cela implique de pouvoir conserver deux parties du jeu en
-\emph{parallèle}, où une seule des deux avance à la fois. Avec un flot
-de contrôle sous forme de simulation par événements discrets, cela
-implique d'avoir deux simulations exécutées en parallèle. Puisque le
-système de simulation ne permet pas de pouvoir facilement arrêter une
-simulation et d'en avoir une deuxième se produisant en même temps, une
-autre approche a été utilisée. Un système de coroutines dans lequel
-les simulations sont exécutées à l'intérieur de coroutines différentes
-a été développé et utilisé. Ainsi, le changement de contexte peut être
-manuellement utilisé lorsqu'un joueur meurt afin de réactiver la
-partie du prochain joueur.
+cela implique de conserver deux parties du jeu en \emph{parallèle}, où
+une seule des deux avance à la fois. Avec un flot de contrôle sous
+forme de simulation par événements discrets, cela implique d'avoir
+deux simulations exécutées en parallèle. Puisque le système de
+simulation ne permet pas de facilement arrêter une simulation et d'en
+avoir une deuxième se produisant en même temps, une autre approche a
+été utilisée. Un système de coroutines dans lequel les simulations
+sont exécutées à l'intérieur de coroutines différentes a été développé
+et utilisé. Ainsi, le changement de contexte peut être manuellement
+utilisé lorsqu'un joueur meurt afin de réactiver la partie du prochain
+joueur.
 
 C'est de cette idée qu'est né le système de coroutine présenté dans le
 chapitre \ref{Chap:corout}. Il fut initialement beaucoup plus simple
@@ -4971,8 +4934,8 @@ partie du joueur actuel.
 Ainsi, l'écriture de cette première version de \si a permis
 d'identifier plusieurs problèmes reliés au développement de jeux vidéo
 (détection et résolution de collisions, parties multi-joueurs,
-etc...). En plus de permettre de pouvoir facilement expérimenter sur
-le type de flot de contrôle utilisé pour développer ce jeu, \Schemelang a
+etc...). En plus de permettre de facilement expérimenter sur le type
+de flot de contrôle utilisé pour développer ce jeu, \Schemelang a
 permis de faire rapidement plusieurs outils non triviaux pour
 l'implantation du jeu, dont un système de fontes et un petit système
 de coroutines.
@@ -4983,8 +4946,8 @@ fastidieuse et aurait besoin d'être modularisée et améliorée. Aussi,
 la technique de flot de contrôle expérimentale utilisée (simulation
 par événements discrets), fonctionne bien pour certains aspects, mais
 ne semble pas naturelle pour d'autres. Ainsi, le flot de contrôle
-pourrait aussi être amélioré de manière à pouvoir exprimer de manière
-plus naturelle le comportement des entités du jeu.
+pourrait aussi être amélioré de manière à exprimer de manière plus
+naturelle le comportement des entités du jeu.
 
 
 \FloatBarrier
@@ -4992,7 +4955,7 @@ plus naturelle le comportement des entités du jeu.
 Une nouvelle version de \si fut développée afin de pallier à une
 lacune existante dans la première version écrite: le problème relié
 aux types de structures de données qui engendrait des cascades
-fastidieuses de vérifications de types pour, entre autre, la
+fastidieuses de vérifications de types pour, entre autres, la
 résolution de collisions (voir la figure \ref{Exp:si1-col-res}).
 
 Initialement, plusieurs systèmes objets existant pour Gambit-C furent
@@ -5001,7 +4964,7 @@ aux besoins présents. Certains offraient beaucoup de puissance
 expressive, mais avec un coût de performance trop élevé tandis que
 d'autre, plus performants, étaient trop restrictifs dans l'interface
 offerte. Pour ces raisons, un système de programmation orientée objet
-fut développé de manière à pouvoir bien répondre aux besoins dans
+fut développé de manière à bien répondre aux besoins dans
 \textit{Space Invaders}, sans apporter un coût d'utilisation trop
 élevé. Ce système fait l'objet du chapitre \ref{Chap:OO}.
 
@@ -5121,10 +5084,10 @@ du comportent des entités sous forme de \textit{threads} serait plus
 naturelle. En effet, en utilisant des événements discrets, le corps
 des événements devait faire en sorte que l'événement se poursuive en
 se réordonnançant un peu plus tard, donnant ainsi la chance aux autres
-événements de pouvoir s'exécuter. Ce phénomène correspond très bien à
-la fonction \scheme{yield} du système de coroutine qui interrompt de
+événements de s'exécuter. Ce phénomène correspond très bien à la
+fonction \scheme{yield} du système de coroutine qui interrompt de
 manière temporaire l'exécution d'une coroutine afin de laisser la
-chance aux autres coroutines de pouvoir continuer leur travail.
+chance aux autres coroutines de continuer leur travail.
 
 Ainsi, dans cette nouvelle version du jeu, \emph{tous} les objets sont
 maintenant des coroutines exécutant leurs comportement de manière
@@ -5172,9 +5135,9 @@ leurs fils d'exécution et que ceux-ci sont tous équivalents, la
 des protocoles de communication complexes entre les objets. Ces
 protocoles doivent régir tout le comportent du jeu et, en bout de
 ligne, le flot de contrôle devient soudainement très difficile à
-exprimer. Ainsi, des méta-objets ont dû être introduits afin de
-pouvoir effectuer la synchronisation entre les objets de base, comme
-les ennemis. La figure \ref{Exp:inv-cnt} donne le comportement du
+exprimer. Ainsi, des méta-objets ont dû être introduits afin
+d'effectuer la synchronisation entre les objets de base, comme les
+ennemis. La figure \ref{Exp:inv-cnt} donne le comportement du
 méta-objet régissant l'activité d'une rangée d'\textit{invader}. Ce
 dernier utilise des listes de diffusions pour envoyer des messages aux
 \textit{invader} de la rangée qu'il coordonne. Il possède deux états:
@@ -5191,7 +5154,7 @@ De plus, l'utilisation intensive (voir abusive) du système de
 coroutine couplé avec le système d'objets a résulté en une chute
 dramatique des performances du jeu. Cette chute de performance a
 permis d'améliorer le système de coroutine en implantant un système de
-profilage des coroutine afin de pouvoir visualiser quelles coroutines
+profilage des coroutine afin de visualiser quelles coroutines
 monopolisaient le contrôle de l'ordonnanceur pour une durée trop
 longue. Il était ainsi possible d'optimiser certaines coroutines afin
 d'améliorer les performances globales du système. Toutefois, même
@@ -5286,7 +5249,7 @@ programmations résultant de l'implantation d'un tel jeu.
 \FloatBarrier
 \section{Développement de \lr} \label{Exp:ld}
 Après avoir développé \textit{Space Invaders}, un deuxième jeu a dû
-être développé afin de pouvoir consolider les techniques
+être développé afin de consolider les techniques
 développées. Le jeu \lr a été choisi dans le but de remplir cette
 tâche pour plusieurs raisons. Principalement, ce jeu contient de
 nouveaux éléments qui n'étaient pas présent dans \si comme le concept
@@ -5316,18 +5279,18 @@ du jeu développé.
 
 \FloatBarrier
 \subsection{Logique du jeu}
-Afin de pouvoir développer ce jeu, les meilleurs techniques utilisées
-pour le développement de \si ont été réutilisées et raffinées pour les
-besoins plus grands de \lr. Par contre, le flot de contrôle de la
-logique du jeu est régi de manière beaucoup plus conservatrice en
-utilisant une boucle principale effectuant le travail à faire pour
-chaque image du jeu (\textit{Game Loop}). Il en résulte qu'une
-fonction générique \scheme{animate} est appelée avant le rendu de
-chaque image de manière à effectuer le travail que doit accomplir
-chaque objet avant ce rendu. La figure \ref{Exp:lr-main} illustre une
-partie de la boucle principale du jeu et l'instance de la fonction
-générique \scheme{advance-frame!} pour un niveau de jeu. Cette figure
-illustre la simplicité du flot de contrôle du jeu résultante grâce à
+Afin de développer ce jeu, les meilleurs techniques utilisées pour le
+développement de \si ont été réutilisées et raffinées pour les besoins
+plus grands de \lr. Par contre, le flot de contrôle de la logique du
+jeu est régi de manière beaucoup plus conservatrice en utilisant une
+boucle principale effectuant le travail à faire pour chaque image du
+jeu (\textit{Game Loop}). Il en résulte qu'une fonction générique
+\scheme{animate} est appelée avant le rendu de chaque image de manière
+à effectuer le travail que doit accomplir chaque objet avant ce
+rendu. La figure \ref{Exp:lr-main} illustre une partie de la boucle
+principale du jeu et l'instance de la fonction générique
+\scheme{advance-frame!} pour un niveau de jeu. Cette figure illustre
+la simplicité du flot de contrôle du jeu résultante grâce à
 l'utilisation de fonction génériques et de fonctions d'ordre
 supérieures.
 
@@ -5598,10 +5561,10 @@ tous les 60 images rendues.
   \label{Exp:lr-start-transition}
 \end{figure}
 
-Ainsi, les macros et les fonctions d'ordre supérieures de \Schemelang ont
-permis de pouvoir exprimer de manière élégante et modulaire les
-concepts reliés à la déclarations de machines à états pour les entités
-ainsi que les niveau du jeu \textit{Lode Runner}.
+Ainsi, les macros et les fonctions d'ordre supérieures de \Schemelang
+ont permis d'exprimer de manière élégante et modulaire les concepts
+reliés à la déclarations de machines à états pour les entités ainsi
+que les niveau du jeu \textit{Lode Runner}.
 
 
 \FloatBarrier
@@ -5683,10 +5646,10 @@ et reproduit un comportement \emph{similaire} à celui des ennemis de
 la version originale. Ces algorithmes sont présentés dans les figures
 \ref{Exp:ai-imm} et \ref{Exp:ai-seek}. Les fermetures contenant ces
 algorithmes sont utilisées de manière dynamique en fonction du niveau
-de difficulté choisi par le joueur. Il est ainsi possible de pouvoir
-modifier durant la partie la difficulté. Aussi, l'utilisation de
-fermeture donne la chance de pouvoir créer de nouvelles fermetures
-contenant des informations plus spécialisées pour l'état actuel du
+de difficulté choisi par le joueur. Il est ainsi possible de modifier
+durant la partie la difficulté. Aussi, l'utilisation de fermeture
+donne la chance de créer de nouvelles fermetures contenant des
+informations plus spécialisées pour l'état actuel du
 jeu. L'implantation du choix dynamique de l'algorithme d'intelligence
 artificielle est présenté dans la figure \ref{Exp:dyn-ai}.
 
@@ -5758,15 +5721,15 @@ modularisation.
 
 La gestion des états plus complexes des objets du jeu a pu être écrite
 de manière très élégante grâce à la conception d'un langage spécifique
-au domaine minimaliste. Il fut ainsi possible de pouvoir décrire le
-\og quoi \fg des animations tout en cachant la mécanique commune aux
-animations des entités du jeu.
+au domaine minimaliste. Il fut ainsi possible de décrire le \og quoi
+\fg des animations tout en cachant la mécanique commune aux animations
+des entités du jeu.
 
 L'ajout d'une grille pour accélérer la détection de collisions semble
 peut-être peu significative puisque \lr ne contient pas une très
 grande quantité d'objet, mais ce système a été ajouté dans le but de
-pouvoir facilement et rapidement implanter des jeux qui seront plus
-complexes et qui nécessiteraient de tels optimisations.
+facilement et rapidement implanter des jeux qui seront plus complexes
+et qui nécessiteraient de tels optimisations.
 
 Tout comme ce fut le cas pour \si, la gestion mémoire automatique n'a
 pas été un problème pour le développement de ce jeu. En effet, malgré
@@ -5812,12 +5775,11 @@ utilisation mémoire.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Travaux reliés}
-Les langages de programmation de la famille \lisp ont déjà été utilisés
-pour produire des jeux vidéo commerciaux de très bonne
+Les langages de programmation de la famille \lisp ont déjà été
+utilisés pour produire des jeux vidéo commerciaux de très bonne
 qualité. Certains seront cités et une revue de l'expérience acquise
-par les développeurs sera exposée dans le but de pouvoir comparer
-leurs expériences avec celle acquise pour le développement de \si et
-de \lr.
+par les développeurs sera exposée dans le but de comparer leurs
+expériences avec celle acquise pour le développement de \si et de \lr.
 
 Avant tout, nous comparerons les différents langages utilisés dans
 l'industrie du jeu vidéo avec \Schemelang afin d'en faire ressortir les
@@ -5908,8 +5870,8 @@ Un langage Lua~\cite{Lua} est fréquemment utilisé non pas pour
 implanter le moteur d'un jeu vidéo, mais plutôt pour effectuer le
 \textit{scripting} de celui-ci, \ie le développement dynamique de
 niveaux, d'environnements, etc... Lua a été utilisé notamment dans le
-jeu \textit{World Of Warcraft} afin de permettre aux joueurs de
-pouvoir ajouter des éléments au jeu de manière dynamique.
+jeu \textit{World Of Warcraft} afin de permettre aux joueurs d'ajouter
+des éléments au jeu de manière dynamique.
 
 Ce langage est reconnu pour avoir un environnement d'exécution très
 léger, environ 150 kilo-octets, ce qui fait en sorte que l'ajout de
@@ -5942,25 +5904,25 @@ constituent eux aussi un sous ensemble de \Schemelang.
 \FloatBarrier
 \section{Sommaire}
 Ainsi, les langages C++ et Lua offrent des fonctionnalités différentes
-de celles offertes en \Schemelang. Le tableau \ref{Rev:lang-comp} effectue
-un résumé des différences entre ces langages. Le langage C++ offre de
-très bonnes performances grâce à son modèle d'exécution près de
-l'architecture de la plate-forme utilisée. Puisqu'il n'offre que très
-peu de fonctionnalités de haut niveau, il constitue un choix idéal
-pour l'implantation de jeux sur des plate-forme aux ressources très
-limitées, tel que c'est le cas sur les consoles portables ou sur les
-téléphones cellulaire. Le langage Lua, quant-à-lui, est un
-sous-ensemble du langage \Schemelang. La présence de gestion de mémoire
-automatique, de fermeture et d'un typage dynamique font de lui un très
-bon candidat comme langage de script afin de pouvoir évaluer
+de celles offertes en \Schemelang. Le tableau \ref{Rev:lang-comp}
+effectue un résumé des différences entre ces langages. Le langage C++
+offre de très bonnes performances grâce à son modèle d'exécution près
+de l'architecture de la plate-forme utilisée. Puisqu'il n'offre que
+très peu de fonctionnalités de haut niveau, il constitue un choix
+idéal pour l'implantation de jeux sur des plate-forme aux ressources
+très limitées, tel que c'est le cas sur les consoles portables ou sur
+les téléphones cellulaire. Le langage Lua, quant-à-lui, est un
+sous-ensemble du langage \Schemelang. La présence de gestion de
+mémoire automatique, de fermeture et d'un typage dynamique font de lui
+un très bon candidat comme langage de script afin d'évaluer
 dynamiquement des parties expérimentales du jeu dans le but de
-raffiner le \textit{gameplay}. \Schemelang offre beaucoup de fonctionnalité
-de haut niveau tels que des fermeture, de la réification de
-continuation ou encore des macros procédurales. Son coût plus élevé en
-allocations mémoires fait de lui un excellent choix pour le
-développement de moteurs de jeu sur des plate-formes modernes ou comme
-engin de \textit{scripting} sur des plate-forme plus limitée sur la
-mémoire.
+raffiner le \textit{gameplay}. \Schemelang offre beaucoup de
+fonctionnalité de haut niveau tels que des fermeture, de la
+réification de continuation ou encore des macros procédurales. Son
+coût plus élevé en allocations mémoires fait de lui un excellent choix
+pour le développement de moteurs de jeu sur des plate-formes modernes
+ou comme engin de \textit{scripting} sur des plate-forme plus limitée
+sur la mémoire.
 
 \begin{table}
 \begin{tabular}{cccc}
@@ -5996,7 +5958,7 @@ dialectes de \lisp dans le développement de jeux vidéo. En effet,
 cette compagnie a écrits plusieurs jeux sur la \textit{PlayStation 2}
 en utilisant le compilateur \textit{GOAL}/\textit{Game Oriented
   Assembly Lisp}, un système maison uniquement compilé vers du code
-machine pour le \textit{PlayStation 2} qui comprenait entre autre un
+machine pour le \textit{PlayStation 2} qui comprenait entre autres un
 système objet. Ce dernier fut utilisé pour développer entièrement de
 nombreux jeux sur la console dont les jeux \textit{Crash Bandicoot} et
 \textit{Jak and Dexter}.
@@ -6006,7 +5968,7 @@ utilisation de GOAL dans un article sur le site web consacré au
 développement de jeux vidéo Gamasutra~\cite{ND_GOAL}. Dans ce dernier,
 il mentionne que le développement de leur propre compilateur de \lisp
 leur a permis d'utiliser plusieurs techniques qui n'auraient pas pu
-être utilisées avec d'autres langages. Entre autre, leur système,
+être utilisées avec d'autres langages. Entre autres, leur système,
 malgré le fait qu'il ne comprenait pas d'interpète, permettait la
 compilation de code et le chargement de celui-ci directement dans le
 jeu qui était exécuté sur une console \textit{PlayStation 2} donnant
@@ -6044,16 +6006,16 @@ très populaire pour l'action et le rendu graphique exceptionnel
 contenu dans ces titres. Dan Liebgold de Naughty Dog a donné une
 conférence sur le développement du jeu \textit{Uncharted: Drake's
   fortune}~\cite{ND_DRAKE} et mentionna qu'ils ont utilisé le langage
-\Schemelang afin de pouvoir exprimer les données du jeu de manière
-dynamique, mais que le moteur du jeu est écrit en C++. Ils profitent
-ainsi des performances qu'offrent C++ pour les zones critiques du jeu
-et utilisent un langage de plus haut niveau pour la description des
+\Schemelang afin d'exprimer les données du jeu de manière dynamique,
+mais que le moteur du jeu est écrit en C++. Ils profitent ainsi des
+performances qu'offrent C++ pour les zones critiques du jeu et
+utilisent un langage de plus haut niveau pour la description des
 données et utilisent un schéma de compilation dynamique similaire à
 celui utilisé par GOAL. La figure \ref{Rev:Drake} illustre la
 constructions de données utilisées dans ce jeu. Cet exemple de code
-illustre bien le type d'utilisation faite du langage \Schemelang, \ie que
-\Schemelang est utilisé non seulement comme langage de script, mais aussi
-pour la définition des données du langage.
+illustre bien le type d'utilisation faite du langage \Schemelang, \ie
+que \Schemelang est utilisé non seulement comme langage de script,
+mais aussi pour la définition des données du langage.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -6089,20 +6051,20 @@ jeux vidéo \textit{Gamerizon inc}.
 
 L'utilisation de \Schemelang dans QuantZ a apporté plusieurs avantages
 technologiques. En effet, le dynamisme du langage a su profiter aux
-développeurs en leur permettant de pouvoir débugger le jeu lors de son
+développeurs en leur permettant de débugger le jeu lors de son
 exécution résultant permettant ainsi la résolution rapides de
 problèmes.
 
-Aussi, la syntaxe sous formes de S-expressions des programmes \Schemelang a
-été utilisée à profit en créant un système d'analyse de code
-permettant d'extraire toutes les chaînes de caractères présente dans
-le jeu afin de pouvoir créer facilement des outils
-d'internationalisation. Ces outils permettent entre autre la création
+Aussi, la syntaxe sous formes de S-expressions des programmes
+\Schemelang a été utilisée à profit en créant un système d'analyse de
+code permettant d'extraire toutes les chaînes de caractères présente
+dans le jeu afin de créer facilement des outils
+d'internationalisation. Ces outils permettent entre autres la création
 automatique de fontes optimisées par langues, qui contiennent
 uniquement les caractères utilisées dans celles-ci. L'utilisation de
-la fonction \Schemelang \scheme{read} combinée à la récursivité du langage
-ont facilement permis d'écrire un analyseur de code. Cette tâche
-aurait été beaucoup plus complexe dans un autre langage de
+la fonction \Schemelang \scheme{read} combinée à la récursivité du
+langage ont facilement permis d'écrire un analyseur de code. Cette
+tâche aurait été beaucoup plus complexe dans un autre langage de
 programmation.
 
 Les fermetures disponible en \Schemelang ont été utilisées comme base d'un
@@ -6143,14 +6105,15 @@ premier ordre et du dynamisme du système Gambit-C.
 \section{Conclusion}
 Ainsi, plusieurs langages sont utilisés dans l'industrie du jeu vidéo
 dont, notamment les langages Lua et C++. Après une comparaison au
-langage \Schemelang, on constate que ces derniers répondent à des besoins
-précis présents dans les jeux vidéo. Lua propose un développement plus
-dynamique tandis que C++ permet d'obtenir de très bonnes performances
-au coût d'avoir moins de puissance d'abstractions. Le choix du langage
-le plus approprié pour le développement d'un jeu devrait donc être
-fait en prenant en considération le matériel utilisé afin d'assurer
-que de pouvoir utiliser le plus de puissance expressive que possible,
-sans toutefois avoir un coût relié à ces abstractions trop élevé.
+langage \Schemelang, on constate que ces derniers répondent à des
+besoins précis présents dans les jeux vidéo. Lua propose un
+développement plus dynamique tandis que C++ permet d'obtenir de très
+bonnes performances au coût d'avoir moins de puissance
+d'abstractions. Le choix du langage le plus approprié pour le
+développement d'un jeu devrait donc être fait en prenant en
+considération le matériel utilisé afin d'assurer que d'utiliser le
+plus de puissance expressive que possible, sans toutefois avoir un
+coût relié à ces abstractions trop élevé.
 
 Aussi, \lisp et \Schemelang ont déjà été utilisés dans l'industrie du jeu
 vidéo pour développer des jeux de grandes qualités tels \textit{Jak
@@ -6173,22 +6136,21 @@ donc de faire le point sur les forces et les faiblesses de
 l'utilisation d'un langage de programmation fonctionnelle et dynamique
 tel que \Schemelang pour le développement de jeux vidéo.
 
-L'expressivité du langage \Schemelang, notamment grâce aux fonctions de
-première classes et aux macros procédurales, a permis de pouvoir
-développer un système de programmation orientée objet et l'intégrer
-directement au langage. Aussi, la réification de continuations a rendu
-possible le développement d'un système de coroutines élaboré.
-L'utilisation de ces systèmes dans la programmation de jeu vidéo fut
-très bénéfique quant à l'amélioration du code produit grâce à
-l'introduction d'une bonne modularité fournie par les fonctions
-génériques du système objets et une grande simplicité pour
-l'implantation de parties multi-joueurs grâce à l'utilisation de
-coroutines pour encapsuler les parties se déroulant en parallèle. Le
-coût de développement de tels modules, en utilisant des langages
-donnant accès à moins de puissance d'abstraction, aurait certainement
-rendu le développement de ceux-ci impossible et donc, \Schemelang s'est
-révélé un langage très puissant pour le développement de ces outils
-indispensables.
+L'expressivité du langage \Schemelang, notamment grâce aux fonctions
+de première classes et aux macros procédurales, a permis de développer
+un système de programmation orientée objet et l'intégrer directement
+au langage. Aussi, la réification de continuations a rendu possible le
+développement d'un système de coroutines élaboré.  L'utilisation de
+ces systèmes dans la programmation de jeu vidéo fut très bénéfique
+quant à l'amélioration du code produit grâce à l'introduction d'une
+bonne modularité fournie par les fonctions génériques du système
+objets et une grande simplicité pour l'implantation de parties
+multi-joueurs grâce à l'utilisation de coroutines pour encapsuler les
+parties se déroulant en parallèle. Le coût de développement de tels
+modules, en utilisant des langages donnant accès à moins de puissance
+d'abstraction, aurait certainement rendu le développement de ceux-ci
+impossible et donc, \Schemelang s'est révélé un langage très puissant
+pour le développement de ces outils indispensables.
 
 Le dynamisme du langage a également jouer un rôle implicite très
 important pour le développement de ces jeux. En effet, la présence
@@ -6199,12 +6161,12 @@ sont signalées durant l'exécution du jeu, la résolution de celles-ci
 sont font très rapidement grâce à la possibilité d'introspection de
 l'état du programme et d'évaluation dynamique de code.
 
-Aussi, le langage \Schemelang a permis de facilement pouvoir expérimenter
-sur le contrôle de flot des jeux en permettant de développer
-facilement des systèmes non-triviaux de simulations à événements
-discrets et de simulation par agents (coroutines). La modification du
-flot de contrôle du premier jeu a pu être fait sont trop d'efforts
-grâce aux abstractions faites entre autre par le système d'objets.
+Aussi, le langage \Schemelang a permis de facilement expérimenter sur
+le contrôle de flot des jeux en permettant de développer facilement
+des systèmes non-triviaux de simulations à événements discrets et de
+simulation par agents (coroutines). La modification du flot de
+contrôle du premier jeu a pu être fait sont trop d'efforts grâce aux
+abstractions faites entre autres par le système d'objets.
 
 Bien sûr, la modularité de programmes apporte généralement des coût en
 performances pour ceux-ci. Ainsi, une difficulté d'utiliser un langage
@@ -6240,7 +6202,7 @@ Ainsi, malgré le coût que peut apporter l'utilisation d'abstractions,
 nous croyons que le bénéfice résultant est bien supérieur à ce
 dernier, surtout sur des plate-formes performantes. Les techniques de
 programmations orientées objets développées nous ont permis de
-rapidement pouvoir développer un nouveau jeu en réutilisant plusieurs
+rapidement développer un nouveau jeu en réutilisant plusieurs
 modules, dont notamment les modules de rendus graphiques et de
 résolution de collisions.
 

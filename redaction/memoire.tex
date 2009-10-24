@@ -72,7 +72,7 @@
     {Novembre}
     {2009}
 
-\setstretch{2.0}
+%\setstretch{2.0}
 \begin{document}
 
 \setcounter{page}{0}
@@ -84,7 +84,8 @@
 \setlength\headheight{0in}
 \setlength\topmargin{0in}
 \addtolength{\voffset}{-0.5in}
-\setstretch{1.5}
+%\setstretch{1.4}
+\doublespacing
 
 \resume
 
@@ -3291,23 +3292,23 @@ respecter la philosophie de base de ce système objets.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Système de coroutines} \label{Chap:corout}
 Les \textit{threads} constituent un outil de programmation important
-permettant l'exécution parallèle matérielle ou logicielle de
-code. L'utilisation de \textit{threads} dans un jeu vidéo peut être
-très pertinente et permettrait d'exprimer de manière concise beaucoup
-de concepts clés. Par exemple l'implantation de parties multi-joueurs
-où ces derniers jouent à tours de rôles se représente bien par un
-modèle parallèle, puisqu'il s'agit vraiment de deux parties distinctes
-qui sont jouées en même temps.
+permettant l'exécution parallèle de code, de façon matérielle ou
+logicielle. L'utilisation de \textit{threads} dans un jeu vidéo peut
+être très pertinente et permettrait d'exprimer de manière concise des
+concepts clés. Par exemple, l'implantation de parties multi-joueurs où
+ces derniers jouent à tour de rôles est bien représentée par un modèle
+parallèle, puisqu'il s'agit de deux parties distinctes jouées en même
+temps.
 
-Le langage \Schemelang tel que décrit par le standard~\cite{R5RS} ne fourni
-pas de système de \textit{threads}. Par contre, le document SRFI
-18~\cite{SRFI18} (\textit{Scheme Request For Implementation}) décrit
-un \textit{API} (\textit{Application Programming Interface}) de
-système de \textit{thread} concurrents. Le système
-Gambit-C~\cite{Gambit4} supporte cet \textit{API} sous forme de
-\textit{threads} verts, \ie  sous formes de concurrence logicielle et
-non matérielle. Malheureusement, le coût d'utilisation des mécanismes
-de synchronisation explicites est très élevé en temps de développement
+Le langage \Schemelang tel que décrit par le standard~\cite{R5RS} ne
+fournit pas de système de \textit{threads}. Par contre, le document
+SRFI 18~\cite{SRFI18} (\textit{Scheme Request For Implementation})
+décrit un \textit{API} (\textit{Application Programming Interface}) de
+système de \textit{threads} concurrents. Gambit-C~\cite{Gambit4}
+supporte cet \textit{API} sous forme de \textit{threads} verts
+correspondant à une concurrence logicielle et non
+matérielle. Malheureusement, le coût d'utilisation des mécanismes de
+synchronisations explicites est très élevé en temps de développement
 et en utilisation du processeur lors de l'exécution.
 
 Par contre, un système de coroutines (appelé aussi \textit{threads}
@@ -3315,20 +3316,20 @@ coopératifs) permettrait d'éviter d'avoir à spécifier explicitement
 ces synchronisations entre entités. En effet, si le flot de contrôle
 est changé durant des moments opportuns connus du programmeur, aucune
 synchronisation supplémentaire n'est requise pour assurer la validité
-d'accès concurrents à des sections critiques. En fait, le problème ne
-se pose même plus, mais disparaît complètement. Ceci rend donc très
-attrayant de tels systèmes pour le développement de jeux vidéo. Il
-permettrait d'exprimer de manière simple des changements de contextes
-dans le jeu, ou même, de modulariser le comportement de chacune des
-entités du jeu. Pour ce faire et afin de conserver la modularité du
-jeu, on peut imaginer une cascade de systèmes de coroutines dont un
-premier niveau permettrait l'implantation de parties multi-joueurs et
-un second niveau permettrait l'implantation du comportement d'entités
-dans le jeu. La figure \ref{Corout:usecase} illustre de manière
-générique cette idée. Dans ce schéma, les carrés noirs représentent
-des système de coroutines et les coroutines sont représentées avec des
-lignes pointillées. L'utilisation systèmes imbriqués permettrait ainsi
-d'exprimer chaque concept de manière modulaire de manière complètement
+d'accès concurrents à des sections critiques. En fait, le problème
+disparaît complètement. Ceci rend donc très attrayant de tels systèmes
+pour le développement de jeux vidéo. Il permettrait d'exprimer de
+manière simple des changements de contextes dans le jeu, ou même de
+modulariser le comportement de chacune des entités du jeu. Afin de
+conserver la modularité du jeu, on peut imaginer une cascade de
+systèmes de coroutines dont un premier niveau permettrait
+l'implantation de parties multi-joueurs et un second niveau
+permettrait l'implantation du comportement d'entités dans le jeu. La
+figure \ref{Corout:usecase} illustre de manière générique cette
+idée. Dans ce schéma, les carrés noirs représentent des systèmes de
+coroutines et les coroutines sont représentées avec des lignes
+pointillées. L'utilisation de systèmes imbriqués permettrait ainsi
+d'exprimer chaque concept de manière modulaire et complètement
 transparente.
 
 \begin{figure}[htb!]
@@ -3340,73 +3341,71 @@ transparente.
 \end{figure}
 
 Gambit-C offre la possibilité de transformer son système de
-\textit{threads} en système de coroutines lorsque le délais de
+\textit{threads} en système de coroutines lorsque le délai de
 changement de contexte automatique est choisi comme étant
 l'infini. Toutefois, il est impossible d'utiliser plusieurs systèmes
 de coroutines avec cette approche. Ainsi, l'utilisation directe des
-fonctionnalités de Gambit-C limite l'utilisation de coroutines au
+fonctionnalités de Gambit-C limite celle de coroutines au
 développement d'un seul concept dans un jeu.
 
 Afin de ne pas être limité par les fonctionnalités fournies par
-Gambit-C, l'expressivité du langage \Schemelang peut être mise à profit. En
-effet, grâce à la réification de continuations du calcul, la tâche de
-l'implantation d'un système de coroutine fait sur mesure est tout à
-fait accessible et réalisable sans changer le langage. Ce chapitre
-présente un système de \textit{threads} \emph{coopératifs} développé
-dans le but de bien répondre aux besoins de jeux vidéo quant à
-l'écriture de code s'exécutant en concurrente de manière sécuritaire
+Gambit-C, l'expressivité du langage \Schemelang peut être mise à
+profit. En effet, grâce à la réification de continuations du calcul,
+la tâche de l'implantation d'un système de coroutine fait sur mesure
+est tout à fait accessible et réalisable sans changer le langage. Ce
+chapitre présente un système de \textit{threads} \emph{coopératifs}
+développé dans le but de bien répondre aux besoins de jeux vidéo quant
+à l'écriture de code s'exécutant en concurrence de manière sécuritaire
 tout en permettant l'utilisation récursive de ce système.
 
 
 \FloatBarrier
 \section{Description du langage}
-Un système de \textit{threads} coopératifs implique donc que le
-changement de contexte d'exécution associés aux changements de
-\textit{threads} doivent être faits de manière explicite par les
-utilisateurs. Ainsi, ces changements de contextes peuvent être faits
-aux moments opportuns, pour assurer l'intégrité des
-données. Toutefois, des synchronisations entre les différentes
-coroutines pourraient être encore nécessaires afin de bien orchestrer
-l'exécution de ces dernières. Afin de permettre aux coroutines de
-communiquer entre elles, une synchronisation par passage de message
-avec \textit{pattern matching} similaire à celle utilisée dans les
-systèmes Termite~\cite{Termite_paper} ou Erlang~\cite{Erlang} a été
-adoptée. Ce mécanisme permet de synchroniser de manière élégante les
-coroutines naturellement.
+Un système de \textit{threads} coopératifs implique que le changement
+de contexte d'exécution associé aux changements de \textit{threads}
+doit être fait de manière explicite par les utilisateurs. Ainsi, ces
+changements de contextes peuvent être faits aux moments opportuns pour
+assurer l'intégrité des données. Toutefois, des synchronisations entre
+les différentes coroutines pourraient être encore nécessaires pour
+bien orchestrer l'exécution de ces dernières. Afin de permettre aux
+coroutines de communiquer entre elles, une synchronisation par passage
+de message avec \textit{pattern matching} similaire à celle utilisée
+dans les systèmes Termite~\cite{Termite_paper} ou Erlang~\cite{Erlang}
+a été adoptée. Ce mécanisme permet de synchroniser naturellement et de
+manière élégante les coroutines.
 
 De plus, le système a été conçu pour être utilisé récursivement. Il
 est donc possible d'avoir une coroutine qui sera elle-même un système
 de coroutine, et ainsi de suite. Cette fonctionnalité a été implantée
 pour que le système soit le plus générique possible. De plus, l'idée
-de système récursifs est aussi très près du langage \Schemelang dans lequel
-la récursion de fonctions est très courante et commune grâce à
+de systèmes récursifs est aussi très près du langage \Schemelang dans
+lequel la récursion de fonctions est très courante et commune grâce à
 l'implantation de l'optimisation d'appels terminaux.
 
-Un tel système de coroutine peut être également vu comme étant un
-système de simulation basée sur les agents, par opposition aux
+Un tel système de coroutines peut être également vu comme étant un
+système de simulations basées sur les agents, par opposition aux
 simulations basées sur des événements discrets. Le comportement des
 entités est alors représenté par chacune des coroutines du
 système. Dans cette optique, la notion de temps du système développé a
 été abstraite grâce à l'introduction de compteurs de temps
 (\textit{timers}). Il est donc possible de choisir non seulement une
 granularité temporelle en spécifiant la fréquence de ce compteur, mais
-il est aussi possible de spécifier un facteur d'accélération,
-permettant d'accélérer la simulation en cours.
+aussi de spécifier un facteur d'accélération permettant d'accélérer la
+simulation en cours.
 
-Le système se résume à un ordonnanceur de coroutine qui utilise une
-file de coroutines prêtes à exécuter pour choisir la prochaine qui
-doit prendre le contrôle. Aussi, une file de coroutines en attente sur
-le temps et sur des conditions sont disponible pour une bonne
-régulation du système. Lorsqu'une coroutine décide de passer la main à
-la coroutine suivante ou lorsqu'elle ne doit plus attendre après le
-temps ou une condition, elle se fait enfiler à la fin de la file
-d'attente de coroutines prêtes. La figure \ref{Corout:system-schema}
-illustre l'architecture globale du système.
+Le système se résume à un ordonnanceur de coroutines qui utilise une
+file de coroutines prêtes à exécuter pour choisir la prochaine devant
+prendre le contrôle. Aussi, une file de coroutines en attente sur le
+temps et une sur des conditions sont disponibles. Lorsqu'une coroutine
+décide de passer la main à la suivante, ou lorsqu'elle ne doit plus
+attendre après le temps ou une condition, elle se fait reléguer à la
+fin de la file d'attente de coroutines prêtes. La figure
+\ref{Corout:system-schema} illustre l'architecture globale du système.
 
 \begin{figure}[htb!]
   \center
   \includegraphics[scale=0.7]{corout-system}
-  \caption{Architecture globale du système de coroutine}
+  \caption{Architecture globale du système de coroutines}
   \label{Corout:system-schema}
 \end{figure}
 
@@ -3416,12 +3415,12 @@ l'utilisation du système de coroutines développé.
 
 \FloatBarrier
 \subsection{Création de coroutines}
-Les coroutines sont des objets en eux même et peuvent être créés de
+Les coroutines sont des objets en eux-mêmes et peuvent être créées de
 manière externe au système de coroutines pour, par la suite, être
 ajoutées à celui-ci. L'avantage de cette approche, utilisée aussi par
 le système de \textit{threads} de Gambit-C, réside dans le fait que
 les objets correspondant aux \textit{threads} peuvent être initialisés
-à l'avance et conservés jusqu'au moment opportun de leurs ajout au
+à l'avance et conservés jusqu'au moment opportun de leurs ajouts au
 système. Une nouvelle instance de coroutine s'effectue avec
 
 \begin{schemecode}
@@ -3429,21 +3428,20 @@ système. Une nouvelle instance de coroutine s'effectue avec
 \end{schemecode}
 
 \noindent
-où \scheme{<corout-id>} est un symbol permettant d'identifier la
-coroutine et le dernier argument est un \textit{thunk} (une fonction
-ne prenant aucun argument) qui contient le corps de l'exécution de
-cette coroutine.
+où \scheme{<corout-id>} est un symbole permettant d'identifier la
+coroutine et le dernier argument est un \textit{thunk} qui contient le
+corps de l'exécution de cette coroutine.
 
 La figure \ref{Corout:state-diag} illustre un diagramme des états
 possibles pour une coroutine avec les transitions correspondantes. Sur
-chacune des transition, un exemple d'appel de fonction effectuant
+chacune des transitions, un exemple d'appel de fonction effectuant
 cette transition est donné. On constate ainsi qu'une coroutine est
-soit prête, en attente ou bien terminée. L'attente d'une coroutine
-peut être conditionnelle à la réception d'un message, au relâchement
-d'une sémaphore ou à un certain délais de temps prescrit. De plus,
-l'attente sur le temps peut être interruptible par la réception d'un
-message. Cet état se produit lorsqu'une attente de message est
-effectuée avec une attente bornée.
+soit prête, en attente ou terminée. L'attente d'une coroutine peut
+être conditionnelle à la réception d'un message, au relâchement d'une
+sémaphore ou à un certain délai de temps prescrit. De plus, l'attente
+sur le temps peut être interrompue par la réception d'un message. Cet
+état se produit lorsqu'une attente de message est effectuée avec une
+attente bornée.
 
 \begin{figure}[htb!]
   \center
@@ -3455,7 +3453,8 @@ effectuée avec une attente bornée.
 L'objet créé pourra être par la suite ajouté à un nouveau système par
 la fonction d'initialisation \scheme{boot} ou encore par une coroutine
 d'une simulation existante avec la fonction
-\scheme{spawn-brother}. Ces fonction sont décrites ci-dessous.
+\scheme{spawn-brother}. Ces fonction sont décrites les sous-sections
+qui suivent.
 
 
 \FloatBarrier
@@ -3467,14 +3466,13 @@ Le système de coroutines peut être démarré en utilisant la fonction
 \end{schemecode}
 
 \noindent
-dont le premier argument doit être une liste contenant les coroutine
+dont le premier argument doit être une liste contenant les coroutines
 présentes lors du démarrage du système et, optionnellement un objet
-correspondant à un compteur de temps pour le système. L'ordre des
-coroutines dans la liste est significatif car il indique dans quel
-ordre seront enfilées les coroutines dans la file d'attente de
-coroutines prêtes. Ainsi, la première coroutine de la liste sera la
-première à être exécutée. La création de \textit{timers} se fait par
-un appel à la fonction
+correspondant à un compteur de temps pour le système. L'ordre dans la
+liste est significatif car il indique le rang selon lequel seront
+enfilées les coroutines prêtes. Ainsi, la première coroutine de la
+liste sera la première à être exécutée. La création de \textit{timers}
+se fait par un appel à la fonction
 
 \begin{schemecode}
 (start-timer! <period> [time-multiplier: <time-mult-value>]))
@@ -3482,23 +3480,22 @@ un appel à la fonction
 
 \noindent
 qui s'occupe de créer un objet faisant abstraction du temps. Ce
-dernier sera rafraîchi selon la période (en seconde) indiquée en temps
-réel. On peut ainsi faire varier la granularité de la simulation afin
-de l'adapter aux besoins existant. Le paramètre optionnelle
+dernier sera rafraîchi selon la période (en secondes) indiquée en
+temps réel. On peut ainsi faire varier la granularité de la simulation
+afin de l'adapter aux besoins existants. Le paramètre optionnel
 \scheme{<time-mult-value>}, si spécifié, accélérera la simulation de
 ce facteur. Ainsi, le temps dans la simulation passera deux fois plus
-vite que le temps réel en utilisant une valeur de multiplicateur de
-temps de deux. La fonction \scheme{(pause-timer! <timer>)} peut être
-utilisée afin de mettre en pause et de repartir le compteur de temps.
+rapidement que le temps réel en utilisant une valeur de multiplicateur
+de temps de deux. La fonction \scheme{(pause-timer! <timer>)} peut
+être utilisée afin de mettre en pause et de repartir le compteur de
+temps.
 
 La figure \ref{Corout:boot} présente un exemple de démarrage d'un
-système de coroutine où le temps sera augmenté toutes les secondes et
+système de coroutines où le temps sera augmenté toutes les secondes et
 où le résultat final de la simulation sera la somme des valeurs
-retournées par chacune des coroutines. Il est important de noter qu'il
-ne faut pas oublier d'arrêter le \textit{timer} lorsqu'il n'est plus
-nécessaire.
+retournées par chacune des coroutines.\\
 
-\begin{figure}[htb!]
+\begin{figure}[htb]
   \begin{schemecode}
 (let* ((c1 (new-corout 'c1 (lambda () (display 1))))
        (c2 (new-corout 'c2 (lambda () (display 2))))
@@ -3510,39 +3507,38 @@ nécessaire.
   \label{Corout:boot}
 \end{figure}
 
-Le système de coroutine a été conçu de manière à permettre de créer
-des systèmes de coroutines de manière cascadée, \ie de créer des
+Ce système a été conçu afin de permettre la création de systèmes de
+coroutines de manière cascadés, \ie qu'il est possible de créer des
 coroutines qui sont elles-mêmes des systèmes de coroutines. De tels
 systèmes récursifs comportent de nombreux avantages. En effet,
-l'utilisation de tels systèmes facilite grandement la modularité de
-l'utilisation du système de coroutine. En effet, il devient possible
-de modulariser les différents aspects d'utilisations dans leurs
-propres systèmes. Par exemple, dans le cadre de jeux simples, on peut
-implanter des parties multi-joueurs en utilisant une coroutine par
-partie. Ces coroutine peuvent alors elle-même contenir un système de
-coroutine utilisé par la partie en elle-même.
+l'utilisation de la récursivité facilite grandement la modularité. Il
+devient possible de modulariser les différents aspects d'utilisations
+dans leurs propres systèmes. Par exemple, dans le cadre de jeux
+simples, on peut implanter des parties multi-joueurs en utilisant une
+coroutine par partie. Ces dernières peuvent alors elles-mêmes contenir
+un système de coroutine utilisé pour la partie.
 
-La procédure de création de ces derniers est simple, il suffit de
-démarrer un nouveau système de coroutine à l'intérieur d'une coroutine
+La procédure de création de ces derniers est obtenue en démarrant un
+nouveau système de coroutine à l'intérieur d'une coroutine
 existante. Lorsque des coroutines démarrent un nouveau système de
 coroutines, l'objet d'abstraction du temps (\textit{timer}) du système
-de coroutine primordial est automatiquement utilisé pour les systèmes
-récursifs de manière à conserver une cohérence entre ceux-ci. Par
-contre, un problème se pose: il devient alors impossible de pouvoir
-retourner le contrôle aux coroutines appartenant au système
-primordial, puisque \scheme{(yield)} ne fera que changer de contexte
-que les coroutines du sous-système.
+primordial est automatiquement utilisé pour les systèmes récursifs de
+manière à conserver une cohérence entre ceux-ci. Par contre, un
+problème se pose: il devient alors impossible de retourner le contrôle
+aux coroutines appartenant au système primordial, puisque
+\scheme{(yield)} ne fera que changer de contexte des coroutines du
+sous-système.
 
 Ce problème est résolu par l'utilisation de la fonction
 \scheme{(super-yield)} qui effectue un changement de contexte pour le
-système de coroutine courant. Si le système courant ne se retrouve pas
-dans un système cascadé, alors rien ne se produira. Une fonction
+système de coroutines courant. Si le système courant ne se retrouve
+pas dans un système cascadé, alors rien ne se produira. Une fonction
 similaire, \scheme{(super-kill-all! <return-value>)} terminera
 \emph{tous} les systèmes de coroutines se retrouvant dans
-l'arborescence de système de coroutine présentement active. Un exemple
-de système de coroutines en cascade est donné dans la figure
+l'arborescence de système de coroutines présentement active. Un
+exemple de système de coroutines en cascade est donné dans la figure
 \ref{Corout:cascade}.  On constate que les appels à
-\scheme{super-yield} ont bien effectué les changements de contextes de
+\scheme{super-yield} ont bien effectué les changements de contextes
 des coroutines hôtes des sous-systèmes de coroutines (\scheme{s1} et
 \scheme{s2}).
 
@@ -3580,7 +3576,7 @@ Puisque le contrôle du flot d'exécution entre les coroutines doit être
 explicité par l'utilisateur, une bonne diversité de fonctions
 permettent la manipulation de celui-ci. Il est important de noter que,
 sauf avec avis contraire, toutes les fonctions décrites dans cette
-section doivent être exécutée \emph{par} une coroutine, \ie dans leur
+section doivent être exécutées \emph{par} une coroutine, \ie dans leur
 corps.
 
 La fonction la plus simple de manipulation du flot d'exécution est
@@ -3591,20 +3587,20 @@ dans la file de coroutines prêtes, tel qu'illustré dans la figure
 \ref{Corout:system-schema}. La coroutine effectuant l'appel à la
 fonction \scheme{yield} sera alors placée à la fin de cette file
 d'attente. Il en résulte que le retour du contrôle à cette coroutine
-ne sera exécutée uniquement lorsque toutes les autres coroutines
-prêtes auront décidée de passer la main à la coroutine suivante. Il
-est également possible de choisir explicitement à quelle coroutine le
+ne sera exécuté uniquement lorsque toutes les autres coroutines prêtes
+auront décidé de passer la main à la coroutine suivante. Il est
+également possible de choisir explicitement à quelle coroutine le
 contrôle sera passé avec la fonction \scheme{(yield-to <corout>)}.
 
 Une coroutine peut aussi décider de se mettre en attente pour une
 certaine période de temps avec la fonction \scheme{(sleep-for <sec>)}
-un certain nombre de secondes. Il en résultera que la coroutine
+pour un certain nombre de secondes. Il en résultera que la coroutine
 actuelle sera placée dans une file d'attente séparée et ne sera
 réenfilée dans la file de coroutines prêtes uniquement lorsque le
-délais prescrit sera dépassé. Cela n'implique pas que la coroutine
-sera exécutée à ce moment là, car si cette file contient déjà des
-coroutines en attentes, elle devra attendre son tour pour poursuivre
-son exécution. Puisqu'une telle attente peu varier en fonction de la
+délai prescrit sera dépassé. Cela n'implique pas que la coroutine sera
+exécutée à ce moment-là, car si cette file contient déjà des
+coroutines en attente, elle devra attendre son tour pour poursuivre
+son exécution. Puisqu'une telle attente peut varier en fonction de la
 plate-forme utilisée, elle introduit un certain indéterminisme dans le
 système.
 
@@ -3617,17 +3613,17 @@ coroutines dans le système en utilisant les fonctions:
 \end{schemecode}
 
 La première ajoute simplement la coroutine spécifiée dans la file de
-coroutines prêtes. Cette coroutine \emph{ne doit pas} déjà être
-présente dans le système. La deuxième fonction,
-\scheme{spawn-brother-thunk}, sert de sucre syntaxique en créeant une
-nouvelle coroutine ayant comme identificateur \scheme{<corout-id>} et
-la fonction spécifiée comme corps avant d'ajouter cette dernière dans
-le système.
+coroutines prêtes. Celle-ci \emph{ne doit pas} déjà être présente dans
+le système. La deuxième fonction, \scheme{spawn-brother-thunk}, sert
+de sucre syntaxique en créant une nouvelle coroutine ayant comme
+identificateur \scheme{<corout-id>} et la fonction spécifiée comme
+corps. Par la suite, la coroutine nouvellement créée sera ajoutée au
+système.
 
 Dans le cadre de l'écriture de jeux vidéo, la modularité des
 coroutines est très importante. Afin de faciliter l'écriture modulaire
 de corps des coroutines, des formes spéciales permettant d'utiliser un
-style CPS ont été ajoutées. Ces dernière permettent l'altération le
+style CPS ont été ajoutées. Ces dernières permettent l'altération du
 fil d'exécution d'une coroutine en modifiant la continuation de son
 calcul par celui d'une autre coroutine ou d'un \textit{thunk}. Ainsi,
 un appel à la forme spéciale \scheme{(continue-with <corout>)} fera en
@@ -3636,10 +3632,10 @@ autre coroutine. De manière similaire, \scheme{(continue-with-thunk!
   <thunk>)} utilisera la fonction passée comme continuation du
 calcul. La figure \ref{Corout:cont-mod} présente un exemple utilisant
 ces deux formes spéciales. Lorsque la coroutine \scheme{c1} s'exécute,
-sa continue change pour celle de \scheme{c2} qui change à sont tour
+sa continuation change pour celle de \scheme{c2} qui change à son tour
 pour la fonction \scheme{t}. Ainsi, la fin du corps des coroutines
 \scheme{c1} et \scheme{c2} ne sera jamais exécutée puisque leurs
-continuation ont été altérées.
+continuations ont été altérées.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -3655,13 +3651,13 @@ continuation ont été altérées.
 \end{figure}
 
 Finalement, une coroutine peut changer sa continuation de manière plus
-drastique en forçant la terminaison du fil d'exécution de celle-ci en
-utilisant la fonction \scheme{(terminate-corout <return-val>)}. La
+drastique en forçant la terminaison du fil d'exécution de celle-ci
+grâce à la fonction \scheme{(terminate-corout <return-val>)}. La
 valeur de retour de la coroutine spécifiée en paramètre est conservée
-dans la structure de donnée de la coroutine et peut être obtenue en
+dans la structure de données de la coroutine et peut être obtenue en
 faisant appel à la fonction \scheme{(corout-get-result <corout>)}. Il
-est aussi possible de faire terminer le système actuel de coroutine,
-au complet, en faisant appel à \scheme{(kill-all!  <return-val>)}. La
+est aussi possible de complètement terminer le système actuel de
+coroutines en faisant appel à \scheme{(kill-all!  <return-val>)}. La
 valeur de retour finale de l'exécution du système sera alors la valeur
 spécifiée.
 
@@ -3670,8 +3666,9 @@ spécifiée.
 \subsection{Environnement dynamique}
 Une certaine introspection est très utile pour un programmeur, surtout
 pour des fins de déboggage.  Un environnement dynamique est disponible
-pour les coroutines, lors de leurs exécution. Cet environnement donne
-accès à de l'information sur ce dernier. il comprend les paramètres:
+pour les coroutines lors de leurs exécutions. Cet environnement donne
+accès à de l'information sur le système de coroutine en cours
+d'exécution. Il comprend les paramètres:
 
 \begin{itemize}
 \item \scheme{(current-corout)} : retourne l'instance de la coroutine
@@ -3679,7 +3676,7 @@ accès à de l'information sur ce dernier. il comprend les paramètres:
 
 \item \scheme{(timer)} : retourne l'objet d'abstraction du temps
   associé avec le système courant. La valeur actuelle du temps peut
-  être obtenue en appellent plutôt la fonction
+  être obtenue en appelant plutôt la fonction
   \scheme{(current-sim-time)}.
 \end{itemize}
 
@@ -3688,7 +3685,7 @@ accès à de l'information sur ce dernier. il comprend les paramètres:
 \subsection{Système de communication inter-coroutines}
 Que ce soit afin d'informer une partie du score d'un autre joueur ou
 d'un vaisseau spatial attendant le bon moment pour effectuer son
-déplacement la synchronisation des entités d'un jeu est primordiale.
+déplacement, la synchronisation des entités d'un jeu est primordiale.
 Le mécanisme principal de synchronisation des coroutines pour ce
 système est basé sur le passage de messages, tel que fait dans le
 système de programmation distribué Termite~\cite{Termite_paper}. Cette
@@ -3712,7 +3709,7 @@ fonctions distinctes et une forme spéciale:
   premier message qui retourne vrai selon le prédicat spécifié. Le
   prédicat doit prendre un seul argument, un message reçu. Comme pour
   la fonction \scheme{?}, l'attente bloquante peut être interrompue
-  après un délai de temps, si ce dernier est spécifié.
+  après un délai, si ce dernier est spécifié.
 
 \item \scheme{(recv (<pattern> <body>) ...)} : Cette forme spéciale
   permet la réception sélective de messages selon des patrons de
@@ -3727,10 +3724,10 @@ fonctions distinctes et une forme spéciale:
   l'ordre de spécification des motifs est important et significatif.
 \end{itemize}
 
-Les valeurs de délai d'attente maximal spécifié pour la réception de
-messages implique qu'il est possible qu'une réception échoue. Dans un
-tel cas, une exception de type \scheme{mailbox-timeout-exception} est
-lancée par la fonction de réception utilisée.
+Les valeurs de délai d'attente maximale spécifiées pour la réception
+de messages impliquent qu'il est possible qu'une réception échoue. Dans
+un tel cas, une exception de type \scheme{mailbox-timeout-exception}
+est lancée par la fonction de réception utilisée.
 
 Les patrons utilisés dans le filtrage de motifs de la forme spéciale
 \scheme{recv} diffèrent de ceux dans Termite. Ici, le patron doit être

@@ -2702,7 +2702,7 @@ méthode définie en dernier qui sera utilisée.
 
 Finalement, il est possible d'utiliser un \textit{cast} pour effectuer
 l'appel spécifiquement désiré. La syntaxe d'utilisation est la
-suivante: \scheme{(<genfun> cast: (<arg1-ty> ...) <arg1> ...)}Le
+suivante: \scheme{(<genfun> cast: (<arg1-ty> ...) <arg1> ...)}. Le
 \textit{cast} est passé comme mot clé dans l'appel de la fonction
 générique et son argument doit être une liste des types de l'instance
 à choisir. Un exemple d'utilisation du \textit{cast} est illustré dans
@@ -2742,7 +2742,7 @@ est finalement retourné.
      \schemeresult{\textless container-instance ... \textgreater}
   \end{schemecode}
   \caption{Exemple d'utilisation de \textit{cast} pour l'appel de
-    fonctions génériques.}
+    fonction générique}
   \label{OO:cast}
 \end{figure}
 
@@ -2750,7 +2750,7 @@ est finalement retourné.
 \FloatBarrier
 \subsection{Fonctions et formes spéciales utilitaires}
 Plusieurs fonctions et formes spéciales utilitaires sont disponibles
-afin de simplifier les tâches répétitives ou bien de permettre une
+afin de simplifier les tâches répétitives ou de permettre une
 introspection limitée avec le système objets. On retrouve plusieurs
 fonctions permettant d'obtenir de l'information sur les types
 d'instances ou de classes. Parmi celles-ci, les principales sont:
@@ -2758,18 +2758,18 @@ d'instances ou de classes. Parmi celles-ci, les principales sont:
 \begin{enumerate}
 \item \scheme{(instance-of? <any-value> <class-name>)} : Prédicat
   similaire au mot clé de même nom en Java qui détermine si la valeur
-  passée est une instance de la classe spécifiée. Ce prédicat retourne
-  vrai si et seulement si cette valeur est une instance directe (et
-  non polymorphe) de cette classe. Cette fonction est donc beaucoup
-  plus efficace que sa contrepartie \scheme{is-subclass?}.
+  passée est une instance directe de la classe spécifiée. Cette
+  fonction est beaucoup plus efficace que sa contrepartie
+  \scheme{is-subclass?}.
 
 \item \scheme{(is-subclass? <any-value> <class-name>)} : Prédicat
   similaire au précédent, qui retourne vrai si et seulement si la
-  valeur est une instance (incluant les instance polymorphes) de la
-  classe spécifiée.
+  valeur est une instance de la classe spécifiée (incluant les
+  instance polymorphes).
 
 \item \scheme{(find-class? <class-name>)} : Retourne le descripteur de
-  la classe spécifiée si elle existe, ou \scheme{\#f} sinon.
+  la classe spécifiée si elle existe, ou dans le cas contraire
+  \scheme{\#f}.
 
 \item \scheme{(get-class-id <any-value>)} : Retourne le nom de la
   classe associée à la valeur spécifiée. S'il s'agit d'une instance de
@@ -2780,35 +2780,33 @@ d'instances ou de classes. Parmi celles-ci, les principales sont:
   les super classes associées à la classe spécifiée.
 \end{enumerate}
 
-Ainsi, l'introspection demeure limitée en comparaison à celle rendue
+Ainsi, l'introspection demeure limitée en comparaison à celle
 disponible par le protocole de méta objet de CLOS, mais elle demeure
 tout de même fonctionnelle. Une meilleure introspection permettrait de
 développer des classes encore plus génériques, mais cette
 fonctionnalité n'est pas nécessaire pour le développement de jeu.
 
-
 D'autre part, trois formes spéciales sont fournies pour simplifier les
-tâches répétitives pour la gestions d'instances de classes. Celles-ci
+tâches répétitives pour la gestion d'instances de classe. Celles-ci
 sont:
 
 \begin{itemize}
 \item \scheme{(new <class-name> <value1> ...)} : Forme spéciale créant
   une nouvelle instance non-initialisée et appelant la fonction
   générique d'initialisation \scheme{init!} avec cette nouvelle
-  instance et les valeur actuelles spécifiées.
+  instance et les valeurs actuelles spécifiées.
 
 \item \scheme{(update! <instance> <class-name> <slot-name> <fun>)} :
   Cette forme spéciale permet de modifier la valeur d'un attribut en
   fonction de sa valeur précédente. La fonction passée doit prendre un
   seul argument en paramètre, qui est la valeur courante de cet
   attribut. La valeur retournée par la fonction sera alors utilisée
-  comme nouvelle valeur de cet attribut.
+  comme nouvelle valeur de celui-ci.
 
 \item \scheme{(set-fields! <instance> <class-name> ((<slot-name>
   <value>) ...))} : Cette forme spéciale permet de modifier de manière
   plus concise la valeur de plusieurs attributs en même temps. Elle
-  est entre autres très utile dans l'écriture de constructeurs
-  d'instances.
+  est utile dans l'écriture de constructeurs d'instances.
 \end{itemize}
 
 La figure \ref{OO:specform} illustre un exemple d'utilisation de ces
@@ -2828,7 +2826,7 @@ formes spéciales.
   (point-x p)) => \schemeresult{2}
   \end{schemecode}
   \caption{Exemple d'utilisation des formes spéciales fournies par le
-    système objets.}
+    système objets}
   \label{OO:specform}
 \end{figure}
 
@@ -2837,29 +2835,29 @@ formes spéciales.
 \FloatBarrier
 \section{Implantation}
 Afin d'implanter ce système objets comme une extension directe du
-langage \Schemelang, les macros \Schemelang ont dû être utilisées. Il
-en résulte donc en l'ajout d'un langage spécifique au domaine de la
+langage \Schemelang, les macros procédurales ont dû être utilisées. Il
+en résulte donc l'ajout d'un langage spécifique au domaine de la
 programmation orientée objet.
 
 Puisque l'expansion de macros \Schemelang se fait lors de la
-compilation, il devient très avantageux de faire le plus de travail
+compilation, il devient avantageux de faire le plus de travail
 possible durant cette expansion afin d'obtenir de bonnes performances
 lors de l'exécution. Par contre, afin d'effectuer beaucoup de travail
-lors de cette expansion, beaucoup d'informations doivent être
-disponibles de manière statique, ce qui brime la philosophie dynamique
-du système objets. Ainsi, nous avons opté pour un compromis entre la
-division du travail effectué lors de la compilation et de celui fait
-lors de l'exécution du système d'objets.
+lors de cette expansion, une grande quantité d'informations doivent
+être disponibles de manière statique, ce qui brime la philosophie
+dynamique du système objets. Ainsi, nous avons opté pour un compromis
+entre la division du travail effectué lors de la compilation et de
+celui fait lors de l'exécution du système d'objets.
 
 De plus, les informations recueillies lors de l'expansion macro sont
-souvent nécessaire au fonctionnement du système lors de son exécution
-et donc, un passage d'informations entre ces deux mondes doit être
-fait. Afin d'y arriver, les structures correspondantes (descripteurs
-de classes, descripteurs de fonction génériques, etc...) sont recréés
-durant l'exécution. Afin de faire plus facilement la distinction entre
-ces deux types de structures, les préfixes \scheme{mt} (\textit{macro
-  expansion time} et \scheme{rt} (\textit{runtime}) sont utilisés dans
-le code source.
+souvent nécessaires au fonctionnement du système lors de son
+exécution.  Un passage d'informations entre ces deux mondes doit donc
+être fait. Afin d'y arriver, les structures correspondantes
+(descripteurs de classes, descripteurs de fonctions génériques,
+etc...)  sont recréées durant l'exécution. Pour distinguer plus
+facilement ces deux types de structures, les préfixes \scheme{mt}
+(\textit{macro expansion time} et \scheme{rt} (\textit{runtime}) sont
+utilisés dans le code source.
 
 Les sections qui suivent expliquent les grandes lignes de
 l'implantation de ce système objets et justifient les choix
@@ -2870,21 +2868,21 @@ d'implantations qui ont dû être faits.
 \subsection{Implantation de define-class}
 Le fonctionnement de \scheme{define-class} est intimement lié aux
 structures de données utilisées pour conserver l'information sur les
-classes afin de transmettre celle-ci aux instances. L'expansion de la
+classes afin de transmettre celles-ci aux instances. L'expansion de la
 forme spéciale \scheme{define-class} résulte en la définition de
 plusieurs fonctions de création et d'accès aux données d'instances,
 mais aussi en la création d'un \emph{descripteur de classe}. Ce
-dernier à pour rôle de conserver non seulement les super classes
+dernier a pour rôle de conserver non seulement les super classes
 associées à la classe définie, mais aussi de conserver l'information
 permettant d'accéder aux attributs d'une instance. Les descripteurs de
 classes utilisés durant l'exécution sont une version légèrement
-simplifié des descripteurs utilisés durant l'expansion de macro.
+simplifiée des descripteurs utilisés durant l'expansion de macros.
 
 Le polymorphisme d'accès aux attributs d'instances est possible grâce
 à une indirection à partir de ce descripteur de classe. Malgré le fait
 qu'une telle indirection ralentie légèrement l'accès aux attributs,
 cette dernière permet aussi d'avoir des instances qui ne possèdent pas
-de d'espaces inutilisés. Ainsi, des index donnant l'emplacement des
+d'espaces inutilisés. Ainsi, des index donnant l'emplacement des
 attributs dans les instances sont conservés dans les descripteurs de
 classes. Puisque l'héritage multiple est permis, ces index peuvent
 varier d'une sous-classe à l'autre. Il en résulte donc que ces index
@@ -2925,23 +2923,21 @@ les structures utilisées lors de l'exécution du système. La figure
   \label{OO:classdesc}
 \end{figure}
 
-Il aurait été possible de faire en sorte que ces indexes soit toujours
+Il aurait été possible de faire en sorte que ces index soient toujours
 au même endroit pour une hiérarchie de classe donnée, mais nous avons
-simplifier le problème dans notre implantation de la manière suivante:
-les index d'indirection se retrouvent au même endroit dans le
-descripteur de classe, peu importe la classe. La conséquence de cette
-simplification est que la taille des nouveaux descripteurs de classes
-augmente linéairement en fonction du nombre d'attributs qui ont été
-définis pour les classes précédemment définies. Une autre possibilité
-aurait été de toujours placer les attributs au même endroit dans les
-instances. Puisqu'en général peu de classe sont définies en
+simplifié le problème dans notre implantation. En effet, les index
+d'indirection se retrouvent au même endroit dans le descripteur de
+classe, peu importe la classe. La conséquence de cette simplification
+est que la taille des nouveaux descripteurs de classe augmente
+linéairement en fonction du nombre d'attributs qui ont été déclarés
+pour les classes précédemment définies. Une autre possibilité aurait
+été de toujours placer les attributs au même endroit dans les
+instances. Puisqu'en général peu de classes sont utilisées en
 comparaison à la quantité d'instances créées, le choix effectué est un
 bon compromis entre l'utilisation de la mémoire et la rapidité d'accès
-aux attributs. 
-
-Ces structures de données sont implantées en utilisant des vecteurs
-\Schemelang. Ceux-ci ont été choisis dans le but de donner un accès rapide
-aux attributs de ces derniers.
+aux attributs. Ces structures de données sont implantées en utilisant
+des vecteurs \Schemelang. Ceux-ci ont été choisis dans le but de
+donner un accès rapide aux attributs.
 
 Lorsque la forme spéciale \scheme{define-class} est expansée,
 plusieurs informations sont extraites et traitées afin de générer
@@ -2950,63 +2946,34 @@ autres, il faut obtenir la liste complète de tous les attributs
 hérités par les classes parents à la classe définie. Cette information
 est stockée dans une table de hachage globale à l'expansion macro
 nommée \scheme{mt-class-table} qui conserve l'information disponible
-pour chaque classe déjà créées. Cette information, stockée sous forme
-de \emph{méta descripteurs de classes}, n'est disponible que pour
-l'expansion macro. Ces descripteurs gardent trace du nom des classes
-créées, de leurs hiérarchie et des positions relatives aux
-descripteurs de classes de l'exécution indiquant où trouver les
-indexes d'indirection associés à leurs attributs.
+pour chaque classe déjà créée. Cette information, stockée sous forme
+de méta descripteurs de classe, n'est disponible que pour l'expansion
+macro. Ces descripteurs gardent une trace du nom des classes créées,
+de leur hiérarchie et une liste de positions relatives aux
+descripteurs de classes présents durant l'exécution. Ces positions
+relatives indiquent où trouver les index d'indirection associés à
+leurs attributs.
 
-Lorsque les nouveaux attributs (attributs non-hérités) sont inclus
-dans descripteurs de classe de l'exécution, un compteur global
-(expansion macro) est utilisé pour obtenir la position du nouveau
-champs dans le vecteur correspondant à ce descripteur. Une fois toutes
-les positions déterminées, la génération du descripteur de classe de
-l'exécution peut être entamée. Un deuxième index, local celui-ci, sera
-utilisé pour trouvé l'index d'indirection des attributs dans
-l'instance. Ainsi, l'index global pointe vers l'endroit où placer
-l'index d'indirection des attributs d'instance dans le descripteur de
-classe de l'exécution et les index d'indirection eux indiquent où
-trouver les attributs dans les instances. La création du descripteur
-de classe utilisé durant l'exécution. La variable
-\scheme{field-indices} est une structure de donnée contenant
-l'information sur les attributs (nom, type, position globale dans le
-descripteur de classe).
-
-\begin{figure}[htb!]
-  \begin{schemecode}
-(let* ((instance-index 1) ; 0 -> class-desc
-       (desc (make-class-desc
-              name supers
-              (if (pair? field-indices)
-                  (- (slot-index
-                      (cdar (take-right field-indices 1)))
-                     1)
-                  0))))
-  (for-each
-   (lambda (fi)
-     (let ((index (slot-index fi)))
-       (cond ((is-instance-slot? fi)
-              (vector-set! desc index (instance-index++)))
-             ((is-class-slot? fi)
-              (vector-set! desc index 'unbound-class-slot))
-             (else
-              (error "Unknown slot type")))))
-   (map cdr field-indices))
-  desc)
-  \end{schemecode}
-  \caption{Création du descripteur de classe}
-  \label{OO:classdesc-code}
-\end{figure}
+Lorsque les nouveaux attributs (non-hérités) sont inclus dans un
+descripteur de classe de l'exécution, un compteur global (expansion
+macro) est utilisé pour obtenir la position du nouveau champs dans le
+vecteur correspondant à ce descripteur. Une fois toutes les positions
+déterminées, la génération du descripteur de classe de l'exécution
+peut être entamée. Un deuxième index, local celui-ci, est utilisé pour
+trouvé l'index d'indirection des attributs dans l'instance. Ainsi,
+l'index global pointe vers l'endroit où placer l'index d'indirection
+des attributs d'instance dans le descripteur de classe de l'exécution.
+Pour leurs parts, les index d'indirection indiquent où trouver les
+attributs dans les instances. 
 
 Une fois cette information en main, toutes les fonctions d'accès et de
-modification d'attributs peuvent être générées sans problèmes. La
+modification d'attributs peuvent être générées sans problème. La
 plupart contiendront des indirections pour l'accès aux champs, sauf
-pour les attributs de classes qui eux, se retrouvent directement dans
-les descripteurs de classes. La figure \ref{OO:slot-access} donne un
+pour les attributs de classe qui eux, se retrouvent directement dans
+les descripteurs de classe. La figure \ref{OO:slot-access} donne un
 exemple concret de code généré effectuant l'accès au champs \scheme{x}
 de la classe \scheme{point} définie dans la figure
-\ref{OO:obj-struct}. Au total, trois indirection sont nécessaire à
+\ref{OO:obj-struct}. Au total, trois indirections sont nécessaires à
 l'obtention de la valeur d'un attribut d'instance. La première
 indirection obtient le descripteur de classe de l'instance en
 question. La deuxième cherche dans ce descripteur l'index
@@ -3031,21 +2998,21 @@ l'indirection sur l'instance.
 \end{figure}
 
 Deux constructeurs d'instances sont aussi générés. Le premier
-constructeur (\scheme{make-<class-name>}) construit et initialise
-\emph{tous} les champs d'une instance de la même manière que procède
-le constructeur d'instance pour la forme \scheme{define-type} de
-Gambit-C. Le deuxième (\scheme{make-<class-name>-instance}) ne prend
-aucun argument et produit une instance non-initialisée qui pourra être
-passée à \scheme{init!}, la fonction générique d'initialisation
-d'objets. Par défaut, une instance de cette fonction générique est
-créée, et fait exactement le même travail que le premier
-constructeur. Aussi, une fonction très rudimentaire d'introspection
-d'instance de classe est aussi implantée sous la forme d'instances de
-la fonction générique \scheme{describe}.
+(\scheme{make-<class-name>}) construit et initialise \emph{tous} les
+champs d'une instance de la même manière que procède le constructeur
+d'instance pour la forme \scheme{define-type} de Gambit-C. Le deuxième
+(\scheme{make-<class-name>-instance}) ne prend aucun argument et
+produit une instance non-initialisée qui pourra être passée à
+\scheme{init!}, la fonction générique d'initialisation d'objets. Par
+défaut, une instance de cette fonction générique est créée, et fait
+exactement le même travail que le premier constructeur. De plus, une
+fonction très rudimentaire d'introspection d'instance de classe est
+implantée sous la forme d'instances de la fonction générique
+\scheme{describe}.
 
-Les choix d'implantation qui viennent d'être énumérés ont été fait
+Les choix d'implantation qui viennent d'être énumérés ont été faits
 dans le but d'obtenir un compromis entre la rapidité du système et la
-puissance expressive qu'il donne accès. Par exemple, on constate
+puissance expressive auquel il donne accès. Par exemple, on constate
 qu'une indirection est faite sur une instance afin d'obtenir son
 descripteur de classe, tandis qu'un pointeur vers ce descripteur de
 classe aurait pu être placé directement (voir la figure
@@ -3054,23 +3021,24 @@ directement dans la fonction d'accès \scheme{point-x}, il n'aurait
 alors plus été possible de l'utiliser de manière polymorphique avec
 les sous-classes de la classe \scheme{point} puisqu'il n'est pas
 certain que l'attribut \scheme{x} se retrouvera au même endroit dans
-une instance de ces sous-classes. Puisqu'un accès au champs d'un
-vecteur est une opération efficace en \Schemelang, nous avons préféré opté
-pour la présence du polymorphisme qui apporte beaucoup en terme de
-puissance expressive.
+une instance de ces sous-classes. Puisqu'un accès aux champs d'un
+vecteur est une opération efficace en \Schemelang, nous avons préféré
+opter pour la présence du polymorphisme qui apporte beaucoup en termes
+d'expressivité.
 
 Puisque le système objets est implanté en utilisant l'expanseur de
-macro \scheme{define-macro} de Gambit-C, les données conservées sur
+macros \scheme{define-macro} de Gambit-C, les données conservées sur
 les classes définies durant cette expansion sont perdues lorsque
-l'expansion est terminée. Il en résulte ainsi qu'il n'est pas possible
-de modifier la hiérarchie de classe définie dans un module \Schemelang (un
-fichier) dans un autre module. Par exemple, une classe \scheme{Alpha}
-définie dans un fichier \scheme{A} ne pourrait pas être sous-classée
-dans un autre fichier \scheme{B}. Toutefois, il est possible de créer
-et d'utiliser les hiérarchies de classes créées dans un autre
-module. L'implantation du support intermodulaire du système objets n'a
-pas été abordé dû à la complexité de la tâche et à la potentielle
-baisse de performance qui pourrait être apporté par un tel support.
+celle-ci est terminée. Par conséquent, il n'est pas possible de
+modifier la hiérarchie de classe définie dans un module \Schemelang
+(un fichier) à l'intérieur d'un autre module. Par exemple, une classe
+\scheme{Alpha} définie dans un fichier \scheme{A} ne pourrait pas être
+sous-classée dans un autre fichier \scheme{B}. Toutefois, il est
+possible d'utiliser les hiérarchies de classes créées dans un premier
+module à l'intérieur d'un autre module. L'implantation du support
+intermodulaire du système objets n'a pas été abordée dû à la
+complexité de la tâche et à la potentielle baisse de performance qui
+pourrait découler d'un tel ajout.
 
 \FloatBarrier
 \subsection{Implantation de define-generic}
@@ -3082,24 +3050,24 @@ seront par la suite transférées vers l'exécution du programme sous la
 forme de structures propres à chaque fonctions génériques qui se
 nomment \scheme{<genfun-name>-meth-table}. Ces structures contiennent
 le nom de la fonction générique, une table de hachage permettant de
-vérifier rapidement l'existence d'une instance en utilisant le type
-des arguments de cette fonction générique comme clé de la table et une
-liste \emph{triée} des instances permettant d'accélérer le
-polymorphisme de fonction génériques.
+vérifier rapidement l'existence d'une instance et une liste
+\emph{triée} des instances permettant d'accélérer le polymorphisme de
+fonctions génériques. La clé de cette table de hachage est basée sur
+le type des arguments de l'instance stockée.
 
 L'expansion de la définition d'une nouvelle fonction générique résulte
-donc en la création de cette structure et en la création d'une
-fonction, portant le nom de la fonction générique, qui a pour but de
-faire le choix de la bonne instance, en fonction des paramètres qui
-lui sont passés. La fonction de \textit{dispatch} générée pour la
-fonction générique \scheme{init!} est illustrée dans la figure
-\ref{OO:init!-gf}. Le code présenté a été légèrement modifié afin
-d'illustrer uniquement l'essence du \textit{dispatch} effectué. On
-constate que dans un premier temps, on cherche dans la table de
-hachage de cette fonction générique si une instance associée aux types
-des arguments passés (ou du \textit{cast} effectué) existe, et si ce
-ne pas le cas, on cherche explicitement une instance admissible de
-manière polymorphe à ces arguments.
+donc en la création de cette structure et d'une fonction portant le
+nom de la fonction générique, qui a pour but de faire le choix de la
+bonne instance à partir des paramètres qui lui sont passés. La
+fonction de \textit{dispatch} générée pour la fonction générique
+\scheme{init!} est illustrée dans la figure \ref{OO:init!-gf}. Le code
+présenté a été légèrement modifié afin d'illustrer uniquement
+l'essence du \textit{dispatch} effectué. On constate que dans un
+premier temps, on cherche dans la table de hachage de cette fonction
+générique si une instance associée aux types des arguments passés (ou
+du \textit{cast} effectué) existe. Si ce ne pas le cas, on cherche
+explicitement une instance admissible de manière polymorphe à ces
+arguments.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -3120,8 +3088,8 @@ manière polymorphe à ces arguments.
 \end{figure}
 
 
-L'algorithme qui détermine qu'elle instance est la plus spécifique
-pour un ensemble d'argument donné est simple: On cherche a trouver la
+L'algorithme qui détermine quelle instance est la plus spécifique pour
+un ensemble d'argument donné est simple: on cherche à trouver la
 première instance dont chacun des types est considéré équivalent au
 type des arguments actuels \emph{dans une liste triée} des instances
 en fonction de leur spécificité. Le critère de spécificité est
@@ -3129,9 +3097,10 @@ déterminé par la profondeur dans la hiérarchie du type des arguments
 de l'instance, \ie par la somme du nombre de classes parents pour
 chacun des types des arguments passés. En ce qui concerne les types
 spéciaux comme \scheme{match-value}, ces types sont considérés comme
-étant très spécifiques et donc prioritaires à un simple correspondance
-du type d'un objet. La figure \ref{OO:polymorphism} illustre le code
-utilisé pour réaliser ce \textit{dispatch} polymorphique.
+étant très spécifiques et donc prioritaires à une simple
+correspondance du type d'un objet. La figure \ref{OO:polymorphism}
+illustre le code utilisé pour réaliser ce \textit{dispatch}
+polymorphique.
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -3154,53 +3123,51 @@ utilisé pour réaliser ce \textit{dispatch} polymorphique.
 implantée en utilisant le mécanisme de variables à portée dynamique de
 Gambit-C. Par contre, l'exécution du corps des méthodes à l'intérieur
 d'un environnement dynamique ralentissait l'exécution de celles-ci
-d'un facteur d'environ 15\% et donc, l'implantation de la fonction
-\scheme{call-next-method} a été abandonnée. En effet, cette fonction
-permet d'écrire des corps de méthodes légèrement plus génériques, mais
-l'utilisation du \scheme{cast} permet de faire sensiblement le même
-travail sans avoir à subir des pertes de performances.
+d'un facteur d'environ 15\%. Par conséquent, l'implantation de cette
+fonction a été abandonnée. En effet, celle-ci permet d'écrire des
+corps de méthodes légèrement plus génériques, mais l'utilisation du
+\scheme{cast} permet de faire sensiblement le même travail sans avoir
+à subir des pertes de performance.
 
 \FloatBarrier
 \subsection{Implantation de define-method}
-L'expansion de la macro \scheme{define-method} est très simple, elle
-consiste en la création d'une structure de donnée qui contient le
-corps de l'instance définie, ainsi que les types associés aux
-arguments attendus. Cette structure existera durant l'expansion et
-sera recréée lors de l'exécution du programme afin d'être appelée par
-la fonction de \textit{dispatch}.
+L'expansion de la macro \scheme{define-method} consiste en la création
+d'une structure de donnée qui contient le corps de l'instance définie
+ainsi que les types associés aux arguments attendus. Cette structure
+existera durant l'expansion et sera recréée lors de l'exécution du
+programme afin d'être appelée par la fonction de \textit{dispatch}.
 
 
 \FloatBarrier
 \section{Performances} \label{OO:bench-sect}
-Ce système de programmation orienté objet a été écrit dans le but
-d'obtenir un compromis entre l'accès à des concepts de haut niveaux et
-de bonnes performances lors de l'exécution, notamment en ce qui à
-attrait à l'accès aux membres d'instances de classes.
+Ce système de programmation orienté objets a été écrit dans le but
+d'obtenir un compromis entre l'accès à des concepts de haut niveau et
+de bonnes performances lors de l'exécution, notamment en ce qui
+concerne l'accès aux membres d'instances de classes.
 
 Dans un premier temps, les performances du système sont analysées de
 manière théorique. Le tableau \ref{OO:complexity} donne la complexité
-algorithmiques des opérations utilisées. La création d'instances
-directe, \ie utilisant les fonctions \scheme{make-<class-name>},
-s'effectuent en temps constant puisqu'il ne s'agit que de la création
-d'un vecteur. Par contre, la création d'instances utilisant des
+algorithmique des opérations utilisées. La création d'instances
+directes, \ie utilisant les fonctions \scheme{make-<class-name>},
+s'effectue en temps constant puisqu'il ne s'agit que de la création
+d'un vecteur. Par contre, la création d'instances par des
 constructeurs, \ie en utilisant \scheme{(new <class-name> ...)},
 possède la complexité des appels de fonctions génériques directs. Par
-\og appel direct \fg, il est sous-entendu que le types des arguments
-de l'appel correspondent aux types attendu directement (et non de
-manière polymorphe) par une instance de fonction générique existante.
-Ces appels possèdent une complexité algorithmique linéaire en fonction
-du nombre de paramètres (appelons le $p$) que possède l'instance. En
-effet, l'obtention d'une instance directe est faite par l'entremise
-d'une recherche dans une table de hachage utilisant \scheme{equal?} à
-titre de comparaison. Cette complexité augmente d'un ordre
-supplémentaire lorsqu'aucune instance directe n'existe et qu'alors une
-instance polymorphique est recherchée puisque une recherche linéaire
-est effectuée sur chacune des instance existantes ($m$), puis la
-compatibilité du type des arguments doit être effectué ($p$). Il est
-intéressant de noter que malgré la complexité quadratique de cette
-opération, le nombre de paramètre ($p$) est normalement très bas.
-L'accès et la modification de membres de classe se fait toutefois de
-manière constante.
+\og appel direct \fg, il est sous-entendu que le type des arguments de
+l'appel correspond aux types des arguments formels, et non de manière
+polymorphe. Ces appels possèdent une complexité algorithmique linéaire
+en fonction du nombre de paramètres que possède l'instance (appelons
+le $p$). En effet, l'obtention d'une instance directe est faite par
+l'entremise d'une recherche dans une table de hachage utilisant
+\scheme{equal?} à titre de comparaison. Cette complexité augmente d'un
+ordre supplémentaire lorsqu'aucune instance directe n'existe et qu'une
+instance polymorphique est recherchée. En effet, une recherche
+linéaire est effectuée sur chacune des instances existantes ($m$),
+puis la compatibilité du type des arguments doit être effectué
+($p$). Il est intéressant de noter que malgré la complexité
+quadratique de cette opération, le nombre de paramètres ($p$) est
+normalement très bas.  L'accès et la modification de membres de classe
+se fait toutefois de manière constante.
 
 \begin{table}
   \center
@@ -3221,20 +3188,20 @@ manière constante.
   \label{OO:complexity}
 \end{table}
 
-Une comparaison pratique de performances a été effectués avec d'autres
-systèmes objets disponibles pour Gambit-C afin d'avoir une meilleure
-idée des constantes cachées dans la complexité des opération
-effectuées durant l'exécution. Il est aussi intéressant de comparer
-les performances du systèmes par rapports aux autres afin de confirmer
-l'obtention du résultat désiré. Ces résultats sont présentés dans le
-tableau \ref{OO:bench}. Ces derniers correspondent aux temps
-nécessaire à $500 000$ exécutions de chacunes des opérations
-principales du système objets. Les systèmes objets
-Meroon~\cite{MEROON}, OOPS~\cite{OOPS} ainsi que les objets obtenus
-avec l'utilisation de la forme spéciale \scheme{define-type} de
-Gambit-C ont été utilisés pour effectuer cette comparaison. Le tableau
-\ref{OO:bench-rel} présente ces résultats d'une manière relative au
-meilleur temps d'exécution du test pour chaque opération vérifiée.
+Une comparaison pratique de performance a été effectuée avec d'autres
+systèmes objets disponibles pour Gambit-C afin de mieux connaître les
+constantes cachées dans la complexité des opérations effectuées durant
+l'exécution. Il est aussi intéressant de comparer les performances du
+système par rapport aux autres afin de confirmer l'obtention du
+résultat désiré. Ces résultats sont présentés dans le tableau
+\ref{OO:bench}. Ces derniers correspondent aux temps nécessaires à $1
+000 000$ d'exécutions de chacune des opérations principales du système
+objets. Les systèmes objets Meroon~\cite{MEROON}, OOPS~\cite{OOPS}
+ainsi que les objets obtenus avec l'utilisation de la forme spéciale
+\scheme{define-type} de Gambit-C ont été utilisés pour effectuer cette
+comparaison. Le tableau \ref{OO:bench-rel} présente ces résultats
+d'une manière relative au meilleur temps d'exécution du test pour
+chaque opération vérifiée.
 
 \begin{table}
   \center
@@ -3242,17 +3209,18 @@ meilleur temps d'exécution du test pour chaque opération vérifiée.
     \hline
     Opération & define-type & Meroon & OOPS & class \\
     \hline \hline
-    création d'instances directe            & 0.005 & 0.215 & 1.423 & 0.007\\
-    création d'instances avec constructeurs & ND    & ND    & ND    & 2.173\\
-    accès aux membres                       & 0.006 & 0.126 & 3.120 & 0.014\\
-    modification de membres                 & 0.008 & 0.117 & 3.961 & 0.011\\
-    \textit{dispatch} direct                & 0.185 & 0.188 & 19.210 & 1.860\\
-    \textit{dispatch} polymorphique         & 0.213 & 0.773 & 18.995 & 5.786\\
+    Création d'instances directes           & 0.005 & 0.215 & 1.423 & 0.007\\
+    Création d'instances avec constructeurs & ND    & ND    & ND    & 2.173\\
+    Accès aux membres                       & 0.006 & 0.126 & 3.120 & 0.014\\
+    Modification de membres                 & 0.008 & 0.117 & 3.961 & 0.011\\
+    \textit{Dispatch} direct                & 0.185 & 0.188 & 19.210 & 1.860\\
+    \textit{Dispatch} polymorphique         & 0.213 & 0.773 & 18.995 & 5.786\\
     \hline
   \end{tabular}
-  \caption{Temps d'exécution (en secondes) de 1000000 itérations de
-    tests comparatifs sur les opérations du système de programmation
-    orientée objet développé avec d'autres systèmes objets existant}
+  \caption{Temps d'exécution (en secondes) de $1 000 000$ d'itérations
+    de tests comparatifs sur les opérations du système de
+    programmation orientée objets développé avec d'autres systèmes
+    objets existants}
   \label{OO:bench}
 \end{table}
 
@@ -3262,63 +3230,61 @@ meilleur temps d'exécution du test pour chaque opération vérifiée.
     \hline
     Opération & define-type & Meroon & OOPS & class \\
     \hline \hline
-    création d'instances directe & 1.0 & 43.0 & 284.6 & 1.4 \\
-    création d'instances avec constructeurs & ND & ND & ND & 1.0 \\
-    accès aux membres & 1.0 & 21.0 & 520.0 & 2.3 \\
-    modification de membres & 1.0 & 14.6 & 495.1 & 1.4 \\
-    \textit{dispatch} direct & 1.0 & 1.0 & 103.8 & 10.0 \\
-    \textit{dispatch} polymorphique & 1.0 & 3.6 & 89.1 & 27.1 \\
+    Création d'instances directes & 1.0 & 43.0 & 284.6 & 1.4 \\
+    Création d'instances avec constructeurs & ND & ND & ND & 1.0 \\
+    Accès aux membres & 1.0 & 21.0 & 520.0 & 2.3 \\
+    Modification de membres & 1.0 & 14.6 & 495.1 & 1.4 \\
+    \textit{Dispatch} direct & 1.0 & 1.0 & 103.8 & 10.0 \\
+    \textit{Dispatch} polymorphique & 1.0 & 3.6 & 89.1 & 27.1 \\
     \hline
   \end{tabular}
-  \caption{Comparaison de performances relative au système le plus
-    rapide (1.0) pour chaque opérations du système objets.}
+  \caption{Comparaison de performances relatives au système le plus
+    rapide (1.0) pour chaque opération du système objets.}
   \label{OO:bench-rel}
 \end{table}
 
 Ces résultats démontrent bien que les objectifs d'implantation ont été
-atteint. En effet, le système développé (\scheme{class}) offre de très
+atteints. En effet, le système développé (\scheme{class}) offre de
 bonnes performances quant à la création d'instances et la manipulation
-de membres de celles-ci. Malgré le fait que le système est environ une
+des membres de celles-ci. Malgré le fait que le système est environ un
 ordre de grandeur plus lent que le système Meroon pour effectuer le
-\textit{dispatch} dynamique de fonctions génériques, ce dernier offre
-beaucoup plus d'expressivité dont l'utilisation de constructeurs ou
-encore de discrimination sur des valeurs. Ainsi, le système développé
-en plus d'offrir plusieurs concepts de hauts niveau quant à la
-programmation orientée objet, se compare très bien aux autres systèmes
-d'objets performants disponibles pour Gambit-C.
+\textit{dispatch} dynamique de fonctions génériques, celui-ci offre
+beaucoup plus d'expressivité dont l'utilisation de constructeurs ou de
+discrimination sur des valeurs. Ainsi, le système développé offre
+plusieurs concepts de haut niveau quant à la programmation orientée
+objets et se compare aux autres systèmes d'objets performants
+disponibles pour Gambit-C.
 
 \FloatBarrier
 \section{Conclusion}
 Ainsi un système objets complet a été développé dans le but d'étendre
 le langage \Schemelang et d'y inclure le paradigme de la programmation
-orientée objet. Ce système objets permet la déclaration de classes avec
+orientée objets. Ce système objets permet la déclaration de classes avec
 héritage multiple, polymorphisme et fonctions génériques effectuant du
 \textit{dispatch} multiple. Ces choix de caractéristiques ont été
 faits dans le but de donner le plus de liberté aux programmeurs de
 jeux vidéo, tout en fournissant de bonnes performances, tant en temps
 sur processeur qu'en utilisation de la mémoire.
 
-Pour y arriver, les structures de données utilisées pour
-l'implantation d'instances de classes ne possèdent pas d'espaces
-inutilisés, et ne requièrent que trois indirection vectorielles afin
-d'accéder aux champs de celles-ci. De même, les fonctions génériques
-utilisent des mécanismes de tri pré-calculé afin d'accélérer le
-\textit{dispatch} d'instances de fonctions génériques de manière
-polymorphe.
+Dans ce but, les structures de données utilisées pour l'implantation
+d'instances de classe ne possèdent pas d'espaces inutilisés et ne
+requièrent que trois indirections vectorielles afin d'accéder aux
+champs de celles-ci. De même, les fonctions génériques utilisent des
+mécanismes de tri pré-calculé afin d'accélérer le \textit{dispatch}
+d'instances de fonctions génériques de manière polymorphe.
 
-Il serait maintenant très intéressant de modifier le système afin
-qu'il supporte un protocole de méta objets. Un tel protocole donnerait
-accès à une introspection très développée et permettrait aux
-utilisateurs de modifier le comportement du système selon leurs
-besoins.
+Il serait maintenant intéressant de modifier le système afin qu'il
+supporte un protocole de méta objets. Un tel protocole donnerait accès
+à une introspection très développée et permettrait aux utilisateurs de
+modifier le comportement du système selon leurs besoins.
 
 Aussi, une modification du système afin de le rendre compatible avec
 des classes de manière inter-modulaire serait une grande amélioration
-en ce qui a attrait à la modularité du code.
+en ce qui concerne la modularité du code.
 
 Par contre, une attention particulière devrait être portée aux coûts
 en performance que ces modifications pourraient impliquer afin de
-respecter la philosophie de base de ce système.
+respecter la philosophie de base de ce système objets.
 
 \clearpage
 

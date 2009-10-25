@@ -3182,7 +3182,7 @@ se fait toutefois de manière constante.
     opération & complexité algorithmique \\
     \hline \hline
     création d'instances directe & $O(1)$\\
-    création d'instances avec constructeurs & $O(p)$\\
+    création avec constructeurs & $O(p)$\\
     accès aux membres & $O(1)$ \\
     modification de membres & $O(1)$ \\
     \textit{dispatch} direct & $O(p)$\\
@@ -3202,12 +3202,13 @@ système par rapport aux autres afin de confirmer l'obtention du
 résultat désiré. Ces résultats sont présentés dans le tableau
 \ref{OO:bench}. Ces derniers correspondent aux temps nécessaires à $1
 000 000$ d'exécutions de chacune des opérations principales du système
-objets. Les systèmes objets Meroon~\cite{MEROON}, OOPS~\cite{OOPS}
-ainsi que les objets obtenus avec l'utilisation de la forme spéciale
-\scheme{define-type} de Gambit-C ont été utilisés pour effectuer cette
-comparaison. Le tableau \ref{OO:bench-rel} présente ces résultats
-d'une manière relative au meilleur temps d'exécution du test pour
-chaque opération vérifiée.
+objets sur un processeur unique de fréquence 1,6 Go ayant 1 Go de
+mémoire centrale. Les systèmes objets Meroon~\cite{MEROON},
+OOPS~\cite{OOPS} ainsi que les objets obtenus avec l'utilisation de la
+forme spéciale \scheme{define-type} de Gambit-C ont été utilisés pour
+effectuer cette comparaison. Le tableau \ref{OO:bench-rel} présente
+ces résultats d'une manière relative au meilleur temps d'exécution du
+test pour chaque opération vérifiée.
 
 \begin{table}
   \center
@@ -3216,7 +3217,7 @@ chaque opération vérifiée.
     Opération & define-type & Meroon & OOPS & class \\
     \hline \hline
     Création d'instances directes           & 0.005 & 0.215 & 1.423 & 0.007\\
-    Création d'instances avec constructeurs & ND    & ND    & ND    & 2.173\\
+    Création avec constructeurs             & ND    & ND    & ND    & 2.173\\
     Accès aux membres                       & 0.006 & 0.126 & 3.120 & 0.014\\
     Modification de membres                 & 0.008 & 0.117 & 3.961 & 0.011\\
     \textit{Dispatch} direct                & 0.185 & 0.188 & 19.210 & 1.860\\
@@ -3237,7 +3238,7 @@ chaque opération vérifiée.
     Opération & define-type & Meroon & OOPS & class \\
     \hline \hline
     Création d'instances directes & 1.0 & 43.0 & 284.6 & 1.4 \\
-    Création d'instances avec constructeurs & ND & ND & ND & 1.0 \\
+    Création avec constructeurs & ND & ND & ND & 1.0 \\
     Accès aux membres & 1.0 & 21.0 & 520.0 & 2.3 \\
     Modification de membres & 1.0 & 14.6 & 495.1 & 1.4 \\
     \textit{Dispatch} direct & 1.0 & 1.0 & 103.8 & 10.0 \\

@@ -903,7 +903,7 @@ les extensions au langage fournies par Gambit-C.
 Les langages de la famille \lisp adoptent une notation préfixe
 parenthésée. Il en résulte que la syntaxe du langage est consistante
 et simple. La figure \ref{Scheme:simple-ex} illustre un exemple simple
-de calcul arithmétique.
+de calcul arithmétique.\\
 
 \begin{figure}[htb]
   \begin{schemecode}
@@ -937,7 +937,7 @@ spécifier des données dont certaines parties peuvent être évaluées à
 l'aide de la forme spéciale \scheme{unquote}. Les formes spéciales
 \scheme{quote}, \scheme{quasiquote} et \scheme{unquote} peuvent être
 aussi utilisées en utilisant les caractères respectifs \scheme{'},
-\scheme{`} et \scheme{,}.
+\scheme{`} et \scheme{,}.\\
 
 \begin{figure}[htb]
   \begin{schemecode}
@@ -968,7 +968,7 @@ fonctions standards de création et d'utilisation. Entre autres, la
 forme spéciale \scheme{lambda} permet la création de fermetures telles
 qu'elles existent dans le lambda calcul. La figure
 \ref{Scheme:basic-ex} illustre l'utilisation des quelques-uns parmi
-ces types de base.
+ces types de base.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1014,7 +1014,7 @@ fonctionnels. La figure \ref{FIG:lambda-calcul} illustre la définition
 de la fonction \scheme{flip}. Cette dernière reçoit en paramètre une
 fonction \scheme{f} et deux valeurs (\scheme{y} et \scheme{x}) et
 s'occupe d'appliquer la fonction reçue aux paramètres dans l'ordre
-inverse.
+inverse.\\
 
 \begin{figure}[htb!]
   \center
@@ -1039,7 +1039,7 @@ lequel elles se trouvaient lors de leur création. Cette capacité de
 retenir l'environnement est très puissante et permet l'utilisation de
 fermeture comme structure de données. Par exemple, la figure
 \ref{Scheme:lambda-pairs} illustre l'implantation de paires similaires
-à celles retrouvées dans \Schemelang en lambda calcul.
+à celles retrouvées dans \Schemelang en lambda calcul.\\
 
 \begin{figure}[htb]
   \center
@@ -1082,7 +1082,7 @@ chacun des éléments de la liste passée comme deuxième paramètre. La
 deuxième fonction est une version \Schemelang de \scheme{flip}
 présentée dans la figure \ref{FIG:lambda-calcul}. L'exemple utilise
 ensuite ces deux dernières afin de soustraire 1 à chaque élément de la
-liste spécifiée.
+liste spécifiée.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1105,7 +1105,7 @@ supérieur très répandue est la fonction \scheme{foldl} qui permet
 d'utiliser chacun des éléments d'une liste pour calculer un résultat
 unique. La figure \ref{Scheme:fold} illustre l'utilisation de cette
 fonction pour faire la somme et le produit des nombres dans une
-liste.
+liste.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1138,7 +1138,7 @@ paresseuse ou d'encapsuler un comportement. La figure
 \ref{Scheme:thunk} illustre l'utilisation d'un \textit{thunk} avec le
 système de \textit{threads} de Gambit-C afin de suspendre l'évaluation
 du corps du processus léger créé jusqu'à ce que ce dernier soit
-démarré.
+démarré.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1167,7 +1167,7 @@ exemple, on défini la macro \scheme{swap} qui interchange la valeur de
 deux variables entre elles. Le résultat de l'expansion sera donné par
 la substitution de l'appel de la macro par son corps où les
 occurrences des paramètres sont intégralement substitués par les
-paramètres actuels, soient \texttt{a} et \texttt{b}.
+paramètres actuels, soient \texttt{a} et \texttt{b}.\\
 
 \begin{figure}[htb!]
   \begin{verbatim}
@@ -1214,7 +1214,7 @@ l'argument est passé par nom est illustré dans la figure
 \ref{Scheme:macro-ex2}. Cette macro très simple utilise le passage par
 nom pour permettre d'incrémenter la valeur d'une variable, ce qui ne
 serait pas possible autrement en \Schemelang puisque le passage
-d'argument se fait normalement par valeur.
+d'argument se fait normalement par valeur.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1234,7 +1234,7 @@ langage \Schemelang d'une nouvelle forme spéciale qui correspond à une
 forme simple d'itération comme l'on retrouve souvent dans les langages
 impératifs. L'expansion de l'appel à cette macro illustrée dans la
 figure \ref{Scheme:macro-ex3} est présentée dans la figure
-\ref{Scheme:macro-ex3-exp}.
+\ref{Scheme:macro-ex3-exp}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1290,7 +1290,7 @@ un exemple d'utilisation de la macro mettant à l'épreuve l'hygiène de
 celle-ci. On constate que malgré le fait qu'aucun effort n'a dû être
 mis en place pour éviter les collisions de noms pour la variable
 \scheme{loop} introduite, la macro réalise le comportement attendu
-dans des conditions potentiellement problématiques.
+dans des conditions potentiellement problématiques.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1325,7 +1325,7 @@ directement \scheme{266}. Il est intéressant de noter qu'un appel à
 cette macro tel que \scheme{(mask 1 (+ 1 2))}, est une erreur. En
 effet, la macro s'attend à avoir un nombre en paramètre, mais elle
 reçoit plutôt dans ce cas-ci la liste \scheme{(+ 1 2)}, puisque les
-arguments de macros ne sont pas évalués.
+arguments de macros ne sont pas évalués.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1351,7 +1351,7 @@ base d'un \textit{DSL} effectuant la création et la manipulation de
 masques binaires. La figure \ref{Scheme:macro-mini-dsl} illustre une
 deuxième macro effectuant durant l'expansion macro la combinaison de
 masques binaires. On obtient un petit langage pour la déclaration
-efficace de tels masques.
+efficace de tels masques.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1400,7 +1400,7 @@ simple de la fonction factorielle. La suite du calcul effectué après
 un appel à la fonction \scheme{fact} est implicite à l'endroit où
 celui-ci se retrouve. Dans l'exemple d'appel à \scheme{fact} présenté
 dans cette figure, on constate que la suite de ce calcul sera
-l'addition de 1 au résultat obtenu.
+l'addition de 1 au résultat obtenu.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1433,7 +1433,7 @@ d'effectuer des itérations à l'aide d'appels terminaux de fonctions.
 La transformation de cette fonction en style CPS est donnée dans la
 figure \ref{Scheme:cps-fact}. Dans cette nouvelle version, la suite de
 l'exécution d'un appel est explicite. Il s'agit d'un appel à la
-continuation passée en paramètre, nommée \scheme{k}.
+continuation passée en paramètre, nommée \scheme{k}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1470,7 +1470,7 @@ réifiée du calcul au point d'appel de \scheme{call/cc}. La figure
 \ref{Scheme:cont-ex} donne un exemple de la réification d'un calcul
 simple. La mutation de la variable \scheme{k} est utilisée afin de
 permettre une sauvegarde de la continuation dans le but de la
-réutiliser plus tard.
+réutiliser plus tard.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1511,7 +1511,7 @@ Gambit-C, on constate que malgré le fait que l'utilisation d'une
 fonction d'ordre supérieur permet d'implanter cet algorithme, il en
 résulte du code inefficace, puisque l'appel à \scheme{foldl} passera
 sur tous les éléments de la liste, même après avoir trouvé une valeur
-supérieure à 10.
+supérieure à 10.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1550,7 +1550,7 @@ continuation au début du calcul de la fonction
 branchement direct vers la suite du calcul à l'appel de
 \scheme{exists-greater-than}. On peut ainsi utiliser cette dernière
 afin d'échapper le corps de la fonction lorsqu'une valeur clé est
-trouvée.
+trouvée.\\
 
 \begin{figure}[htb!]
 \begin{schemecode}
@@ -1582,7 +1582,7 @@ Un autre exemple d'utilisation intéressant de continuations est la
 création d'un système de recherche par retour arrière
 (\textit{backtracking}). La figure \ref{Scheme:backtrack} illustre un
 exemple simple de recherche d'un triplet de nombres entiers tel que
-$x^2 = y^2+z^2$.
+$x^2 = y^2+z^2$.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1884,7 +1884,7 @@ Le système Gambit-C permet la définition de paramètres avec
 l'utilisation de mots clés. La figure \ref{Scheme:fun-key} illustre un
 exemple de définition d'une telle fonction avec quelques appels à
 celle-ci. On constate qu'il est alors possible de définir des valeurs
-optionnelles qui possèdent une valeur par défaut.
+optionnelles qui possèdent une valeur par défaut.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1904,7 +1904,7 @@ mot clé \scheme{\#!rest} ou encore le point (\scheme{.}) est utilisé
 pour délimiter les paramètres normaux du paramètre reste, qui
 contiendra une liste de tous les paramètres supplémentaires
 utilisés. La figure \ref{Scheme:rest-ex} illustre un exemple
-d'utilisation du paramètre reste.
+d'utilisation du paramètre reste.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1923,7 +1923,7 @@ fonction comme premier argument et un nombre arbitraire d'arguments
 par la suite. Le dernier argument passé doit être une liste. Le
 contenu de cette liste sera inséré dans un appel à la fonction
 spécifiée. La figure \ref{Scheme:apply} illustre quelques utilisations
-de la procédure \scheme{apply}.
+de la procédure \scheme{apply}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1967,7 +1967,7 @@ imbriquées les unes dans les autres, la forme spéciale \scheme{(cond
   (<pred> <body>) ... [(else <body>)])} peut être utilisée. Cette
 dernière permet aussi de récupérer la valeur retournée par un prédicat
 s'évaluant à vrai en ajoutant \scheme{=>} tel qu'illustré dans la
-figure \ref{Scheme:cond}.
+figure \ref{Scheme:cond}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -2004,7 +2004,7 @@ types. L'utilisation du mot clé \scheme{extender:} permet aussi la
 création d'une nouvelle forme spéciale (au nom spécifié) qui permet la
 définition de sous-types héritant des membres de la classe en
 question, implantant ainsi un héritage simple. La figure
-\ref{Scheme:deftype} illustre l'utilisation de cette forme spéciale.
+\ref{Scheme:deftype} illustre l'utilisation de cette forme spéciale.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -2031,7 +2031,7 @@ l'affichage du résultat de l'évaluation d'une expression. Le standard
 enjolivé d'une sortie de \scheme{write}. La fonction \scheme{println}
 permet l'affichage d'expressions composées. La figure
 \ref{Scheme:print} illustre des exemples d'utilisations de ces
-fonctions.
+fonctions.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -2054,7 +2054,7 @@ fonctions C ou C++ présentes dans des librairies. La figure
 \ref{Scheme:FFI} illustre une interface minimaliste à la librairie C
 OpenGL et une utilisation de cette interface. On constate donc qu'une
 fois importées, les fonctions de cette dernière peuvent être utilisées
-comme n'importe qu'elle fonction \Schemelang.
+comme n'importe qu'elle fonction \Schemelang.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -2096,7 +2096,7 @@ mécanisme, il est possible d'attacher une continuation à la suite d'un
 \textit{thunk} en utilisant la fonction \scheme{(continuation-graft
   <cont> <thunk>)}. La figure \ref{Scheme:cont-capt} illustre une
 telle capture de continuation, ainsi que des exemples d'utilisations
-de cette dernière.
+de cette dernière.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -2208,7 +2208,7 @@ l'instance de la classe associée à la méthode, mais que le
 explicitement. L'exemple illustré est très simple puisqu'il s'agit de
 \textit{dispatch} double sur deux types, mais pourrait devenir très
 complexe s'il s'agissait de faire une discrimination sur plus de deux
-objets.
+objets.\\
 
 \begin{figure}[h!]
   \begin{verbatim}
@@ -2261,7 +2261,7 @@ de ces arguments et de leur nombre. On obtient donc un système très
 dynamique effectuant du \textit{dispatch multiple}. La figure
 \ref{OO:CLOS_ex} présente la définition d'une fonction générique
 effectuant automatiquement le choix de la bonne instance en se basant
-dynamiquement sur les types des arguments passés.
+dynamiquement sur les types des arguments passés.\\
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2377,7 +2377,7 @@ d'utilisations.
 La définition de classes, faite via la forme spéciale
 \textit{define-class}, est une version simplifiée de la forme
 \scheme{defclass} de CLOS. La syntaxe de \scheme{define-class} est
-présentée dans la figure \ref{OO:defclass-syntaxe}.
+présentée dans la figure \ref{OO:defclass-syntaxe}.\\
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2405,7 +2405,7 @@ système d'objets. Les figures \ref{Scheme:deftype} et
 \ref{OO:defclass-simple} illustrent cette conversion. Aussi, le choix
 d'utiliser des fonctions compatibles à \scheme{define-type} rend la
 base du système d'objets triviale à utiliser par des nouveaux
-utilisateurs déjà familier avec Gambit-C.
+utilisateurs déjà familier avec Gambit-C.\\
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2462,7 +2462,7 @@ nécessitent pas ces dernières pour être accédés ou modifiés.
 Toutefois, ces fonctions d'accès ou de modification de valeur
 d'attributs de classes permettent de prendre optionnellement une
 instance afin d'utiliser ces fonctions de manière polymorphique. La
-figure \ref{OO:class-slot} illustre ce processus.
+figure \ref{OO:class-slot} illustre ce processus.\\
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2496,7 +2496,7 @@ par les fonctions génériques, comme décrit dans la section
 spéciale \scheme{new} qui s'occupe de créer la nouvelle instance de
 l'objet et d'appeler la fonction générique \scheme{init!}. La figure
 \ref{OO:constructeurs} illustre l'utilisation de constructeurs
-génériques d'objets.
+génériques d'objets.\\
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2562,7 +2562,7 @@ telle déclaration est strictement équivalente à \scheme{(<arg-name>
   *)}. La figure \ref{OO:genfun-ex} présente un exemple de
 déclarations et d'utilisations d'instances d'une fonction générique
 effectuant des additions sur des objets s'étalant sur plusieurs types
-et ayant un nombre variable de paramètres.
+et ayant un nombre variable de paramètres.\\
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2628,7 +2628,7 @@ que la discrimination fonctionne bien lorsque les instances effectuent
 de la discrimination orthogonale, \ie que les possibilités ne se
 recoupent pas entre elles. Une discrimination arbitraire pourrait se
 produire si plusieurs instances peuvent être discriminées de manière
-équivalentes pour un même appel.
+équivalentes pour un même appel.\\
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2682,7 +2682,7 @@ obtient une valeur de 1, puisque la classe \scheme{circle} est une
 sous-classe de \scheme{point}. C'est donc l'instance discriminant sur
 un objet de type \scheme{circle} qui est choisie. Si les valeurs de
 discrimination sont égales pour plusieurs instances, alors c'est la
-méthode définie en dernier qui sera utilisée.
+méthode définie en dernier qui sera utilisée.\\
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2715,7 +2715,7 @@ instance de la classe \scheme{circle}. Le constructeur de la classe
 constructeur de la classe \scheme{point}. Ensuite, l'objet conteneur
 est initialisé en choisissant explicitement le constructeur attendant
 un argument de type \scheme{point}. L'objet correctement initialisé
-est finalement retourné.
+est finalement retourné.\\
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2811,7 +2811,7 @@ sont:
 \end{itemize}
 
 La figure \ref{OO:specform} illustre un exemple d'utilisation de ces
-formes spéciales.
+formes spéciales.\\
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2892,7 +2892,7 @@ descripteurs de classes afin que les accesseurs des super-classes
 sachent où trouver cette information. La figure \ref{OO:obj-struct}
 contient un exemple de définitions de classes permettant d'illustrer
 les structures utilisées lors de l'exécution du système. La figure
-\ref{OO:classdesc} schématise ces structures.
+\ref{OO:classdesc} schématise ces structures.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -2914,7 +2914,6 @@ les structures utilisées lors de l'exécution du système. La figure
     classe et de fonction d'accès à un attribut par indirection.}
   \label{OO:obj-struct}
 \end{figure}
-
 
 \begin{figure}[htb!]
   \center
@@ -2983,8 +2982,7 @@ l'instance. Puisque la position de cet index d'indirection est
 globale, elle est directement insérée dans le code généré. Dans cette
 exemple, cette position se trouve à l'index $2$ dans le descripteur de
 classe. Finalement, la valeur de l'attribut est obtenue en effectuant
-l'indirection sur l'instance.
-
+l'indirection sur l'instance.\\
 
 \begin{figure}[htb!]
   \begin{verbatim}
@@ -3068,7 +3066,7 @@ premier temps, on cherche dans la table de hachage de cette fonction
 générique si une instance associée aux types des arguments passés (ou
 du \textit{cast} effectué) existe. Si ce ne pas le cas, on cherche
 explicitement une instance admissible de manière polymorphe à ces
-arguments.
+arguments.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -3101,7 +3099,7 @@ spéciaux comme \scheme{match-value}, ces types sont considérés comme
 étant très spécifiques et donc prioritaires à une simple
 correspondance du type d'un objet. La figure \ref{OO:polymorphism}
 illustre le code utilisé pour réaliser ce \textit{dispatch}
-polymorphique.
+polymorphique.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -3330,7 +3328,7 @@ idée. Dans ce schéma, les carrés noirs représentent des systèmes de
 coroutines et les coroutines sont représentées avec des lignes
 pointillées. L'utilisation de systèmes imbriqués permettrait ainsi
 d'exprimer chaque concept de manière modulaire et complètement
-transparente.
+transparente.\\
 
 \begin{figure}[htb!]
   \center
@@ -3400,7 +3398,7 @@ temps et une sur des conditions sont disponibles. Lorsqu'une coroutine
 décide de passer la main à la suivante, ou lorsqu'elle ne doit plus
 attendre après le temps ou une condition, elle se fait reléguer à la
 fin de la file d'attente de coroutines prêtes. La figure
-\ref{Corout:system-schema} illustre l'architecture globale du système.
+\ref{Corout:system-schema} illustre l'architecture globale du système.\\
 
 \begin{figure}[htb!]
   \center
@@ -3441,7 +3439,7 @@ soit prête, en attente ou terminée. L'attente d'une coroutine peut
 sémaphore ou à un certain délai de temps prescrit. De plus, l'attente
 sur le temps peut être interrompue par la réception d'un message. Cet
 état se produit lorsqu'une attente de message est effectuée avec une
-attente bornée.
+attente bornée.\\
 
 \begin{figure}[htb!]
   \center
@@ -3540,7 +3538,7 @@ exemple de système de coroutines en cascade est donné dans la figure
 \ref{Corout:cascade}.  On constate que les appels à
 \scheme{super-yield} ont bien effectué les changements de contextes
 des coroutines hôtes des sous-systèmes de coroutines (\scheme{s1} et
-\scheme{s2}).
+\scheme{s2}).\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -3635,7 +3633,7 @@ ces deux formes spéciales. Lorsque la coroutine \scheme{c1} s'exécute,
 sa continuation change pour celle de \scheme{c2} qui change à son tour
 pour la fonction \scheme{t}. Ainsi, la fin du corps des coroutines
 \scheme{c1} et \scheme{c2} ne sera jamais exécutée puisque leurs
-continuations ont été altérées.
+continuations ont été altérées.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -3745,7 +3743,7 @@ attentes bornées dans le temps est disponible sous la forme
 \scheme{(after <timeout> <body> ...)}. Ce patron spécial doit être
 spécifié \emph{en dernier}, s'il est présent. La figure
 \ref{Corout:recv-pat} illustre plusieurs motifs différents qui peuvent
-être utilisés.
+être utilisés.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -3884,7 +3882,7 @@ la figure \ref{Corout:corout-class}. Elle contient toutes les
 informations essentielles au fonctionnement de celle-ci, dont entre
 autre sa continuation (\scheme{kont}), sa boîte de messagerie, une
 sauvegarde de l'environnement d'un sous-système de coroutine
-(\scheme{state-env}), etc...
+(\scheme{state-env}), etc...\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -3927,7 +3925,7 @@ valeur de retour d'une coroutine. Lorsque l'utilisateur demande à
 obtenir la valeur de retour d'une coroutine, le contenu du membre
 \scheme{result} est comparé à ce symbole afin de savoir si une valeur
 de retour s'y trouve ou non, tel qu'illustré dans la figure
-\ref{Corout:get-result}.
+\ref{Corout:get-result}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4021,7 +4019,7 @@ le cas où il existe d'autres coroutines en veille (par exemple sur
 l'attente d'un message), alors le système est en position
 d'interblocage. Sinon, le travail est terminé et donc, l'état du
 système parent est rétabli et la continuation primordiale est
-invoquée.
+invoquée.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4067,7 +4065,7 @@ une utilisation future. Comme l'indique la figure
 simplement par un retour à ces continuations sauvegardées dans la
 structure de donnée des coroutine. La valeur utilisée pour le retour a
 ces continuations est complètement arbitraire et sera ignorée par
-celle-ci.
+celle-ci.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4129,7 +4127,7 @@ maximale de messages, la coroutine en attente pourrait se retrouver
 dans la file d'attente sur le temps des coroutines. Afin de distinguer
 une telle attente bornée d'un appel à \scheme{sleep-for}, l'état
 \scheme{interruptible?} du champs \scheme{sleeping?} d'une coroutine
-est utilisé.
+est utilisé.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4161,7 +4159,7 @@ message. Si le délais d'attente est dépassé, alors une exception est
 lancée à l'utilisateur. La figure \ref{Corout:?}  illustre
 l'implantation de la fonction \scheme{?}, la plus simple pour la
 réception de message. Elle permet par contre de donner une bonne idée
-du procédé employé.
+du procédé employé.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4211,7 +4209,7 @@ conforme à un des patrons de filtrage sera retenu. La figure
  du motif est complexe~\cite{Marc-Erlang}. Ainsi, puisque
  l'utilisation de cette forme spéciale a été mise de côté vers la fin
  de la recherche effectuée pour ce mémoire, cette optimisation a été
- omise pour des fins de simplicité.
+ omise pour des fins de simplicité.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4444,7 +4442,7 @@ déplacement des ennemis est inversement proportionnelle à leurs
 nombre. Le niveau se termine lorsque tous les ennemis sont
 détruits. Alors, le prochain niveau (qui est exactement le même que le
 précédant) débute. La figure \ref{Exp:si-screen} illustre une capture
-d'écran du jeu développé.
+d'écran du jeu développé.\\
 
 \begin{figure}[htb!]
   \center
@@ -4527,7 +4525,7 @@ doit être présent afin de permettre une interprétation correcte de la
 fonte lue. Par exemple, l'image fournie dans la figure \ref{Exp:font}
 doit être accompagnée d'un fichier de même nom, portant une extension
 \emph{.scm} conteant la description \scheme{((colors: (white green
-  red)) (chars: (0 1)))}.
+  red)) (chars: (0 1)))}.\\
 
 \begin{figure}[htb!]
   \center
@@ -4589,7 +4587,7 @@ La figure \ref{Exp:des} illustre des événements qui sont ordonnancés
 au tout début d'une partie. Ainsi le premier événement se chargera de
 faire un \textit{dispatch} d'autres événements débutant la partie. Les
 deux derniers événements sont des événements de gestion d'affichage et
-d'entrées/sorties du jeu.
+d'entrées/sorties du jeu.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4611,7 +4609,7 @@ Ces événements doivent donc s'occuper de poursuivre le calcul du jeu
 leur étant assigné en réordonnant de nouveaux événements
 ultérieurement dans le jeu. Par exemple, la figure \ref{Exp:mother-ev}
 illustre l'évènement principal implantant le comportement désiré pour
-le vaisseau mère des ennemis.
+le vaisseau mère des ennemis.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4668,7 +4666,7 @@ terminal). On a pu ainsi facilement utiliser l'animation de
 clignotement, et ce de manière très modulaire, dans notre animation de
 début de partie. Cette figure illustre un exemple d'utilisation de
 cette animation en réécrivant de manière plus complète l'événement de
-début de partie de la figure \ref{Exp:des}.
+début de partie de la figure \ref{Exp:des}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4701,7 +4699,7 @@ forme spéciale \scheme{define-type} de Gambit-C. Elles ont utilisé
 l'héritage simple que permet cette forme de manière à tirer profit du
 maximum de polymorphisme et de modularisation de code possible. La
 figure \ref{Exp:deftyp-objs} donne certaines définitions des
-structures employées.
+structures employées.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4743,7 +4741,7 @@ efficace et modulaire grâce aux types qui contiennent de l'information
 sur les boîtes englobantes des objets. Puisqu'il n'y a jamais beaucoup
 d'objets présents dans le jeu en même temps, une détection très
 rudimentaire de collisions fut utilisée. Cette dernière est présentée
-dans la figure \ref{Exp:dc-si1}.
+dans la figure \ref{Exp:dc-si1}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4768,7 +4766,7 @@ que les types des objets doivent être manuellement analysés de manière
 à utiliser la bonne fonction de résolution qui, elle aussi, se doit
 d'analyser le type de l'objet reçu de manière a choisir la bonne
 résolution à adopter. Il en résulte en du code très lourd, où il est
-très facile d'introduire des erreurs.
+très facile d'introduire des erreurs.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4821,7 +4819,7 @@ informations au préalable. Il est intéressant de noter que juste avant
 le changement de contexte, un événement très prioritaire doit être
 ordonnancé de manière à se produire immédiatement au retour du
 contexte de la coroutine. Il s'agit de l'animation ré-introduisant la
-partie du joueur actuel.
+partie du joueur actuel.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4908,7 +4906,7 @@ claire. L'utilisation de ces champs pourra être, par la suite, faite
 de manière complètement uniforme et transparente. La macro
 \scheme{setup-static-fields} a été écrite afin de permettre d'assigner
 les champs de classes pour les classes enfants de
-\scheme{game-object}.
+\scheme{game-object}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4948,7 +4946,7 @@ définies pour les paires de collisions possibles dans le jeu et le
 système s'occupe de faire automatiquement le choix dynamique de la
 bonne instance en fonction des objets passés en paramètre. Le code
 résultant est beaucoup plus modulaire et clair que celui de la version
-précédente du jeu.
+précédente du jeu.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5019,7 +5017,7 @@ afin de spécifier le comportement que devra entreprendre l'objet. Ce
 corps est déterminé de manière dynamique avec la fonction générique
 \scheme{behaviour} et sera exécuté dans un environnement contenant des
 gestionnaires de messages dynamiques, communs à tous les objets,
-permettant de pauser le jeu ou de détruire ces derniers.
+permettant de pauser le jeu ou de détruire ces derniers.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5087,7 +5085,7 @@ appropriée que les approches utilisées pour implanter \si. Par contre,
 cette expérimentation sur la technique de flot de contrôle a permis de
 démontrer la facilité avec laquelle il a été possible de modifier le
 coeur du jeu pour essayer de nouvelles options quant à l'architecture
-du programme et de son flot de contrôle.
+du programme et de son flot de contrôle.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5187,7 +5185,7 @@ possession du joueur, une échelle de sortie apparaît et mène le joueur
 au niveau suivant. La joueur dispose de trois vies pour se rendre le
 plus loin possible dans le jeu et obtenir le meilleur score
 possible. La figure \ref{Exp:ld-screen} illustre une capture d'écran
-du jeu développé.
+du jeu développé.\\
 
 \begin{figure}[htb!]
   \center
@@ -5212,7 +5210,7 @@ principale du jeu et l'instance de la fonction générique
 \scheme{advance-frame!} pour un niveau de jeu. Cette figure illustre
 la simplicité du flot de contrôle du jeu résultante grâce à
 l'utilisation de fonction génériques et de fonctions d'ordre
-supérieures.
+supérieures.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5259,7 +5257,7 @@ afin de régir leurs comportements et les animations de ceux-ci. La
 figure \ref{Exp:hl} donne le contenu de la classe \scheme{human-like}
 qui sert de base aux classes \scheme{player} et \scheme{robot} qui
 implantent respectivement les instances du joueurs et des robots
-ennemis. Elle démontre bien la complexité de l'état de ces entités.
+ennemis. Elle démontre bien la complexité de l'état de ces entités.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5293,7 +5291,7 @@ différentes peuvent être présent en même temps, l'ordre de la
 modification de l'état est significative. Si ces derniers avaient été
 orthogonaux, la gestion de ceux-ci aurait pu être effectuée en
 utilisant la discrimination de méthodes sur les valeurs de ces
-états. Le code résultant aurait donc été très limpide.
+états. Le code résultant aurait donc été très limpide.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5333,7 +5331,7 @@ correspondant à l'état actuel de l'animation. Cet état est conservé
 dans l'attribut \scheme{state-member} et sera utilisé par l'algorithme
 de rendu graphique du jeu. Le paramètre \scheme{cycle-delta}
 représente le nombre d'images qui seront rendues avant le changement
-de l'état actuel de l'entité.
+de l'état actuel de l'entité.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5365,7 +5363,7 @@ définition de l'animation de marche utilisée par les sous-classes de
 la classe \scheme{human-like}. On peut donc ainsi tirer profit du
 polymorphisme du système objets en plus du petit langage de définition
 d'animations afin de définir de manière claire et concise une
-animation cyclique.
+animation cyclique.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5391,7 +5389,7 @@ effet, on peut subdiviser le flot d'un niveau en 6 états différents:
 derniers. Chaque états sont justifiés par un comportement différent du
 niveau, soit par une gestion différente des entrées du joueurs comme
 c'est le cas pour l'état \scheme{paused} ou encore par un rendu
-graphique différent du niveau.
+graphique différent du niveau.\\
 
 \begin{figure}[htb!]
   \center
@@ -5414,7 +5412,7 @@ description des transitions, il est possible d'utiliser le symbole
 \scheme{*} afin de représenter tous les états possibles ou sinon
 d'utiliser une sous-liste contenant les états de provenance ou
 d'arrivé pour cette transition. La figure
-\ref{Exp:lr-lvl-state-machine}.
+\ref{Exp:lr-lvl-state-machine}.\\
 
 \begin{figure}[htb1]
   \begin{schemecode}
@@ -5454,7 +5452,7 @@ distinction entre ces états. Par exemple, la fonction
 du début de la partie s'occupe d'ajouter un nouvel objet représentant
 une chaîne de caractères qui contient le compte à rebours. Ce dernier
 utilise la récursivité afin de se recréé avec le rebours mis-à-jour à
-tous les 60 images rendues.
+tous les 60 images rendues.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5504,7 +5502,7 @@ détectée. Bien sûr, la taille de la grille influence sur le travail
 nécessaire lors de chaque ajout et déplacement d'objets, mais puisque
 dans \lr la plupart des objets sont statiques, cela ne pose pas de
 problèmes réels. La figure \ref{Exp:lr-col-detection} illustre
-l'algorithme de détection de collisions utilisé.
+l'algorithme de détection de collisions utilisé.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5539,7 +5537,7 @@ figure \ref{Exp:layers}, le joueur se trouve sur la couche
 du jeu, résultant en l'affichage du joueur par dessus ces
 derniers. Les objets sont triés lorsque des nouveaux objets sont
 ajoutés au niveau afin d'éviter à faire ce tri lors du rendu de chaque
-images.
+images.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5571,7 +5569,7 @@ durant la partie la difficulté. Aussi, l'utilisation de fermeture
 donne la chance de créer de nouvelles fermetures contenant des
 informations plus spécialisées pour l'état actuel du
 jeu. L'implantation du choix dynamique de l'algorithme d'intelligence
-artificielle est présenté dans la figure \ref{Exp:dyn-ai}.
+artificielle est présenté dans la figure \ref{Exp:dyn-ai}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5900,7 +5898,7 @@ d'illustrer l'utilisation des coroutines de ce jeu. On constate que le
 code conserve l'état de la variable \scheme{ii} qui se trouve a être,
 dans cet exemple, un compteur d'images rendues pour une animation
 nommée \scheme{idle}. L'utilisation de coroutine leur a permis de
-conserver l'état du calcul en cours.
+conserver l'état du calcul en cours.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5935,7 +5933,7 @@ celui utilisé par GOAL. La figure \ref{Rev:Drake} illustre la
 constructions de données utilisées dans ce jeu. Cet exemple de code
 illustre bien le type d'utilisation faite du langage \Schemelang, \ie
 que \Schemelang est utilisé non seulement comme langage de script,
-mais aussi pour la définition des données du langage.
+mais aussi pour la définition des données du langage.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}

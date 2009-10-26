@@ -4950,13 +4950,15 @@ précédente du jeu.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(define-method (resolve-collision! level (laser laser-obj) (inv invader-ship))
+(define-method (resolve-collision! level (laser laser-obj) 
+                                         (inv invader-ship))
   (invader-ship? inv) 
   (level-increase-score! level inv)
   (destroy-laser! level laser)
   (explode-invader! level inv))
 
-(define-method (resolve-collision! level (laser1 laser-obj) (laser2 laser-obj))
+(define-method (resolve-collision! level (laser1 laser-obj)
+                                         (laser2 laser-obj))
   (let ((inv-laser (if (player\_laser? laser1) laser2 laser1)))
     (explode-laser! level inv-laser)
     (destroy-laser! level inv-laser)))
@@ -5415,8 +5417,9 @@ d'arrivées pour cette transition. La figure
 
 \begin{figure}[htb1]
   \begin{schemecode}
-(define-state-machine <class-name> <init-state> <init-action> <state-list>
-                      ((<from-state> <to-state> <transition-action>) ...))
+(define-state-machine 
+  <class-name> <init-state> <init-action> <state-list>
+  ((<from-state> <to-state> <transition-action>) ...))
   \end{schemecode}
   \caption{Interface du système de machines à états développé pour les
     niveaux de \lr}
@@ -5695,9 +5698,10 @@ qu'en utilisation de la mémoire.
 \chapter{Travaux reliés}
 Les langages de programmation de la famille \lisp ont déjà été
 utilisés pour produire des jeux vidéo commerciaux de très bonne
-qualité. Certains seront cités et une revue de l'expérience acquise
-par les développeurs sera exposée dans le but de comparer leurs
-expériences avec celle acquise pour le développement de \si et de \lr.
+qualité. Certains parmi ceux-ci seront cités et une revue de
+l'expérience acquise par les développeurs de ces derniers sera exposée
+dans le but de comparer leurs expériences avec celle acquise pour le
+développement de \si et de \lr.
 
 Avant tout, nous comparerons les différents langages utilisés dans
 l'industrie du jeu vidéo avec \Schemelang afin d'en faire ressortir les
@@ -5726,37 +5730,36 @@ d'utilisations de celui-ci.
 \subsection{C++}
 Le langage principalement utilisé pour le développement de jeu vidéo
 est sans aucun doute le langage C++~\cite{cplusplus}. Ce dernier est
-une version orientée objet du langage C qui est aussi très répandu et
-apprécié pour être un langage suffisamment de bas niveau pour
-permettre d'écrire du code très efficace. Ainsi, C++ apporte les
-paradigmes de la programmation orientée objet en introduisant des
+une version orientée objet du langage C\cite{Ritchie-C-dev} qui est
+aussi très répandu et apprécié pour être un langage suffisamment de
+bas niveau pour permettre d'écrire du code très efficace. C++ apporte
+les paradigmes de la programmation orientée objet en introduisant des
 classes à héritage multiple et des fonctions virtuelles permettant un
 \textit{dispatch} dynamique simple. C++ possède également un système
 de gestion d'exceptions et de \textit{templates}.
 
 Ainsi, le langage C++ semble être grandement apprécié pour son mélange
 de concepts de haut niveau comme la programmation orientée objet et de
-bas niveau, comme la gestion de mémoire manuelle et son modèle
-d'exécution très près du matériel. Il diffère grandement d'un langage
-de haut niveau tel que \Schemelang. En effet, il ne possède pas de
-fermetures, de continuations et de système de macros évolué. La
-programmation en C++ est dite impérative parce que le résultat du
-programme dépend intrinsèquement de l'état de celui-ci. De plus,
-puisqu'il s'agit d'un langage typé statiquement, le dépistage
-d'erreurs de programmation est plus ardu.
+bas niveau, tel que la gestion de mémoire manuelle. Il diffère
+grandement d'un langage de haut niveau tel que \Schemelang. En effet,
+il ne possède pas de fermetures, de continuations et de système de
+macros évolué. La programmation en C++ est dite impérative parce que
+le résultat du programme dépend intrinsèquement de l'état de
+celui-ci. De plus, puisqu'il s'agit d'un langage typé statiquement, le
+dépistage d'erreurs de programmation est plus ardu.
 
 Il en découle donc que C++ offre beaucoup moins de concepts de haut
-niveau, réduisant ainsi la facilité d'abstractions et de programmation
-en général pour donner accès plus facilement à de bonnes
-performances. Ainsi, C++ semble un bon choix de langage pour des
+niveau, réduisant ainsi la facilité d'abstraction et de programmation
+en général pour donner accès à de bonnes performances. À la lumière de
+ces différences, C++ semble un bon choix de langage pour des
 plate-formes possédant un matériel limité, tant en mémoire que
 puissance du processeur. Par contre, sur des machines plus puissantes,
 \Schemelang semble plus approprié parce qu'il apporte beaucoup plus de
-puissance d'abstraction aux programmeurs. Une utilisation de C++ pour
-implanter les parties critiques du moteur de jeu pourrait et de \Schemelang
-pour développer la partie \textit{gameplay} du jeu semble aussi une
-bonne approche sur des plate-formes performantes afin d'optimiser les
-performances du jeu.
+puissance d'abstraction aux programmeurs. Toutefois, une utilisation
+de C++ pour implanter les parties critiques du moteur d'un jeu et de
+\Schemelang pour développer la partie \textit{gameplay} de ce dernier
+semble aussi une bonne approche sur des plate-formes évoluées afin
+d'optimiser les performances du jeu.
 
 Un net avantage du langage C++ face à \Schemelang est la quantité
 astronomique de librairies de tout genres disponibles aux
@@ -5772,14 +5775,15 @@ d'images pourrait être fait par l'une des nombreuses librairies
 disponibles.
 
 Il est également important de souligner le facteur de la main d'oeuvre
-pour l'adoption de \Schemelang pour remplacer C++. En effet, la quantité de
-programmeurs maîtrisant le langage \Schemelang est très restreintes en
-comparaison aux nombres de programmeurs C++ et donc, même si \Schemelang
-pourrait se révéler un meilleur choix technologique pour le
-développement d'un jeu, il est possible que l'embauche de suffisamment
-de programmeurs \Schemelang soit trop difficile et coûteux vis-à-vis
-l'embauche de programmeurs C++ beaucoup plus nombreux. Rendant ainsi
-C++ plus attrayant et moins risqué pour une entreprise.
+pour l'adoption de \Schemelang pour remplacer C++. En effet, la
+quantité de programmeurs maîtrisant le langage \Schemelang est très
+restreinte en comparaison aux nombres de programmeurs C++ et donc,
+même si \Schemelang pourrait se révéler un meilleur choix
+technologique pour le développement d'un jeu, il est possible que
+l'embauche de suffisamment de programmeurs \Schemelang soit trop
+difficile et coûteux vis-à-vis l'embauche de programmeurs C++ beaucoup
+plus nombreux. Un tel phénomène pourrait ainsi rendre C++ plus
+attrayant et moins risqué pour aux yeux d'une entreprise.
 
 
 \FloatBarrier
@@ -5792,30 +5796,29 @@ jeu \textit{World Of Warcraft} afin de permettre aux joueurs d'ajouter
 des éléments au jeu de manière dynamique.
 
 Ce langage est reconnu pour avoir un environnement d'exécution très
-léger, environ 150 kilo-octets, ce qui fait en sorte que l'ajout de
-cet environnement a un faible coût en espace mémoire, ce qui est utile
+léger, environ 150 kilo-octets, ce qui fait en sorte que l'ajout de ce
+système a un faible coût en espace mémoire, ce qui est désirable
 lorsque cette intégration est faite sur des plate-formes au matériel
 plus limité comme des consoles portables. Lua contient certains
 éléments de la programmation dite de haut niveau dont les fermetures,
 une gestion de mémoire automatique, l'optimisation d'appels terminaux
-et un système de coroutines. Il fourni aussi un système objets limité à
-la Javascript~\cite{ECMA-262}, basé sur le prototypage d'objets.
+et un système de coroutines. Il fourni aussi un système objets limité
+à la Javascript~\cite{ECMA-262}, basé sur le prototypage d'objets.
 
 Ainsi, malgré le fait que ce dernier contient plusieurs aspects de la
 programmation de haut niveau, Lua possède plusieurs différences au
-langage \Schemelang. Il ne supporte pas la réification de continuation et
-ne possède pas de système de macros. Ainsi, l'absence de ces
-fonctionnalités rend l'abstraction et la modularité, utile pour de
-gros projets, moins accessible. Il en résulte que Lua est moins
+langage \Schemelang. Il ne supporte pas la réification de
+continuations et ne possède pas de système de macros. Ainsi, l'absence
+de ces fonctionnalités rend l'abstraction et la modularité, utile pour
+de gros projets, moins accessible. Il en résulte que Lua est moins
 approprié pour écrire le moteur de jeux vidéo non triviaux. Toutefois,
 puisque l'interprète du langage est très rapide, il pourrait être
-envisagé pour être utilisé pour le développement de jeux à plus petite
-échelle.
+envisagé pour le développement de jeux à plus petite échelle.
 
 Pour les mêmes raison que Lua, d'autre langages de programmations sont
-également utilisés afin d'effectuer le \textit{scripting} d'un
-jeu. Parmi ceux-ci, on retrouve principalement Python~\cite{Python} et
-Javascript~\cite{ECMA-262} qui sont très similaire à Lua et donc
+également utilisés afin d'effectuer le \textit{scripting} de
+jeux. Parmi ceux-ci, on retrouve principalement Python~\cite{Python}
+et Javascript~\cite{ECMA-262} qui sont très similaire à Lua et donc
 constituent eux aussi un sous ensemble de \Schemelang.
 
 
@@ -5827,9 +5830,9 @@ effectue un résumé des différences entre ces langages. Le langage C++
 offre de très bonnes performances grâce à son modèle d'exécution près
 de l'architecture de la plate-forme utilisée. Puisqu'il n'offre que
 très peu de fonctionnalités de haut niveau, il constitue un choix
-idéal pour l'implantation de jeux sur des plate-forme aux ressources
+idéal pour l'implantation de jeux sur des plate-formes aux ressources
 très limitées, tel que c'est le cas sur les consoles portables ou sur
-les téléphones cellulaire. Le langage Lua, quant-à-lui, est un
+les téléphones cellulaire. Le langage Lua, quant à lui, est un
 sous-ensemble du langage \Schemelang. La présence de gestion de
 mémoire automatique, de fermeture et d'un typage dynamique font de lui
 un très bon candidat comme langage de script afin d'évaluer
@@ -5839,8 +5842,8 @@ fonctionnalité de haut niveau tels que des fermeture, de la
 réification de continuation ou encore des macros procédurales. Son
 coût plus élevé en allocations mémoires fait de lui un excellent choix
 pour le développement de moteurs de jeu sur des plate-formes modernes
-ou comme engin de \textit{scripting} sur des plate-forme plus limitée
-sur la mémoire.
+ou comme engin de \textit{scripting} sur des plate-formes plus
+limitées sur la mémoire.
 
 \begin{table}
 \begin{tabular}{cccc}
@@ -5876,29 +5879,29 @@ dialectes de \lisp dans le développement de jeux vidéo. En effet,
 cette compagnie a écrits plusieurs jeux sur la \textit{PlayStation 2}
 en utilisant le compilateur \textit{GOAL}/\textit{Game Oriented
   Assembly Lisp}, un système maison uniquement compilé vers du code
-machine pour le \textit{PlayStation 2} qui comprenait entre autres un
-système objets. Ce dernier fut utilisé pour développer entièrement de
-nombreux jeux sur la console dont les jeux \textit{Crash Bandicoot} et
-\textit{Jak and Dexter}.
+machine pour le \textit{PlayStation 2} qui comprenait notamment un
+système objets et de coroutines. Ce dernier fut utilisé pour
+développer entièrement de nombreux jeux sur la console dont les jeux
+de des séries \textit{Crash Bandicoot} et \textit{Jak and Dexter}.
 
 Scott Shumaker, programmeur chef chez Naughty Dog, a commenté leur
 utilisation de GOAL dans un article sur le site web consacré au
 développement de jeux vidéo Gamasutra~\cite{ND_GOAL}. Dans ce dernier,
 il mentionne que le développement de leur propre compilateur de \lisp
 leur a permis d'utiliser plusieurs techniques qui n'auraient pas pu
-être utilisées avec d'autres langages. Entre autres, leur système,
-malgré le fait qu'il ne comprenait pas d'interpète, permettait la
+être envisagées avec d'autres langages. Entre autres, leur système,
+malgré le fait qu'il ne comprenait pas d'interprète, permettait la
 compilation de code et le chargement de celui-ci directement dans le
-jeu qui était exécuté sur une console \textit{PlayStation 2} donnant
-accès ainsi à de la programmation très dynamique basée sur du
-prototypage. Il mentionne également que GOAL comprenait un système de
-coroutine. Un exemple de code simplifié pour GOAL est donné dans la
-figure \ref{Rev:goal}. Le code présenté a été simplifié dans le but
-d'illustrer l'utilisation des coroutines de ce jeu. On constate que le
-code conserve l'état de la variable \scheme{ii} qui se trouve a être,
-dans cet exemple, un compteur d'images rendues pour une animation
-nommée \scheme{idle}. L'utilisation de coroutine leur a permis de
-conserver l'état du calcul en cours.\\
+jeu qui était en cours d'exécution sur une console \textit{PlayStation
+  2}. Ils obtenaient ainsi de la programmation très dynamique basée
+sur du prototypage. Il mentionne également que GOAL comprenait un
+système de coroutine. Un exemple de code simplifié pour GOAL est donné
+dans la figure \ref{Rev:goal}. Le code présenté a été simplifié dans
+le but d'illustrer l'utilisation des coroutines de ce jeu. On constate
+que le code conserve l'état de la variable \scheme{ii} qui se trouve a
+être, dans cet exemple, un compteur d'images rendues pour une
+animation nommée \scheme{idle}. L'utilisation de coroutine leur a
+permis de conserver l'état du calcul en cours de manière triviale.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5911,8 +5914,8 @@ conserver l'état du calcul en cours.\\
 \end{figure}
 
 Il mentionne également dans cet article que l'utilisation de leur
-système GOAL a été la source de plusieurs problèmes principalement dus
-au fait que GOAL fut développé par un seul programmeur \lisp et que lui
+système GOAL a été la source de plusieurs problèmes principalement dû
+au fait que GOAL fut développé par un seul programmeur \lisp dont lui
 seul en comprenait parfaitement l'étendue. Il mentionne aussi qu'il
 fut difficile de trouver de la main d'oeuvre maîtrisant le langage
 \lisp et que même ceux-ci devaient tout de même s'adapter au système
@@ -5920,17 +5923,17 @@ utilisé.
 
 Ils ont par la suite créé les jeux \textit{Uncharted: Drake's fortune}
 et \textit{Uncharted 2: Among Thieves} qui sont rapidement devenus
-très populaire pour l'action et le rendu graphique exceptionnel
-contenu dans ces titres. Dan Liebgold de Naughty Dog a donné une
-conférence sur le développement du jeu \textit{Uncharted: Drake's
+très populaires pour leurs scènes d'action et leurs rendus graphiques
+exceptionnels. Dan Liebgold de Naughty Dog a donné une conférence sur
+le développement du jeu \textit{Uncharted: Drake's
   fortune}~\cite{ND_DRAKE} et mentionna qu'ils ont utilisé le langage
 \Schemelang afin d'exprimer les données du jeu de manière dynamique,
 mais que le moteur du jeu est écrit en C++. Ils profitent ainsi des
 performances qu'offrent C++ pour les zones critiques du jeu et
 utilisent un langage de plus haut niveau pour la description des
-données et utilisent un schéma de compilation dynamique similaire à
-celui utilisé par GOAL. La figure \ref{Rev:Drake} illustre la
-constructions de données utilisées dans ce jeu. Cet exemple de code
+données. Ils ainsi utilisent un schéma de compilation dynamique
+similaire à celui utilisé par GOAL. La figure \ref{Rev:Drake} illustre
+la construction de données utilisées dans ce jeu. Cet exemple de code
 illustre bien le type d'utilisation faite du langage \Schemelang, \ie
 que \Schemelang est utilisé non seulement comme langage de script,
 mais aussi pour la définition des données du langage.\\
@@ -5951,8 +5954,8 @@ mais aussi pour la définition des données du langage.\\
        :z (* (-> axis z) sin-angle/2)
        :w (cos (* 0.5 angle)))))
   \end{schemecode}
-  \caption{Code de données utilisées dans le jeu \textit{Uncharted:
-      Drake's fortune}~\cite{ND_DRAKE}}
+  \caption{Déclaration de données en \Schemelang utilisées dans le jeu
+    \textit{Uncharted: Drake's fortune}~\cite{ND_DRAKE}}
   \label{Rev:Drake}
 \end{figure}
 
@@ -5962,23 +5965,23 @@ mais aussi pour la définition des données du langage.\\
 Récemment, le jeu QuantZ~\cite{Quantz} fut développé presque
 exclusivement en utilisant le langage \Schemelang et le compilateur
 Gambit-C. Ce dernier constitue un jeu de puzzle 3D similaire à Tetris
-où le but est d'agencer des billes de même couleurs sur un cube. Les
-informations relatives au développement de ce jeu ont été acquise par
+où le but est d'agencer des billes de même couleur sur un cube. Les
+informations relatives au développement de ce jeu ont été acquises par
 l'auteur qui est toujours employé par le studio de développement de
 jeux vidéo \textit{Gamerizon inc}.
 
 L'utilisation de \Schemelang dans QuantZ a apporté plusieurs avantages
 technologiques. En effet, le dynamisme du langage a su profiter aux
 développeurs en leur permettant de débugger le jeu lors de son
-exécution résultant permettant ainsi la résolution rapides de
-problèmes.
+exécution. Cet aspect du langage permis la résolution rapide de
+problèmes et donc d'accélérer le développement du jeu.
 
 Aussi, la syntaxe sous formes de S-expressions des programmes
 \Schemelang a été utilisée à profit en créant un système d'analyse de
-code permettant d'extraire toutes les chaînes de caractères présente
+code permettant d'extraire toutes les chaînes de caractères présentent
 dans le jeu afin de créer des outils d'internationalisation. Ces
-outils permettent entre autres la création automatique de fontes
-optimisées par langues, qui contiennent uniquement les caractères
+outils permettent notamment la création automatique de fontes
+optimisées par langues qui contiennent uniquement les caractères
 utilisées dans celles-ci. L'utilisation de la fonction \Schemelang
 \scheme{read} combinée à la récursivité du langage ont facilement
 permis d'écrire un analyseur de code. Cette tâche aurait été beaucoup
@@ -6001,7 +6004,7 @@ mémoire et causer ainsi de longues pauses durant l'exécution du
 jeu. Aussi, la sérialisation de données disponible dans Gambit-C a été
 utilisée afin de transformer de grosses structures de données
 statiques (préférences, scores de joueurs, ...) afin que celles-ci ne
-soient pas traversée par le gestionnaire avant le rendu de chaque
+soient pas traversées par le gestionnaire avant le rendu de chaque
 image du jeu.
 
 L'état du jeu a été implanté en utilisant un mécanisme de
@@ -6009,13 +6012,13 @@ programmation fonctionnelle réactive basée sur \Schemelang permettant
 l'écriture élégante de niveaux grâce à la propagation de signaux
 correspondant à l'état du jeu. Aussi, le moteur de physique du jeu,
 écrit en C, a pu être intégrer sans problèmes au reste du moteur de
-QuantZ en utilisant le FFI de Gambit-C.
+QuantZ en utilisant l'interface aux fonctions étrangères de Gambit-C.
 
 Ainsi, le jeu QuantZ représente un exemple concret d'un jeu commercial
-ayant utilisé \Schemelang comme langage principal de développement. Leur
-utilisation du langage a su tirer profit de la plupart des
-particularité de \Schemelang dont notamment l'utilisation de fonctions de
-premier ordre et du dynamisme du système Gambit-C.
+ayant utilisé \Schemelang comme langage principal de
+développement. L'utilisation faite du langage a su tirer profit de la
+plupart des particularité de \Schemelang dont notamment l'utilisation
+de fonctions de premier ordre et du dynamisme du système Gambit-C.
 
 
 \FloatBarrier
@@ -6028,21 +6031,22 @@ développement plus dynamique tandis que C++ permet d'obtenir de très
 bonnes performances au coût d'avoir moins de puissance
 d'abstractions. Le choix du langage le plus approprié pour le
 développement d'un jeu devrait donc être fait en prenant en
-considération le matériel utilisé afin d'assurer que d'utiliser le
-plus de puissance expressive que possible, sans toutefois avoir un
-coût relié à ces abstractions trop élevé.
+considération le matériel utilisé afin d'obtenir le plus de puissance
+expressive que possible, sans toutefois avoir un coût relié à ces
+abstractions trop élevé.
 
-Aussi, \lisp et \Schemelang ont déjà été utilisés dans l'industrie du jeu
-vidéo pour développer des jeux de grandes qualités tels \textit{Jak
-  and Dexter}, \textit{Uncharted: Drake's Fortune} et
+Aussi, \lisp et \Schemelang ont déjà été utilisés dans l'industrie du
+jeu vidéo pour développer des jeux de grandes qualités tels
+\textit{Jak and Dexter}, \textit{Uncharted: Drake's Fortune} et
 \textit{QuantZ}. L'expérience acquise par les développeurs de ces jeux
 est très positive. On constate de manière unanime ces langages leurs
-ont fourni un environnement de développement dynamique et
-l'extensibilité du langage a jouer à l'avantage de ceux-ci. Ainsi,
-malgré la faible adoption de \Schemelang pour l'écriture de jeux vidéo
-commerciaux par les compagnies de l'industrie, les équipes l'ayant
-utilisé semblent l'avoir beaucoup apprécier et surtout, l'utilisent
-toujours dans le développement de leurs jeux.
+ont fourni un environnement de développement
+dynamique. L'extensibilité du langage a aussi joué à l'avantage de
+ceux-ci. Ainsi, malgré la faible adoption de \Schemelang pour
+l'écriture de jeux vidéo commerciaux par les compagnies de
+l'industrie, les équipes l'ayant utilisé semblent l'avoir beaucoup
+apprécié et surtout, l'utilisent toujours dans le développement de
+leurs jeux.
 
 \clearpage
 
@@ -6066,42 +6070,42 @@ multi-joueurs grâce à l'utilisation de coroutines pour encapsuler les
 parties se déroulant en parallèle. Le coût de développement de tels
 modules, en utilisant des langages donnant accès à moins de puissance
 d'abstraction, aurait certainement rendu le développement de ceux-ci
-impossible et donc, \Schemelang s'est révélé un langage très puissant
-pour le développement de ces outils indispensables.
+très difficile. Par conséquent, \Schemelang s'est révélé un langage
+très puissant pour le développement de ces outils indispensables.
 
 Le dynamisme du langage a également jouer un rôle implicite très
 important pour le développement de ces jeux. En effet, la présence
-d'un déboggeur très dynamique et efficace a apporté une grande
-flexibilité au développement et permis de développer efficacement ces
-deux jeux. En effet, malgré le fait que les erreurs de programmation
-sont signalées durant l'exécution du jeu, la résolution de celles-ci
-sont font très rapidement grâce à la possibilité d'introspection de
-l'état du programme et d'évaluation dynamique de code.
+d'un déboggeur dynamique et efficace a apporté une grande flexibilité
+au développement et permis de développer efficacement ces deux
+jeux. En effet, malgré le fait que les erreurs de programmation sont
+signalées durant l'exécution du jeu, la résolution de celles-ci se
+font très rapidement grâce à la possibilité d'introspection de l'état
+du programme et d'évaluation dynamique de code.
 
 Aussi, le langage \Schemelang a permis d'expérimenter sur le contrôle
 de flot des jeux en permettant de développer des systèmes non-triviaux
 de simulations à évènements discrets et de simulation par agents
 (coroutines). La modification du flot de contrôle du premier jeu a pu
-être fait sont trop d'efforts grâce aux abstractions faites entre
-autres par le système d'objets.
+être fait sont trop d'efforts grâce aux abstractions faites, entre
+autres, par le système d'objets.
 
-Bien sûr, la modularité de programmes apporte généralement des coût en
-performances pour ceux-ci. Ainsi, une difficulté d'utiliser un langage
-comme \Schemelang face à la programmation de jeux vidéo réside entre
-trouver le bon équilibre entre le niveau d'abstraction et la
-spécification de code (optimisations). Bien sûr cette balance varie
-grandement en fonction de l'architecture du matériel sur lequel le jeu
-sera déployé. S'il s'agit d'une plate-forme au matériel très limité,
-alors le coût d'abstraction pourrait peut-être s'avérer trop
-grand. Dans un tel cas, l'utilisation de langages de plus bas niveau,
-comme C++, semble plus appropriée afin de bâtir le moteur du jeu, mais
-\Schemelang pourrait alors être utilisé comme langage de script afin de
-permettre de développer dynamiquement le \textit{gameplay} du jeu. Par
-contre, s'il s'agit de plate-forme performantes, comme c'est le cas
-pour les jeux développés dans le cadre de ce mémoire, alors la
-possibilité de modulariser le code est beaucoup plus grande et les
-performances deviennent moins critiques, face à la réutilisabilité
-potentielle du code écrit. \Schemelang devient alors un candidat idéal.
+Toutefois, la modularité de programmes apporte généralement des coût
+en performance pour ceux-ci. Ainsi, une difficulté d'utiliser un
+langage comme \Schemelang face à la programmation de jeux vidéo réside
+entre trouver le bon équilibre entre le niveau d'abstraction et la
+spécialisation de code (optimisations). Cette balance varie grandement
+en fonction de l'architecture du matériel sur lequel le jeu sera
+déployé. S'il s'agit d'une plate-forme au matériel très limité, alors
+le coût d'abstraction pourrait s'avérer trop grand. Dans un tel cas,
+l'utilisation de langages de plus bas niveau, comme C++, semble plus
+appropriée afin de bâtir le moteur du jeu, mais \Schemelang pourrait
+alors être utilisé comme langage de script afin de développer
+dynamiquement le \textit{gameplay} du jeu. Par contre, s'il s'agit de
+plate-formes performantes, comme c'est le cas pour les jeux développés
+dans le cadre de ce mémoire, alors la possibilité de modulariser le
+code devient plus accessible et les performances deviennent moins
+critiques, face à la réutilisabilité potentielle du code
+écrit. \Schemelang devient alors un candidat idéal.
 
 Un problème potentiel qui n'a pas été adressé dans ce mémoire est
 relié à l'allocation et la gestion de mémoire automatique utilisée par
@@ -6123,121 +6127,25 @@ rapidement développer un nouveau jeu en réutilisant plusieurs
 modules, dont notamment les modules de rendus graphiques et de
 résolution de collisions.
 
+Il serait maintenant intéressant de développer des jeux de plus grande
+envergures afin de pousser plus loin l'aspect dynamique du langage par
+l'écriture d'outils d'écriture de scripts qui pourraient être utilisés
+en temps réel lors de la conception des niveaux. L'utilisation des
+techniques présentées dans ce mémoire permettraient ainsi une
+utilisation complète du langage et donc de fournir un aperçu global
+des performances qu'offre \Schemelang pour le développement de jeux
+vidéo.
+
 
 
 %%%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %chapter{Bibliographie}
-\setstretch{1}
+\singlespacing
 \bibliographystyle{unsrt} %% or maybe plain or abbrv
 \bibliography{memoire}
 
 %%%% %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \appendix
-% TODO: ce compteur doit être ajusté à la main 
-% \setcounter{page}{99}
-
-%% \chapter{Code des exemples}
-
-%% \section{Compte de banque}
-
-%% \subsection{Compte de banque en Java}\label{account_java}
-
-%% \subsubsection{Classe Account}
-%% \codeinput{bank/Account.java}
-
-%% \subsubsection{Interface RemoteAccount}
-%% \codeinput{bank/RemoteAccount.java}
-
-%% \subsubsection{Classe LogRecord}
-%% \codeinput{bank/LogRecord.java}
-
-%% \subsubsection{Classe AccountServer}
-%% \codeinput{bank/AccountServer.java}
-
-%% \subsubsection{Classe AccountClient}
-%% \codeinput{bank/AccountClient.java}
-
-%% %% \subsection{Compte de banque en Termite}\label{account_termite}
-%% %% \schemeinput{bank/account.scm}
-
-%% \newpage 
-
-%% \section{Serveur générique: genserver.scm}
-%% \schemeinput{genserver.scm}
-
-%% %% \section{Superviseur générique: supervisor.scm}
-%% %% 
-%% %% \schemeinput{supervisor.scm}
-
-%% \newpage
-
-%% \section{Définition de type}\label{define_termite_type}
-%% \schemeinput{deftype.scm}
-
-%% \newpage
-%% \chapter{Code des tests de performance}
-
-%% \section{Fibonacci}
-
-%% \subsection{Scheme}\codeinput{bench/fib.scm}
-%% \subsection{Erlang}\codeinput{bench/fib.erl}
-
-%% \newpage
-%% \section{Takeuchi}
-
-%% \subsection{Scheme}\codeinput{bench/tak.scm}
-%% \subsection{Erlang}\codeinput{bench/tak.erl}
-
-%% \newpage
-%% \section{Inversion naïve}
-%% \subsection{Scheme}\codeinput{bench/nrev.scm}
-%% \subsection{Erlang}\codeinput{bench/nrev.erl}
-
-%% \newpage
-%% \section{Quick Sort}
-%% \subsection{Scheme}\codeinput{bench/qsort.scm}
-%% \subsection{Erlang}\codeinput{bench/qsort.erl}
-
-
-%% \newpage
-%% \section{Smith Waterman}
-%% \subsection{Scheme}\codeinput{bench/smith.scm}
-%% \newpage
-%% \subsection{Erlang}\codeinput{bench/smith.erl}
-
-%% \newpage
-%% \section{Self}
-%% \subsection{Termite}\codeinput{bench/self.scm}
-%% \subsection{Gambit}\codeinput{bench/self_gambit.scm}
-%% \subsection{Erlang}\codeinput{bench/self.erl}
-
-%% \newpage
-%% \section{Spawn}
-%% \subsection{Termite}\codeinput{bench/spawn.scm}
-%% \subsection{Gambit}\codeinput{bench/spawn_gambit.scm}
-%% \subsection{Erlang}\codeinput{bench/spawn.erl}
-
-%% \newpage
-%% \section{Ring}
-
-%% \subsection{Termite}\codeinput{bench/ring.scm}
-%% \newpage
-%% \subsection{Gambit}\codeinput{bench/ring_gambit.scm}
-%% \newpage
-%% \subsection{Erlang}\codeinput{bench/ring.erl}
-
-%% \newpage
-%% \section{Ping-pong}
-
-%% \subsection{Termite}\codeinput{bench/pingpong.scm}
-%% \newpage
-%% \subsection{Erlang}\codeinput{bench/pingpong.erl}
-
-
-%% \newpage
-%% \section{``Migration''}
-
-%% \subsection{Termite}\codeinput{bench/migrate.scm}
 
 \end{document}
 

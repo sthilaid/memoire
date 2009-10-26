@@ -3736,22 +3736,21 @@ un tel cas, une exception de type \scheme{mailbox-timeout-exception}
 est lancée par la fonction de réception utilisée.
 
 Les patrons utilisés dans le filtrage de motifs de la forme spéciale
-\scheme{recv} diffèrent de ceux dans Termite. Ici, le patron doit être
-une donnée \Schemelang. Lorsque, dans cette donnée, un symbole est précédé
-d'une virgule (\textit{unquote}), le symbole est \emph{lié} à la
-valeur trouvée à cet endroit du motif dans le message reçu. Les
-formats de motifs reconnus sont les symboles, les mots clés, les
-caractères, les valeurs booléennes, les nombres, les chaînes de
-caractères, les listes et les vecteurs. Aussi, il est possible
-d'ajouter des gardes (filtrage conditionnel au prédicat) en incluant
-une liste de la forme \scheme{(where <pred-expr>)} après le motif de
-filtrage. Le prédicat utilisé est simplement une expression
-\Schemelang. Finalement, un patron spécial permettant d'effectuer des
-attentes bornées dans le temps est disponible sous la forme
-\scheme{(after <timeout> <body> ...)}. Ce patron spécial doit être
-spécifié \emph{en dernier}, s'il est présent. La figure
-\ref{Corout:recv-pat} illustre plusieurs motifs différents qui peuvent
-être utilisés.\\
+\scheme{recv} diffèrent de ceux dans Termite.  Dans notre système,
+lorsqu'un symbole est précédé d'une virgule (\textit{unquote}),
+celui-ci est \emph{lié} à la valeur trouvée à cet endroit du motif
+dans le message reçu. Les formats de motifs reconnus sont les
+symboles, les mots clés, les caractères, les valeurs booléennes, les
+nombres, les chaînes de caractères, les listes et les vecteurs. Aussi,
+il est possible d'ajouter des gardes (filtrage conditionnel au
+prédicat) en incluant une liste de la forme \scheme{(where
+  <pred-expr>)} après le motif de filtrage. Le prédicat utilisé est
+simplement une expression \Schemelang. Finalement, un patron spécial
+permettant d'effectuer des attentes bornées dans le temps est
+disponible sous la forme \scheme{(after <timeout> <body> ...)}. S'il
+est présent, ce patron spécial doit être spécifié \emph{en
+  dernier}. La figure \ref{Corout:recv-pat} illustre plusieurs motifs
+différents qui peuvent être utilisés.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -3772,33 +3771,33 @@ spécifié \emph{en dernier}, s'il est présent. La figure
   \label{Corout:recv-pat}
 \end{figure}
 
-Une particularité intéressante de ce filtrage par motif est reliée au
+Une particularité intéressante de ce filtrage par motifs est reliée au
 fait qu'il est possible d'utiliser des patrons de manière dynamique,
 \ie qui n'apparaissent pas dans la forme spéciale \scheme{recv}, mais
-plutôt qui ont été spécifiés grâce à une autre forme spéciale,
+plutôt qui ont été spécifiés grâce à une autre forme spéciale:
 \scheme{(with-dynamic-handlers ((<pattern> <handler-body>) ...)
   <body>)}. Tous les appels à \scheme{recv} se trouvant dans le corps
 (\scheme{<body>}) de \scheme{with-dynamic-handlers} se trouveront
-augmentés de ces nouveaux patrons. Il est important de mentionné que
+augmentés de ces nouveaux patrons. Il est important de mentionner que
 ces patrons dynamiques seront toutefois considérés en dernier lieu. Il
 est donc possible de factoriser des patrons communs et de les
 appliquer à tous les appels de la forme spéciale de réception de
 messages par filtrage de motifs.
 
 Le filtrage par patron présenté se conforme à la sémantique définie
-par les formes équivalente dans les système Termite~\cite{Termite} et
+par les formes équivalentes dans les système Termite~\cite{Termite} et
 Erlang~\cite{Erlang} par le fait que la sélection du message reçu se
 fait sur le premier message reçu qui correspond à au moins un patron
 de filtrage. Ce choix semble raisonnable puisqu'il en résulte que la
-sélection de message est complètement déterministe. En effet, la
+sélection d'un message est complètement déterministe. En effet, la
 réception de nouveaux messages (qui est indéterministe dû à
 l'incertitude qu'apporte la fonction \scheme{sleep-for}) n'influence
 pas le choix du message. Si un message déjà reçu correspond à un
-patron il sera choisi peu importe l'arrivée d'un nouveau message. Il
+patron, il sera choisi peu importe l'arrivée d'un nouveau message. Il
 en découle que le système de messagerie est robuste et fiable.
 
 Aussi, un mécanisme de liste de diffusion a été inclus. Ce mécanisme
-simple permet d'enregistrer des coroutine dans une liste de diffusion
+simple permet d'enregistrer des coroutines dans une liste de diffusion
 et, par la suite, d'envoyer à toutes les coroutines inscrites des
 messages de manière simultanée. Quoi que très primitif, ce système
 permet d'émuler la base d'un système de programmation
@@ -3808,7 +3807,7 @@ listes de diffusions sont:
 \begin{itemize}
 \item \scheme{(subscribe <list-id> <corout>)} : Inscription de la
   coroutine spécifiée à la liste de diffusion identifiée par le symbole
-  choisi. Si la liste n'existait pas, elle sera créée.
+  choisi. Si la liste n'existe pas, elle sera créée.
 
 \item \scheme{(unsubscribe <list-id> <corout>)} : Désinscription d'une
   coroutine à une liste de diffusion.
@@ -3818,37 +3817,39 @@ listes de diffusions sont:
 \end{itemize}
 
 \noindent
-Un identificateur de liste de diffusion est représenté par une donné
-\Schemelang. L'avantage d'utiliser des données comme identificateur est
-qu'il est alors possible de créer celui-ci durant
+Un identificateur de liste de diffusion est représenté par une donnée
+\Schemelang. L'avantage d'utiliser des données comme identificateur
+est qu'il est alors possible de créer celui-ci durant
 l'exécution. L'utilisation de variables \Schemelang pointant vers une
-structure de donnés, plutôt que des données \Schemelang, offriraient de
-meilleurs performances, mais ce dynamisme ne serait pas disponible.
+structure de données, plutôt que des données \Schemelang, offriraient
+de meilleurs performances, mais le dynamisme présent dans notre
+système ne serait pas disponible.
 
 
 \FloatBarrier
 \subsection{Autres mécanismes de synchronisation}
-Le mécanisme de messagerie sophistiqué du système de coroutine permet
-d'effectuer de manière élégante les synchronisation nécessaire entre
+Le mécanisme de messagerie sophistiqué du système de coroutines permet
+d'effectuer de manière élégante les synchronisations nécessaires entre
 les coroutines. Toutefois, certains problèmes pourraient être exprimés
-plus facilement grâce à des moyens plus traditionnels de
-synchronisation.  Pour ce faire, des
-sémaphores~\cite{DIJKSTRA_SEMAPHORE} ont été ajoutées au système de
-coroutine développé. Celles-ci permettent donc d'exprimer de manière
-différente les contraintes de synchronisations qui peuvent être
-nécessaire pour l'implantation d'un jeu. Les fonctions de manipulation
-et de création de sémaphores sont données ci-bas:
+plus facilement grâce à des moyens traditionnels de synchronisation.
+Pour ce faire, des sémaphores~\cite{DIJKSTRA_SEMAPHORE} ont été
+ajoutées au système de coroutines développé. Celles-ci permettent donc
+d'exprimer de manière différente les contraintes de synchronisation
+qui peuvent être nécessaires pour l'implantation d'un jeu. Les
+fonctions de manipulation et de création de sémaphores sont données
+ci-dessous:
 
 \begin{itemize}
 \item \scheme{(new-semaphore <init-value>)} : Création d'une nouvelle
   sémaphore ayant comme valeur initiale \scheme{<init-value>}.
 
 \item \scheme{(new-mutex)} : Création d'une nouvelle sémaphore ayant
-  comme valeur initiale 1.
+  comme valeur initiale $1$.
 
 \item \scheme{(sem-locked? <sem>)} : Permet de vérifier s'il reste des
   ressources disponibles dans une sémaphore. S'il en reste, la
-  fonction retournera vrai, et faux sinon.
+  fonction retournera vrai. Dans le cas contraire, elle retournera
+  faux.
 
 \item \scheme{(sem-lock! <sem>)} : Prend une ressource de la sémaphore
   spécifiée. Si aucune ressource n'est disponible, la coroutine se met
@@ -3858,7 +3859,7 @@ et de création de sémaphores sont données ci-bas:
 \item \scheme{(sem-unlock! <sem>)} : Libère une ressource de la
   sémaphore spécifiée. Aucune vérification n'est faite pour s'assurer
   que la coroutine courante possède réellement cette ressource. Si des
-  coroutines sont en attentes de cette ressource, la première à s'être
+  coroutines sont en attente de cette ressource, la première à s'être
   mise en attente est alors réveillée et enfilée dans la file de
   coroutines prêtes.
 \end{itemize}
@@ -3867,29 +3868,26 @@ et de création de sémaphores sont données ci-bas:
 
 \FloatBarrier
 \section{Implantation}
-L'implantation de ce système de coroutine est centralisée sur
+L'implantation de ce système de coroutines est centralisée sur
 l'utilisation des fonctions \scheme{continuation-capture} et
 \scheme{continuation-return} afin de permettre la conservation de
-l'état courant d'une coroutine.
-
-Un net avantage lorsque le système est directement implanté par
-l'utilisateur est qu'il répond sur mesure aux demandes de ce dernier
-et donc il peut s'exprimer dans une syntaxe simple, tout en conservant
-un contrôle fin sur le comportement du système.
-
-Cette section explique les mécaniques internes du système de
+l'état courant d'une coroutine. Un net avantage lorsque le système est
+directement implanté par l'utilisateur est qu'il répond sur mesure aux
+demandes de ce dernier. Il peut donc s'exprimer dans une syntaxe
+simple, tout en conservant un contrôle fin sur le comportement du
+système. Cette section présente les mécanismes internes du système de
 coroutines développé, en expliquant non seulement les structures de
-données utilisées, mais aussi les algorithmes utilisés.
+données utilisées, mais aussi les algorithmes.
 
 \FloatBarrier
 \subsection{Implantation des coroutines}
-La structure de donnée des coroutine est implantée en utilisant le
+La structure de données des coroutines est implantée en utilisant le
 système d'objets fourni dans le système Gambit-C. Une version orientée
 objet est aussi disponible. La structure employée est illustrée dans
 la figure \ref{Corout:corout-class}. Elle contient toutes les
 informations essentielles au fonctionnement de celle-ci, dont entre
-autre sa continuation (\scheme{kont}), sa boîte de messagerie, une
-sauvegarde de l'environnement d'un sous-système de coroutine
+autres sa continuation (\scheme{kont}), sa boîte de messagerie, une
+sauvegarde de l'environnement d'un sous-système de coroutines
 (\scheme{state-env}), etc...\\
 
 \begin{figure}[htb!]
@@ -3910,7 +3908,7 @@ sauvegarde de l'environnement d'un sous-système de coroutine
    (make-corout id kont mailbox state-env 
                 sleeping? delta-t msg-lists result)))
   \end{schemecode}
-  \caption{Structure de donnée représentant une coroutine}
+  \caption{Structure de données représentant une coroutine}
   \label{Corout:corout-class}
 \end{figure}
 
@@ -3918,21 +3916,21 @@ La continuation primordiale d'une coroutine est sa terminaison de
 manière \og propre \fg, \ie en utilisant la fonction de terminaison de
 coroutines. C'est ce qui permet à une coroutine ayant comme
 \textit{thunk} uniquement \scheme{(lambda () 1)} de terminer
-correctement avec la valeur de retour 1.
+correctement avec la valeur de retour $1$.
 
 La variable d'état \scheme{sleeping?} permet d'indiquer à
-l'ordonnanceur de savoir si la coroutine qui vient de céder le
-contrôle a été mise en veille ou non, afin de savoir si cette dernière
-doit retourner dans la file d'attente des coroutine prêtes. La figure
+l'ordonnanceur si la coroutine qui vient de céder le contrôle a été
+mise en veille ou non, afin de savoir si cette dernière doit retourner
+dans la file d'attente des coroutine prêtes. La figure
 \ref{Corout:state-diag} illustre les états possibles contenus dans
 \scheme{sleeping?}.
 
 Afin de déterminer si la coroutine possède ou non une valeur de
-retour, un symbole unique connu est utilisé afin d'initialiser la
-valeur de retour d'une coroutine. Lorsque l'utilisateur demande à
-obtenir la valeur de retour d'une coroutine, le contenu du membre
-\scheme{result} est comparé à ce symbole afin de savoir si une valeur
-de retour s'y trouve ou non, tel qu'illustré dans la figure
+retour, un symbole unique connu est utilisé pour initialiser la valeur
+de retour d'une coroutine. Lorsque l'utilisateur demande à obtenir la
+valeur de retour d'une coroutine, le contenu du membre \scheme{result}
+est comparé à ce symbole afin de savoir si une valeur de retour s'y
+trouve ou non, tel qu'illustré dans la figure
 \ref{Corout:get-result}.\\
 
 \begin{figure}[htb!]
@@ -3950,27 +3948,29 @@ de retour s'y trouve ou non, tel qu'illustré dans la figure
 \FloatBarrier
 \subsection{Timers}
 Les timers sont aussi implantés comme des structures
-\textit{define-type}. Leurs rôle est de fournir une abstraction
+\textit{define-type}. Leurs rôles est de fournir une abstraction
 temporelle pour le déroulement du système de coroutines, qui peut être
 perçu comme une simulation. Cette classe très simple contient des
 champs afin de tenir compte du temps courant de la simulation, de la
 période du timer, etc...
 
 Les timers doivent être rafraîchis régulièrement selon une période
-fixe, ainsi il doivent être exécutés complètement à l'extérieur du
-système de coroutine pour y arriver et donc, sont implantés en
+fixe. Ainsi, ils doivent être exécutés complètement à l'extérieur du
+système de coroutines pour y arriver et sont donc implantés en
 utilisant le système de \textit{threads} de Gambit-C. Il en résulte
-donc que ces derniers sont rafraîchis régulièrement de manière
-concurrente avec le système de coroutines.
+que ces derniers sont rafraîchis régulièrement de manière concurrente
+avec le système de coroutines.
 
 \subsection{Ordonnancement}
-L'ordonnancement est le coeur du système de coroutine. Cet
+L'ordonnancement est le coeur du système de coroutines. Cet
 ordonnancement évolue dans un environnement contenant l'état du
 système de coroutines actif. Cet environnement est conservé dans une
-structure de donnée globale et peut être accédé en appelant la
+structure de données globale et peut être accédé en appelant la
 fonction ayant le nom du paramètre. Par exemple, le paramètre
 d'environnement \scheme{current-corout} peut être accédé et modifié
-par la fonction \scheme{(current-corout [<new-value>])}.
+par la fonction \scheme{(current-corout [<new-value>])}. Le choix de
+cet \textit{API} a été fait afin de ressembler aux variables
+dynamiques de Gambit-C. Les paramètres d'états de l'ordonnanceur sont:
 
 \begin{itemize}
 \item \scheme{current-corout} : Paramètre contenant la coroutine
@@ -3983,46 +3983,45 @@ par la fonction \scheme{(current-corout [<new-value>])}.
 \item \scheme{time-sleep-q} : File prioritaire implantée avec un arbre
   rouge-noir qui contient les coroutines en attente sur le temps.
 \item \scheme{root-k} : Continuation primordiale, \ie continuation du
-  système de coroutine courant.
+  système de coroutines courant.
 \item \scheme{parent-state} : Sauvegarde de l'état du système de
-  coroutine \emph{parent} au système actuel, pour des systèmes
+  coroutines \emph{parent} au système actuel, pour des systèmes
   cascadés. Cet état est décrit par les paramètres présentés ici.
 \item \scheme{dynamic-handlers} : Liste de patrons dynamiques utilisés
   avec la forme spéciale \scheme{recv}.
-\item \scheme{sleeping-coroutines}: Nombres de coroutines en
-  attentes. Cette variable est nécessaire parce que l'accès aux files
-  \scheme{q} et \scheme{time-sleep-q} n'est pas suffisante. En effet,
+\item \scheme{sleeping-coroutines}: Nombre de coroutines en
+  attente. Cette variable est nécessaire parce que l'accès aux files
+  \scheme{q} et \scheme{time-sleep-q} n'est pas suffisant. En effet,
   les coroutines peuvent être en attente sur une sémaphore ou sur la
   réception d'un message. Ainsi ce paramètre permet à l'ordonnanceur
   de savoir s'il existe toujours au moins une coroutine en attente.
 \end{itemize}
 
-La récursion du système fonctionne grâce à un système de sauvegarde de
-cet état dans le paramètre d'environnement \scheme{parent-state} dans
-un sens ou dans le champs \scheme{state-env} d'un objet de coroutine
-dans l'autre.
+La récursion du système fonctionne grâce à la sauvegarde de l'état du
+système actuel dans le champs \scheme{state-env} d'un objet de
+coroutine et grâce à la restauration de l'état de la coroutine parent
+située dans le paramètre d'environnement \scheme{parent-state}.
 
-L'algorithme d'ordonnancement, en lui même, est très simple. Ce
-dernier est présenté intégralement dans la figure
-\ref{Corout:scheduler}. Dans un premier temps, la coroutine ayant
-suspendu son exécution est traitée. Si cette dernière a terminé son
-exécution, elle sa valeur de retour est sauvegardé, sinon elle est
-automatiquement remise dans la file d'attente des coroutines
-prêtes. Par la suite, la file prioritaire de coroutines en attente sur
-le temps est regardée afin réveiller toutes coroutines ayant dépassées
-leurs délais de sommeil. Finalement, la première coroutine disponible
-dans la file de coroutines prêtes est choisie comme prochaine
-coroutine et son travail est poursuivi par un appel à
-\scheme{resume-coroutine}. Si toutefois aucune coroutine ne se
-trouvait dans la file \scheme{q}, alors une vérification des
-coroutines en attente sur le temps est faite afin de déterminer s'il
-reste du travail à faire. S'il y a des coroutines en attente sur le
-temps, alors l'ordonnanceur se met en veille pour le délais d'attente
-restant. Cette particularité se distingue nettement des simulations à
-événements discrets qui auraient plutôt incrémentés leur horloge
-interne directement de ce délais, comportement qui est indésirable
-pour un jeu vidéo. Par contre, lorsqu'aucune coroutine n'est prête ou
-ne dort sur le temps, alors le système ne peut plus rien faire. Dans
+L'algorithme d'ordonnancement, en lui-même, est simple. Ce dernier est
+présenté intégralement dans la figure \ref{Corout:scheduler}. Dans un
+premier temps, la coroutine ayant suspendu son exécution est
+traitée. Si cette dernière a terminé son exécution, sa valeur de
+retour est sauvegardée, sinon elle est automatiquement remise dans la
+file d'attente des coroutines prêtes. Par la suite, la file
+prioritaire de coroutines en attente sur le temps est regardée afin de
+réveiller toutes coroutines ayant dépassé leur délai de
+sommeil. Finalement, la première coroutine disponible dans la file de
+coroutines prêtes est choisie comme la prochaine et son travail est
+poursuivi par un appel à \scheme{resume-coroutine}. Si toutefois
+aucune ne se trouvait dans la file \scheme{q}, alors une vérification
+des coroutines en attente sur le temps est faite afin de déterminer
+s'il reste du travail à faire. S'il y a des coroutines en attente sur
+le temps, alors l'ordonnanceur se met en veille pour le délai
+d'attente restant. Cette particularité se distingue nettement des
+simulations à événements discrets qui auraient plutôt incrémenté leur
+horloge interne directement de ce délai, comportement qui est
+indésirable pour un jeu vidéo. Lorsqu'aucune coroutine n'est prête ou
+ne dort sur le temps, alors la simulation ne peut plus continuer. Dans
 le cas où il existe d'autres coroutines en veille (par exemple sur
 l'attente d'un message), alors le système est en position
 d'interblocage. Sinon, le travail est terminé et donc, l'état du
@@ -4060,20 +4059,19 @@ invoquée.\\
   \label{Corout:scheduler}
 \end{figure}
 
-Le changement de contexte et le retour au contexte d'une coroutine
-sont faits, à la base, par les fonctions \scheme{yield} et
-\scheme{resume-coroutine}, illustrées respectivement dans les figures
-\ref{Corout:yield} et \ref{Corout:resume-corout}. La figure
-\ref{Corout:yield} illustre aussi la version permettant le changement
-de contexte d'un système de coroutine récursif. Ces dernières
-illustrent la base même du système de coroutine, où la réification de
-continuations permet la sauvegarde de l'état présent du calcul pour
-une utilisation future. Comme l'indique la figure
-\ref{Corout:resume-corout}, l'état de ces calculs sont poursuivis
-simplement par un retour à ces continuations sauvegardées dans la
-structure de donnée des coroutine. La valeur utilisée pour le retour a
-ces continuations est complètement arbitraire et sera ignorée par
-celle-ci.\\
+Le changement et le retour de contexte d'une coroutine sont faits par
+les fonctions \scheme{yield} et \scheme{resume-coroutine}, illustrées
+respectivement dans les figures \ref{Corout:yield} et
+\ref{Corout:resume-corout}. La figure \ref{Corout:yield} illustre
+aussi la version permettant le changement de contexte d'un système de
+coroutines récursif. Ces dernières illustrent la base même du système
+de coroutines, où la réification de continuation permet la sauvegarde
+de l'état présent du calcul pour une utilisation future. Comme
+l'indique la figure \ref{Corout:resume-corout}, ces calculs sont
+poursuivis simplement par un retour à leurs continuations sauvegardées
+dans la structure de données des coroutines. La valeur utilisée pour
+le retour à ces continuations est complètement arbitraire et sera
+ignorée par celles-ci.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4095,7 +4093,7 @@ celle-ci.\\
               (corout-kont-set! current-c k))
             (corout-scheduler)))))))
   \end{schemecode}
-  \caption{Fonctions de changement de contexte explicites}
+  \caption{Fonctions de changement de contexte explicite}
   \label{Corout:yield}
 \end{figure}
 
@@ -4118,14 +4116,13 @@ celle-ci.\\
 
 \FloatBarrier
 \subsection{Système de messagerie}
-La fonctionnalité de messagerie du système de coroutines est à la base
-très simple. Comme l'illustre la figure \ref{Corout:corout-class},
-chaque objet coroutine possède une boîte de réception de
-messages. Cette boîte est implantée comme une file d'attente,
-similairement à la file d'attente des coroutines prêtes utilisée par
-l'ordonnanceur.
+La fonctionnalité de messagerie du système de coroutines est très
+simple. Comme l'illustre la figure \ref{Corout:corout-class}, chaque
+coroutine possède une boîte de réception de messages. Cette boîte est
+implantée comme une file d'attente, similairement à la file d'attente
+des coroutines prêtes utilisée par l'ordonnanceur.
 
-L'envoi de message consiste à ajouter un nouveau message dans cette
+L'envoi de messages consiste à ajouter un nouveau message dans cette
 file d'attente. Après cet ajout, le système vérifie si la coroutine
 réceptrice était en attente d'un message et si c'est le cas, alors
 cette dernière est remise en action dans l'ordonnanceur. La figure
@@ -4135,7 +4132,8 @@ maximale de messages, la coroutine en attente pourrait se retrouver
 dans la file d'attente sur le temps des coroutines. Afin de distinguer
 une telle attente bornée d'un appel à \scheme{sleep-for}, l'état
 \scheme{interruptible?} du champs \scheme{sleeping?} d'une coroutine
-est utilisé.\\
+est utilisé, tel que schématisé dans la figure
+\ref{Corout:state-diag}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4157,16 +4155,16 @@ est utilisé.\\
 Pour la réception de messages, la coroutine actuelle vérifie si un
 message est disponible dans sa boîte de réception et, si c'est le cas,
 elle retourne le premier message enfilé dans celle-ci. Lorsqu'aucun
-message n'est disponible, la coroutine attend alors jusqu'à la
+message n'est pas disponible, la coroutine attend alors jusqu'à la
 réception d'un nouveau message avec une attente bornée dans le temps
 ou pas. Pour une attente bornée, la coroutine est mise en veille pour
-la durée spécifiée, en spécifiant qu'elle peut être interrompue par la
-réception d'un message. Sinon, alors l'état de la coroutine est
-conservée et elle est considérée comme dormante en attente de
-message. Si le délais d'attente est dépassé, alors une exception est
+la durée désirée, en spécifiant qu'elle peut être interrompue par la
+réception d'un message. Sinon, l'état de la coroutine est alors
+conservé et celle-ci est considérée comme dormante en attente de
+message. Si le délai d'attente est dépassé, alors une exception est
 lancée à l'utilisateur. La figure \ref{Corout:?}  illustre
 l'implantation de la fonction \scheme{?}, la plus simple pour la
-réception de message. Elle permet par contre de donner une bonne idée
+réception de messages. Elle permet par contre de donner une bonne idée
 du procédé employé.\\
 
 \begin{figure}[htb!]
@@ -4192,20 +4190,20 @@ du procédé employé.\\
 
 L'implantation de la forme spéciale de réception de messages
 \scheme{recv} est complexe et ne sera pas expliquée en détails. Cette
-dernière est implantée par une macro \Schemelang qui transforme les patrons
-de filtrage données dans une deuxième forme spéciale de filtrage par
-motifs appelée \scheme{match}. Le code généré par la macro
-\scheme{recv} tente d'effectuer le filtrage par motifs sur chacun des
+dernière est implantée par une macro \Schemelang qui transforme les
+patrons de filtrage donnés dans une deuxième forme spéciale de
+filtrage par motifs appelée \scheme{match}. Le code généré par la
+macro \scheme{recv} tente d'effectuer le filtrage sur chacun des
 messages présents dans la boîte de réception de la coroutine
-actuelle. Ainsi, le premier messages (dans leur ordre d'arrivé) qui se
+actuelle. Ainsi, le premier message (dans leur ordre d'arrivée) qui se
 conforme à un des patrons de filtrage sera retenu. La figure
 \ref{Corout:recv-order} illustre ce comportement.
 
  L'expansion macro du corps de la coroutine \scheme{c1} est donnée
  dans la figure \ref{Corout:recv-exp}. On constate que le patron donné
- est vérifié en premier sur chaque messages. Par la suite, si aucun
- messages ne correspondent à ce patron, une vérification est faite
- parmi les patrons dynamiques afin de trouver un message pouvant être
+ est vérifié en premier sur chaque message. Par la suite, si aucun
+ message ne correspond à ce patron, une vérification est faite parmi
+ les patrons dynamiques afin de trouver un message pouvant être
  utilisé. Si aucun message n'est trouvé, alors la coroutine est mise
  en veille pour une seconde et pourrait être interrompue par l'arrivée
  d'un nouveau message. Il est intéressant de noter que lorsqu'un
@@ -4213,7 +4211,7 @@ conforme à un des patrons de filtrage sera retenu. La figure
  deuxième appel à la macro \scheme{match} est fait afin d'exécuter le
  corps du patron dans un environnement effectuant les liaisons
  déclarées dans le motif du patron. Il en résulte ainsi une légère
- perte de performances, mais l'optimisation de cette double recherche
+ perte de performance, mais l'optimisation de cette double recherche
  du motif est complexe~\cite{Marc-Erlang}. Ainsi, puisque
  l'utilisation de cette forme spéciale a été mise de côté vers la fin
  de la recherche effectuée pour ce mémoire, cette optimisation a été
@@ -4272,15 +4270,16 @@ conforme à un des patrons de filtrage sera retenu. La figure
 \section{Performances}
 Afin d'obtenir une idée des performances du système développé, ce
 dernier est comparé à d'autres systèmes similaires sur les fonctions
-critiques de ces derniers. La comparaison est effectuée selon le temps
-(en secondes) pour faire un million de ces opérations critiques. Les
-opérations critiques choisies sont le changement de contexte
-(\scheme{yield}), l'envoi et la réception de messages simple
-(\scheme{!} et \scheme{?}) ainsi que l'envoi et la réception de
-messages avec filtrage (\scheme{!} et \scheme{recv}). Le tableau
-\ref{Corout:bench} présente ces résultats. Le tableau
-\ref{Corout:bench-rel} présente ces mêmes résultat de manière relative
-dans le but de mieux illustrer les différences de performances.
+critiques. La comparaison est effectuée selon le temps (en secondes)
+pour faire un million de ces opérations. Le choix de celles-ci se
+résume par les fonctions de changement de contexte (\scheme{yield}),
+d'envoi et de réception de messages simples (\scheme{!} et \scheme{?})
+ainsi que d'envoi et de réception de messages avec filtrage
+(\scheme{!} et \scheme{recv}). Le tableau \ref{Corout:bench} présente
+ces résultats. Le tableau \ref{Corout:bench-rel} présente ces mêmes
+résultats de manière relative dans le but de mieux illustrer les
+différences de performances. L'exécution de ces tests a été effectuée
+sur un processeur de 1.6 GHz possédant 1 Go de mémoire principale.
 
 \label{Corout:bench-section}
 
@@ -4295,9 +4294,9 @@ dans le but de mieux illustrer les différences de performances.
     Réception avec filtrage & 5.098 & ND    & 4.877 & 2.575\\
     \hline
   \end{tabular}
-  \caption{Temps d'exécution (en secondes) de 1000000 d'itérations de
-    tests comparatifs entre le système développé et d'autres systèmes
-    similaires}
+  \caption{Temps d'exécution (en secondes) de $1000000$ d'itérations
+    de tests comparatifs entre le système développé et d'autres
+    systèmes similaires}
   \label{Corout:bench}
 \end{table}
 
@@ -4312,29 +4311,31 @@ dans le but de mieux illustrer les différences de performances.
     Réception avec filtrage & 2.0 & ND  & 1.9 & 1.0 \\
     \hline
   \end{tabular}
-  \caption{Comparaison de performances relative au système le plus
+  \caption{Comparaison de performances relatives au système le plus
     rapide (1.0) en fonction des données de la table
     \ref{Corout:bench}}
   \label{Corout:bench-rel}
 \end{table}
 
 La comparaison du temps de changement de contexte est uniquement
-effectué avec Gambit-C puisque Termite et Erlang ne sont pas des
+effectuée avec Gambit-C puisque Termite et Erlang ne sont pas des
 systèmes de coroutines, mais plutôt des systèmes de programmation
 concurrente. On constate que le changement de contexte est environ six
 fois plus lent que celui effectué par Gambit-C. Puisque le code de
 \scheme{yield} est déjà très épuré, ce test comparatif indique qu'il
-s'agit plutôt de l'ordonnanceur de notre système est plus lent que
-celui de Gambit-C. 
+s'agit plutôt de l'ordonnanceur de notre système qui est plus lent que
+celui de Gambit-C. Toutefois, cette différence de performances est
+acceptable pour les utilisations légères de notre système dans un jeu
+vidéo.
 
 En ce qui concerne l'envoi et la réception de messages simples, notre
-système est comparé aux la fonctions
+système est comparé aux fonctions
 \scheme{thread-send}/\scheme{thread-receive} de Gambit-C et aux
-fonctions \scheme{!} et \scheme{?} de Termite. On constate que notre
-système offre des meilleurs performances pour ce test
+fonctions \scheme{!}/\scheme{?} de Termite. On constate que notre
+système offre de meilleurs performances pour ce test
 comparatif. L'écart au système Gambit-C se justifie probablement par
 le fait que l'utilisation d'outils de synchronisation n'est pas
-nécessaire dans notre système. Termite offre quant-à-lui des
+nécessaire dans notre système. Termite offre quant à lui des
 performances plutôt surprenantes pour ce test comparatif puisqu'il est
 non seulement quatre fois plus lent que notre système, mais il est
 aussi presque trois fois plus lent que lui-même pour la réception de

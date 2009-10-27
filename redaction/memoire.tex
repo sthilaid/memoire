@@ -4265,7 +4265,8 @@ conforme à un des patrons de filtrage sera retenu. La figure
 \begin{figure}[htb!]
   \begin{schemecode}
 (let loop ()
-  (let ((\#:mailbox44 (corout-mailbox (current-corout))))
+  (let ((\#:mailbox44 (corout-mailbox (current-corout)))
+        (\#:absolute-timeout558 (+ (time->seconds (current-time)) 1)))
     (let \#:loop43 ()
       (cond ((queue-find-and-remove!
               (lambda (\#:msg45)
@@ -4281,11 +4282,14 @@ conforme à un des patrons de filtrage sera retenu. La figure
              => (lambda (res) (unbox res) (\#:loop43)))
             
             (else
-             (let ((msg-q-size (queue-size \#:mailbox44)))
-               (sleep-for 1 interruptible?: \#t)
-               (if (= (queue-size \#:mailbox44) msg-q-size)
-                   (display 'finished!)
-                   (\#:loop43))))))))
+              (let ((sleep-delta
+                     (- \#:absolute-timeout558
+                        (time->seconds (current-time)))))
+                (if (> sleep-delta 0)
+                    (begin
+                      (sleep-for sleep-delta interruptible?: \#t)
+                      (\#:loop43))
+                    (display 'finished!))))))))
   \end{schemecode}
   \caption{Expansion macro du corps de la coroutine \scheme{c1} de la
     figure \ref{Corout:recv-order}}
@@ -4294,7 +4298,7 @@ conforme à un des patrons de filtrage sera retenu. La figure
 
 
 \FloatBarrier
-\section{Performances}
+\section{Performances} \label{Corout:bench-section}
 Afin d'obtenir une idée des performances du système développé, ce
 dernier est comparé à d'autres systèmes similaires sur les fonctions
 critiques. La comparaison est effectuée selon le temps (en secondes)
@@ -4302,28 +4306,57 @@ pour faire un million de ces opérations. Le choix de celles-ci se
 résume par les fonctions de changement de contexte (\scheme{yield}),
 d'envoi et de réception de messages simples (\scheme{!} et \scheme{?})
 ainsi que d'envoi et de réception de messages avec filtrage
-(\scheme{!} et \scheme{recv}). Le tableau \ref{Corout:bench} présente
-ces résultats. Le tableau \ref{Corout:bench-rel} présente ces mêmes
+(\scheme{!} et \scheme{recv}). Les opérations de réception de messages
+ont aussi été testées en utilisant une attente bornée nulle afin
+d'observer le coût associé à de telles attentes. Finalement, un test
+plus réaliste d'un serveur de \scheme{ping} a été utilisé. Le corps de
+ce test pour notre système est illustré dans la figure
+\ref{Corout:ping-server}. Le tableau \ref{Corout:bench} présente ces
+résultats. Le tableau \ref{Corout:bench-rel} présente ces mêmes
 résultats de manière relative dans le but de mieux illustrer les
 différences de performances. L'exécution de ces tests a été effectuée
-sur un processeur de 1.6 GHz possédant 1 Go de mémoire principale.
+sur un processeur de 1.6 GHz possédant 1 Go de mémoire principale.\\
 
-\label{Corout:bench-section}
+\begin{figure}[htb!]
+  \begin{schemecode}
+(let* ((c2 (new-corout 'c2 
+             (lambda ()
+               (let loop ()
+                 (recv ((,sender ping) (! sender 'pong)))
+                 (loop)))))
+         (c1 (new-corout
+              'c1 (lambda ()
+                    (do ((i 0 (+ i 1)))
+                        ((= i benchmark-limit) (kill-all! 'done))
+                      (! c2 (list (current-corout) 'ping))
+                      (recv (pong 'ok)))))))
+    (time-expr (boot (list c1 c2))))
+  \end{schemecode}
+  \caption{Test de performance \scheme{ping-server} utilisé pour
+    comparé une utilisation réaliste de la réception de messages avec
+    filtrage de motifs.}
+  \label{Corout:ping-server}
+\end{figure}
 
 \begin{table}
   \center
   \begin{tabular}{cccccc}
     \hline
-    Opération & Coroutines & Gambit-C & Termite & Erlang\\
+    Opérations & Coroutines & Gambit-C & Termite & Erlang\\
     \hline \hline
-    Changement de contexte  & 4.648 & 0.737 & ND    &    ND\\
-    Messagerie simple       & 1.798 & 2.374 & 6.992 &    ND\\
-    Réception avec filtrage & 5.098 & ND    & 4.877 & 2.575\\
+    \scheme{yield} & 2.250 & 0.385 & ND & ND\\
+    \scheme{!} & 1.155 & 0.260 & 0.967 & ND\\
+    \scheme{?} & 0.728 & 0.131 & 5.108 & ND\\
+    \scheme{? avec timeout} & 5.118 & 0.228 & 5.118 & ND\\
+    \scheme{!+?} &  6.877 & 1.328 & 2.061 & ND\\
+    \scheme{recv} & 0.684 & ND & 1.460 & 0.253\\
+    \scheme{recv avec timeout} & 4.340 & ND & 2.986 & 0.042\\
+    \scheme{ping server} & 10.796 & ND & 4.858 & 2.412\\
     \hline
   \end{tabular}
-  \caption{Temps d'exécution (en secondes) de $1000000$ d'itérations
-    de tests comparatifs entre le système développé et d'autres
-    systèmes similaires}
+  \caption{Temps d'exécution (en secondes) de $1000000$ itérations de
+    tests comparatifs entre le système développé et d'autres systèmes
+    similaires}
   \label{Corout:bench}
 \end{table}
 
@@ -4331,11 +4364,16 @@ sur un processeur de 1.6 GHz possédant 1 Go de mémoire principale.
   \center
   \begin{tabular}{cccccc}
     \hline
-    Opération & Coroutines & Gambit-C & Termite & Erlang\\
+    Opérations & Coroutines & Gambit-C & Termite & Erlang\\
     \hline \hline
-    Changement de contexte  & 6.3 & 1.0 & ND  & ND \\
-    Messagerie simple       & 1.0 & 1.3 & 3.9 & ND \\
-    Réception avec filtrage & 2.0 & ND  & 1.9 & 1.0 \\
+    \scheme{yield} & 5.8 & 1.0 & ND  & ND \\
+    \scheme{!} & 4.4 & 1.0 & 3.7 & ND\\
+    \scheme{?} & 5.6 & 1.0 39.0 & ND\\
+    \scheme{? avec timeout} & 22.5 & 1.0 &  22.5 & ND\\
+    \scheme{!+?} &  5.2 & 1.0 & 1.6 & ND\\
+    \scheme{recv} & 2.7 & ND & 5.8 & 1.0\\
+    \scheme{recv avec timeout} & 103.3 & ND & 71.1 & 1.0\\
+    \scheme{ping server} & 4.5 & ND & 2.0 & 1.0\\
     \hline
   \end{tabular}
   \caption{Comparaison de performances relatives au système le plus
@@ -4356,25 +4394,23 @@ acceptable pour les utilisations légères de notre système dans un jeu
 vidéo.
 
 En ce qui concerne l'envoi et la réception de messages simples, notre
-système est comparé aux fonctions
-\scheme{thread-send}/\scheme{thread-receive} de Gambit-C et aux
-fonctions \scheme{!}/\scheme{?} de Termite. On constate que notre
-système offre de meilleurs performances pour ce test
-comparatif. L'écart au système Gambit-C se justifie probablement par
-le fait que l'utilisation d'outils de synchronisation n'est pas
-nécessaire dans notre système. Termite offre quant à lui des
-performances plutôt surprenantes pour ce test comparatif puisqu'il est
-non seulement quatre fois plus lent que notre système, mais il est
-aussi presque trois fois plus lent que lui-même pour la réception de
-messages en utilisant du filtrage par motifs.
+système se trouve à être environ cinq fois plus lent que le système le
+plus rapide pour ce genre d'opération, soit Gambit-C. L'utilisation
+d'attentes bornées par le temps semble toutefois ralentir d'avantage
+les performances observées, tout comme pour le système Termite.
+L'écart à Gambit-C se justifie probablement par l'utilisation de
+structures de données moins efficace dans notre cas. Malgré tout, les
+performances observées demeurent acceptables.
 
-Finalement, la comparaison de filtrage par motif entre notre système,
-Termite et Erlang indique que notre système et Termite offrent des
-performances équivalentes, soient environ deux fois plus lentes que
-celles offertes par Erlang. Ce résultat n'est pas très surprenant
-puisque Erlang est réputé comme étant très efficace. Toutefois,
-plusieurs optimisations sur la réception de message par filtrage
-pourraient être effectuées afin d'améliorer cette performance.
+La comparaison de filtrage par motif entre notre système, Termite et
+Erlang indique que notre système et Termite offrent des performances
+équivalentes, soient environ cinq fois plus lentes que celles offertes
+par Erlang. Encore une fois, l'utilisation d'attentes bornées à
+beaucoup ralentit l'exécution de notre système et celle de Termite.
+Ces résultats ne sont pas très surprenants puisque Erlang est réputé
+comme étant très efficace. Toutefois, plusieurs optimisations sur la
+réception de message par filtrage pourraient être effectuées dans
+notre système afin d'améliorer celles-ci.
 
 
 \FloatBarrier

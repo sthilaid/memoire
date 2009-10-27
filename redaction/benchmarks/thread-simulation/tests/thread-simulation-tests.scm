@@ -227,22 +227,26 @@
     (boot (list c1 c2 c3))
     (corout-get-result c1)))
 
-(define-test test-timeout-? "1ok" 'done
+(define-test test-timeout-? "12ok" 'done
   (let* ((c1 (new-corout 'c1 (lambda () (with-exception-catcher
                                          (lambda (e) (display 'ok))
                                          (lambda ()
                                            (display (?))
+                                           (display (? timeout: 0.
+                                                       timeout-val: 2))
                                            (display (? timeout: 0.1))))
                                      'done)))
          (c2 (new-corout 'c2 (lambda () (! c1 1)))))
     (boot (list c1 c2))
     (corout-get-result c1)))
 
-(define-test test-timeout-?? "3ok" 'done
+(define-test test-timeout-?? "35ok" 'done
   (let* ((c1 (new-corout 'c1 (lambda () (with-exception-catcher
                                          (lambda (e) (display 'ok))
                                          (lambda ()
                                            (display (?? odd? timeout: 1))
+                                           (display (?? odd? timeout: 1
+                                                        timeout-val: 5))
                                            (display (?? odd? timeout: 0.2))))
                                      'done)))
          (c2 (new-corout 'c2 (lambda () (! c1 2) (yield) (! c1 3)))))
@@ -297,6 +301,19 @@
                                  (loop))))))
     (boot (list c1 c2 c3))
     'ok))
+
+(define-test test-recv-ensure-timeout "timeout!-finished!" 'ok
+(let* ((c1 (new-corout 'c1 (lambda ()
+                               (recv
+                                (ping (display 'ping-))
+                                (after 1 (display 'timeout!-)))
+                               (display 'finished!)
+                               (kill-all! 'ok))))
+       (loop-corout (new-corout 'loop
+                                (lambda () (let loop ()
+                                             (! c1 'toto) (yield) (loop))))))
+
+  (boot (list loop-corout c1))))
 
 (define-test test-msg-lists "alloallosalut#tallo" 'salut
   (let ((c1 (new-corout 'c1 (lambda ()
@@ -388,17 +405,23 @@
                             (lambda () (boot (list c1 c2))))))
 
 ;; Test the reception of correct message, of timeout and of unexpected msg
+
 (define-test test-recv-only "allono" 'ok
-  (let* ((c1 (new-corout 'c1 (lambda ()
-                               (recv-only (allo (display 'allo))
-                                          (after 0.05 (display 'no)))
-                               (recv-only (allo (display 'allo))
-                                          (after 0.05 (display 'no)))
-                               (recv-only (allo (display 'allo))
-                                          (after 0.05 (display 'no))))))
+  (let* ((c1 (new-corout 'c1
+                         (lambda ()
+                           (recv-only ((allo from ,sender)
+                                       (display 'allo)
+                                       (recv-only (allo (display 'allo))
+                                                  (after 0.05 (display 'no)))
+                                       (! sender 'ok))
+                                      (after 1 (display 'no)))
+                               
+                           (yield)
+                           (recv-only (allo (display 'allo))
+                                      (after 0.05 (display 'no))))))
         (c2 (new-corout 'c2 (lambda ()
-                              (! c1 'allo)
-                              (sleep-for 0.1)
+                              (! c1 `(allo from (current-corout)))
+                              (?)
                               (! c1 'toto!)))))
     (with-exception-catcher (lambda (e) 'ok)
                             (lambda () (boot (list c1 c2))))))

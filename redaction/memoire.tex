@@ -1,7 +1,5 @@
 \documentclass[12pt,twoside,letterpaper,francais]{book}
 
-%% \documentclass[12pt]{report}
-
 \usepackage[french, english]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{url}
@@ -979,9 +977,10 @@ ces types de base.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
-((lambda (x y) (+ (car x) (vector-ref y 2))) 
+((lambda (x y) (+ (car x) (vector-ref y 2)))
  '(1 2 3) 
  '\#(4 5 6)) => \schemeresult{7}
+
 (substring (list->string '(\#\textbackslash a \#\textbackslash l \#\textbackslash l \#\textbackslash o \#\textbackslash !)) 
            0 
            3) => \schemeresult{"all"}
@@ -1097,8 +1096,10 @@ liste spécifiée.\\
     (if (pair? lst)
         (cons (f (car lst)) (map f (cdr lst)))
         '()))
+
 (define (flip f y)
     (lambda (x) (f x y)))
+
 (map (flip - 1) '(1 2 3 4 5)) => \schemeresult{(0 1 2 3 4)}
   \end{schemecode}
   \caption{Exemple de création et d'utilisation de fonctions d'ordre
@@ -1120,7 +1121,9 @@ liste.\\
     (if (not (pair? lst))
         acc
         (foldl f (f acc (car lst)) (cdr lst))))
+
 (foldl + 0 '(1 2 3 4 5)) => \schemeresult{15}
+
 (foldl * 1 '(1 2 3 4 5)) => \schemeresult{120}
   \end{schemecode}
   \caption{Fonction d'ordre supérieure \scheme{foldl}.}
@@ -1226,9 +1229,10 @@ d'argument se fait normalement par valeur.\\
 \begin{figure}[htb!]
   \begin{schemecode}
 (define-macro (inc! var) `(set! ,var (+ ,var 1)))
+
 (let ((x 1))
-    (inc! x)
-    x) => \schemeresult{2}
+  (inc! x)
+  x) => \schemeresult{2}
   \end{schemecode}
   \caption{Exemple simple de macro utilisant le passage par nom à profit}
   \label{Scheme:macro-ex2}
@@ -1263,7 +1267,7 @@ figure \ref{Scheme:macro-ex3} est présentée dans la figure
   \begin{schemecode}
 (let ((v (make-vector 5)))
   (let loop ((x 0))
-    (if (< x 5) (begin (vector-set! v x x)
+    (if (< x 5) (begin (vector-set! v x x) 
                        (loop (+ x 1)))))
   v)
   \end{schemecode}
@@ -1339,6 +1343,7 @@ arguments de macros ne sont pas évalués.\\
 (define-macro (mask . bits)
   (define (curry2 f x) (lambda (y) (f x y)))
   (apply + (map (curry2 expt 2) bits)))
+
 (number->string (mask 1 3 8) 2) => \schemeresult{"100001010"}
   \end{schemecode}
   \caption{Exemple plus avancé de macro \Schemelang.}
@@ -1364,6 +1369,7 @@ efficace de tels masques.\\
   \begin{schemecode}
 (define-macro (mask-or . masks)
   (apply bitwise-ior (map eval masks)))
+
 (mask-or (mask 1 3) (mask 8)) => \schemeresult{266}
   \end{schemecode}
   \caption{Macro venant augmenter le petit \textit{DSL} portant sur la
@@ -1445,7 +1451,9 @@ continuation passée en paramètre, nommée \scheme{k}.\\
 \begin{figure}[htb!]
   \begin{schemecode}
 (define (minusk n1 n2 k) (k (- n1 n2)))
+
 (define (timesk n1 n2 k) (k (* n1 n2)))
+
 (define (factk n k)
   (if (< n 2)
       (k 1)
@@ -1483,6 +1491,7 @@ réutiliser plus tard.\\
   \begin{schemecode}
 (define k \#f)
 (define f (lambda (x y) (* x y)))
+
 (+ 3 (- (call/cc (lambda (cont) (set! k cont) (f 5 6))) 2)) => \schemeresult{31}
 (k 10) => \schemeresult{11}
   \end{schemecode}
@@ -1523,10 +1532,12 @@ supérieure à 10.\\
 \begin{figure}[htb!]
   \begin{schemecode}
 (trace foldl)
+
 (define (exists-greater-than val lst)
     (foldl (lambda (false x) (if (> x val) x false))
            \#f
            lst))
+
 (exists-greater-than 100 (list 1 102 3 2 7 12))
   \end{schemecode}
   {{\it
@@ -1562,6 +1573,7 @@ trouvée.\\
 \begin{figure}[htb!]
 \begin{schemecode}
 (trace foldl)
+
 (define (exists-greater-than val lst)
     (call/cc
      (lambda (return)
@@ -1570,6 +1582,7 @@ trouvée.\\
                                      retval))
               \#f
               lst))))
+
 (exists-greater-than 100 (list 1 102 3 2 7 12))
 \end{schemecode}
     {{\it
@@ -1897,6 +1910,7 @@ optionnelles qui possèdent une valeur par défaut.\\
   \begin{schemecode}
 (define (f x y \#!key z (sum (+ x y)))
   (list x y z sum))
+
 (f 1 2)                      => \schemeresult{(1 2 \#f 3)}
 (f 1 2 z: 'allo)             => \schemeresult{(1 2 allo 3)}
 (f 1 2 z: 'allo sum: 'salut) => \schemeresult{(1 2 allo salut)}
@@ -1916,6 +1930,7 @@ d'utilisation du paramètre reste.\\
 \begin{figure}[htb!]
   \begin{schemecode}
 (define (g x y . z) (list x y z))
+
 (g 1 2)       => \schemeresult{(1 2 ())}
 (g 1 2 3 4 5) => \schemeresult{(1 2 (3 4 5))}
   \end{schemecode}
@@ -2017,8 +2032,10 @@ question, implantant ainsi un héritage simple. La figure
   \begin{schemecode}
 (define-type point x y extender: define-type-of-point)
 (define-type-of-point circle r)
+
 (define (add p1 p2) (make-point (+ (point-x p1) (point-x p2))
                                 (+ (point-y p1) (point-y p2))))
+
 (add (make-point 1 2) (make-circle 3 4 5)) => \schemeresult{\#\textless point \#4 x: 1 y: 1\textgreater}
 (if (circle? (make-point 1 2)) 'ok 'no)    => \schemeresult{no}
   \end{schemecode}
@@ -2042,10 +2059,10 @@ fonctions.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(write (list 1 'a "a")) => \schemeresult{(1 a "a")} (display (list 1
-    'a "a")) => \schemeresult{(1 a a)} (write (list 1 'a "a")) =>
-    \schemeresult{(1 a "a")\textbackslash~n} (println "Bonjour " (+ 1
-    2) (map (flip + 1) '(1 2 3))) => \schemeresult{Bonjour 3234}
+(write (list 1 'a "a")) => \schemeresult{(1 a "a")} 
+(display (list 1 'a "a")) => \schemeresult{(1 a a)} 
+(write (list 1 'a "a")) => \schemeresult{(1 a "a")\textbackslash~n} 
+(println "Bonjour " (+ 1 2) (map (flip + 1) '(1 2 3))) => \schemeresult{Bonjour 3234}
   \end{schemecode}
   \caption{Exemples d'utilisations de fonctions d'affichage}
   \label{Scheme:print}
@@ -2274,12 +2291,13 @@ dynamiquement sur les types des arguments passés.\\
   \begin{schemecode}
 (defclass Titi () ((x :accessor x :initarg :x)))
 (defclass Blub () ((val :accessor val :initarg :val)))
+
 (defgeneric add (p1 p2))
 (defmethod add ((p1 Titi) (p2 Titi)) (+ (x p1) (x p2)))
 (defmethod add ((p1 Titi) (p2 Blub)) (+ (x p1) (val p2)))
+
 (let ((p1 (make-instance 'Titi :x 1))
       (p2 (make-instance 'Blub :val 2)))
-
   (print (add p1 p1))  => \schemeresult{2}
   (print (add p1 p2))) => \schemeresult{3}
   \end{schemecode}
@@ -2418,9 +2436,12 @@ utilisateurs déjà familier avec Gambit-C.\\
   \begin{schemecode}
 (define-class point () (slot: x) (slot: y))
 (define-class circle (point) (slot: r))
+
 (define (add p1 p2) (make-point (+ (point-x p1) (point-x p2))
                                 (+ (point-y p1) (point-y p2))))
+
 (add (make-point 1 2) (make-circle 3 4 5)) => \schemeresult{\#(<class-desc> 4 6)}
+
 (if (circle? (make-point 1 2)) 'ok 'no)    => \schemeresult{no}
   \end{schemecode}
   \caption{Utilisation simple du système objets compatible avec la
@@ -2508,6 +2529,7 @@ génériques d'objets.\\
 \begin{figure}[h!]
   \begin{schemecode}
 (define-class titi () (slot: i))
+
 (define-class toto ()
   (slot: t)
   (constructor: (lambda (self t) (toto-t-set! self t)))
@@ -2576,13 +2598,14 @@ et ayant un nombre variable de paramètres.\\
 (define-class length () (slot: l))
 (define-class point () (slot: x) (slot: y))
 (define-class circle (point) (slot: radius))
+
 (define-generic add)
 (define-method (add x y) (+ x y))
 (define-method (add x y z) (+ x y z))
+(define-method (add (p point) (l length)) (+ (point-x p) (length-l l)))
 (define-method (add (p1 point) (p2 point))
   (new point (+ (point-x p1) (point-x p2))
              (+ (point-y p1) (point-y p2))))
-(define-method (add (p point) (l length)) (+ (point-x p) (length-l l)))
 
 (let ((p (new point 1 2)) (l (new length 5)))
     (add 10 11)         => \schemeresult{21}
@@ -2730,11 +2753,13 @@ est finalement retourné.\\
   (constructor: (lambda (self x y)
                   (pp 'creating-point)
                   (point-x-set! self x) (point-y-set! self y))))
+
 (define-class circle (point) (slot: radius)
   (constructor: (lambda (self x y r)
                   (pp 'creating-circle)
                   (circle-radius-set! self r)
                   (init! cast: '(point * *) self x y))))
+
 (define-class container () (slot: obj)
   (constructor: (lambda (self (p point))
                   (pp 'containing-a-point)
@@ -2823,14 +2848,15 @@ formes spéciales.\\
 \begin{figure}[h!]
   \begin{schemecode}
 (define-class point () (slot: x) (slot: y))
+
 (define-class colored-circle (point) (slot: radius) (slot: color)
   (constructor:
    (lambda (self x y r c)
      (init! cast: '(point * *) self x y)
      (set-fields! self colored-circle ((radius r) (color c))))))
+
 (let ((p (new colored-circle 1 2 3 'red)))
   (update! p point x (flip + 1))
-  
   (point-x p)) => \schemeresult{2}
   \end{schemecode}
   \caption{Exemple d'utilisation des formes spéciales fournies par le
@@ -2910,10 +2936,11 @@ les structures utilisées lors de l'exécution du système. La figure
 (point-zero-set! 'toto)
 (point3d-zero-set! 'titi)
 
-(define p (new point 1 2))
-   => \schemeresult{\#(\#(point () 1 2 toto) 1 2)}
+(define p (new point 1 2)) => \schemeresult{\#(\#(point () 1 2 toto) 1 2)}
+
 (define distance (new length 5)) 
    => \schemeresult{\#(\#(length () unknown-slot unknown-slot unknown-slot 1) 5)}
+
 (define p2 (new point3d 4 5 6))  
    => \schemeresult{\#(\#(point3d (point) 1 2 titi unknown-slot 3) 4 5 6)}
   \end{schemecode}
@@ -2924,7 +2951,7 @@ les structures utilisées lors de l'exécution du système. La figure
 
 \begin{figure}[htb!]
   \center
-  \includegraphics[scale=0.7]{oo-schema}
+  \includegraphics[scale=0.55]{oo-schema}
   \caption{Schématisation des structures créées dans la figure
     \ref{OO:obj-struct}}
   \label{OO:classdesc}
@@ -3451,7 +3478,7 @@ attente bornée.\\
 
 \begin{figure}[htb!]
   \center
-  \includegraphics[scale=0.6]{corout-state-diag}
+  \includegraphics[scale=0.7]{corout-state-diag}
   \caption{Diagramme d'états d'une coroutine}
   \label{Corout:state-diag}
 \end{figure}
@@ -3505,8 +3532,7 @@ retournées par chacune des coroutines.\\
   \begin{schemecode}
 (let* ((c1 (new-corout 'c1 (lambda () (display 1))))
        (c2 (new-corout 'c2 (lambda () (display 2))))
-       (c3 (new-corout 'c3 (lambda () (display 3))))
-       (timer (start-timer! 1.0)))
+       (c3 (new-corout 'c3 (lambda () (display 3)))))
   (boot (list c1 c2 c3))) => \schemeresult{123}
   \end{schemecode}
   \caption{Exemple de démarrage d'un système de coroutines}
@@ -3563,6 +3589,7 @@ des coroutines hôtes des sous-systèmes de coroutines (\scheme{s1} et
        (s2 (new-corout 's2 (lambda () (boot (list c4 c5 c6))))))
   (boot (list s1 s2))
   (fold-l + 0 (map corout-get-result (list c1 c2 c3 c4 c5 c6))))
+
 => \schemeresult{(now returning: 1)}
    \schemeresult{(now returning: 4)}
    \schemeresult{(now returning: 2)}
@@ -4602,6 +4629,7 @@ d'entrées/sorties du jeu.\\
                  (create-new-mothership-event level))))
  
 (schedule-event! sim 0 (create-main-manager-event level))
+
 (schedule-event! sim 0 (create-redraw-event level))
   \end{schemecode}
   \caption{Exemple de code de simulation par évènements discrets}
@@ -4678,6 +4706,7 @@ de partie de la figure \ref{Exp:des}.\\
     (in 0 (create-text-flash-animation-event level
             (level-get level score-msg-obj)
             animation-duration new-cont))))
+
 (schedule-event! sim 0
   (start-of-game-animation-event level
     (generate-invaders-event level
@@ -4707,6 +4736,7 @@ des structures employées.\\
   \begin{schemecode}
 (define-type game-object id type pos state color speed
   extender: define-type-of-game-object)
+
 (define-type-of-game-object invader-ship row col)
 (define-type-of-game-object player-ship)
 (define-type-of-game-object message-obj text)
@@ -4777,6 +4807,7 @@ l'introduction d'erreurs est facile.\\
    ((player-ship? obj) (resolve-player-collision! level obj coll-obj))
    ((laser-obj? obj) (resolve-laser-collision! level obj coll-obj))
    ...))
+
 (define (resolve-laser-collision! level laser-obj collision-obj)
   (cond ((invader-ship? collision-obj) ...)
         ((laser-obj? collision-obj) ...)
@@ -4914,8 +4945,10 @@ les champs de classes pour les classes enfants de
   (slot: id) (slot: pos) (slot: state) (slot: color) (slot: speed)
   (class-slot: sprite-id) (class-slot: bbox)
   (class-slot: state-num) (class-slot: score-value))
+
 (define-class sprite-obj ())
 (define-class invader-ship (game-object sprite-obj) (slot: row) (slot: col))
+
 (define-class easy-invader   (invader-ship))
 (define-class medium-invader (invader-ship))
 (define-class hard-invader   (invader-ship))
@@ -4962,7 +4995,9 @@ précédente du jeu.\\
   (let ((inv-laser (if (player\_laser? laser1) laser2 laser1)))
     (explode-laser! level inv-laser)
     (destroy-laser! level inv-laser)))
+
 ...
+
 (define (move-object! level obj)
   (move-object-raw! obj)
   (let ((collision-obj (detect-collision? obj level)))
@@ -5099,6 +5134,7 @@ contrôle.\\
       (broadcast `(invader-row ,(Inv-Controller-row (self)))
                  'move)
       (wait-state))))
+
   (define-wait-state wait-state moved (inv-nb)
     (recv
      (go-down-warning
@@ -5120,6 +5156,7 @@ contrôle.\\
                        'init)
             (unsubscribe instant-components (self))
             (init-state))))
+
   (init-state))
   \end{schemecode}
   \caption{Comportement du méta-objet \scheme{invader-controller} qui
@@ -5544,7 +5581,9 @@ afin d'éviter à faire ce tri lors du rendu de chaque images.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(enum background-layer stage-layer foreground-layer human-like-layer top-layer)
+(enum background-layer stage-layer foreground-layer 
+      human-like-layer top-layer)
+
 (define-method (get-layer (h human-like))    human-like-layer)
 (define-method (get-layer (h hole))          foreground-layer)
 (define-method (get-layer (s stage))         stage-layer)

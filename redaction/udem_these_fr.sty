@@ -393,8 +393,7 @@
   \if@restonecol
    \twocolumn\fi}
 
-\def\debutchapitres{\clearpage %
-     \pagenumbering{arabic}}
+\def\debutchapitres{\pagenumbering{arabic}\setcounter{page}{1}}
 
 %\renewcommand\chapter{\if@openright\cleardoublepage\else\clearpage\fi
 %                    \thispagestyle{empty}%

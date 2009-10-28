@@ -80,6 +80,7 @@
 %\setstretch{2.0}
 \begin{document}
 
+\selectlanguage{french}
 \setcounter{page}{1}
 \PagesCouverture
 
@@ -94,21 +95,57 @@
 
 \resume
 
+Ce mémoire vise à recenser les avantages et les inconvénients de
+l'utilisation du langage de programmation fonctionnel dynamique
+\Schemelang pour le dévelop-pement de jeux vidéo. Pour ce faire, la
+méthode utilisée est d'abord basée sur une approche plus théorique. En
+effet, une étude des besoins au niveau de la programmation exprimés
+par ce type de développement, ainsi qu'une description détaillant les
+fonctionnalités du langage \Schemelang pertinentes au développement de
+jeu vidéo sont données afin de bien mettre en contexte le sujet. Par
+la suite, une approche pratique est utilisée en effectuant le
+développement de deux jeux vidéo de complexités croissantes: \si et
+\lr. Le développement de ces jeux vidéo a mené à l'extension du
+langage \Schemelang par plusieurs langages spécifiques au domaine et
+bibliothèques, dont notamment un système de programmation orienté
+objets et un système de coroutines. L'expérience acquise par le
+développement de ces jeux est finalement comparée à celle d'autres
+développeurs de jeux vidéo de l'industrie qui ont utilisé \Schemelang
+pour la création de titres commerciaux. En résumé, l'utilisation de ce
+langage a permis d'atteindre un haut niveau d'abstraction favorisant
+la modularité des jeux développés sans affecter les performances de
+ces derniers.
 
 \vspace{2em}
 
-\noindent {\bf Mots clés}: Language de programmation fonctionnels,
-\Schemelang, jeux vidéo, programmation orientée objet.
+\noindent {\bf Mots clés}: Langages de programmation fonctionnels,
+\Schemelang, jeux vidéo, programmation orientée objets, coroutines.
 
 \abstract
 
 \selectlanguage{english}
 
+This master's thesis aims at pinpointing the pros and cons of using
+the dynamic functionnal language \Schemelang for developing video
+games. The method used is first based on a theoretical
+approach. Indeed, the specific requirements for video game programming
+and a detailed description of relevant Scheme features are presented.
+Then, a practical approach is taken by presenting two video games
+developed using the \Schemelang language: \si and \lr. Their
+developpement resulted in the creation of various domain-specefic
+languages and libraries, such as an object oriented-system and a
+coroutine system. Each of these are presented separately in their own
+chapter. Finally, the experience achieved in this process is compared
+to the experience acquired by some video game companies that also used
+\Schemelang for the developpement of their titles. The use made of
+\Schemelang alowed us to perform various high-level abstractions that
+improved the modularity of the video games developed, without
+affecting their performance.
 
 \vspace{2em}
 
-\noindent {\bf Keywords}: Functional programming languages, \Schemelang,
-video games, object oriented programming.
+\noindent {\bf Keywords}: Functional programming languages,
+\Schemelang, video games, object oriented programming, coroutines.
 
 
 \selectlanguage{french}
@@ -125,56 +162,58 @@ video games, object oriented programming.
 
 \remerciements
 
-Je tient à remercier ma femme, mon fils et ma famille proche pour le
-soutien précieux qu'ils m'ont apporté tout au long de mes études
-universitaires. Je n'aurais jamais pu y arriver sans leur aide.
+Je tiens à remercier ma femme Julie, mon fils Émile ainsi que ma
+famille proche pour le soutien précieux qu'ils m'ont apporté tout au
+long de mes études universitaires. Je n'aurais jamais pu y arriver
+sans leur aide.
 
 Je voudrais également remercier tout les membres du laboratoire de
 traitement parallèle dans lequel j'ai effectué les travaux de
 recherche présentés dans ce mémoire. Leurs connaissances et amitié me
 suivront tout au long de mon cheminement professionnel. Mon directeur
-de recherche, Marc Feeley, a joué un rôle très important des ces
+de recherche, Marc Feeley, a joué un rôle très important dans ces
 études, tant au niveau des connaissances scientifiques qu'au niveau de
 la persévérance et de la continuité. Je lui en suis très
-reconnaissant. 
+reconnaissant.
 
 Je tiens également à remercier le Conseil de recherche en sciences et
-en génie du Canada (CRSNG) pour leur précieux soutien financier qui
-m'a permis d'entreprendre la recherche présentée dans ce document.
+en génie du Canada (CRSNG) pour son précieux soutien financier qui m'a
+permis d'entreprendre la recherche présentée dans ce document.
 
 Aussi, je voudrais remercier le studio de développement de jeux vidéo
-\textit{Gamerizon inc}. pour lequel je travaille et qui m'a permis de
+\textit{Gamerizon Inc}. pour lequel je travaille et qui m'a permis de
 prendre congé afin de rédiger ce mémoire de maîtrise.
 
-Finalement, je voudrais remercier tous les lecteurs et lectrices qui
-auront le courage de lire ce document au complet!
+Enfin, je voudrais remercier tous les lecteurs et lectrices qui auront
+le courage de lire ce document au complet!
 
-% \preface
-% 
-% Préface...
+%% \preface
+%% 
+%%  Préface...
 
-\debutchapitres
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Introduction} \label{Chap:Intro}
+\debutchapitres
+
 L'industrie du jeu vidéo devient de plus en plus importante dans le
 domaine de l'informatique. Cette croissance est bien reflétée par
-l'augmentation de 28\% des revenus provenant de la vente de jeux vidéo
+l'augmentation de 28~\% des revenus provenant de la vente de jeux vidéo
 aux États-Unis durant l'année 2007~\cite{NPD_Games_2007}. La place
 occupée par l'industrie du jeu vidéo durant cette même année s'estime
-à 76\% du marché de tous les logiciels vendus~\cite{NPD_Soft_2008}. 
+à 76~\% du marché de tous les logiciels vendus~\cite{NPD_Soft_2008}. 
 
 L'engouement du marché du jeu vidéo incite les compagnies oeuvrant
 dans le domaine à repousser les limites de l'état de l'art du
-développement de jeux. La compétition est féroce et beaucoup
-d'efforts doivent donc être investis dans la création d'un jeu afin qu'il
-se démarque de la masse et devienne un nouveau \og Blockbuster Hit
-\fg. Le président de la compagnie française UbiSoft estime que le coût
-moyen de développement d'un jeu sur une console moderne se situe entre
-20 et 30 millions de dollars~\cite{cbc_ubisoft}. Si l'on estime le
-salaire moyen d'un artiste ou d'un développeur de jeu vidéo à 60
-000\$ par année, cela reviendrait à un travail d'environ 300 à 500
-années/hommes.
+développement de jeux. La compétition est féroce et beaucoup d'efforts
+doivent donc être investis dans la création d'un jeu afin qu'il se
+démarque de la masse et devienne un nouveau \textit{Blockbuster
+  Hit}. Le président de la compagnie française UbiSoft estime que le
+coût moyen de développement d'un jeu sur une console moderne se situe
+entre 20 et 30 millions de dollars~\cite{cbc_ubisoft}. Si l'on estime
+le salaire moyen d'un artiste ou d'un développeur de jeu vidéo à 60
+000~\$ par année, cela reviendrait à un travail d'environ 300 à 500
+années-hommes.
 
 Puisque la création d'un jeu vidéo peut nécessiter autant d'efforts,
 il semble très intéressant de faciliter le développement de ces
@@ -184,12 +223,13 @@ diminution énorme des coûts de production et améliorer la qualité des
 environnements utilisés par les développeurs.
 
 Jusqu'à ce jour, la grande majorité des jeux vidéo sont écrits à
-l'aide de langages de bas niveau, tels que C~\cite{Ritchie-C-dev},
-C++~\cite{cplusplus} ou encore C\#~\cite{CSHARP_SPEC}. Les langages de
-bas niveaux sont caractérisés par un modèle d'implantation près de
-l'architecture de la plate-forme sur laquelle le logiciel est
-déployé. Ces langages sont généralement utilisés parce qu'ils sont
-déjà bien établis et que la main d'oeuvre est facilement accessible.
+l'aide de langages relativement de bas niveau, tels que
+C~\cite{Ritchie-C-dev}, C++~\cite{cplusplus} ou encore
+C\#~\cite{CSHARP_SPEC}. Les langages de plus bas niveaux sont
+caractérisés par un modèle d'implantation près de l'architecture de la
+plate-forme sur laquelle le logiciel est déployé. Ces langages sont
+généralement utilisés parce qu'ils sont déjà bien établis et que la
+main d'oeuvre est facilement accessible.
 
 Les langages de haut niveau sont, quant à eux, caractérisés par une
 bonne abstraction du système utilisé. Ces derniers permettent

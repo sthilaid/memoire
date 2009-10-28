@@ -5781,6 +5781,30 @@ malgré un plus grand nombre d'objets présents, ceux-ci demeurent en
 trop faible quantité pour éprouver la gestion mémoire sur des
 ordinateurs récents.
 
+\FloatBarrier
+\section{Performances}
+La performances des jeux développés a été évaluée sur aspects. Ces
+derniers mesurent l'efficacité des jeux sur l'utilisation de
+ressources (processeur et mémoire), ainsi que sur l'impacte du système
+de gestion automatique de mémoire. Le tableau \ref{Exp:perf} illustre
+les résultats obtenus face à ces points de comparaison.
+
+\begin{table}
+  \begin{tabular}{}
+  \end{tabular}
+  \hline
+  Points de comparaison & \textit{Space Invaders} & \textit{Lode Runner}\\
+  \hline \hline
+  Utilisation du processeur & & 70~\%\\
+  Nombres d'images par secondes & & 83.6\\
+  Durée minimum de pause du GC & & 0.0033~s\\
+  Durée moyenne de pause du GC & & 0.0045~s\\
+  Durée maximum de pause du GC & & 0.0096~s\\
+  Quantité de mémoire utilisée & & 1.5~Mo\\
+  \hline
+  \caption{}
+  \label{Exp:perf}
+\end{table}
 
 \FloatBarrier
 \section{Conclusion}

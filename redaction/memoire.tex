@@ -3151,16 +3151,25 @@ arguments.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
+
 (lambda (\#!key cast . args)
-  (let ((types (cond ((pair? cast) cast) 
-                     (else (map get-class-id args)))))
+  (let ((types
+         (if cast
+             cast
+             (cond ((= args-nb 0) '())
+                   ((= args-nb 1) (list (get-class-id (car args))))
+                   ...
+                   (else (map get-class-id args))))))
     (cond
-      ((or (generic-function-get-instance init!-meth-table types))
-           (find-polymorphic-instance? init!-meth-table 
-                                       args types))
-           => (lambda (method) 
-                (apply (method-body method) args)))
-      (else (error ...)))))
+     ((or (generic-function-get-instance init!-meth-table types)
+          (find-polymorphic-instance? init!-meth-table 
+                                      args types))
+      => (lambda (method)
+           (cond ((= args-nb 0) ((method-body method)))
+                 ((= args-nb 1) ((method-body method) (car args)))
+                 ...
+                 (else (apply (method-body method) args)))))
+     (else (error ...)))))
   \end{schemecode}
   \caption{Code expansé effectuant le \textit{dispatch} dynamique pour
     la fonction générique \scheme{init!}}
@@ -3184,15 +3193,17 @@ polymorphique.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
-(define (find-polymorphic-instance? genfun actual-params actual-types)
+(define (find-polymorphic-instance? genfun 
+                                    actual-params actual-types)
   (let ((args-nb (length actual-params))
-        (sorted-instances (generic-function-sorted-instances genfun)))
+        (sorted-instances 
+          (generic-function-sorted-instances genfun)))
     (exists (lambda (method)
-              (equivalent-types? (method-types method)
-                                 actual-params
-                                 actual-types))
-            (filter (lambda (i) (= (length (method-types i)) args-nb))
-                    sorted-instances))))
+              (and (= (length (method-types method)) args-nb)
+                   (equivalent-types? (method-types method)
+                                      actual-params
+                                      actual-types)))
+            sorted-instances)))
   \end{schemecode}
   \caption{Implantation de la recherche d'instances polymorphiques
     d'une fonction générique}
@@ -3282,7 +3293,9 @@ OOPS~\cite{OOPS} ainsi que les objets obtenus avec l'utilisation de la
 forme spéciale \scheme{define-type} de Gambit-C ont été utilisés pour
 effectuer cette comparaison. Le tableau \ref{OO:bench-rel} présente
 ces résultats d'une manière relative au meilleur temps d'exécution du
-test pour chaque opération vérifiée.
+test pour chaque opération vérifiée. Les tests effectués sur des
+fonctions génériques utilisent quatre instances de celles-ci pour
+notre système objet ($m=4$).
 
 \begin{table}
   \center
@@ -3291,11 +3304,13 @@ test pour chaque opération vérifiée.
     Opération & define-type & Meroon & OOPS & class \\
     \hline \hline
     Création d'instances directes           & 0.005 & 0.215 & 1.423 & 0.007\\
-    Création avec constructeurs             & ND    & ND    & ND    & 2.173\\
+    Création avec constructeurs             & ND    & ND    & ND    & 1.318\\
     Accès aux membres                       & 0.006 & 0.126 & 3.120 & 0.014\\
     Modification de membres                 & 0.008 & 0.117 & 3.961 & 0.011\\
-    \textit{Dispatch} direct                & 0.185 & 0.188 & 19.210 & 1.860\\
-    \textit{Dispatch} polymorphique         & 0.213 & 0.773 & 18.995 & 5.786\\
+    \textit{Dispatch} direct ($p=2$)        & 0.185 & 0.641 & 19.210 & 0.897\\
+    \textit{Dispatch} direct ($p=5$)        & 0.411 & 1.008 & 22.820 & 1.997\\ 
+    \textit{Dispatch} polymorphique ($p=2$) & 0.188 & 0.705 & 18.995 & 3.578\\
+    \textit{Dispatch} polymorphique ($p=5$) & 0.452 & 1.200 & 24.052 & 10.125\\
     \hline
   \end{tabular}
   \caption{Temps d'exécution (en secondes) de 1~000~000 itérations de
@@ -3314,8 +3329,10 @@ test pour chaque opération vérifiée.
     Création avec constructeurs & ND & ND & ND & 1.0 \\
     Accès aux membres & 1.0 & 21.0 & 520.0 & 2.3 \\
     Modification de membres & 1.0 & 14.6 & 495.1 & 1.4 \\
-    \textit{Dispatch} direct & 1.0 & 1.0 & 103.8 & 10.0 \\
-    \textit{Dispatch} polymorphique & 1.0 & 3.6 & 89.1 & 27.1 \\
+    \textit{Dispatch} direct ($p=2$) & 1.0 & 3.5 & 103.8 & 4.8 \\
+    \textit{Dispatch} direct ($p=5$) & 1.0 & 2.5 & 55.5 & 4.9\\
+    \textit{Dispatch} polymorphique ($p=2$) & 1.0 & 3.8 & 101.0 & 19.0\\
+    \textit{Dispatch} polymorphique ($p=5$) & 1.0 & 2.7 & 53.2 & 22.4\\
     \hline
   \end{tabular}
   \caption{Comparaison de performances relatives au système le plus
@@ -3326,14 +3343,21 @@ test pour chaque opération vérifiée.
 Ces résultats démontrent bien que les objectifs d'implantation ont été
 atteints. En effet, le système développé (\scheme{class}) offre de
 bonnes performances quant à la création d'instances et la manipulation
-des membres de celles-ci. Malgré le fait que le système est environ un
-ordre de grandeur plus lent que le système Meroon pour effectuer le
-\textit{dispatch} dynamique de fonctions génériques, celui-ci offre
-beaucoup plus d'expressivité dont l'utilisation de constructeurs ou de
-discrimination sur des valeurs. Ainsi, le système développé offre
-plusieurs concepts de haut niveau quant à la programmation orientée
-objets et se compare aux autres systèmes d'objets performants
-disponibles pour Gambit-C.
+des membres de celles-ci. Malgré le fait que notre système est environ
+un cinq fois plus lent qu'un appel de fonction dans Gambit-C pour
+effectuer le \textit{dispatch} direct de fonctions génériques, \ie où
+une instance de la fonction générique existe pour les types des
+arguments passés à celle-ci. Une dégradation d'un facteur de cinq est
+aussi observée pour effectuer le travail supplémentaire lors d'appels
+de fonctions génériques nécessitant du polymorphisme. 
+
+Ainsi, les performances obtenus se comparent très bien à Gambit-C
+lui-même pour la création d'objets et l'accès au membres de
+ceux-ci. Aussi, la performance d'appels de fonctions générique, quoi
+que légèrement plus lente, se compare aussi à Meroon qui est réputé
+pour être bien optimisé. Donc, tout en offrant plus de fonctionnalités
+que ses compétiteurs notre système offre des performances adéquates en
+fonction des critères fixés.
 
 \FloatBarrier
 \section{Conclusion}
@@ -4355,16 +4379,32 @@ d'envoi et de réception de messages simples (\scheme{!} et \scheme{?})
 ainsi que d'envoi et de réception de messages avec filtrage
 (\scheme{!} et \scheme{recv}). Les opérations de réception de messages
 ont aussi été testées en utilisant une attente bornée nulle afin
-d'observer le coût associé à de telles attentes. Finalement, un test
-plus réaliste d'un serveur de \scheme{ping} a été utilisé. Le corps de
-ce test pour notre système est illustré dans la figure
+d'observer le coût associé à de telles attentes. Les patrons utilisés
+pour le filtrage par motifs sans et avec \textit{timeout} utilisent le
+patron illustré dans la figure \ref{Corout:bench-pattern}. Finalement,
+un test plus réaliste d'un serveur de \scheme{ping} a été utilisé. Le
+corps de ce test pour notre système est illustré dans la figure
 \ref{Corout:ping-server}. Le tableau \ref{Corout:bench} présente ces
 résultats. Le tableau \ref{Corout:bench-rel} présente ces mêmes
 résultats de manière relative dans le but de mieux illustrer les
 différences de performances. L'exécution de ces tests a été effectuée
 sur un processeur de 1.6 GHz possédant 1 Go de mémoire principale.\\
 
-\begin{figure}[htb!]
+\begin{figure}[htb]
+  \begin{schemecode}
+(recv (salut 'non) 
+      ((allo 12) 'ok)
+      \textless{}(after 2)\textgreater{})
+  \end{schemecode}
+  \caption{Patron de filtrage utilisé pour les tests de
+    performances. Le message reçu par ce dernier est celui attendu par
+    la deuxième branche.}
+  \label{Corout:bench-pattern}
+\end{figure}
+
+\medskip
+
+\begin{figure}[htb]
   \begin{schemecode}
 (let* ((c2 (new-corout 'c2 
              (lambda ()
@@ -4392,12 +4432,12 @@ sur un processeur de 1.6 GHz possédant 1 Go de mémoire principale.\\
     Opérations & Coroutines & Gambit-C & Termite & Erlang\\
     \hline \hline
     \scheme{yield} & 2.250 & 0.385 & ND & ND\\
-    \scheme{!} & 1.155 & 0.260 & 0.967 & ND\\
-    \scheme{?} & 0.728 & 0.131 & 5.108 & ND\\
-    \scheme{? avec timeout} & 5.118 & 0.228 & 5.118 & ND\\
-    \scheme{!} et \scheme{?} &  6.877 & 1.328 & 2.061 & ND\\
+    \scheme{!} & 1.155 & 0.260 & 0.967 & 1.282\\
+    \scheme{?} & 0.728 & 0.131 & 5.108 & 0.270\\
+    \scheme{?} avec timeout & 1.876 & 0.142 & 5.118 & 0.269\\
+    \scheme{!} et \scheme{?} &  6.877 & 1.328 & 2.061 & 1.842\\
     \scheme{recv} & 0.684 & ND & 1.460 & 0.253\\
-    \scheme{recv avec timeout} & 4.340 & ND & 2.986 & 0.042\\
+    \scheme{recv} avec timeout & 2.743 & ND & 1.938 & 0.273\\
     \scheme{ping server} & 10.796 & ND & 4.858 & 2.412\\
     \hline
   \end{tabular}
@@ -4414,13 +4454,13 @@ sur un processeur de 1.6 GHz possédant 1 Go de mémoire principale.\\
     Opérations & Coroutines & Gambit-C & Termite & Erlang\\
     \hline \hline
     \scheme{yield} & 5.8 & 1.0 & ND  & ND \\
-    \scheme{!} & 4.4 & 1.0 & 3.7 & ND\\
-    \scheme{?} & 5.6 & 1.0 39.0 & ND\\
-    \scheme{? avec timeout} & 22.5 & 1.0 &  22.5 & ND\\
-    \scheme{!} et \scheme{?} &  5.2 & 1.0 & 1.6 & ND\\
-    \scheme{recv} & 2.7 & ND & 5.8 & 1.0\\
-    \scheme{recv avec timeout} & 103.3 & ND & 71.1 & 1.0\\
-    \scheme{ping server} & 4.5 & ND & 2.0 & 1.0\\
+    \scheme{!} & 4.4 & 1.0 & 3.7 & 4.9\\
+    \scheme{?} & 5.5 & 1.0 & 38.9 & 2.0\\
+    \scheme{?} avec timeout & 13.2 & 1.0 & 36.0 & 1.8\\
+    \scheme{!} et \scheme{?} &  5.1 & 1.0 & 1.5 & 1.3\\
+    \scheme{recv} & 2.3 & ND & 5.7 & 1.0\\
+    \scheme{recv} avec timeout & 9.8 & ND & 7.0 & 1.0\\
+    \scheme{ping server} & 4.4 & ND & 2.0 & 1.0\\
     \hline
   \end{tabular}
   \caption{Comparaison de performances relatives au système le plus
@@ -4453,11 +4493,11 @@ La comparaison de filtrage par motif entre notre système, Termite et
 Erlang indique que notre système et Termite offrent des performances
 équivalentes, soient environ cinq fois plus lentes que celles offertes
 par Erlang. Encore une fois, l'utilisation d'attentes bornées à
-beaucoup ralentit l'exécution de notre système et celle de Termite.
-Ces résultats ne sont pas très surprenants puisque Erlang est réputé
-comme étant très efficace. Toutefois, plusieurs optimisations sur la
-réception de message par filtrage pourraient être effectuées dans
-notre système afin d'améliorer celles-ci.
+ralentit d'un facteur de deux l'exécution de notre système et celle de
+Termite.  Ces résultats ne sont pas très surprenants puisque Erlang
+est réputé comme étant très efficace. Toutefois, plusieurs
+optimisations sur la réception de message par filtrage pourraient être
+effectuées dans notre système afin d'améliorer celles-ci.
 
 
 \FloatBarrier
@@ -5798,7 +5838,7 @@ une minute aux versions compilées des jeux.
     Points de comparaison & \textit{Space Invaders} & \textit{Lode Runner}\\
     \hline \hline
     Utilisation du processeur & 40~\% & 70~\%\\
-    Nombres d'images par secondes & 29.8 & 83.6\\
+    Nombres d'images par secondes & 29.8 & 68.2\\
     Durée minimum de pause du GC & 0.0020~s & 0.0033~s\\
     Durée moyenne de pause du GC & 0.0025~s & 0.0045~s\\
     Durée maximum de pause du GC & 0.0037~s & 0.0096~s\\

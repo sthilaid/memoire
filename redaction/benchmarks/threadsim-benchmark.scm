@@ -39,8 +39,13 @@
   (let* ((c1 (new-corout
               'c1 (lambda ()
                     (do ((i 0 (+ i 1)))
-                        ((= i benchmark-limit) (kill-all! 'done))
-                      (? timeout: 0 timeout-val: 'ok))))))
+                          ((= i benchmark-limit) 'ok)
+                      (! (current-corout) 'allo))
+                    (let ((dt (time-expr
+                               (do ((i 0 (+ i 1)))
+                                   ((= i benchmark-limit) 'ok)
+                                 (? timeout: 2 timeout-val: 'ok)))))
+                      dt)))))
     (time-expr (boot (list c1)))))
 
 (define (bench-!-?)
@@ -73,9 +78,16 @@
   (let* ((c1 (new-corout
               'c1 (lambda ()
                     (do ((i 0 (+ i 1)))
-                        ((= i benchmark-limit) (kill-all! 'done))
-                      (recv (after 0 'ok)))))))
-    (time-expr (boot (list c1)))))
+                          ((= i benchmark-limit) 'ok)
+                      (! (current-corout) '(allo 12)))
+                    (time-expr
+                     (do ((i 0 (+ i 1)))
+                         ((= i benchmark-limit) 'done)
+                       (recv (salut 'non)
+                             ((allo 12) 'ok)
+                             (after 2 'ok))))))))
+    (boot (list c1))
+    (corout-get-result c1)))
 
 (define (bench-ping-server)
   (let* ((c2 (new-corout 'c2 (lambda ()

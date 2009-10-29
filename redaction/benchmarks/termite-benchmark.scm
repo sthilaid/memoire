@@ -29,6 +29,9 @@
   (let ((main (self)))
     (spawn
      (lambda ()
+       (do ((i 0 (+ i 1)))
+           ((= i benchmark-limit) 'ok)
+         (! (self) 'ping))
        (! main (time-expr (do ((i 0 (+ i 1)))
                               ((= i benchmark-limit) 'ok)
                             (? 0. 'ok))))))
@@ -52,11 +55,27 @@
      (lambda ()
        (do ((i 0 (+ i 1)))
            ((= i benchmark-limit) 'ok)
-         (! (self) 'pong))
+         (! (self) '(allo 12)))
        (! main
           (time-expr (do ((i 0 (+ i 1)))
                          ((= i benchmark-limit) 'ok)
-                       (recv ('pong 'ok)))))))
+                       (recv (salut 'non)
+                             ((allo 12) 'ok)))))))
+    (?)))
+
+(define (bench-recv-timeout)
+  (let ((main (self)))
+    (spawn
+     (lambda ()
+       (do ((i 0 (+ i 1)))
+           ((= i benchmark-limit) 'ok)
+         (! (self) '(allo 12)))
+       (! main
+          (time-expr (do ((i 0 (+ i 1)))
+                         ((= i benchmark-limit) 'ok)
+                       (recv (salut 'non)
+                             ((allo 12) 'ok)
+                             (after 2 'ok)))))))
     (?)))
 
 (define (bench-ping-server)
@@ -75,14 +94,7 @@
                          (recv ('pong 'ok))))))))
     (?)))
 
-(define (bench-recv-timeout)
-  (let ((main (self)))
-    (spawn
-     (lambda ()
-       (! main (time-expr (do ((i 0 (+ i 1)))
-                              ((= i benchmark-limit) 'ok)
-                            (recv (after 0 'ok)))))))
-    (?)))
+
 
 (pp `(termite !: ,(bench-!)))
 (pp `(termite ?: ,(bench-?)))

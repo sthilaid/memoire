@@ -5787,24 +5787,56 @@ La performances des jeux développés a été évaluée sur aspects. Ces
 derniers mesurent l'efficacité des jeux sur l'utilisation de
 ressources (processeur et mémoire), ainsi que sur l'impacte du système
 de gestion automatique de mémoire. Le tableau \ref{Exp:perf} illustre
-les résultats obtenus face à ces points de comparaison.
+les résultats obtenus face à ces points de comparaison. Les résultats
+présentées dans ce tableau ont été obtenus en jouant durant environ
+une minute aux versions compilées des jeux.
 
 \begin{table}
-  \begin{tabular}{}
+  \center
+  \begin{tabular}{ccc}
+    \hline
+    Points de comparaison & \textit{Space Invaders} & \textit{Lode Runner}\\
+    \hline \hline
+    Utilisation du processeur & 40~\% & 70~\%\\
+    Nombres d'images par secondes & 29.8 & 83.6\\
+    Durée minimum de pause du GC & 0.0020~s & 0.0033~s\\
+    Durée moyenne de pause du GC & 0.0025~s & 0.0045~s\\
+    Durée maximum de pause du GC & 0.0037~s & 0.0096~s\\
+    Quantité de mémoire utilisée & 1~Mo& 1.5~Mo\\
+    \hline
   \end{tabular}
-  \hline
-  Points de comparaison & \textit{Space Invaders} & \textit{Lode Runner}\\
-  \hline \hline
-  Utilisation du processeur & & 70~\%\\
-  Nombres d'images par secondes & & 83.6\\
-  Durée minimum de pause du GC & & 0.0033~s\\
-  Durée moyenne de pause du GC & & 0.0045~s\\
-  Durée maximum de pause du GC & & 0.0096~s\\
-  Quantité de mémoire utilisée & & 1.5~Mo\\
-  \hline
-  \caption{}
+  \caption{Analyse de performances des jeux développés}
   \label{Exp:perf}
 \end{table}
+
+On constate que le jeu \textit{Space Invaders} ne présente pas de
+bonnes performances quant à la gestion du processeur. Le taux de
+rafraîchissement faible présenté par celui-ci est la conséquence de
+l'utilisation de systèmes de flot de contrôles expérimentaux. En
+effet, l'ordonnancement fut difficile à bien orchestrer et c'est
+principalement pour cette raison que l'utilisation de simulations à
+événements discrets et de coroutines a été abandonnée.
+
+Toutefois, le jeu \textit{Lode Runner} présente des performances très
+intéressantes. L'utilisation du processeur a été beaucoup améliorée en
+utilisant une technique de flot de contrôle plus traditionnelle. On
+observe un pourcentage d'utilisation du processeur à environ 70~\%
+tout en donnant un taux de rafraîchissement de plus de 80 images par
+secondes. 
+
+En ce qui concerne l'utilisation de la mémoire, les deux jeux
+présentent des profils acceptables. En effet, l'utilisation moyenne de
+la mémoire varie entre un et deux méga-octets, ce qui correspond à
+très peu sur des plate-formes modernes.
+
+Finalement, on peut observer que les pauses dues à la récupération de
+mémoire automatique furent de très courtes durées. Ainsi, celles-ci
+n'ont eu aucun impact sur la fluidité du jeu tel que
+requis. Toutefois, la faible utilisation mémoire vient biaiser cette
+observation. On ne peut donc pas conclure dans l'absolu sur l'impacte
+de l'utilisation de la gestion de mémoire automatique dans un jeu
+développé en Scheme avec nos implantations de \textit{Space Invaders}
+et \textit{Lode Runner}.
 
 \FloatBarrier
 \section{Conclusion}
@@ -5821,13 +5853,23 @@ par évènements discrets à une simulation par agents. La conversion
 s'est faite sans trop d'efforts, grâce aux abstractions utilisées.
 
 Par la suite, un deuxième jeu a été développé afin de permettre la
-validation des techniques utilisées pour \textit{Space Invaders} sur un jeu plus
-complexe. Ainsi, \textit{Lode Runner} fut développé en utilisant les abstractions de
-haut niveau que permettent les fonctions de première classe combinées
-avec un système d'objets très polyvalent et la conception de nouvelles
-formes spéciales. En utilisant, cette fois-ci, une approche
-conservatrice sur le flot de contrôle. Le résultat fut très clair: le
-jeu a été développé rapidement et sans problèmes importants.
+validation des techniques utilisées pour \textit{Space Invaders} sur
+un jeu plus complexe. Ainsi, \textit{Lode Runner} fut développé en
+utilisant les abstractions de haut niveau que permettent les fonctions
+de première classe combinées avec un système d'objets très polyvalent
+et la conception de nouvelles formes spéciales. En utilisant, cette
+fois-ci, une approche conservatrice sur le flot de contrôle. Le
+résultat fut très clair: le jeu a été développé rapidement et sans
+problèmes importants.
+
+Malgré les problèmes reliés à l'ordonnancement des tâche dans
+\textit{Space Invaders}, l'analyse des performances de ces jeux a
+permis de démontrer qu'ils correspondent bien aux besoins nécessaire
+pour le développement d'un jeu. L'utilisation de la mémoire est
+demeurée faible et les pauses dues à la récupérations mémoire sont
+minimes. De plus, \textit{Lode Runner} présente un taux de
+rafraîchissement répondant bien aux attentes nécessaires à la fluidité
+des jeux.
 
 Ainsi, il serait maintenant intéressant de voir quel serait l'impact
 de l'implantation en Scheme d'un jeu de qualité commerciale afin

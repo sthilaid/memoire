@@ -11,11 +11,18 @@
 
 \usepackage{udem_these_fr}
 
+% Ajustement du formatage
+% selon le guide de presentation d'un memoire: 
+%
+%   Dans la version papier comme électronique, les pages doivent être
+%   de dimensions 21,5 cm x 28 cm. Un cadre n'est pas nécessaire;
+%   cependant, des marges d'environ 2 à 3 cm doivent être laissées en
+%   haut, en bas et à droite de la page. Quant à la marge de gauche,
+%   elle doit être de 4 à 5 cm afin de permettre une lecture facile
+%   une fois le document relié.
+%
+\usepackage[letterpaper, tmargin=2cm, bmargin=2cm, rmargin=2cm, lmargin=4cm, twoside]{geometry}
 
-%% Si cette option est activee, l'espace a droite des pages impaire
-%% (ou a gauche des pages paires si le documents utilise un style
-%% twoside) est reduit a un pouce.
-%\usepackage[rmargin=1in]{geometry}
 
 
 
@@ -78,11 +85,11 @@
 \PagesCouverture
 
 % Modifications du layout des pages
-\setlength\textheight{9.0in}
-\setlength\headsep{20pt}
-\setlength\headheight{0in}
-\setlength\topmargin{0in}
-\addtolength{\voffset}{-0.5in}
+%% \setlength\textheight{9.0in}
+%% \setlength\headsep{20pt}
+%% \setlength\headheight{0in}
+%% \setlength\topmargin{0in}
+%% \addtolength{\voffset}{-0.5in}
 %\setstretch{1.4}
 \doublespacing
 
@@ -5822,13 +5829,16 @@ ordinateurs récents.
 
 \FloatBarrier
 \section{Performances}
-La performances des jeux développés a été évaluée sur aspects. Ces
-derniers mesurent l'efficacité des jeux sur l'utilisation de
-ressources (processeur et mémoire), ainsi que sur l'impacte du système
-de gestion automatique de mémoire. Le tableau \ref{Exp:perf} illustre
-les résultats obtenus face à ces points de comparaison. Les résultats
-présentées dans ce tableau ont été obtenus en jouant durant environ
-une minute aux versions compilées des jeux.
+La performances des jeux développés a été évaluée sur plusieurs
+aspects. Ces derniers mesurent l'efficacité des jeux sur l'utilisation
+de ressources (processeur et mémoire), ainsi que sur l'impact du
+système de gestion automatique de mémoire. Le tableau \ref{Exp:perf}
+illustre les résultats obtenus face à ces points de comparaison. Les
+résultats présentés dans ce tableau ont été obtenus en jouant durant
+environ une minute aux versions compilées des jeux. Il est important
+de noter que les jeux possèdent un taux de rafraîchissement de 30
+images par secondes fixé dans le but d'avoir un comportement similaire
+aux versions originales de ces derniers.
 
 \begin{table}
   \center
@@ -5836,8 +5846,8 @@ une minute aux versions compilées des jeux.
     \hline
     Points de comparaison & \textit{Space Invaders} & \textit{Lode Runner}\\
     \hline \hline
-    Utilisation du processeur & 40~\% & 70~\%\\
-    Nombres d'images par secondes & 29.8 & 68.2\\
+    Utilisation du processeur & 40~\% & 30~\%\\
+    Nombres d'images par secondes & 29.8 & 29.0\\
     Durée minimum de pause du GC & 0.0020~s & 0.0033~s\\
     Durée moyenne de pause du GC & 0.0025~s & 0.0045~s\\
     Durée maximum de pause du GC & 0.0037~s & 0.0096~s\\
@@ -5848,20 +5858,16 @@ une minute aux versions compilées des jeux.
   \label{Exp:perf}
 \end{table}
 
-On constate que le jeu \textit{Space Invaders} ne présente pas de
-bonnes performances quant à la gestion du processeur. Le taux de
-rafraîchissement faible présenté par celui-ci est la conséquence de
-l'utilisation de systèmes de flot de contrôles expérimentaux. En
-effet, l'ordonnancement fut difficile à bien orchestrer et c'est
-principalement pour cette raison que l'utilisation de simulations à
-événements discrets et de coroutines a été abandonnée.
-
-Toutefois, le jeu \textit{Lode Runner} présente des performances très
-intéressantes. L'utilisation du processeur a été beaucoup améliorée en
-utilisant une technique de flot de contrôle plus traditionnelle. On
-observe un pourcentage d'utilisation du processeur à environ 70~\%
-tout en donnant un taux de rafraîchissement de plus de 80 images par
-secondes. 
+On constate que le jeu \textit{Space Invaders} utilise d'une manière
+plus intensive le processeur principal que \textit{Lode Runner} qui
+pourtant est un jeu plus complexe. Cette perte de performance est
+attribuée à l'utilisation intensive du système objets et de coroutines
+développés. En effet, \textit{Lode Runner} a fait une utilisation plus
+légère de ces derniers de manière à tirer profit de leurs abstractions
+aux endroits les plus utiles. Il en résulte ainsi en une amélioration
+des performances d'environ 10~\%. Une comparaison de ces performances
+avec les versions originales de ces jeu est présentée dans le tableau
+\ref{Rev:comp} du chapitre \ref{Rev:comp-section}.
 
 En ce qui concerne l'utilisation de la mémoire, les deux jeux
 présentent des profils acceptables. En effet, l'utilisation moyenne de
@@ -5906,15 +5912,22 @@ Malgré les problèmes reliés à l'ordonnancement des tâche dans
 permis de démontrer qu'ils correspondent bien aux besoins nécessaire
 pour le développement d'un jeu. L'utilisation de la mémoire est
 demeurée faible et les pauses dues à la récupérations mémoire sont
-minimes. De plus, \textit{Lode Runner} présente un taux de
-rafraîchissement répondant bien aux attentes nécessaires à la fluidité
-des jeux.
+minimes. De plus, \textit{Lode Runner} présente une utilisation du CPU
+relativement faible. Par contre, puisque ces jeux ont été
+originalement développés trente ans auparavant, ils ne peuvent qu'être
+grossièrement comparés aux jeux vidéo modernes en terme de complexité
+algorithmique et d'utilisation de la mémoire. Cette différence entre
+les jeux développés et des jeux moderne rend une extrapolation des
+résultats obtenus difficile. Ainsi, ce mémoire présente un aperçu du
+potentiel de l'utilisation de Scheme dans le développement de jeu
+vidéo et, les conclusions tirées ici devront être validées dans le
+futur par le développement de jeux modernes en Scheme.
 
-Ainsi, il serait maintenant intéressant de voir quel serait l'impact
-de l'implantation en Scheme d'un jeu de qualité commerciale afin
-de tester plus profondément les limites que pourrait imposer le
-langage sur des jeux plus exigeant tant en utilisation processeur
-qu'en utilisation de la mémoire.
+Il serait maintenant intéressant de voir quel serait l'impact de
+l'implantation en Scheme d'un jeu de qualité commerciale afin de
+tester plus profondément les limites que pourrait imposer le langage
+sur des jeux plus exigeant tant en utilisation processeur qu'en
+utilisation de la mémoire.
 
 
 
@@ -6002,6 +6015,27 @@ représente certainement un net avantage. Par exemple, le chargement
 d'images pourrait être fait par l'une des nombreuses librairies
 disponibles.
 
+Aussi, C++ bénéficie de la présence d'une grande variété d'outils de
+développement tels des IDE (\textit{Integrated Development
+  Environment}) ou des systèmes avancés de profilages
+d'exécutions. Ces derniers facilitent grandement l'utilisation du
+langage C++ en permettant aux développeurs d'utiliser des déboggeurs
+visuels avancés, des outils de refactorisation, des profileurs
+permettant de trouver les parties de code les plus utilisées (autant
+dans le processeur principal que sur la carte graphique),
+\textit{etc}. Comme mentionné dans le chapitre \ref{Chap:Scheme},
+l'implantation Gambit-C du langage Scheme possèdent un déboggeur
+dynamique très sophistiqué, mais elle ne possède pas une telle
+intégration dans un seul environnement de développement. Toutefois,
+puisque le système Gambit-C compile le langage Scheme vers le langage
+C ou C++, il serait possible d'utiliser les IDE disponibles pour C++
+pour du code écrit en Scheme \textit{dans une certaine mesure}. Il
+serait ainsi possible de, par exemple, visualiser les résultats de
+profilages fait sur la carte graphique, mais cette usage serait très
+peu adapté aux besoins du langage Scheme et viendrait briser tout
+l'intérêt d'un environnement de développement intégré en utilisant ces
+outils de manière externes au développement du code Scheme.
+
 Il est également important de souligner le facteur de la main d'oeuvre
 pour l'adoption de Scheme pour remplacer C++. En effet, la
 quantité de programmeurs maîtrisant le langage Scheme est très
@@ -6043,6 +6077,10 @@ approprié pour écrire le moteur de jeux vidéo non triviaux. Toutefois,
 puisque l'interprète du langage est très rapide, il pourrait être
 envisagé pour le dévelop\-pement de jeux à plus petite échelle.
 
+Plusieurs environnements de développements intégrés sont disponibles
+pour Lua, mais ceux-ci demeurent très rudimentaires et supportent des
+fonctionnalités de base tels des déboggeurs visuels. 
+
 Pour les mêmes raison que Lua, d'autre langages de programmations sont
 également utilisés afin d'effectuer le \textit{scripting} de
 jeux. Parmi ceux-ci, on retrouve principalement Python~\cite{Python}
@@ -6053,25 +6091,37 @@ constituent eux aussi un sous ensemble de Scheme.
 \FloatBarrier
 \section{Sommaire}
 Ainsi, les langages C++ et Lua offrent des fonctionnalités différentes
-de celles offertes en Scheme. Le tableau \ref{Rev:lang-comp}
-effectue un résumé des différences entre ces langages. Le langage C++
-offre de très bonnes performances grâce à son modèle d'exécution près
-de l'architecture de la plate-forme utilisée. Puisqu'il n'offre que
-très peu de fonctionnalités de haut niveau, il constitue un choix
-idéal pour l'implantation de jeux sur des plate-formes aux ressources
-très limitées, tel que c'est le cas sur les consoles portables ou sur
-les téléphones cellulaire. Le langage Lua, quant à lui, est un
-sous-ensemble du langage Scheme. La présence de gestion de
-mémoire automatique, de fermeture et d'un typage dynamique font de lui
-un très bon candidat comme langage de script afin d'évaluer
-dynamiquement des parties expérimentales du jeu dans le but de
-raffiner le \textit{gameplay}. Scheme offre beaucoup de
-fonctionnalité de haut niveau tels que des fermeture, de la
-réification de continuation ou encore des macros procédurales. Son
-coût plus élevé en allocations mémoires fait de lui un excellent choix
-pour le dévelop\-pement de moteurs de jeu sur des plate-formes modernes
-ou comme engin de \textit{scripting} sur des plate-formes plus
-limitées sur la mémoire.
+de celles offertes en Scheme. Le tableau \ref{Rev:lang-comp} effectue
+un résumé des différences entre ces langages. Le langage C++ offre de
+très bonnes performances grâce à son modèle d'exécution près de
+l'architecture de la plate-forme utilisée. Puisqu'il n'offre que très
+peu de fonctionnalités de haut niveau, il constitue un choix idéal
+pour l'implantation de jeux sur des plate-formes aux ressources très
+limitées, tel que c'est le cas sur les consoles portables ou sur les
+téléphones cellulaire.
+
+Le langage Lua, quant à lui, est un sous-ensemble du langage
+Scheme. La présence de gestion de mémoire automatique, de fermeture et
+d'un typage dynamique font de lui un très bon candidat comme langage
+de script afin d'évaluer dynamiquement des parties expérimentales du
+jeu dans le but de raffiner le \textit{gameplay}.
+
+Scheme offre beaucoup de fonctionnalités de haut niveau tels que des
+fermetures, de la réification de continuations ou encore des macros
+procédurales. Son coût plus élevé en allocations mémoires fait de lui
+un excellent choix pour le dévelop\-pement de moteurs de jeu sur des
+plate-formes modernes ou comme engin de \textit{scripting} sur des
+plate-formes plus limitées sur la mémoire.
+
+Le langage C++ offre à ses programmeurs la possibilité d'utiliser des
+environnements de développement intégrés avancés qui donnent un accès
+direct à des outils de développement et d'optimisation. Les IDE
+disponibles pour Lua possèdent un sous-ensemble des fonctionnalités de
+ceux offerts pour C++, mais permettent un accès facile aux
+fonctionnalités de bases telles un déboggeur visuel. Les développeurs
+Gambit-C ne possède pas de tels outils de développement intégrés, mais
+peuvent utiliser de manière indirecte les outils de développement
+offert pour les langages C et C++.
 
 \begin{table}
 \begin{tabular}{cccc}
@@ -6084,6 +6134,7 @@ Macros                       & textuelles & aucune & procédurales\\
 Réification de continuations & non & non & oui\\
 Mode usuel d'utilisation     & compilé & interprété & compilé et interprété\\
 Dépistage d'erreurs          & bas niveau & bas niveau & haut niveau\\
+IDE                          & très développé & de base & inexistant\\
 \hline
 \end{tabular}
 \caption{Comparaison des langages C++, Lua et Scheme}
@@ -6248,6 +6299,92 @@ dévelop\-pement. L'utilisation faite du langage a su tirer profit de la
 plupart des particularité de Scheme dont notamment l'utilisation
 de fonctions de premier ordre et du dynamisme du système Gambit-C.
 
+\FloatBarrier
+\section{Autres version des jeux développés}
+\label{Rev:comp-section}
+
+Cette section présente les versions originales des jeux développés
+dans le but de les comparer aux versions écrites pour ce mémoire.
+
+\subsection{\textit{Space Invaders}}
+
+Tel que mentionné dans le chapitre \ref{Chap:JV}, le jeu original de
+\textit{Space Invaders} date de 1978 sur console arcade.  Le
+concepteur avait dû, à l'époque, non seulement concevoir le jeu, mais
+aussi le matériel sur lequel le jeu fonctionnait, lui prenant environ
+un an de développement à lui seul. Le processeur utilisé était un 8080
+d'Intel offrant une vitesse d'horloge allant jusqu'à 2 MHz. Le tableau
+\ref{Rev:comp} illustre ces différences avec le jeu développé pour
+ce mémoire. On constate que l'effort de production du jeu original
+était plus grand, mais en tenant compte du fais que le développement
+initial comprenais aussi la mise au point du matériel utilisé, on peut
+estimer des temps de développement équivalents pour les deux
+versions. Toutefois, le code original, écrit en langage assembleur est
+certainement très spécifique au jeu écrit, tandis que le code écrit
+pour ce mémoire apporte des librairies qui permettent de développer
+d'autres jeux vidéo plus facilement. Aussi, on constate un facteur de
+1000 entre la vitesse d'horloges de l'architecture originales face aux
+architecture modernes des processeurs.
+
+
+En ce qui concerne le jeu \textit{Lode Runner}, la version finale du
+jeu fut publiée en 1983 sur l'ordinateur \textit{Apple II+} et écrit
+en langage assembleur. La durée de développement de ce jeu est
+difficile à donner, puisque le jeu final est le fruit de la troisième
+réécriture du code source. De plus, ce concepteur effectuait à temps
+partiel, puis à temps plein le développement du jeu. On peut toutefois
+estimer le développement total à environ un an, en incluant la
+conception des 150 niveaux du jeu et l'écriture de toutes les versions
+du code. La vitesse d'horloge du processeur utilisé était également
+d'environ 1 MHz.
+
+En assumant que les jeux originaux utilisaient 30 images par secondes
+pour leur rendu graphique et en tenant compte des performances des
+jeux développés présentées dans le tableau \ref{Exp:perf}, on obtient
+un ratio indiquant que la version Scheme du jeu est environ 350 fois
+plus lente que la version originale du jeu. En effet, l'utilisation
+processeur de nos jeux sont de 40~\% pour \textit{Space Invaders} et
+de 30~\% pour \textit{Lode Runner}. Cette différence de performance
+entre les jeux originaux écrits il y a trente ans et les réécriture
+faites pour ce mémoire peut être expliquée par plusieurs
+facteurs. D'une part, les jeux originaux sont écrits directement en
+langage assembleur et donc, beaucoup d'optimisations de très bas
+niveaux ont pu être faites grâce à l'accès presque direct aux
+ressources du matériels, ce qui n'est pas possible pour des jeux
+écrits en Scheme et qui sont exécutés dans un système d'exploitation
+complexe exécutant des dizaines de processus de manière
+concurrente. D'autre part, comme il a déjà été mentionné, les jeux
+écrits pour la rédaction de ce documents possèdent de puissante
+abstractions tels un système de programmation orienté objet ou un
+système de coroutine. Ces dernières imposent un coût de performances
+tels que mentionné dans les tableaux \ref{OO:bench} et
+\ref{Corout:bench}.  Les abstractions du langage Scheme apportent
+elles aussi un certain coût de performance en comparaison à du code
+écrit en langage assembleur.
+
+Les temps de développement des versions réécrite des jeux sont
+comparable aux temps requis pour le développement des premières
+versions officielles de ces derniers. Toutefois, le temps de
+développements de 6 mois pris pour la réécriture comprend
+l'élaboration de plusieurs librairies facilitant le développement
+ultérieur de nouveaux jeux, ce qui n'est probablement pas le cas des
+versions originales écrites en langage de bas niveau.
+
+\begin{table}[htb!]
+  \begin{tabular}{cccc}
+    Titre & Année de sortie & Vitesse CPU & Durée de développement\\
+    \hline \hline 
+    Space Invaders (original) & 1978 & 2 MHz & 1 Année/Homme\\
+    Space Invaders (mémoire) & 2008 & 1.6 GHz & 1/2 Année/Homme\\
+    \hline
+    Lode Runner (original) & 1983 & 1 MHz & 1/2 Année/Homme\\
+    Lode Runner (mémoire) & 2009 & 1.6 GHz & 1 Année/Homme\\
+    \hline
+  \end{tabular}
+  \caption{Comparaison entre les versions originales et réécrites des
+    jeux développés.}
+  \label{Rev:comp}
+\end{table}
 
 \FloatBarrier
 \section{Conclusion}
@@ -6262,6 +6399,11 @@ devrait donc être fait en prenant en considération le matériel utilisé
 afin d'obtenir le plus de puissance expressive que possible, sans
 toutefois avoir un coût relié à ces abstractions trop élevé.
 
+La présence d'environnement de développement intégrées rend attrayant
+l'utilisation des langages C++ et Lua, mais la plupart des
+fonctionnalité offertes peuvent être utilisées pour le langage Scheme
+de manière indirecte.
+
 Aussi, Lisp et Scheme ont déjà été utilisés dans l'industrie du jeu
 vidéo pour développer des jeux de grandes qualités tels \textit{Jak
   and Dexter}, \textit{Uncharted: Drake's Fortune} et
@@ -6273,6 +6415,14 @@ ceux-ci. Ainsi, malgré la faible adoption de Scheme pour l'écriture de
 jeux vidéo commerciaux par les compagnies de l'industrie, les équipes
 l'ayant utilisé semblent l'avoir beaucoup apprécié et surtout,
 l'utilisent toujours dans le dévelop\-pement de leurs jeux.
+
+Finalement, les versions réécrites de \textit{Space Invaders} et de
+\textit{Lode Runner} lorsque comparées aux versions originales
+semblent démontrer une utilisation du processeur approximativement 350
+fois plus exigeante, mais utilisent des abstractions de haut niveau
+permettant la réutilisation du code écrit pour l'écriture de nouveaux
+jeu, contrairement aux versions originales écrites en langage
+assembleur. 
 
 \clearpage
 
@@ -6344,24 +6494,22 @@ devienne trop coûteux. De même, la présence du gestionnaire
 automatique de mémoire pourrait potentiellement engendrer des pauses
 de durées aléatoires du jeu qui sont très indésirables. Ces phénomènes
 n'ont par contre pas été observés dans les jeux développés pour ce
-mémoire, puisqu'ils demeuraient trop simples.
+mémoire, puisqu'ils demeuraient trop simples. Des jeux plus modernes
+possèdent généralement un plus grand nombre d'entités de manière
+simultanée durant une partie, augmentant ainsi le stress sur la
+mémoire et donc, sur la récupération automatique de celle-ci.
 
-Ainsi, malgré le coût que peut apporter l'utilisation d'abstractions,
-nous croyons que le bénéfice résultant est bien supérieur à ce
-dernier, surtout sur des plate-formes performantes. Les techniques de
-programmations orientées objets développées nous ont permis de
-rapidement développer un nouveau jeu en réutilisant plusieurs
-modules, dont notamment les modules de rendus graphiques et de
-résolution de collisions.
-
-Il serait maintenant intéressant de développer des jeux de plus grande
-envergure afin de pousser plus loin l'aspect dynamique du langage par
-l'écriture d'outils d'écriture de scripts qui pourraient être utilisés
-en temps réel lors de la conception des niveaux. L'utilisation des
-techniques présentées dans ce mémoire permettraient ainsi une
-utilisation complète du langage et donc de fournir un aperçu global
-des performances qu'offre Scheme pour le dévelop\-pement de jeux
-vidéo.
+Il serait donc intéressant d'utiliser les techniques présentées dans
+ce mémoire afin de développer des jeux de plus grande envergure dans
+le but d'obtenir une meilleure idée sur l'impacte d'une utilisation
+plus intensive de la mémoire dans un jeu. Un tel jeu écrit en Scheme
+permettrait aussi de pousser plus loin l'aspect dynamique du langage
+par l'écriture d'outils d'écriture de scripts qui pourraient être
+utilisés en temps réel lors de la conception des
+niveaux. L'utilisation des techniques présentées dans ce mémoire
+permettraient ainsi une utilisation complète du langage et donc de
+fournir un aperçu global des performances qu'offre Scheme pour le
+dévelop\-pement de jeux vidéo.
 
 
 

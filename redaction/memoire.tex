@@ -35,10 +35,14 @@
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
 
+%% Je ne comprend pas pk les \def\tablename de udem_these_fr ne
+%% fonctionne pas, jai donc du redefinir \tablename avant chaque
+%% table... x_x'
+\newcommand{\customizedTableName}{\textsc{Tableau}}
 
 \newcommand{\todo}[1]{[TODO: {\it #1}]}
 \newcommand{\object}[1]{{\it #1}}
-\newcommand{\ie}{{\textit{i.e.}}}
+\newcommand{\ie}{{\textit{i.e.}~}}
 
 \input{r5rscommands.tex}
 
@@ -48,8 +52,9 @@
 \newcommand{\scheme}[1]{\selectlanguage{english}{\tt #1}\selectlanguage{french}}
 \newcommand{\schemeresult}[1]{{\it #1}}
 
+
 \title{Sur l'utilisation du langage de programmation Scheme pour
-  le développement de jeux video}
+  le développement de jeux vidéo}
 
 % remplir les champs...
 \Auteur{David}{St-Hilaire}
@@ -70,7 +75,7 @@
 
 %Pour un doctorat, changer simplement \MSc par \PhD
 %titre: 15 mots, max. 175 caractère
-\MSc{Sur l'utilisation du langage de programmation Scheme pour le développement de jeux video}
+\MSc{Sur l'utilisation du langage de programmation Scheme pour le développement de jeux vidéo}
     {}
     {d'informatique et de recherche op\'{e}rationnelle}
     {informatique}
@@ -102,7 +107,7 @@ méthode utilisée est d'abord basée sur une approche plus théorique. En
 effet, une étude des besoins au niveau de la programmation exprimés
 par ce type de dévelop\-pement, ainsi qu'une description détaillant les
 fonctionnalités du langage Scheme pertinentes au dévelop\-pement de
-jeu vidéo sont données afin de bien mettre en contexte le sujet. Par
+jeux vidéo sont données afin de bien mettre en contexte le sujet. Par
 la suite, une approche pratique est utilisée en effectuant le
 dévelop\-pement de deux jeux vidéo de complexités croissantes: \textit{Space Invaders} et
 \textit{Lode Runner}. Le dévelop\-pement de ces jeux vidéo a mené à l'extension du
@@ -132,20 +137,20 @@ approach. Indeed, the specific requirements for video game programming
 and a detailed description of relevant Scheme features are presented.
 Then, a practical approach is taken by presenting two video games
 developed using the Scheme language: \textit{Space Invaders} and \textit{Lode Runner}. Their
-developpement resulted in the creation of various domain-specefic
-languages and libraries, such as an object oriented-system and a
-coroutine system. Each of these are presented separately in their own
+development resulted in the creation of various domain-specific
+languages and libraries, such as an objec- oriented system and a
+coroutine system. Each of these are presented separately in their respective
 chapter. Finally, the experience achieved in this process is compared
 to the experience acquired by some video game companies that also used
-Scheme for the developpement of their titles. The use made of
-Scheme alowed us to perform various high-level abstractions that
+Scheme for the developpement of their titles. The use of
+Scheme allowed us to perform various high-level abstractions that
 improved the modularity of the video games developed, without
 affecting their performance.
 
 \vspace{2em}
 
 \noindent {\bf Keywords}: Functional programming languages,
-Scheme, video games, object oriented programming, coroutines.
+Scheme, video games, object-oriented programming, coroutines.
 
 
 \selectlanguage{french}
@@ -167,7 +172,7 @@ famille proche pour le soutien précieux qu'ils m'ont apporté tout au
 long de mes études universitaires. Je n'aurais jamais pu y arriver
 sans leur aide.
 
-Je voudrais également remercier tout les membres du laboratoire de
+Je voudrais également remercier tous les membres du laboratoire de
 traitement parallèle dans lequel j'ai effectué les travaux de
 recherche présentés dans ce mémoire. Leurs connaissances et amitié me
 suivront tout au long de mon cheminement professionnel. Mon directeur
@@ -211,7 +216,7 @@ démarque de la masse et devienne un nouveau \textit{Blockbuster
   Hit}. Le président de la compagnie française UbiSoft estime que le
 coût moyen de dévelop\-pement d'un jeu sur une console moderne se situe
 entre 20 et 30 millions de dollars~\cite{cbc_ubisoft}. Si l'on estime
-le salaire moyen d'un artiste ou d'un développeur de jeu vidéo à 60
+le salaire moyen d'un artiste ou d'un développeur de jeux vidéo à 60
 000~\$ par année, cela reviendrait à un travail d'environ 300 à 500
 années-hommes.
 
@@ -251,14 +256,13 @@ facilement. Les langages de la famille Lisp semblent être de bons
 candidats en tant que langages de haut niveau. Le langage
 Scheme~\cite{R5RS}, un Lisp moderne et performant, offre ainsi
 plusieurs fonctionnalités de haut niveau. On retrouve, entre autres,
-du typage dynamique, des fonctions de premier ordre, un système de
-macro évolué, un accès direct aux continuations du calcul et un
-système de déboggage très efficace. Ces particularités du langage
-Scheme sont discutées plus en détails dans le chapitre
-\ref{Chap:Scheme}.
+du typage dynamique, des fonctions de première classe, un système de
+macros évolué, un accès direct aux continuations du calcul et un
+système de déboggage dynamique. Ces particularités du langage Scheme
+sont discutées plus en détail dans le chapitre \ref{Chap:Scheme}.
 
 Le système Gambit-C~\cite{Gambit4}, l'une des implantations de
-Scheme les plus performantes~\cite{GAMBIT_BENCHMARKS} sera
+Scheme les plus performantes~\cite{GAMBIT_BENCHMARKS}, sera
 utilisé pour effectuer les expériences pratiques. Ce système comporte
 de nombreuses extensions pouvant être très utiles au dévelop\-pement de
 jeux vidéo. On y retrouve entre autres des tables de hachage et des
@@ -272,27 +276,26 @@ de jeux vidéo.
 \section{Problématique}
 Ce mémoire de maîtrise vise à répondre à la problématique suivante:
 \begin{quote}
-  Quelles sont les forces et les faiblesses du langages de
-  programmation Scheme pour le dévelop\-pement de jeux vidéo.
+  Quelles sont les forces et les faiblesses du langage de
+  programmation Scheme pour le dévelop\-pement de jeux vidéo?
 \end{quote}
 
 \FloatBarrier
 \section{Méthodologie}
 Afin de répondre à la problématique posée, nous avons étudié les
-caractéristiques de Scheme et du compilateur Gambit-C, ainsi que
-les besoins au niveau du dévelop\-pement de jeux vidéo. Par la suite,
-deux jeux ont été développés en utilisant à profit ces
-caractéristiques dans le but de raffiner nos approches et les évaluer
-dans un contexte pratique.
+caractéristiques de Scheme et du compilateur Gambit-C, ainsi que les
+besoins au niveau du dévelop\-pement de jeux vidéo. Par la suite, deux
+jeux ont été développés en exploitant ces caractéristiques dans le but
+de raffiner nos approches et les évaluer dans un contexte pratique.
 
 Le premier jeu a servi de plate-forme d'exploration permettant
 d'élaborer une méthodologie efficace pour le dévelop\-pement de
 jeux. Afin d'obtenir une telle méthodologie, plusieurs itérations de
 dévelop\-pement ont été effectuées, chacune permettant d'explorer de
-nouveaux aspects sur la manière de résoudre les problématiques
+nouveaux aspects sur la manière de résoudre des problématiques
 associées à la création de jeux. Par exemple, la synchronisation des
 entités dans le jeu ou la description efficace d'un système de
-détection et de résolution de collisions ont été résolus.
+détection et de résolution de collisions ont été résolues.
 
 Suite à l'écriture de ce jeu, un deuxième jeu plus complexe a été
 développé. Ce dernier visait à consolider les techniques précédemment
@@ -305,19 +308,19 @@ artificielle.
 \section{Aperçu du mémoire}
 Ce mémoire est composé de quatre parties. La première partie est une
 présentation de l'industrie des jeux vidéo et des défis découlant du
-dévelop\-pement de ces derniers. Par la suite, une introduction traitant
-de programmation fonctionnelle, du langage de programmation
-Scheme et des outils de dévelop\-pement disponibles, en particulier
-le compilateur Gambit-C est présentée. Ce chapitre donne un aperçu
+dévelop\-pement de ces derniers. Par la suite est présentée une
+introduction traitant de programmation fonctionnelle, du langage de
+programmation Scheme et des outils de dévelop\-pement disponibles, en
+particulier le compilateur Gambit-C. Ce chapitre donne un aperçu
 général de ces langages et permet de saisir les concepts fondamentaux
 du langage Scheme.
 
 La deuxième partie du mémoire porte sur des extensions faites au
 langage Scheme qui ont été utilisées dans le but d'améliorer le
-dévelop\-pement de jeux vidéo. On y présente la programmation orientée
-objet et un système d'objets conçu pour répondre aux besoins de la
-programmation de jeux vidéo. Un système de coroutines conçu dans les
-mêmes optiques est également présenté.
+dévelop\-pement de jeux vidéo. On y présente la programmation
+orientée objet et un système d'objets conçu pour répondre aux besoins
+de la programmation de jeux vidéo. Un système de coroutines conçu dans
+les mêmes optiques est également présenté.
 
 La troisième partie porte sur l'expérience acquise par l'auteur en
 effectuant l'écriture de deux jeux vidéo simples, mais possédant
@@ -341,9 +344,8 @@ et inconvénients ou problèmes rencontrés sont exposés.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Dévelop\-pement de jeux vidéo} \label{Chap:JV}
-Les jeux vidéo font parti d'un domaine de l'informatique en pleine
-effervescence grâce à une demande constante de nouveaux
-produits. 
+Les jeux vidéo font partie d'un domaine de l'informatique en pleine
+effervescence grâce à une demande constante de nouveaux produits.
 
 L'histoire des jeux vidéo possède déjà un demi-siècle de créations de
 tous genres qui ont contribué à générer l'engouement actuel pour ces
@@ -366,13 +368,13 @@ L'histoire des jeux vidéo s'étale sur environ un demi-siècle. Cette
 dernière est une source importante d'informations qui permet d'exposer
 l'évolution des jeux vidéo. Seulement un bref résumé est présenté afin
 de donner les grandes lignes de l'évolution des jeux au cours des
-cinquante dernières années~\cite{VIDEOGAMES_history}~\cite{HISCORE}.
+cinquante dernières années~\cite{VIDEOGAMES_history,HISCORE}.
 
 \FloatBarrier
 \subsection{Préhistoire 1948-1970}
 Les jeux vidéo ont fait leur apparition avant même les premiers
 ordinateurs. En effet, le \textit{Cathode Ray Amusement
-  Device}~\cite{CRTAD} fit sont apparition en 1948. Il s'agissait d'un
+  Device}~\cite{CRTAD} fit son apparition en 1948. Il s'agissait d'un
 jeu rendu sur un tube cathodique simulant le lancement de missiles sur
 des cibles.
 
@@ -392,7 +394,7 @@ dédiées aux jeux vidéo a ainsi débuté.
 
 
 \FloatBarrier
-\subsection{Système arcade 1970-1985}
+\subsection{Systèmes arcade 1970-1985}
 En 1971, des étudiants de l'université de Stanford ont réimplanté le
 jeu \textit{Spacewar!} sur une machine fonctionnant avec de la
 monnaie. Ce fut la première machine arcade.
@@ -403,34 +405,34 @@ l'industrie du jeu vidéo sur arcade avec le jeu \textit{Pong}. Il
 s'agissait d'un jeu de tennis de table permettant à deux joueurs de se
 mesurer l'un à l'autre. Ce jeu demeure toujours très célèbre.
 
-Ce fut alors l'âge d'or des machines d'arcade où l'on a créé beaucoup
-de jeux aux contenus diversifiés. Parmi ceux-ci, \textit{Space Invaders}(1978) et
-\textit{PacMan}(1980) furent extrêmement populaires.
+Ce fut alors l'âge d'or des machines arcade où l'on a créé beaucoup de
+jeux aux contenus diversifiés. Parmi ceux-ci, \textit{Space
+  Invaders}~(1978) et \textit{PacMan}~(1980) furent extrêmement
+populaires.
 
-Malgré la simplicité des jeux d'arcade, ils étaient beaucoup appréciés
+Malgré la simplicité des jeux arcade, ils étaient beaucoup appréciés
 par les joueurs qui tentaient continuellement de se surpasser.
 
-De nos jours, on retrouve toujours des salles d'arcades, mais
-celles-ci ont perdu de la popularité puisque les consoles de jeu se
-retrouvent dans nos salons.
+De nos jours, on retrouve toujours des salles arcades, mais celles-ci
+ont perdu de la popularité puisque les consoles de jeux se retrouvent
+dans nos salons.
 
 
 \FloatBarrier
 \subsection{Premières consoles 1972-1984}
 La première console de jeu vidéo, le \textit{Magnavox Odyssey} fit son
-apparition en Amérique du Nord en 1972. Cette console permettait aux
-joueurs de jouer sur la télévision assis confortablement dans leur
-salon. Elle permettait aussi d'insérer des jeux sous forme de
-cartouches. Un total de 28 jeux étaient disponibles pour cette
-console, qui malgré l'absence de périphérique audio, a été vendue en
-300 000 exemplaires.
+apparition en Amérique du Nord en 1972. Cette console permettait de
+jouer sur la télévision, assis confortablement dans le salon. Elle
+permettait aussi d'insérer des jeux sous forme de cartouches. Un total
+de 28 jeux étaient disponibles pour cette console, qui malgré
+l'absence de périphérique audio, a été vendue en 300 000 exemplaires.
 
 Plusieurs autres consoles ont par la suite été créées, allant d'une
 version console de \textit{Pong} jusqu'à des consoles plus puissantes
 comme le \textit{ColecoVision} qui démarrèrent l'ère des consoles
-8-bit. La vocation principale de ces dernières n'étaient pas d'innover
-dans le dévelop\-pement de jeux, mais plutôt de rendre disponible les
-jeux d'arcades populaires.
+8-bits. La vocation principale de ces dernières n'étaient pas
+d'innover dans le dévelop\-pement de jeux, mais plutôt de rendre
+disponible les jeux arcades populaires.
 
 
 \FloatBarrier
@@ -447,12 +449,12 @@ ordinateurs \textit{Apple II}. Ce jeu d'action fut l'un des premiers
 comprenant un éditeur de niveaux.
 
 Aussi, le jeu \textit{Rogue} fut créé durant les années 1980, pour les
-premiers systèmes Unix. Il fut le pionnier d'un nouveau genre de jeu
-(surnommé \textit{Roguelike}) qui différait beaucoup des jeux
-d'actions retrouvés en salles d'arcade ou sur console. Il présentait
-une interface visuelle très minimaliste. La narration, qui était un
-point central du jeu, était effectuée de manière textuelle et le
-joueur interagissait de même avec le jeu.
+premiers systèmes Unix. Il fut le pionnier d'un nouveau genre de jeux
+(surnommé \textit{Roguelike}) qui différait beaucoup des jeux d'action
+retrouvés en salles d'arcade ou sur console. Il présentait une
+interface visuelle très minimaliste. La narration, qui était un point
+central du jeu, était effectuée de manière textuelle et le joueur
+interagissait de même avec le jeu.
 
 Les jeux d'ordinateurs ont longtemps été supérieurs aux jeux de
 consoles puisque les ordinateurs étaient toujours à la fine pointe de
@@ -482,34 +484,34 @@ furent un succès rapportant plusieurs centaines de millions de dollars
 Par la suite, les grandes compagnies du jeu vidéo comme
 \textit{Nintendo} et \textit{Bandai} se sont intéressées à de telles
 consoles et produisirent plusieurs exemplaires des consoles
-\textit{Game \& Watch} qui contenaient des succès d'arcades tels
+\textit{Game \& Watch} qui contenaient des succès d'arcade tels
 \textit{Mario's Cement Factory} et \textit{Donkey Kong Jr}.
 
 Le même concepteur de \textit{Game \& Watch} a par la suite fusionné
 ces dernières avec le contrôleur du \textit{Nintendo Entertainement
-  System}(NES) pour obtenir la première console portable à grand
+  System}~(NES) pour obtenir la première console portable à grand
 succès: le \textit{GameBoy}. Cette console qui offrait un écran
 monochrome fut vendue à 118 millions d'exemplaires. Le jeu le plus
 vendu sur cette console fut nulle autre que \textit{Tetris} qui a été
 vendu à environ 33 millions d'unités.
 
-Les consoles portables ont continué d'évoluer grandement et elles
-sont actuellement équivalentes aux consoles d'une ou deux générations
+Les consoles portables ont continué d'évoluer grandement et elles sont
+actuellement équivalentes aux consoles d'une ou deux générations
 précédentes. Par exemple, le Sony \textit{PlayStation Portable}
 rivalise en matière de puissance de matériel à la précédente console
 de Sony, le \textit{PlayStation 2}. On peut donc développer des jeux
-très complexes sur ces consoles portables, mais ils ne peuvent toujours
-pas rivaliser avec les jeux sur consoles ou d'ordinateurs.
+très complexes sur ces consoles portables, mais ils ne peuvent
+toujours pas rivaliser avec les jeux sur consoles ou ordinateurs.
 
 
 \FloatBarrier
 \subsection{Consoles intermédiaires 1984-2006}
 Au début des années 1980, plusieurs consoles étaient disponibles sur
 le marché, mais une saturation de mauvais jeux et des problèmes de
-gestion ont fait en sorte que l'industrie du jeux vidéo a connu une
+gestion ont fait en sorte que l'industrie du jeu vidéo a connu une
 grande dépression. Cette dernière a pris subitement fin avec la sortie
 de la console produite par \textit{Nintendo}, le \textit{Nintendo
-  Entertainement System} (NES) qui connu un succès fulgurant en
+  Entertainement System} (NES), qui connut un succès fulgurant en
 vendant 62 millions de consoles dans le monde. La grande qualité des
 jeux produits a certainement favorisé l'adoption de cette nouvelle
 console. On retrouve entre autres des jeux de tous genres comme le jeu
@@ -518,7 +520,7 @@ de plate-forme \textit{Super Mario Bros}, le jeu d'aventure
 \textit{Metroid}.
 
 Par la suite, la compagnie SEGA sortit un compétiteur sérieux au NES,
-le \textit{Master System}, qui rivalisait en terme de puissance
+le \textit{Master System}, qui rivalisait en termes de puissance
 matérielle et de prix. Depuis ce temps se livre la guerre des consoles
 où lorsqu'une compagnie développe un nouveau produit, les compétiteurs
 ne tardent pas à en produire un similaire.
@@ -535,13 +537,13 @@ Au moment de l'écriture de ce mémoire, on retrouve la console
 occasionnels grâce au contrôleur innovateur de cette console
 permettant de jouer en effectuant des mouvements plus naturels.
 
-D'un autre côté compétionnent le \textit{PlayStation 3} de Sony et le
-\textit{XBox 360} de Microsoft qui cherchent à convaincre les joueurs
-plus assidus d'utiliser leur système en offrant des consoles à la fine
-pointe de la technologie et à prix très raisonnable en comparaison aux
-prix des ordinateurs de jeux équivalents. Par exemple, le
-\textit{PlayStation 3} utilise une architecture \textit{Cell} qui
-comprend une unité principale de 3,2 GHz et 8 sous processeurs moins
+D'un autre côté compétitionnent le \textit{PlayStation 3} de Sony et
+le \textit{XBox 360} de Microsoft qui cherchent à convaincre les
+joueurs plus assidus d'utiliser leur système en offrant des consoles à
+la fine pointe de la technologie et à prix très raisonnable en
+comparaison des prix des ordinateurs de jeux équivalents. Par exemple,
+le \textit{PlayStation 3} utilise une architecture \textit{Cell} qui
+comprend une unité principale de 3,2 GHz et 8 sous-processeurs moins
 puissants permettant d'exécuter plusieurs processus en parallèle. Ce
 dernier possède aussi une carte graphique puissante comprenant une
 mémoire vidéo de 256 Mo.
@@ -559,8 +561,8 @@ plates-formes se retrouvent sur le marché.
 
 La grande quantité de jeux qui ont été produits a fait en sorte que
 les caractéristiques de qualité sont devenues essentielles afin qu'un
-jeu vidéo puisse se comparer aux jeux déjà existant et ainsi avoir une
-chance d'être adopté par les consommateurs. Ces attentes du
+jeu vidéo puisse se comparer aux jeux déjà existants et ainsi avoir
+une chance d'être adopté par les consommateurs. Ces attentes du
 consommateur peuvent se traduire essentiellement par les besoins
 suivants:
 
@@ -569,7 +571,7 @@ suivants:
 \item Offrir de beaux rendus graphiques et un affichage visuel
   agréable
 \item Avoir une composante multi-joueurs
-\item Optionnellement contenir une narration 
+\item Optionnellement contenir une narration.
 \end{itemize}
 
 Le \textit{gameplay} d'un jeu représente le facteur de plaisir qu'un
@@ -586,7 +588,7 @@ implique aussi d'évaluer plusieurs possibilités en testant sur des
 prototypes et en effectuant de nombreux cycles de dévelop\-pement du
 jeu.
 
-En ce qui concerne le rendu graphique du jeu, en plus des designers ,
+En ce qui concerne le rendu graphique du jeu, en plus des designers,
 c'est aussi avec les artistes que les développeurs doivent s'accorder
 dans le but de concevoir un moteur de rendu répondant bien aux besoins
 de leurs créations. Celles-ci doivent être faites en respectant les
@@ -595,11 +597,11 @@ produit. Ainsi, le moteur de rendu doit être facilement extensible
 afin d'accommoder les nouvelles idées et les nouveaux concepts à
 intégrer.
 
-Une composante multi-joueur, tout dépendant si elle implique des
+Une composante multi-joueurs, tout dépendant si elle implique des
 parties faites sur le réseau ou non, pourrait nécessiter une grande
-rigueur de programmation afin d'assurer une stabilité de connections et
-empêcher les joueurs de tricher. Ces sujets ne sont pas discutés dans
-ce mémoire.
+rigueur de programmation afin d'assurer une stabilité de connexions
+et empêcher les joueurs de tricher. Ces sujets ne sont pas discutés
+dans ce mémoire.
 
 La diversité des jeux développés a mené à une classification de
 ceux-ci. Les principaux genres de jeux sont:
@@ -607,9 +609,9 @@ ceux-ci. Les principaux genres de jeux sont:
 \begin{itemize}
 \item Action: Jeux rapides demandant souvent de l'habileté de la part
   des joueurs.
-\item Stratégie: Jeux à rythme plus lent, exigeant une réflection plus
+\item Stratégie: Jeux à rythme plus lent, exigeant une réflexion plus
   profonde de la part des joueurs.
-\item Jeux de Rôles: Jeu où la narration de l'histoire occupe une
+\item Jeux de rôles: Jeux où la narration de l'histoire occupe une
   place importante et où les personnages de l'histoire subissent une
   évolution graduelle en fonction du temps.
 \item Simulation: Jeux qui tentent de représenter fidèlement des
@@ -627,7 +629,7 @@ diversité du contenu des jeux vidéo produits.
 
 \FloatBarrier
 \section{Contraintes de programmation}
-Le dévelop\-pement de jeu vidéo implique une programmation sous des
+Le dévelop\-pement de jeux vidéo implique une programmation sous des
 contraintes sévères afin que le jeu respecte les normes du marché et
 les attentes des joueurs. Une contrainte importante pour le
 dévelop\-pement de jeux vidéo est reliée à l'efficacité
@@ -636,9 +638,9 @@ l'immersion du joueur dans l'univers créé par le jeu de certains
 genres. Les jeux doivent donc être des programmes efficaces de manière
 à inviter le joueur à entrer le plus possible dans la narration.
 
-Une autre contrainte importante reliée au dévelop\-pement de jeu est la
-modularité du code produit. En effet, afin que les efforts placés dans
-la production d'un jeu vidéo puissent être réutilisés dans les
+Une autre contrainte importante reliée au dévelop\-pement de jeux est
+la modularité du code produit. En effet, afin que les efforts placés
+dans la production d'un jeu vidéo puissent être réutilisés dans les
 productions subséquentes, des abstractions doivent être faites afin de
 faciliter la réutilisation de ces dernières. Souvent, pour obtenir des
 performances adéquates, les développeurs doivent sacrifier la
@@ -654,18 +656,18 @@ fluidité de celui-ci. Lorsqu'un film est projeté sur un écran de
 cinéma, le taux de rafraîchissement de l'image est d'environ 30 trames
 par seconde. Par contre, les images captées par les caméras
 contiennent du \og flou de mouvement \fg, effet créé par le mouvement
-s'étant produit durant la capture de cette image. Ce flou permet à
-notre cerveau d'estimer ou de faire l'extrapolation du mouvement dans
-une trame et donc de croire l'illusion créée par la projection des
-images. De plus, le faible éclairage présent dans une sale de cinéma
-aide l'image projetée à rester plus longtemps imprégnée dans la rétine
-de l'oeil, facilitant ainsi la compréhension du mouvement dans
-l'image.
+s'étant produit durant l'ouverture de l'obturateur pendant un certain
+temps. Ce flou permet à notre cerveau d'estimer ou de faire
+l'extrapolation du mouvement dans une trame et donc de croire
+l'illusion créée par la projection des images. De plus, le faible
+éclairage présent dans une salle de cinéma aide l'image projetée à
+rester plus longtemps imprégnée sur la rétine de l'oeil, facilitant
+ainsi la compréhension du mouvement dans l'image.
 
 Par contre, dans un jeu vidéo, les images rendues à l'écran sont
-parfaitement nettes et ne contiennent donc pas ce flou de mouvement,
-ce qui vient réduire la crédibilité de l'illusion faite par la
-succession des images à l'écran. Il faut donc augmenter le taux de
+souvent parfaitement nettes et ne contiennent donc pas ce flou de
+mouvement, ce qui vient réduire la crédibilité de l'illusion faite par
+la succession des images à l'écran. Il faut donc augmenter le taux de
 rafraîchissement à environ 60 trames par seconde pour obtenir le
 niveau de crédibilité d'une projection
 cinématographique~\cite{30vs60}.
@@ -673,14 +675,14 @@ cinématographique~\cite{30vs60}.
 Toutefois, un taux de rafraîchissement de 60 trames par seconde n'est
 pas nécessaire pour tous les jeux. Cela varie grandement avec la
 nature des jeux. Par exemple, un jeu de stratégie où les joueurs
-jouent à tours de rôles possède peu d'animations et donc pourrait très
+jouent à tour de rôle possède peu d'animations et donc pourrait très
 probablement être satisfaisant avec un taux de rafraîchissement de 30
 trames par seconde ou moins.
 
 Aussi, il est possible que les designers du jeu acceptent de réduire
 volontairement le taux de rafraîchissement afin d'avoir plus de temps
 pour rendre une image. Un jeu possédant un taux de rafraîchissement de
-60 trames par seconde implique que les images sont rafraîchies tous
+60 trames par seconde implique que les images sont rafraîchies toutes
 les 16 millisecondes, ce qui ne laisse pas beaucoup de temps pour
 effectuer le calcul du moteur du jeu en plus du rendu de
 l'image. Heureusement, les cartes vidéo modernes sont capables de
@@ -692,7 +694,7 @@ efficace que possible afin que le processus de rendu des trames soit
 transparent au joueur.
 
 \FloatBarrier
-\subsubsection{Réponse quasi temps réelle}
+\subsubsection{Réponse quasi temps réel}
 Une autre implication de la fluidité requise par un jeu vidéo est le
 délai de réponse face aux entrées du joueur. Ce délai doit être aussi
 faible que possible pour donner l'impression que le personnage dans le
@@ -707,14 +709,14 @@ En plus de devoir être efficacement implanté, un jeu vidéo moderne se
 doit d'être aussi modulaire que possible. Pour y arriver, le couplage
 entre les différentes composantes doit être faible.
 
-Le dévelop\-pement de logiciel favorisant la modularité est une qualité
-standard en génie logiciel, mais elle vient très bien s'appliquer au
-dévelop\-pement de jeux modernes. En effet, ces derniers sont des
-projets de très grande envergure impliquant beaucoup de
-programmeurs. Il en résulte qu'un bon design modulaire permet de bien
-séparer les tâches à effectuer de manière parallèle par des équipes
-spécialisées. Si le projet est bien géré, cela pourrait certainement
-réduire le coût de dévelop\-pement de tels projets.
+Le dévelop\-pement de logiciels favorisant la modularité est une
+qualité standard en génie logiciel, mais elle vient très bien
+s'appliquer au dévelop\-pement de jeux vidéo modernes. En effet, ces
+derniers sont des projets de très grande envergure impliquant beaucoup
+de programmeurs. Il en résulte qu'un bon design modulaire permet de
+bien séparer les tâches à effectuer de manière parallèle par des
+équipes spécialisées. Si le projet est bien géré, cela pourrait
+certainement réduire le coût de dévelop\-pement de tels projets.
 
 De plus, une bonne modularité permet de créer des composantes qui sont
 cohésives et qui permettent donc d'être réutilisées par la suite. Une
@@ -739,7 +741,7 @@ composantes d'un jeu.
 \subsection{Malléabilité}
 La malléabilité d'un logiciel pourrait se définir comme la facilité
 avec laquelle ce dernier peut être modifié ou transformé. Cette
-qualité est importante pour le dévelop\-pement de jeu puisqu'un tel
+qualité est importante pour le dévelop\-pement de jeux puisqu'un tel
 processus implique généralement de faire beaucoup de prototypage. Le
 code d'un jeu se doit alors d'être très malléable afin d'aider à faire
 des changements rapidement au moteur du jeu pour tester de nouvelles
@@ -766,11 +768,11 @@ grand intérêt à vouloir diminuer le coût de dévelop\-pement de
 ceux-ci. 
 
 Les coûts de dévelop\-pement de jeux modernes sont de l'ordre des
-millions de dollars et impliquent des dizaines voir des centaines
+millions de dollars et impliquent des dizaines voire des centaines
 d'artistes, de programmeurs et de designers. Ainsi, même de toutes
-petites accélérations d'un cycle de dévelop\-pement pourraient avoir un
-impact sur le travail de beaucoup de gens et se traduire ainsi en de
-grandes économies sur les coûts de dévelop\-pement.
+petites accélérations d'un cycle de dévelop\-pement pourraient avoir
+un impact sur le travail de beaucoup de gens et se traduire ainsi en
+de grandes économies sur les coûts de dévelop\-pement.
 
 Les contraintes impliquées au niveau de la programmation par le
 dévelop\-pement de jeux vidéo ont été étudiées. Ces dernières se
@@ -786,7 +788,7 @@ prototypage du jeu.
 Il semble donc que le choix d'un langage permettant de répondre à ces
 contraintes pourrait certainement faciliter le dévelop\-pement de jeux
 vidéo. Ainsi, des économies substantielles aux compagnies de
-l'industrie pourraient être engendrée, rendant plus accessible le
+l'industrie pourraient être engendrées, rendant plus accessible le
 dévelop\-pement de jeux aux plus petites compagnies possédant des
 budgets moins importants.
 
@@ -800,32 +802,33 @@ programmation a beaucoup d'influence sur la structure du code
 écrit. Plusieurs facteurs influencent ces différences. Par exemple, un
 langage à typage statique résultera en du code qui a une structure
 adaptée aux besoins du moment, mais qui sera beaucoup moins malléable
-par la suite. Ainsi, afin d'optimiser les efforts de dévelop\-pement
-pour un projet, une bonne analyse des besoins est de rigueur afin de
-choisir un langage répondant le mieux possible à ceux-ci.
+par la suite~\cite{StaticVSDynamic}. Ainsi, afin d'optimiser les
+efforts de dévelop\-pement pour un projet, une bonne analyse des
+besoins est de rigueur afin de choisir un langage répondant le mieux
+possible à ceux-ci.
 
 En se basant sur les besoins et les contraintes énoncés dans le
 chapitre \ref{Chap:JV}, nous proposons l'utilisation du langage de
-programmation Scheme comme outil principal de dévelop\-pement de
-jeux vidéo. Il s'agit d'un langage de très haut niveau qui semble être
-un candidat idéal pour permettre un dévelop\-pement efficace de jeux
+programmation Scheme comme outil principal de dévelop\-pement de jeux
+vidéo. Il s'agit d'un langage de très haut niveau qui semble être un
+candidat idéal pour permettre un dévelop\-pement efficace de jeux
 vidéo. En plus de posséder plusieurs implantations très performantes,
 ce langage offre une grande quantité de concepts de programmation de
 haut niveau. Parmi ceux-ci, on retrouve entre autres les concepts de
 la programmation fonctionnelle qui offrent un grand potentiel
-d'abstraction au niveau de la structure du code, un système de macro
-évolué qui permet d'augmenter Scheme avec des langages
-spécifiques au domaine, l'accès aux continuations du calcul qui
-permettent une manipulation très puissante du flot de contrôle du
-programme et un système de gestion mémoire automatique.
+d'abstraction au niveau de la structure du code, un système de macros
+évolué qui permet d'augmenter Scheme avec des langages spécifiques au
+domaine, l'accès aux continuations du calcul qui permettent une
+manipulation très puissante du flot de contrôle du programme et un
+système de gestion mémoire automatique.
 
 Ce chapitre donne un bref historique du langage Scheme afin de le
 mettre en situation et donner un aperçu de son origine. Par la suite,
 une brève explication des concepts de base du langage est donnée dans
 le but d'illustrer la simplicité de celui-ci. Plus d'informations sur
 les bases de Scheme peuvent être obtenues dans la
-littérature~\cite{R5RS}~\cite{SICP}. Finalement, les particularités du
-langage sont mises en lumière afin de mettre en évidence l'ampleur de
+littérature~\cite{R5RS,SICP}. Finalement, les particularités du
+langage sont discutées afin de mettre en évidence l'ampleur de
 celles-ci dans le contexte du dévelop\-pement de jeux vidéo.
 
 
@@ -848,36 +851,36 @@ en 1958 dans un laboratoire d'intelligence artificielle du MIT
 (\textit{Massachusetts Institute of Technology}) sous la direction de
 John McCarthy. Le langage original introduisait déjà des concepts
 fondamentaux comme l'utilisation de listes pour représenter du code,
-la programmation fonctionnelle ainsi que le concept de gestion de
+la programmation fonctionnelle, ainsi que le concept de gestion de
 mémoire automatique. Un article décrivant le langage Lisp comme un
 langage de programmation et de formalisme de définition de fonctions
 récursives fut publié ultérieurement~\cite{LISP_ORIGINS}.
 
 Le langage fut aussitôt adopté par la communauté de recherche en
-intelligence artificielle, puisque l'utilisation de traitement
+intelligence artificielle, puisque l'utilisation d'un traitement
 symbolique permettait de développer de nouveaux algorithmes dans ce
 domaine.
 
 Lisp évolua par la suite en de nombreux dialectes différents, chacun
 apportant ses propres extensions au langage. Vers le début des années
 1980, un comité d'unification de ces multiples dialectes fut formé
-pour donner naissance au standard Common Lisp. En 1984, Guy Steele publia
-un livre~\cite{CLISP} donnant une description détaillée du standard
-établi par la communauté Lisp. Il en résulte donc une spécification
-très complexe du langage qui s'est trouvé gonflée par les multiples
-dialectes lui ayant donné naissance. Ainsi, Common Lisp possède beaucoup de
-bagage, et il devient difficile pour un programmeur de maîtriser tous
-les concepts de ce langage.
+pour donner naissance au standard Common Lisp. En 1984, Guy Steele
+publia un livre~\cite{CLISP} donnant une description détaillée du
+standard établi par la communauté Lisp. Il en résulte donc une
+spécification très complexe du langage qui s'est trouvée gonflée par
+les multiples dialectes lui ayant donné naissance. Ainsi, Common Lisp
+possède beaucoup de bagage, et il devient difficile pour un
+programmeur de maîtriser tous les concepts de ce langage.
 
 
 \FloatBarrier
 \subsection{Avènement de Scheme}
 Peu avant la standardisation de Common Lisp, Guy Steele et Gerald
 J. Sussman conçurent la spécification d'un nouveau dialecte du langage
-Lisp appelé Scheme~\cite{SCHEME_ORIGINS}. L'origine du
-dévelop\-pement de Scheme provient de la tentative de compréhension
-d'un formalisme modulaire d'agents en intelligence
-artificielle~\cite{ACTOR}~\cite{Scheme-History}. Ils ont donc bâti un
+Lisp appelé Scheme~\cite{SCHEME_ORIGINS}. L'origine du dévelop\-pement
+de Scheme provient de la tentative de compréhension d'un formalisme
+modulaire d'agents en intelligence
+artificielle~\cite{ACTOR,Scheme-History}. Ils ont donc bâti un
 interprète minimaliste basé sur Lisp afin de comprendre ce formalisme
 qui s'exprimait mal avec les langages disponibles à l'époque. Ce petit
 interprète supportait ainsi une portée statique appropriée pour la
@@ -898,13 +901,13 @@ majeures. Celles-ci offrent non seulement plusieurs extensions du
 langage, mais aussi de bonnes performances grâce à l'implantation
 d'optimisations de compilation avancées.
 
-Le langage Scheme impose une philosophie de minimalisme à ces
+Le langage Scheme impose une philosophie de minimalisme à ses
 programmeurs en ne leur fournissant que la base dans le
 standard. Cette philosophie est souvent appréciée car elle mène à
 utiliser ce qui est vraiment nécessaire et à faire soi-même ce qui
 n'est pas disponible, créant ainsi une bonne autonomie chez les
-programmeurs Scheme. De plus, le langage est accompagné d'une
-centaine de librairies externes de traitement générique dénommées
+programmeurs Scheme. De plus, le langage est accompagné d'une centaine
+de librairies externes de traitement générique dénommées
 \textit{Scheme Request For Implementation} (SRFI~\cite{SRFI}).
 
 
@@ -962,16 +965,16 @@ de calcul arithmétique.\\
 Cette syntaxe apporte plusieurs bénéfices au langage. Puisque chaque
 appel de fonction (ou de forme spéciale) est parenthésé, il en résulte
 qu'un programme Scheme est très structuré et peut être manipulé
-efficacement en utilisant des outils de dévelop\-pement performant tel
-\textit{VI} ou \textit{Gnu Emacs}. De plus, Scheme utilise la
+efficacement en utilisant des outils de dévelop\-pement performants
+tels \textit{VI} ou \textit{Gnu Emacs}. De plus, Scheme utilise la
 même syntaxe pour les données d'un programme que pour le programme. Il
 devient ainsi possible de concevoir des programmes qui créent des
-programmes Scheme. C'est ce qui constitue la base du système de
-macro de Scheme. On dit ainsi qu'un programme Scheme est
-représenté par des expressions symboliques, fréquemment appelées
-S-expression. La distinction entre une donnée et les instructions d'un
-programme se fait par l'entremise des formes spéciales \scheme{quote}
-et \scheme{quasiquote} qui spécifient respectivement que l'expression
+programmes Scheme. C'est ce qui constitue la base du système de macros
+de Scheme. On dit ainsi qu'un programme Scheme est représenté par des
+expressions symboliques, fréquemment appelées S-expression. La
+distinction entre une donnée et les instructions d'un programme se
+fait par l'entremise des formes spéciales \scheme{quote} et
+\scheme{quasiquote} qui spécifient respectivement que l'expression
 doit être entièrement ou en partie traitée comme une donnée et donc,
 ne doit pas être évaluée comme un programme. La figure
 \ref{Scheme:s-quote-ex} donne deux exemples d'utilisation de ces
@@ -982,7 +985,7 @@ deuxième exemple utilise la forme \scheme{quasiquote} qui permet de
 spécifier des données dont certaines parties peuvent être évaluées à
 l'aide de la forme spéciale \scheme{unquote}. Les formes spéciales
 \scheme{quote}, \scheme{quasiquote} et \scheme{unquote} peuvent être
-aussi utilisées en utilisant les caractères respectifs \scheme{'},
+aussi utilisées \textit{via} les caractères respectifs \scheme{'},
 \scheme{`} et \scheme{,}.\\
 
 \begin{figure}[htb]
@@ -997,24 +1000,23 @@ aussi utilisées en utilisant les caractères respectifs \scheme{'},
 
 \FloatBarrier
 \subsection{Aperçu des fonctionnalités requises par le standard}
-Le standard du langage Scheme~\cite{R5RS} est très minimaliste,
-mais possède toutes les fonctionnalités de base requises par un
-langage de haut niveau comme Scheme. On y spécifie que
-Scheme est un langage typé dynamiquement, \ie que les
-vérifications de types sont faites durant l'exécution d'un programme,
-et non durant la compilation. Cette particularité fait en sorte que
-Scheme est un langage qui peut être interprété ou compilé. Les
-types de base du langage sont tous disjoints entre eux, \ie aucun
-objet ne peut appartenir à plus d'un de ces types. Ces types sont
-vérifiés par les prédicats \scheme{boolean?}, \scheme{pair?},
-\scheme{symbol?}, \scheme{number?}, \scheme{char?}, \scheme{string?},
-\scheme{vector?}, \scheme{port?}, \scheme{procedure?} et
-\scheme{null?}. Chacun de ces types sont documentés et possèdent des
-fonctions standards de création et d'utilisation. Entre autres, la
-forme spéciale \scheme{lambda} permet la création de fermetures telles
-qu'elles existent dans le lambda calcul. La figure
-\ref{Scheme:basic-ex} illustre l'utilisation des quelques-uns parmi
-ces types de base.\\
+Le standard du langage Scheme~\cite{R5RS} est très minimaliste, mais
+possède toutes les fonctionnalités de base requises par un langage de
+haut niveau comme Scheme. On y spécifie que Scheme est un langage typé
+dynamiquement, \ie que les vérifications de types sont faites durant
+l'exécution d'un programme, et non durant la compilation. Cette
+particularité fait en sorte que Scheme est un langage qui peut être
+interprété ou compilé. Les types de base du langage sont tous
+disjoints entre eux, \ie aucun objet ne peut appartenir à plus d'un de
+ces types. Ces types sont vérifiés par les prédicats
+\scheme{boolean?}, \scheme{pair?}, \scheme{symbol?}, \scheme{number?},
+\scheme{char?}, \scheme{string?}, \scheme{vector?}, \scheme{port?},
+\scheme{procedure?} et \scheme{null?}. Chacun de ces types est
+documenté et possède des fonctions standards de création et
+d'utilisation. Entre autres, la forme spéciale \scheme{lambda} permet
+la création de fermetures telles qu'elles existent dans le lambda
+calcul. La figure \ref{Scheme:basic-ex} illustre l'utilisation des
+quelques-uns parmi ces types de base.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1026,7 +1028,7 @@ ces types de base.\\
            0 
            3) => \schemeresult{"all"}
   \end{schemecode}
-  \caption{Exemples d'utilisation des type de base de Scheme}
+  \caption{Exemples d'utilisation des types de base de Scheme}
   \label{Scheme:basic-ex}
 \end{figure}
 
@@ -1034,7 +1036,7 @@ ces types de base.\\
 \FloatBarrier
 \section{Programmation fonctionnelle}
 Le langage Scheme est un langage fonctionnel. Cette famille de
-langage de programmation est caractérisée par une programmation
+langages de programmation est caractérisée par une programmation
 centrée sur l'appel de fonctions dites avec une transparence
 référentielle, où la valeur de retour d'une fonction dépend uniquement
 des paramètres et non de l'état du système. Ce type de programmation
@@ -1050,16 +1052,16 @@ commercial.
 \subsection{Programmation fonctionnelle pure}
 Une programmation dite purement fonctionnelle respecte de manière
 stricte le paradigme de la programmation fonctionnelle, \ie que les
-fonctions sont des entités mathématique qui ne sont pas affectées par
+fonctions sont des entités mathématiques qui ne sont pas affectées par
 l'état du système. L'origine de ce type de programmation se situe
 avant même l'apparition des premiers ordinateurs. C'est dans les
 années 1936 qu'Alonzo Church a introduit le formalisme mathématique de
-définition de fonctions mathématique dénommé lambda calcul non
+définition de fonctions mathématiques dénommé lambda calcul non
 typé~\cite{LAMBDA_CALCULUS}. Ce dernier introduit un formalisme de
 définition de fonctions qui sert de base aux langages de programmation
 fonctionnels. La figure \ref{FIG:lambda-calcul} illustre la définition
 de la fonction \scheme{flip}. Cette dernière reçoit en paramètre une
-fonction \scheme{f} et deux valeurs (\scheme{y} et \scheme{x}) et
+fonction \textit{f} et deux valeurs (\textit{y} et \textit{x}) et
 s'occupe d'appliquer la fonction reçue aux paramètres dans l'ordre
 inverse.\\
 
@@ -1073,7 +1075,7 @@ inverse.\\
 
 Ces fonctions sont considérées pures car elles sont exemptes de
 mutations de l'état du calcul. Ainsi, le résultat de l'application
-d'une fonction (appellée $\beta$-reduction en lambda calcul) ne dépend
+d'une fonction (appelée $\beta$-reduction en lambda calcul) ne dépend
 que des paramètres de ces dernières.
 
 Une caractéristique importante présente dans le lambda calcul est la
@@ -1120,7 +1122,7 @@ style en Scheme.
 \FloatBarrier
 \subsection{Programmation fonctionnelle en Scheme}
 Le lambda calcul ouvre la porte à la création d'abstractions très
-intéressantes: les fonctions d'ordre supérieure. Celles-ci reçoivent
+intéressantes: les fonctions d'ordre supérieur. Celles-ci reçoivent
 des fonctions en paramètre, les manipulent et en retournent de
 nouvelles. La figure \ref{FIG:hof} illustre un exemple d'écriture et
 d'utilisation de fonctions d'ordre supérieur. La première fonction
@@ -1144,7 +1146,7 @@ liste spécifiée.\\
 (map (flip - 1) '(1 2 3 4 5)) => \schemeresult{(0 1 2 3 4)}
   \end{schemecode}
   \caption{Exemple de création et d'utilisation de fonctions d'ordre
-    supérieure.}
+    supérieur.}
   \label{FIG:hof}
 \end{figure}
 
@@ -1167,7 +1169,7 @@ liste.\\
 
 (foldl * 1 '(1 2 3 4 5)) => \schemeresult{120}
   \end{schemecode}
-  \caption{Fonction d'ordre supérieure \scheme{foldl}.}
+  \caption{Fonction d'ordre supérieur \scheme{foldl}.}
   \label{Scheme:fold}
 \end{figure}
 
@@ -1210,13 +1212,13 @@ pour faire des abstractions qui sont résolues durant la compilation
 d'un fichier source. Dans sa forme la plus élémentaire, un système de
 macro peut être implanté sous la forme d'un pré-processeur de code qui
 ne fait que du remplacement de patrons par une expansion textuelle
-directe. C'est ce genre de système de macro que l'on retrouve entre
+directe. C'est ce genre de système de macros que l'on retrouve entre
 autres dans le langage C. Ce type de macro, quoique très simple,
 permet de faire déjà beaucoup d'abstractions. La figure
 \ref{Scheme:c-macros} illustre un exemple de macros C. Dans cet
-exemple, on défini la macro \scheme{swap} qui interchange la valeur de
-deux variables entre elles. Le résultat de l'expansion sera donné par
-la substitution de l'appel de la macro par son corps où les
+exemple, on définit la macro \scheme{swap} qui interchange la valeur
+de deux variables entre elles. Le résultat de l'expansion sera donné
+par la substitution de l'appel de la macro par son corps où les
 occurrences des paramètres sont intégralement substitués par les
 paramètres actuels, soient \texttt{a} et \texttt{b}.\\
 
@@ -1248,7 +1250,7 @@ de la macro en question.
 
 L'utilisation d'expressions symboliques pour représenter de la même
 manière les données d'un programme et le code source de celui-ci en
-Scheme permet l'implantation d'un système de macro très puissant, dit
+Scheme permet l'implantation d'un système de macros très puissant, dit
 procédural. Plusieurs de ces systèmes d'expansion de macros sont
 disponibles en Scheme. Le plus simple d'entre eux est celui qui
 provient directement de Lisp, soit la forme spéciale
@@ -1316,22 +1318,22 @@ figure \ref{Scheme:macro-ex3} est présentée dans la figure
   v)
   \end{schemecode}
   \caption{Résultat de l'expansion macro de l'appel présenté dans la
-    figure \ref{Scheme:macro-ex3}.}
+    figure \ref{Scheme:macro-ex3}}
   \label{Scheme:macro-ex3-exp}
 \end{figure}
 
 Ces macros demeurent très simples et se rapprochent de ce qui peut
-être exprimé à l'aide de macro C. Toutefois, la macro \scheme{for}
+être exprimé à l'aide de macros C. Toutefois, la macro \scheme{for}
 comporte un problème. Celui-ci est relié à l'introduction de la
 variable \scheme{loop}. L'ajout de cette variable peut causer le
-problème connu sous le nom de \emph{Capture de noms}. En effet, la
+problème connu sous le nom de \emph{Capture de nom}. En effet, la
 macro n'aura pas le comportement escompté si l'un de ses paramètres
 possède une référence à une variable déjà existante nommée
-\scheme{loop}. Le problème de capture de variables était tout aussi
-présent dans les macro de C et constituait pour ce type de macro un
+\scheme{loop}. Le problème de capture de variable était tout aussi
+présent dans les macros de C et constituait pour ce type de macro un
 problème insolvable. Par contre, il est possible d'éviter ce problème
-en Scheme en générant un nom de variable pour \scheme{loop} qui
-est assurément unique. L'implantation Gambit-C offre la fonction
+en Scheme en générant un nom de variable pour \scheme{loop} qui est
+assurément unique. L'implantation Gambit-C offre la fonction
 \scheme{gensym} pour ces besoins.
 
 Le problème de capture de nom est associé au phénomène appelé hygiène
@@ -1339,11 +1341,11 @@ des macros. Ce problème peut être résolu manuellement comme suggéré,
 mais il existe aussi d'autres expanseurs de macros assurant l'hygiène
 des macros, dont entre autres, la forme spéciale
 \scheme{syntax-rules}~\cite{SCHEME_HYG_MACRO}. La réécriture de la
-macro \scheme{for} en utilisant un système de macro hygiénique est
+macro \scheme{for} en utilisant un système de macros hygiénique est
 donnée dans la figure \ref{Scheme:macro-ex4}. Cette figure donne aussi
 un exemple d'utilisation de la macro mettant à l'épreuve l'hygiène de
 celle-ci. On constate que malgré le fait qu'aucun effort n'a dû être
-mis en place pour éviter les collisions de noms pour la variable
+mis en place pour éviter les collisions de nom pour la variable
 \scheme{loop} introduite, la macro réalise le comportement attendu
 dans des conditions potentiellement problématiques.\\
 
@@ -1366,7 +1368,7 @@ dans des conditions potentiellement problématiques.\\
 \end{figure}
 
 Bien que l'expansion de macro faite avec \scheme{define-macro} puisse
-impliquer des collisions de variables, elle permet une plus grande
+impliquer des collisions de variable, elle permet une plus grande
 liberté d'écriture. En effet, parfois la collision de nom peut être
 intentionnelle. Aussi, le problème est résolu avec l'utilisation de
 symboles uniques.
@@ -1390,7 +1392,7 @@ arguments de macros ne sont pas évalués.\\
 
 (number->string (mask 1 3 8) 2) => \schemeresult{"100001010"}
   \end{schemecode}
-  \caption{Exemple plus avancé de macro Scheme.}
+  \caption{Exemple plus avancé de macro Scheme}
   \label{Scheme:macro-ex1}
 \end{figure}
 
@@ -1431,10 +1433,10 @@ d'un langage naturel. Durant l'expansion, celles-ci transformeraient
 ces déclarations et combinaisons en des structures de données
 efficaces tant en utilisation mémoire qu'en rapidité d'accès et de
 manipulation. Un autre exemple pourrait être la création d'un système
-de programmation orienté objet à l'aide de macros Scheme. La puissance
-de calcul disponible durant l'expansion pourrait ainsi servir à la
-création des fonctions auxiliaires d'accès aux membres, à la
-détermination des membres hérités, \textit{etc}.
+de programmation orientée objets à l'aide de macros Scheme. La
+puissance de calcul disponible durant l'expansion pourrait ainsi
+servir à la création des fonctions auxiliaires d'accès aux membres, à
+la détermination des membres hérités, \textit{etc}.
 
 En conclusion, les macros Scheme donnent accès à une très grande
 puissance expressive en permettant l'utilisation de la puissance
@@ -1442,9 +1444,9 @@ complète du langage durant l'expansion de ces dernières. Cette
 puissance de calcul et cette simplicité proviennent du fait que le
 code source et les données utilisent la même syntaxe, soit les
 S-expressions. Ainsi, en utilisant ce système de macros, il est
-possible d'ajouter de nouvelles formes spéciales au langages et créer
-des langages spécifiques au domaine (\textit{Domain specific
-  languages}).
+possible d'ajouter de nouvelles formes spéciales au langage et créer
+des langages spécifiques au domaine (\textit{Domain Specific
+  Languages}).
 
 
 \FloatBarrier
@@ -1517,8 +1519,8 @@ terminaux. La transformation CPS est souvent utilisée par les
 implantations de Scheme car elle facilite l'implantation de
 l'optimisation d'appels terminaux. Ce style de programmation permet
 aussi d'utiliser de manière élégante la puissance d'abstraction des
-langages fonctionnels en permettant de diviser le calcul en petites
-parties interchangeables et modulaires.
+langages fonctionnels en divisant le calcul en petites parties
+interchangeables et modulaires.
 
 Le langage Scheme offre la possibilité de réifier automatiquement
 la continuation d'un calcul donné par l'entremise de la forme spéciale
@@ -1595,17 +1597,17 @@ supérieure à 10.\\
 \textbar 102\\
 102
 }}
-  \caption{Utilisation non efficace de \scheme{foldl}.}
+  \caption{Utilisation non efficace de \scheme{foldl}}
   \label{Scheme:bad-fold}
 \end{figure}
 
-On doit donc ré-écrire le méta comportement offert par \scheme{foldl}
+On doit donc ré-écrire le méta-comportement offert par \scheme{foldl}
 afin d'arrêter la recherche aussitôt qu'une valeur supérieure à 10 est
 trouvée. Cela vient à l'encontre du principe d'abstraction et mène à
 une maintenance difficile du code.
 
 Les continuations nous offrent par contre la possibilité d'utiliser la
-méta fonction \scheme{foldl}, sans perte de performance. La figure
+méta-fonction \scheme{foldl}, sans perte de performance. La figure
 \ref{Scheme:better-foldl} indique comment s'y prendre. En réifiant la
 continuation au début du calcul de la fonction
 \scheme{exists-greater-than}, on obtient une fonction qui permet le
@@ -1635,7 +1637,7 @@ trouvée.\\
 102
     }}
   \caption{Utilisation d'une continuation pour échapper au flot de
-    contrôle.}
+    contrôle}
   \label{Scheme:better-foldl}
 \end{figure}
 
@@ -1688,9 +1690,9 @@ l'utilisation d'un style CPS utilisant des continuations explicites
 apporte beaucoup de puissance au langage Scheme. L'utilisation de
 continuations permet la sauvegarde de l'état d'un calcul en cours dans
 une fermeture et permet sa réutilisation ultérieure. On peut ainsi
-créer sans trop d'efforts des systèmes d'exceptions, de retour arrière
-ou même de coroutines, systèmes qui seraient tous pertinents à
-utiliser dans le cadre de la programmation de jeux vidéo.
+créer sans trop d'efforts des systèmes d'exceptions, de retour
+arrières ou même de coroutines, systèmes qui seraient tous pertinents
+à utiliser dans le cadre de la programmation de jeux vidéo.
 
 
 
@@ -1716,17 +1718,17 @@ responsabilité de la désallocation des objets est difficile à
 déterminer.
 
 Ces erreurs sont très problématiques. C'est sans doute pour cette
-raison que déjà très tôt, des systèmes de gestions automatiques de
+raison que déjà très tôt, des systèmes de gestion automatique de
 mémoire ont été développés. Les premiers systèmes de gestion de
-mémoires automatiques, appelés aussi ramasses miettes, apparurent avec
-le langage Lisp. Le principe de base est simple, il s'agit de
-parcourir la mémoire utilisée par le programme en partant des
-\emph{racines} de celui-ci. Les racines comprennent tous les liens aux
-données accessibles, comme les variables globales ou locales d'une
-fonction en cours d'exécution. Lorsque la mémoire est parcourue, on
-garde trace des zones accessibles. Après avoir parcouru toute la
-mémoire utilisée, il ne suffit que de récupérer automatiquement les
-zones qui ne sont plus accessibles par le programme.
+mémoire automatique, appelés aussi ramasse miettes, apparurent avec le
+langage Lisp. Le principe de base est simple, il s'agit de parcourir
+la mémoire utilisée par le programme en partant des \emph{racines} de
+celui-ci. Les racines comprennent tous les liens aux données
+accessibles, comme les variables globales ou locales d'une fonction en
+cours d'exécution. Lorsque la mémoire est parcourue, on garde trace
+des zones accessibles. Après avoir parcouru toute la mémoire utilisée,
+il ne suffit que de récupérer automatiquement les zones qui ne sont
+plus accessibles par le programme.
 
 Bien sûr, la gestion de mémoire automatique se fait avec un certain
 coût en temps de calcul. La répartition de ce temps dépend grandement
@@ -1736,26 +1738,26 @@ désallocation d'objets puisque la détermination de la vivacité d'un
 objet est, dans la généralité du problème, indécidable. Ainsi, il peut
 y avoir des cas où le système de gestion pense qu'un pointeur est
 toujours accessible, alors qu'en réalité, il ne sera plus jamais
-utilisé par le programme créant ainsi des fuites de mémoires. Ces
+utilisé par le programme, créant ainsi des fuites de mémoire. Ces
 fuites sont toutefois beaucoup plus difficiles à créer que celles
 obtenues lorsqu'une gestion manuelle de mémoire est utilisée.
 
 
 \FloatBarrier
 \subsection{Survol des techniques}
-Plusieurs techniques de gestion de mémoire automatiques ont été
+Plusieurs techniques de gestion de mémoire automatique ont été
 développées au cours des années. Cette section effectue un bref survol
 de ces différentes techniques. Plusieurs articles effectuant une revue
 des techniques existantes sont
-disponibles~\cite{GC_REVIEW1}~\cite{GC_REVIEW3}.
+disponibles~\cite{GC_REVIEW1,GC_REVIEW3}.
 
 
 \FloatBarrier
-\subsubsection{\textit{Mark And Sweep}}
-Une des techniques la plus simple de gestion de mémoire automatique
-est le \textit{Mark And Sweep}~\cite{LISP_ORIGINS}. Cette technique
+\subsubsection{\textit{Mark and Sweep}}
+Une des techniques les plus simples de gestion de mémoire automatique
+est le \textit{Mark and Sweep}~\cite{LISP_ORIGINS}. Cette technique
 consiste à traverser la mémoire à partir des racines et à marquer
-chacun des espaces mémoire rencontrés lors du parcours. Ensuite, tous
+chacun des espaces mémoires rencontrés lors du parcours. Ensuite, tous
 les espaces mémoires alloués sont parcourus et tous ceux qui ne sont
 pas marqués sont récupérés. Cette technique est très simple, mais peut
 mener à des problèmes de fragmentations de la mémoire. De plus, elle
@@ -1764,11 +1766,11 @@ impliquant donc une pause considérable dans l'exécution du programme.
 
 
 \FloatBarrier
-\subsubsection{\textit{Stop And Copy}}
-Une autre technique classique se nomme \textit{Stop And
-  Copy}~\cite{STOP_AND_COPY}. De manière similaire au \textit{Mark And
-  Sweep}, cette technique parcoure les zones mémoires utilisées à
-partir des racines. Par contre, le \textit{Stop And Copy} doit séparer
+\subsubsection{\textit{Stop and Copy}}
+Une autre technique classique se nomme \textit{Stop and
+  Copy}~\cite{STOP_AND_COPY}. De manière similaire au \textit{Mark and
+  Sweep}, cette technique parcourt les zones mémoires utilisées à
+partir des racines. Par contre, le \textit{Stop and Copy} doit séparer
 la mémoire disponible en deux zones distinctes, l'une dans laquelle
 les allocations sont effectuées et l'autre demeure réservée. Lorsque
 le ramasse miettes atteint un objet en mémoire, il le copie vers la
@@ -1778,40 +1780,41 @@ ainsi copiées et compactées. Donc, les allocations subséquentes sont
 par la suite effectuées dans la nouvelle zone mémoire, résultant en
 une désallocation implicite des espaces inutilisés dans la zone
 précédente. Cette technique est légèrement plus efficace que le
-\textit{Mark And Sweep} traditionnel, mais nécessite le double
-d'espace pour faire la gestion de la mémoire. Le \textit{Stop And
+\textit{Mark and Sweep} traditionnel, mais nécessite le double
+d'espace pour faire la gestion de la mémoire. Le \textit{Stop and
   Copy} est utilisé dans l'implantation Scheme Gambit-C.
 
 
 \FloatBarrier
 \subsubsection{Gestionnaires gé\-né\-ra\-tion\-nels}
-Une amélioration notable de la technique du \textit{Mark And Sweep} a
-donné naissance aux ramasses miettes
-gé\-né\-ra\-tion\-nels~\cite{GEN_GC}. Brièvement, cette technique divise la
-mémoire en plusieurs générations. Les objets récemment alloués sont
-conservés dans la pouponnière puis, lorsque ceux-ci sont retenus plus
-longtemps, ils sont déplacés vers une génération plus ancienne, et
-ainsi de suite. Seul la pouponnière est parcourue lors de chaque
-récupération et lorsque celle-ci est remplie, elle déclenche une
-récupération dans la génération au-dessus d'elle. Ainsi, cet
+Une amélioration notable de la technique du \textit{Mark and Sweep} a
+donné naissance aux ramasse miettes
+gé\-né\-ra\-tion\-nels~\cite{GEN_GC}. Brièvement, cette technique
+divise la mémoire en plusieurs générations. Les objets récemment
+alloués sont conservés dans la pouponnière puis, lorsque ceux-ci sont
+retenus plus longtemps, ils sont déplacés vers une génération plus
+ancienne, et ainsi de suite. Seule la pouponnière est parcourue lors
+de chaque récupération et lorsque celle-ci est remplie, elle déclenche
+une récupération dans la génération au-dessus d'elle. Ainsi, cet
 algorithme est mieux adapté aux cas d'utilisations les plus fréquents,
 car les objets récemment alloués ont souvent une courte durée de vie
 moyenne, contrairement aux objets déjà retenus, qui eux possèdent une
 meilleur chance d'être conservés à long terme.
 
-Tout comme les deux techniques précédentes, les ramasses miettes
-gé\-né\-ra\-tion\-nels nécessitent l'arrêt du programme durant l'opération
-récupération, qui peut, dans le pire des cas, s'effectuer sur toute la
-mémoire. Ainsi, les gestionnaires de mémoires gé\-né\-ra\-tion\-nels
-améliorent les performances du temps de récupération moyen, au
-détriment du temps de récupération de toute la mémoire (pire cas).
+Tout comme les deux techniques précédentes, les ramasse miettes
+gé\-né\-ra\-tion\-nels nécessitent l'arrêt du programme durant
+l'opération récupération, qui peut, dans le pire des cas, s'effectuer
+sur toute la mémoire. Ainsi, les gestionnaires de mémoire
+gé\-né\-ra\-tion\-nels améliorent les performances du temps de
+récupération moyen, au détriment du temps de récupération de toute la
+mémoire (pire cas).
 
 
 \FloatBarrier
 \subsubsection{Gestionnaires incrémentaux}
 Afin de remédier au problème d'arrêt complet de l'exécution du
 programme, un nouveau type de ramasse miettes a été développé: des
-gestionnaires de mémoires incrémentaux ou temps
+gestionnaires de mémoire incrémentaux ou temps
 réels~\cite{INCR_BAKER}. Ceux-ci peuvent utiliser un algorithme
 générique de marquage à trois couleurs de la
 mémoire~\cite{dijkstra-tricolour} afin d'effectuer partiellement le
@@ -1821,7 +1824,7 @@ blanc, l'ensemble gris et l'ensemble noir. Initialement, toutes les
 zones sont blanches, à l'exception des racines qui sont marquées comme
 grises. Ensuite, pour chaque élément de l'ensemble gris, l'algorithme
 marque chacune des zones accessibles par ceux-ci comme gris et marque
-finalement l'élément gris comme noir. À la fin, les zones mémoire
+finalement l'élément gris comme noir. À la fin, les zones mémoires
 toujours blanches sont inaccessibles et donc récupérées.  Le travail
 de marquage peut être fait en étant subdivisé de manière à traverser
 un nombre fini de noeuds. Il en résulte donc que les pauses dues à la
@@ -1833,15 +1836,15 @@ programme exécuté (nommé le mutateur), certaines précautions doivent
 pointeurs en mémoire tel qu'il serait possible d'accéder à des espaces
 marqués comme étant non-accessibles et donc qui seront ultérieurement
 récupérés. Deux approches sont alors envisageables: des barrières de
-lectures ou d'écriture sur les zones mémoires. Les barrières de
-lectures assurent que seuls des pointeurs noirs sont retournés. Ces
-dernières sont généralement très coûteuses car les accès mémoire
-constituent environ 15~\% des
-instructions~\cite{Zorn90barriermethods}. Par contre, celles-ci
-doivent être utilisées pour des récupérateurs incrémentaux copiants,
-tel un \textit{Stop And Copy} incrémental. Les barrières en écritures
-possèdent plusieurs variantes qui effectuent des compromis entre
-l'efficacité algorithmique et l'efficacité de récupération.
+lecture ou d'écriture sur les zones mémoires. Les barrières de lecture
+assurent que seuls des pointeurs noirs sont retournés. Ces dernières
+sont généralement très coûteuses car les accès mémoire constituent
+environ 15~\% des instructions~\cite{Zorn90barriermethods}. Par
+contre, celles-ci doivent être utilisées pour des récupérateurs
+incrémentaux copiants, tel un \textit{Stop And Copy} incrémental. Les
+barrières en écriture possèdent plusieurs variantes qui effectuent
+des compromis entre l'efficacité algorithmique et l'efficacité de
+récupération.
 
 
 \FloatBarrier
@@ -1858,7 +1861,7 @@ continue. Les algorithmes de gestion de mémoire incrémentaux
 améliorent le pire cas du temps de récupération en augmentant le coût
 moyen. Ainsi, les coûts apportés à l'exécution du programme doivent
 être considérés. Donc, l'utilisation de récupérateurs
-gé\-né\-ra\-tion\-nels semblent un bon choix pour la programmation de
+gé\-né\-ra\-tion\-nels semble un bon choix pour la programmation de
 jeux vidéo car ils offrent de bonnes performances pour les
 utilisations normales de la mémoire, comme c'est généralement le cas
 pour des jeux vidéo.
@@ -1866,22 +1869,24 @@ pour des jeux vidéo.
 
 \FloatBarrier
 \section{Dynamisme du langage}
-Le langage Scheme est un langage à typage dynamique, faisant
-ainsi contraste aux langages fonctionnels de la famille
-\textit{ML}. Un typage dynamique se distingue par des vérifications de
-types effectuées durant l'exécution d'un programme. Un typage
-statique, quant à lui, effectuera les vérifications de types durant la
+
+Le langage Scheme est un langage à typage dynamique, faisant ainsi
+contraste aux langages fonctionnels de la famille \textit{ML}. Un
+typage dynamique se distingue par des vérifi\-cations de types
+effectuées durant l'ex\-écution d'un programme. Un typage statique,
+quant à lui, effectuera les vérifications de types durant la
 compilation. Ainsi, une importante différence entre les deux approches
 est le moment où les erreurs de programmation apparaissent. D'autre
 part, dû à la nature beaucoup plus stricte du typage statique, la
-récupération d'erreurs est beaucoup plus difficile, car elle dépend
-uniquement d'informations connues statiquement. 
+résolution d'erreurs est beaucoup plus difficile, car elle dépend
+uniquement d'informations connues statiquement.
 
 Un typage statique trouve des erreurs de types beaucoup plus tôt dans
 le processus de dévelop\-pement et permet d'exécuter un code libre de
 toutes vérifications de types. Une particularité des systèmes typés
 statiquement consiste à avoir des structures de code plus rigides,
-demandant possiblement beaucoup d'efforts pour être modifiées.
+demandant possiblement beaucoup d'efforts pour être
+modifiées~\cite{StaticVSDynamic}.
 
 Pour un typage dynamique, les erreurs ne surviendront que durant
 l'exécution du programme et ne pourraient jamais ou difficilement se
@@ -1897,18 +1902,18 @@ de faire de la programmation en direct (\textit{live coding}).
 
 
 \FloatBarrier
-\subsection{Interprétation et débuggage efficace}
+\subsection{Interprétation et déboggage efficace}
 Un langage typé dynamiquement a la possibilité d'être interprété
 puisque les types ne doivent pas nécessairement être corrects avant
 l'exécution. On peut ainsi évaluer les instructions les unes à la
 suite des autres dans un environnement global d'interprétation
-(\textit{toplevel}). Cette particularité infuse beaucoup de puissance
+(\textit{top level}). Cette particularité infuse beaucoup de puissance
 au langage. En effet, cela permet de tester les modules écrits de
 manière indépendante et interactive. Les cas extrêmes peuvent ainsi
 être vérifiés et il est donc possible d'avoir une bonne assurance sur
 le fonctionnement correct des algorithmes utilisés.
 
-En cas d'erreurs, le système est conçu afin de les détecter et
+En cas d'erreurs, le système est conçu afin de les détecter et les
 diagnostiquer. Puisque l'environnement est dynamique, une grande
 puissance d'introspection et d'analyse est disponible. Le système
 Gambit-C permet non seulement d'inspecter la pile de continuations
@@ -1919,28 +1924,28 @@ but de trouver la source de l'erreur.
 
 De plus, le dynamisme du langage peut pousser la puissance de
 récupération d'erreurs encore plus loin en combinant le système de
-débuggage de Gambit-C avec un protocole établi sur \textit{TCP-IP}
-permettant de faire du dégoggage à distance. On peut ainsi analyser
+déboggage de Gambit-C avec un protocole établi sur \textit{TCP-IP}
+permettant de faire du déboggage à distance. On peut ainsi analyser
 une erreur s'étant produite sur un processus distant, qui pourrait
 potentiellement être exécuté sur un système embarqué ou un appareil ne
 disposant pas d'interface permettant la récupération d'erreurs. Par
-exemple, ce système a été utilisé afin de débugger des processus
+exemple, ce système a été utilisé afin de débogger des processus
 Scheme exécutés sur un téléphone cellulaire.
 
 Il en résulte donc que malgré un faible coût en performance lors de
 l'exécution d'un programme, un système utilisant le typage dynamique
-apporte beaucoup de flexibilité aux programmeurs et leur fourni des
+apporte beaucoup de flexibilité aux programmeurs et leur fournit des
 outils efficaces pour le dévelop\-pement de logiciels.
 
 
 
 \FloatBarrier
-\section{Extension utiles}
+\section{Extensions utiles}
 Cette section présente un recueil des extensions du langage
 Scheme qui sont utilisées dans les chapitres suivants de ce
 mémoire. Ces dernières ne constituent pas nécessairement un atout
 précis quant à la programmation de jeux vidéo, mais apporteront plutôt
-une meilleure compréhension des exemples de codes fournis.
+une meilleure compréhension des exemples de code fournis.
 
 
 \FloatBarrier
@@ -1967,10 +1972,10 @@ optionnelles qui possèdent une valeur par défaut.\\
 La syntaxe des fonctions a aussi été étendue de manière à permettre la
 spécification d'un nombre de paramètres arbitraires. Pour ce faire, le
 mot clé \scheme{\#!rest} ou encore le point (\scheme{.}) est utilisé
-pour délimiter les paramètres normaux du paramètre reste, qui
+pour délimiter les paramètres normaux du paramètre \textit{reste}, qui
 contiendra une liste de tous les paramètres supplémentaires
 utilisés. La figure \ref{Scheme:rest-ex} illustre un exemple
-d'utilisation du paramètre reste.\\
+d'utilisation du paramètre \textit{reste}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -1979,13 +1984,13 @@ d'utilisation du paramètre reste.\\
 (g 1 2)       => \schemeresult{(1 2 ())}
 (g 1 2 3 4 5) => \schemeresult{(1 2 (3 4 5))}
   \end{schemecode}
-  \caption{Exemple d'utilisation du paramètre reste}
+  \caption{Exemple d'utilisation du paramètre \textit{reste}}
   \label{Scheme:rest-ex}
 \end{figure}
 
 Lorsqu'une fonction reçoit plusieurs arguments, il est possible
 d'utiliser la procédure \scheme{apply} afin d'appliquer la fonction en
-question à \emph{une liste} d'arguments. Cette fonction attend une
+question à une \emph{liste} d'arguments. Cette fonction attend une
 fonction comme premier argument et un nombre arbitraire d'arguments
 par la suite. Le dernier argument passé doit être une liste. Le
 contenu de cette liste sera inséré dans un appel à la fonction
@@ -2004,9 +2009,9 @@ de la procédure \scheme{apply}.\\
 
 
 \FloatBarrier
-\subsection{Tables de hachages}
+\subsection{Tables de hachage}
 Le système Gambit-C supporte aussi l'utilisation de tables de
-hachages. Ces dernières peuvent être créées par la fonction
+hachage. Ces dernières peuvent être créées par la fonction
 \scheme{make-table} et des valeurs peuvent y être insérées ou
 inspectées avec les fonctions \scheme{(table-set! <table> <key>
   <value>)} et \scheme{(table-ref <table> <key>
@@ -2056,8 +2061,8 @@ figure \ref{Scheme:cond}.\\
 
 \FloatBarrier
 \subsection{Déclaration et utilisation d'objets}
-Le système Gambit-C apporte la définitions d'objets implantant des
-fonctionnalités minimales d'un système de programmation orienté
+Le système Gambit-C apporte la définition d'objets implantant des
+fonctionnalités minimales d'un système de programmation orientée
 objet. La définition de telles structures se fait en utilisant la
 forme spéciale
 
@@ -2093,7 +2098,7 @@ question, implantant ainsi un héritage simple. La figure
 \subsection{Affichage de résultats}
 Plusieurs fonctions sont disponibles en Scheme afin d'effectuer
 l'affichage du résultat de l'évaluation d'une expression. Le standard
-Scheme fourni entre autres les fonctions \scheme{write} et
+Scheme fournit entre autres les fonctions \scheme{write} et
 \scheme{display} qui permettent un affichage bas niveau de données
 Scheme. Le système Gambit-C offre aussi les fonctions
 \scheme{pretty-print} (ou \scheme{pp}) afin de faire un affichage
@@ -2178,8 +2183,8 @@ de cette dernière.\\
 (let ((thunk (lambda () (display 'allo) (+ 2 3))))
     (+ 10 (continuation-graft k thunk))) => \schemeresult{allo6}
   \end{schemecode}
-  \caption{Exemple d'utilisation de l'api amélioré de capture de
-    continuations fourni par Gambit-C}
+  \caption{Exemple d'utilisation de l'API améliorée de capture de
+    continuations fournie par Gambit-C}
   \label{Scheme:cont-capt}
 \end{figure}
 
@@ -2203,12 +2208,12 @@ ralentissement lors de l'exécution de jeux. Finalement, la possibilité
 de réifier les continuations d'un programme en cours d'exécution offre
 beaucoup de puissance expressive au programmeur.
 
-Le langage Scheme étant très simple, il est essentiel de créer
-des extensions de ce langage afin de bâtir un jeu vidéo sur une base
+Le langage Scheme étant très simple, il est essentiel de créer des
+extensions de ce langage afin de bâtir un jeu vidéo sur une base
 solide pour répondre aux besoins spécifiques. L'expressivité du
-langage rend cette tâche facile. Ainsi, deux extensions au langages
-Scheme ont été développées dans le but de répondre spécifiquement
-aux besoins des jeux vidéo.
+langage rend cette tâche facile. Ainsi, deux extensions au langage
+Scheme ont été développées dans le but de répondre spécifiquement aux
+besoins des jeux vidéo.
 
 \clearpage
 
@@ -2218,19 +2223,18 @@ Scheme est un langage offrant aux programmeurs beaucoup de ressources
 à l'état brut et leur permet de se bâtir des outils personnalisés pour
 mieux répondre à leurs besoins.
 
-Un paradigme qui n'est pas supporté directement par le langage
-Scheme est celui de la programmation orientée objet. Celui-ci
-possède des structures de données hiérarchiques, les objets,
-favorisant la modularité et l'encapsulation de celles-ci. Cette
-modularité provient des abstractions résultantes de la hiérarchie des
-méta-objets appelés classes. L'encapsulation permet de cacher les
-données qui devraient demeurer internes au module créé.  Le
-sous-typage résultant de la création de classes permet entre autres
-l'utilisation générique de fonctions souvent appelées méthodes ou
-fonctions génériques.
+Un paradigme qui n'est pas supporté directement par le langage Scheme
+est celui de la programmation orientée objet. Ce paradigme possède des
+structures de données hiérarchiques, les objets, favorisant la
+modularité et l'encapsulation de celles-ci. Cette modularité provient
+des abstractions résultant de la hiérarchie des méta-objets appelés
+classes. L'encapsulation permet de cacher les données qui devraient
+demeurer internes au module créé.  Le sous-typage résultant de la
+création de classes permet entre autres l'utilisation générique de
+fonctions souvent appelées méthodes ou fonctions génériques.
 
-Ces objets sont centrés sur la notion d'état qui évolue au fil de
-l'exécution du programme. Malgré le fait que la notion d'état d'un
+Ces objets sont centrés sur la notion d'états qui évolue au fil de
+l'exécution du programme. Malgré le fait que la notion d'états d'un
 programme ne se marie pas bien avec la programmation fonctionnelle,
 l'utilisation d'objets pour représenter les entités dans un jeu est
 très naturelle et appropriée. En effet, ces entités possèdent des
@@ -2239,9 +2243,9 @@ on peut imaginer une balle qui possède une vitesse de déplacement et
 une position.
 
 De plus, l'utilisation de méthodes permet, d'une part, de réutiliser
-des comportements communs à des objets d'une même hiérarchie de classe
-et, d'autre part, de choisir un comportement approprié pour
-un objet donné, via le \textit{dispatch} de méthode qui sélectionne
+des comportements communs à des objets d'une même hiérarchie de
+classes et, d'autre part, de choisir un comportement approprié pour un
+objet donné, via le \textit{dispatch} de méthode qui sélectionne
 automatiquement la méthode la plus appropriée disponible pour un objet
 donné.
 
@@ -2256,15 +2260,15 @@ minimal.
 
 Ainsi, le système Gambit-C nous permet d'utiliser des concepts de la
 programmation orientée objet de manière rudimentaire. Cette approche
-ne fournie aucune possibilité d'attacher des méthodes aux objets qui
+ne fournit aucune possibilité d'attacher des méthodes aux objets qui
 sont au coeur du polymorphisme.
 
 L'approche plus traditionnelle quant à la déclaration de méthodes de
 classes est celle utilisée par le langage de programmation
 Java~\cite{JavaSpec}. Cette approche lie les méthodes à une classe et
 ses descendantes. Les appels de ces méthodes possèdent ainsi un
-argument caché (souvent nommé \textit{self} ou \textit{this}) qui se
-est une instance de cette classe. Le \textit{dispatch} dynamique
+argument caché (souvent nommé \textit{self} ou \textit{this}) qui est
+une instance de cette classe. Le \textit{dispatch} dynamique
 s'effectue \emph{uniquement sur le type de ce premier argument}. C'est
 l'approche appelée \textit{dispatch} simple (\textit{Single
   Dispatch}). Cette approche est bien adaptée pour une interaction
@@ -2315,10 +2319,10 @@ t.add(b) = 3
 
 \FloatBarrier
 
-Le langage Common Lisp~\cite{CLISP} possède un système orienté objet, le
-Common Lisp Object System~\cite{CLOS} (CLOS), qui diverge beaucoup de
-l'approche traditionnelle. Ce système offre une grande flexibilité de
-comportement et une riche introspection via un protocole de
+Le langage Common Lisp~\cite{CLISP} possède un système orienté objet,
+le Common Lisp Object System~\cite{CLOS} (CLOS), qui diverge beaucoup
+de l'approche traditionnelle. Ce système offre une grande flexibilité
+de comportements et une riche introspection via un protocole de
 méta-objets~\cite{MOP} (\textit{Meta Object Protocol}). L'aspect le
 plus intéressant de ce système est l'utilisation de fonctions
 génériques, éliminant l'utilisation de méthodes traditionnelles. Une
@@ -2347,7 +2351,7 @@ dynamiquement sur les types des arguments passés.\\
   (print (add p1 p1))  => \schemeresult{2}
   (print (add p1 p2))) => \schemeresult{3}
   \end{schemecode}
-  \caption{Exemple de \textit{dispatch multiple} écrit en CLOS.}
+  \caption{Exemple de \textit{dispatch multiple} écrit en CLOS}
   \label{OO:CLOS_ex}
 \end{figure}
 
@@ -2373,21 +2377,23 @@ programmation orientée objet afin d'écrire des jeux vidéo en
 Scheme de manière naturelle et modulaire.
 
 Plusieurs systèmes objets sont déjà disponibles pour l'implantation de
-Scheme Gambit-C. La plupart sont inspirés de la puissance
-expressive du système CLOS. On retrouve entre autres le système
-orienté objet Meroon~\cite{MEROON}. Ce système impose plusieurs
-limitations dont le fait que la hiérarchie de classe est limitée à un
-héritage simple. Aussi, il n'est pas possible d'allouer des attributs
-de classes, communs à toutes les instances. OOPS~\cite{OOPS} est un
-autre système objets disponible pour Gambit-C. Celui-ci offre plus de
+Scheme Gambit-C. La plupart sont inspirés de la puissance expressive
+du système CLOS. On retrouve entre autres le système orienté objet
+Meroon~\cite{MEROON}. Ce système impose plusieurs limitations dont le
+fait que la hiérarchie de classes est limitée à un héritage
+simple. Aussi, il n'est pas possible d'allouer des attributs de
+classes, communs à toutes les instances. OOPS~\cite{OOPS} est un autre
+système objet disponible pour Gambit-C. Celui-ci offre plus de
 fonctionnalités que Meroon, dont la possibilité de créer des classes
 avec héritage multiple. Cette fonctionnalité est très pertinente pour
 l'écriture de logiciels, car elle permet l'agrégation de plusieurs
 modules de manière très élégante et offre beaucoup de flexibilité. Le
 tableau \ref{OO:fonct-comp} présente une comparaison de ces systèmes
-objets sur la présence de fonctionnalités utiles pour le dévelop\-pement
-de jeux vidéo.
+objets sur la présence de fonctionnalités utiles pour le
+dévelop\-pement de jeux vidéo.
 
+
+\renewcommand{\tablename}{\customizedTableName}
 \begin{table}
   \center
   \begin{tabular}{|c|c|c|c|}
@@ -2417,14 +2423,14 @@ Le tableau \ref{OO:bench} de la section \ref{OO:bench-sect} illustre
 les performances de ces deux systèmes. On constate que les systèmes
 \textit{define-type} de Gambit-C et Meroon sont beaucoup plus
 performants que OOPS. Il en résulte donc qu'aucun de ces systèmes ne
-semblent offrir de bonnes performances tout en donnant accès aux
+semble offrir de bonnes performances tout en donnant accès aux
 fonctionnalités de la programmation orientée objet de haut niveau
 énoncées dans le tableau \ref{OO:fonct-comp}. Ainsi, afin d'obtenir un
 compromis entre l'expressivité et les performances, un nouveau système
-d'objet a été développé. Ce dernier aura comme vocation de répondre
+d'objets a été développé. Ce dernier aura comme vocation de répondre
 aux besoins en efficacité d'un jeu vidéo, tout en apportant le plus
 d'outils et de puissance d'abstraction que possible. Ce dernier est
-décrit en détails dans le reste de ce chapitre.
+décrit en détail dans le reste de ce chapitre.
 
 
 
@@ -2433,7 +2439,7 @@ décrit en détails dans le reste de ce chapitre.
 Le système de programmation orientée objet développé est fortement
 inspiré du Common Lisp Object System~\cite{CLOS} et possède la plupart
 des propriétés intéressantes de ce dernier. On retrouve entre autres
-de l'héritage multiple de classes, du polymorphisme d'instance de
+de l'héritage multiple de classes, du polymorphisme d'instances de
 classes et surtout, des fonctions génériques à \textit{dispatch}
 multiple personnalisé. Malgré ces fonctionnalités de haut niveau, une
 attention a été apportée aux performances, tout spécialement à l'accès
@@ -2443,7 +2449,7 @@ un jeu vidéo. En effet, le dévelop\-pement préliminaire de \textit{Space Inva
 membres d'instances est une opération très fréquente qui se doit
 d'être efficace afin de ne pas ralentir la cadence du jeu.
 
-Le reste de cette section fourni un API (\textit{Application
+Le reste de cette section fournit un API (\textit{Application
   Programming Interface}) au système, tout en motivant l'ajout des
 fonctionnalités clés de celui-ci et en fournissant des exemples
 d'utilisations.
@@ -2459,11 +2465,11 @@ présentée dans la figure \ref{OO:defclass-syntaxe}.\\
   \begin{schemecode}
 (define-class <class-name> (<super1> ...) <member1> ...)
   \end{schemecode}
-  \caption{Syntaxe de la forme spéciale \scheme{define-type}.}
+  \caption{Syntaxe de la forme spéciale \scheme{define-class}}
   \label{OO:defclass-syntaxe}
 \end{figure}
 
-Le méta symbole \scheme{<class-name>} représente le nom que portera la
+Le méta-symbole \scheme{<class-name>} représente le nom que portera la
 classe définie. Suivant ce nom se trouve la liste de super classes,
 données par leurs noms respectifs. Par la suite, les membres de la
 classe sont donnés. Ces membres peuvent être un attribut d'instance
@@ -2481,7 +2487,7 @@ système d'objets. Les figures \ref{Scheme:deftype} et
 \ref{OO:defclass-simple} illustrent cette conversion. Aussi, le choix
 d'utiliser des fonctions compatibles à \scheme{define-type} rend la
 base du système d'objets triviale à utiliser par des nouveaux
-utilisateurs déjà familier avec Gambit-C.\\
+utilisateurs déjà familiers avec Gambit-C.\\
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2491,12 +2497,12 @@ utilisateurs déjà familier avec Gambit-C.\\
 (define (add p1 p2) (make-point (+ (point-x p1) (point-x p2))
                                 (+ (point-y p1) (point-y p2))))
 
-(add (make-point 1 2) (make-circle 3 4 5)) => \schemeresult{\#(<class-desc> 4 6)}
+(add (make-point 1 2) (make-circle 3 4 5)) => \schemeresult{\#(\textless{}class-desc\textgreater 4 6)}
 
 (if (circle? (make-point 1 2)) 'ok 'no)    => \schemeresult{no}
   \end{schemecode}
-  \caption{Utilisation simple du système objets compatible avec la
-    forme \scheme{define-type}.}
+  \caption{Utilisation simple du système objet compatible avec la
+    forme \scheme{define-type}}
   \label{OO:defclass-simple}
 \end{figure}
 
@@ -2562,7 +2568,7 @@ figure \ref{OO:class-slot} illustre ce processus.\\
 
 
 En plus des créateurs d'instances à la \scheme{define-type}, le
-système objets permet de définir un ou plusieurs constructeurs pour la
+système objet permet de définir un ou plusieurs constructeurs pour la
 création d'instances simplifiées. Ces constructeurs sont plutôt des
 fonctions d'initialisation de nouvelles instances. Elles
 \emph{doivent} avoir un premier argument correspondant à l'instance à
@@ -2598,19 +2604,19 @@ génériques d'objets.\\
 
 \FloatBarrier
 \subsection{Définition de fonctions génériques} \label{OO:genfun}
-Toujours inspiré fortement du modèle éprouvé du système objets de
-Common Lisp~\cite{CLOS}, le système objets développé possède des
+Toujours inspiré fortement du modèle éprouvé du système objet de
+Common Lisp~\cite{CLOS}, le système objet développé possède des
 fonctions génériques permettant de faire du \textit{dispatch} multiple
 sur les arguments de celles-ci. Le choix d'adhérer à la philosophie de
 Lisp s'explique non seulement par le fait que nous souhaitons que
-notre système objets puisse offrir le plus de puissance expressive
+notre système objet puisse offrir le plus de puissance expressive
 possible aux programmeurs de jeux vidéo. En effet, plusieurs problèmes
 se retrouvant dans le dévelop\-pement de jeux vidéo peuvent être
 exprimés de manière très concise avec des fonctions génériques. Par
-exemple, la résolution de collision est un comportement qui dépend des
-deux entités impliquées et donc l'utilisation d'une fonction générique
-pour effectuer la résolution du travail à accomplir se fait de manière
-très naturelle.
+exemple, la résolution de collisions est un comportement qui dépend
+des deux entités impliquées et donc l'utilisation d'une fonction
+générique pour effectuer la résolution du travail à accomplir se fait
+de manière très naturelle.
 
 La déclaration d'une nouvelle fonction générique se fait par le biais
 de la forme spéciale
@@ -2627,12 +2633,12 @@ forme spéciale
 
 \noindent
 qui possède une syntaxe similaire à une définition de fonction, mais
-où la syntaxe des arguments a été étendue. Une description d'argument
+où la syntaxe des arguments a été étendue. Une description d'arguments
 est généralement une liste de la forme \scheme{(<arg-name>
   <arg-type>)}, où le premier élément est le nom de la variable et le
 deuxième le type de celle-ci. Le type est normalement le nom de la
 classe à laquelle l'instance peut appartenir (incluant le
-polymorphisme). Une description d'argument peut aussi être un symbole
+polymorphisme). Une description d'arguments peut aussi être un symbole
 unique qui sera le nom de la variable liée à la valeur passée en
 argument. Puisque dans un tel cas aucune information n'est donnée sur
 l'argument à recevoir, aucune discrimination d'instance ne sera faite
@@ -2653,7 +2659,8 @@ et ayant un nombre variable de paramètres.\\
 (define-generic add)
 (define-method (add x y) (+ x y))
 (define-method (add x y z) (+ x y z))
-(define-method (add (p point) (l length)) (+ (point-x p) (length-l l)))
+(define-method (add (p point) (l length)) 
+  (+ (point-x p) (length-l l)))
 (define-method (add (p1 point) (p2 point))
   (new point (+ (point-x p1) (point-x p2))
              (+ (point-y p1) (point-y p2))))
@@ -2678,8 +2685,8 @@ syntaxe est l'une parmi:
 
 \begin{itemize}
 \item \scheme{(match-value: <value>)} : La valeur du paramètre actuel
-  doit être égal (selon \scheme{equal?}) à \scheme{<value>} pour
-  discriminer ce paramètre d'une fonction générique. L'expression
+  doit être égale (selon \scheme{equal?}) à \scheme{<value>} pour
+  discriminer ce para\-mètre d'une fonction générique. L'expression
   \scheme{<value>} est considérée constante.
 
 \item \scheme{(match-member-value: <class> <slot-name> <value>)} : Le
@@ -2709,7 +2716,7 @@ que la discrimination fonctionne bien lorsque les instances effectuent
 de la discrimination orthogonale, \ie que les possibilités ne se
 recoupent pas entre elles. Une discrimination arbitraire pourrait se
 produire si plusieurs instances peuvent être discriminées de manière
-équivalentes pour un même appel.\\
+équivalente pour un même appel.\\
 
 \begin{figure}[h!]
   \begin{schemecode}
@@ -2742,7 +2749,7 @@ est que les instances discriminant sur une classe données doivent
 apparaître \emph{après} la déclaration de celle-ci, sinon le
 comportement du système est indéterminé.
 
-Puisque le système objets supporte de l'héritage multiple, il est
+Puisque le système objet supporte de l'héritage multiple, il est
 possible qu'une fonction générique possède uniquement deux instances
 correspondant à des super classes d'une classe donnée, comme c'est le
 cas dans la figure \ref{OO:discrimination}. Les classes
@@ -2753,14 +2760,14 @@ fonction générique \scheme{test} discriminant directement sur le type
 instances disponibles puisque ces dernières sont utilisables pour une
 instance de la classe \scheme{colored-circle}. L'algorithme discrimine
 alors comme suit: il considère que l'instance de la fonction générique
-qui possède \emph{la plus profonde hiérarchie de classe} est la plus
+qui possède \emph{la plus profonde hiérarchie de classes} est la plus
 spécifique. Cette profondeur est approximée par la somme du nombre de
-super classe que possède chacun des arguments de l'instance de la
+super classes que possède chacun des arguments de l'instance de la
 fonction générique en question. Ainsi, l'instance \scheme{(test (x
   colored))} obtient une valeur de 0, puisque \scheme{colored} ne
 possède aucune super classe et l'instance \scheme{(test (x circle))}
 obtient une valeur de 1, puisque la classe \scheme{circle} est une
-sous-classe de \scheme{point}. C'est donc l'instance discriminant sur
+sous classe de \scheme{point}. C'est donc l'instance discriminant sur
 un objet de type \scheme{circle} qui est choisie. Si les valeurs de
 discrimination sont égales pour plusieurs instances, alors c'est la
 méthode définie en dernier qui sera utilisée.\\
@@ -2837,7 +2844,7 @@ est finalement retourné.\\
 \subsection{Fonctions et formes spéciales utilitaires}
 Plusieurs fonctions et formes spéciales utilitaires sont disponibles
 afin de simplifier les tâches répétitives ou de permettre une
-introspection limitée avec le système objets. On retrouve plusieurs
+introspection limitée avec le système objet. On retrouve plusieurs
 fonctions permettant d'obtenir de l'information sur les types
 d'instances ou de classes. Parmi celles-ci, les principales sont:
 
@@ -2867,13 +2874,13 @@ d'instances ou de classes. Parmi celles-ci, les principales sont:
 \end{enumerate}
 
 Ainsi, l'introspection demeure limitée en comparaison à celle
-disponible par le protocole de méta objet de CLOS, mais elle demeure
+disponible par le protocole de méta-objet de CLOS, mais elle demeure
 tout de même fonctionnelle. Une meilleure introspection permettrait de
 développer des classes encore plus génériques, mais cette
-fonctionnalité n'est pas nécessaire pour le dévelop\-pement de jeu.
+fonctionnalité n'est pas nécessaire pour le dévelop\-pement de jeux.
 
 D'autre part, trois formes spéciales sont fournies pour simplifier les
-tâches répétitives pour la gestion d'instances de classe. Celles-ci
+tâches répétitives pour la gestion d'instances de classes. Celles-ci
 sont:
 
 \begin{itemize}
@@ -2913,7 +2920,7 @@ formes spéciales.\\
   (point-x p)) => \schemeresult{2}
   \end{schemecode}
   \caption{Exemple d'utilisation des formes spéciales fournies par le
-    système objets}
+    système objet}
   \label{OO:specform}
 \end{figure}
 
@@ -2921,7 +2928,7 @@ formes spéciales.\\
 
 \FloatBarrier
 \section{Implantation}
-Afin d'implanter ce système objets comme une extension directe du
+Afin d'implanter ce système objet comme une extension directe du
 langage Scheme, les macros procédurales ont dû être utilisées. Il
 en résulte donc l'ajout d'un langage spécifique au domaine de la
 programmation orientée objet.
@@ -2932,22 +2939,22 @@ possible durant cette expansion afin d'obtenir de bonnes performances
 lors de l'exécution. Par contre, afin d'effectuer beaucoup de travail
 lors de cette expansion, une grande quantité d'informations doivent
 être disponibles de manière statique, ce qui brime la philosophie
-dynamique du système objets. Ainsi, nous avons opté pour un compromis
+dynamique du système objet. Ainsi, nous avons opté pour un compromis
 entre la division du travail effectué lors de la compilation et de
-celui fait lors de l'exécution du système d'objets.
+celui fait lors de l'exécution du système objet.
 
 De plus, les informations recueillies lors de l'expansion macro sont
 souvent nécessaires au fonctionnement du système lors de son
 exécution.  Un passage d'informations entre ces deux mondes doit donc
 être fait. Afin d'y arriver, les structures correspondantes
 (descripteurs de classes, descripteurs de fonctions génériques,
-\textit{etc}) sont recréées durant l'exécution. Pour distinguer plus
+\textit{etc.}) sont recréées durant l'exécution. Pour distinguer plus
 facilement ces deux types de structures, les préfixes \scheme{mt}
-(\textit{macro expansion time} et \scheme{rt} (\textit{runtime}) sont
+(\textit{macro expansion time}) et \scheme{rt} (\textit{runtime}) sont
 utilisés dans le code source.
 
 Les sections qui suivent expliquent les grandes lignes de
-l'implantation de ce système objets et justifient les choix
+l'implantation de ce système objet et justifient les choix
 d'implantations qui ont dû être faits.
 
 
@@ -2967,14 +2974,14 @@ simplifiée des descripteurs utilisés durant l'expansion de macros.
 
 Le polymorphisme d'accès aux attributs d'instances est possible grâce
 à une indirection à partir de ce descripteur de classe. Malgré le fait
-qu'une telle indirection ralentie légèrement l'accès aux attributs,
+qu'une telle indirection ralentit légèrement l'accès aux attributs,
 cette dernière permet aussi d'avoir des instances qui ne possèdent pas
-d'espaces inutilisés. Ainsi, des index donnant l'emplacement des
+d'espaces inutilisés. Ainsi, des indices donnant l'emplacement des
 attributs dans les instances sont conservés dans les descripteurs de
-classes. Puisque l'héritage multiple est permis, ces index peuvent
+classes. Puisque l'héritage multiple est permis, ces indices peuvent
 varier d'une sous-classe à l'autre. Il en résulte donc que ces index
 d'indirection doivent toujours se retrouver au même endroit dans les
-descripteurs de classes afin que les accesseurs des super-classes
+descripteurs de classes afin que les accesseurs des super classes
 sachent où trouver cette information. La figure \ref{OO:obj-struct}
 contient un exemple de définitions de classes permettant d'illustrer
 les structures utilisées lors de l'exécution du système. La figure
@@ -2998,7 +3005,7 @@ les structures utilisées lors de l'exécution du système. La figure
    => \schemeresult{\#(\#(point3d (point) 1 2 titi unknown-slot 3) 44 55 66)}
   \end{schemecode}
   \caption{Exemple concret de structure d'instance, descripteur de
-    classe et de fonction d'accès à un attribut par indirection.}
+    classe et de fonction d'accès à un attribut par indirection}
   \label{OO:obj-struct}
 \end{figure}
 
@@ -3011,7 +3018,7 @@ les structures utilisées lors de l'exécution du système. La figure
 \end{figure}
 
 Il aurait été possible de faire en sorte que ces index soient toujours
-au même endroit pour une hiérarchie de classe donnée, mais nous avons
+au même endroit pour une hiérarchie de classes donnée, mais nous avons
 simplifié le problème dans notre implantation. En effet, les index
 d'indirection se retrouvent au même endroit dans le descripteur de
 classe, peu importe la classe. La conséquence de cette simplification
@@ -3023,8 +3030,8 @@ instances. Puisqu'en général peu de classes sont utilisées en
 comparaison à la quantité d'instances créées, le choix effectué est un
 bon compromis entre l'utilisation de la mémoire et la rapidité d'accès
 aux attributs. Ces structures de données sont implantées en utilisant
-des vecteurs Scheme. Ceux-ci ont été choisis dans le but de
-donner un accès rapide aux attributs.
+des vecteurs Scheme. Ceux-ci ont été choisis dans le but de donner un
+accès rapide aux attributs.
 
 Lorsque la forme spéciale \scheme{define-class} est expansée,
 plusieurs informations sont extraites et traitées afin de générer
@@ -3034,7 +3041,7 @@ hérités par les classes parents à la classe définie. Cette information
 est stockée dans une table de hachage globale à l'expansion macro
 nommée \scheme{mt-class-table} qui conserve l'information disponible
 pour chaque classe déjà créée. Cette information, stockée sous forme
-de méta descripteurs de classe, n'est disponible que pour l'expansion
+de méta-descripteurs de classe, n'est disponible que pour l'expansion
 macro. Ces descripteurs gardent une trace du nom des classes créées,
 de leur hiérarchie et une liste de positions relatives aux
 descripteurs de classes présents durant l'exécution. Ces positions
@@ -3043,22 +3050,22 @@ leurs attributs.
 
 Lorsque les nouveaux attributs (non-hérités) sont inclus dans un
 descripteur de classe de l'exécution, un compteur global (expansion
-macro) est utilisé pour obtenir la position du nouveau champs dans le
+macro) est utilisé pour obtenir la position du nouveau champ dans le
 vecteur correspondant à ce descripteur. Une fois toutes les positions
 déterminées, la génération du descripteur de classe de l'exécution
 peut être entamée. Un deuxième index, local celui-ci, est utilisé pour
-trouvé l'index d'indirection des attributs dans l'instance. Ainsi,
+trouver l'indice d'indirection des attributs dans l'instance. Ainsi,
 l'index global pointe vers l'endroit où placer l'index d'indirection
 des attributs d'instance dans le descripteur de classe de l'exécution.
 Pour leurs parts, les index d'indirection indiquent où trouver les
-attributs dans les instances. 
+attributs dans les instances.
 
 Une fois cette information en main, toutes les fonctions d'accès et de
 modification d'attributs peuvent être générées sans problème. La
-plupart contiendront des indirections pour l'accès aux champs, sauf
+plupart contiendront des indirections pour l'accès aux champ, sauf
 pour les attributs de classe qui eux, se retrouvent directement dans
 les descripteurs de classe. La figure \ref{OO:slot-access} donne un
-exemple concret de code généré effectuant l'accès au champs \scheme{x}
+exemple concret de code généré effectuant l'accès au champ \scheme{x}
 de la classe \scheme{point} définie dans la figure
 \ref{OO:obj-struct}. Au total, trois indirections sont nécessaires à
 l'obtention de la valeur d'un attribut d'instance. La première
@@ -3066,7 +3073,7 @@ indirection obtient le descripteur de classe de l'instance en
 question. La deuxième cherche dans ce descripteur l'index
 d'indirection qui donnera la position de l'attribut dans
 l'instance. Puisque la position de cet index d'indirection est
-globale, elle est directement insérée dans le code généré. Dans cette
+globale, elle est directement insérée dans le code généré. Dans cet
 exemple, cette position se trouve à l'index $2$ dans le descripteur de
 classe. Finalement, la valeur de l'attribut est obtenue en effectuant
 l'indirection sur l'instance.\\
@@ -3108,38 +3115,38 @@ alors plus été possible de l'utiliser de manière polymorphique avec
 les sous-classes de la classe \scheme{point} puisqu'il n'est pas
 certain que l'attribut \scheme{x} se retrouvera au même endroit dans
 une instance de ces sous-classes. Puisqu'un accès aux champs d'un
-vecteur est une opération efficace en Scheme, nous avons préféré
-opter pour la présence du polymorphisme qui apporte beaucoup en termes
+vecteur est une opération efficace en Scheme, nous avons préféré opter
+pour la présence du polymorphisme qui apporte beaucoup en terme
 d'expressivité.
 
-Puisque le système objets est implanté en utilisant l'expanseur de
+Puisque le système objet est implanté en utilisant l'expanseur de
 macros \scheme{define-macro} de Gambit-C, les données conservées sur
 les classes définies durant cette expansion sont perdues lorsque
 celle-ci est terminée. Par conséquent, il n'est pas possible de
-modifier la hiérarchie de classe définie dans un module Scheme
-(un fichier) à l'intérieur d'un autre module. Par exemple, une classe
+modifier la hiérarchie de classes définie dans un module Scheme (un
+fichier) à l'intérieur d'un autre module. Par exemple, une classe
 \scheme{Alpha} définie dans un fichier \scheme{A} ne pourrait pas être
 sous-classée dans un autre fichier \scheme{B}. Toutefois, il est
 possible d'utiliser les hiérarchies de classes créées dans un premier
 module à l'intérieur d'un autre module. L'implantation du support
-intermodulaire du système objets n'a pas été abordée dû à la
-complexité de la tâche et à la potentielle baisse de performance qui
-pourrait découler d'un tel ajout.
+intermodulaire du système objet n'a pas été abordée dû à la complexité
+de la tâche et à la potentielle baisse de performance qui pourrait
+découler d'un tel ajout.
 
 \FloatBarrier
-\subsection{Implantation de define-generic}
+\subsection{Implantation de \scheme{define-generic}}
 De manière similaire à la définition de nouvelles classes, des
 informations sur les fonctions génériques définies et sur leurs
 instances sont conservées dans une table de hachage globale durant
 l'expansion macro et se nomme \scheme{mt-meth-table}. Ces informations
 seront par la suite transférées vers l'exécution du programme sous la
-forme de structures propres à chaque fonctions génériques qui se
-nomment \scheme{<genfun-name>-meth-table}. Ces structures contiennent
-le nom de la fonction générique, une table de hachage permettant de
-vérifier rapidement l'existence d'une instance et une liste
-\emph{triée} des instances permettant d'accélérer le polymorphisme de
-fonctions génériques. La clé de cette table de hachage est basée sur
-le type des arguments de l'instance stockée.
+forme de structures propres à chaque fonction générique qui se nomme
+\scheme{<genfun-name>-meth-table}. Ces structures contiennent le nom
+de la fonction générique, une table de hachage permettant de vérifier
+rapidement l'existence d'une instance et une liste \emph{triée} des
+instances permettant d'accélérer le polymorphisme de fonctions
+génériques. La clé de cette table de hachage est basée sur le type des
+arguments de l'instance stockée.
 
 L'expansion de la définition d'une nouvelle fonction générique résulte
 donc en la création de cette structure et d'une fonction portant le
@@ -3227,7 +3234,7 @@ corps de méthodes légèrement plus génériques, mais l'utilisation du
 à subir des pertes de performance.
 
 \FloatBarrier
-\subsection{Implantation de define-method}
+\subsection{Implantation de \scheme{define-method}}
 L'expansion de la macro \scheme{define-method} consiste en la création
 d'une structure de données qui contient le corps de l'instance définie
 ainsi que les types associés aux arguments attendus. Cette structure
@@ -3237,7 +3244,7 @@ programme afin d'être appelée par la fonction de \textit{dispatch}.
 
 \FloatBarrier
 \section{Performances} \label{OO:bench-sect}
-Ce système de programmation orienté objets a été écrit dans le but
+Ce système de programmation orientée objet a été écrit dans le but
 d'obtenir un compromis entre l'accès à des concepts de haut niveau et
 de bonnes performances lors de l'exécution, notamment en ce qui
 concerne l'accès aux membres d'instances de classes.
@@ -3253,19 +3260,21 @@ possède la complexité des appels de fonctions génériques directs. Par
 \og appel direct \fg, il est sous-entendu que le type des arguments de
 l'appel correspond aux types des arguments formels, et non de manière
 polymorphe. Ces appels possèdent une complexité algorithmique linéaire
-en fonction du nombre de paramètres que possède l'instance (appelons
-le $p$). En effet, l'obtention d'une instance directe est faite par
-l'entremise d'une recherche dans une table de hachage utilisant
-\scheme{equal?} à titre de comparaison. Cette complexité augmente d'un
-ordre supplémentaire lorsqu'aucune instance directe n'existe et qu'une
-instance polymorphique est recherchée. En effet, une recherche
-linéaire est effectuée sur chacune des instances existantes ($m$),
-puis la compatibilité du type des arguments doit être effectué
-($p$). Il est intéressant de noter que malgré la complexité
-quadratique de cette opération, le nombre de paramètres ($p$) est
-normalement très bas.  L'accès et la modification de membres de classe
-se fait toutefois de manière constante.
+en fonction du nombre de paramètres que possède l'instance
+(appelons-le $p$). En effet, l'obtention d'une instance directe est
+faite par l'entremise d'une recherche dans une table de hachage
+utilisant \scheme{equal?} à titre de comparaison. Cette complexité
+augmente d'un ordre supplémentaire lorsqu'aucune instance directe
+n'existe et qu'une instance polymorphique est recherchée. En effet,
+une recherche linéaire est effectuée sur chacune des instances
+existantes ($m$), puis la compatibilité du type des arguments doit
+être effectuée ($p$). Il est intéressant de noter que malgré la
+complexité quadratique de cette opération, le nombre de paramètres
+($p$) est normalement très bas.  L'accès et la modification de membres
+de classe se fait toutefois de manière constante.
 
+
+\renewcommand{\tablename}{\customizedTableName}
 \begin{table}
   \center
   \begin{tabular}{cc}
@@ -3280,7 +3289,7 @@ se fait toutefois de manière constante.
     \textit{dispatch} polymorphique & $O(mp)$\\
     \hline
   \end{tabular}
-  \caption{Complexité algorithmique des opérations du système objets
+  \caption{Complexité algorithmique des opérations du système objet
     effectuées durant l'exécution}
   \label{OO:complexity}
 \end{table}
@@ -3303,6 +3312,7 @@ test pour chaque opération vérifiée. Les tests effectués sur des
 fonctions génériques utilisent quatre instances de celles-ci pour
 notre système objet ($m=4$).
 
+\renewcommand{\tablename}{\customizedTableName}
 \begin{table}
   \center
   \begin{tabular}{ccccc}
@@ -3321,10 +3331,11 @@ notre système objet ($m=4$).
   \end{tabular}
   \caption{Temps d'exécution (en secondes) de 1~000~000 itérations de
     tests comparatifs sur les opérations du système de programmation
-    orientée objets développé avec d'autres systèmes objets existants}
+    orientée objets développé avec d'autres systèmes objet existants}
   \label{OO:bench}
 \end{table}
 
+\renewcommand{\tablename}{\customizedTableName}
 \begin{table}
   \center
   \begin{tabular}{ccccc}
@@ -3342,7 +3353,7 @@ notre système objet ($m=4$).
     \hline
   \end{tabular}
   \caption{Comparaison de performances relatives au système le plus
-    rapide (1.0) pour chaque opération du système objets.}
+    rapide (1.0) pour chaque opération du système objet}
   \label{OO:bench-rel}
 \end{table}
 
@@ -3357,9 +3368,9 @@ arguments passés à celle-ci. Une dégradation d'un facteur de cinq est
 aussi observée pour effectuer le travail supplémentaire lors d'appels
 de fonctions génériques nécessitant du polymorphisme. 
 
-Ainsi, les performances obtenus se comparent très bien à Gambit-C
-lui-même pour la création d'objets et l'accès au membres de
-ceux-ci. Aussi, la performance d'appels de fonctions générique, quoi
+Ainsi, les performances obtenues se comparent très bien à Gambit-C
+lui-même pour la création d'objets et l'accès aux membres de
+ceux-ci. Aussi, la performance d'appels de fonctions génériques, quoi
 que légèrement plus lente, se compare aussi à Meroon qui est réputé
 pour être bien optimisé. Donc, tout en offrant plus de fonctionnalités
 que ses compétiteurs notre système offre des performances adéquates en
@@ -3367,9 +3378,9 @@ fonction des critères fixés.
 
 \FloatBarrier
 \section{Conclusion}
-Ainsi un système objets complet a été développé dans le but d'étendre
+Ainsi un système objet complet a été développé dans le but d'étendre
 le langage Scheme et d'y inclure le paradigme de la programmation
-orientée objets. Ce système objets permet la déclaration de classes avec
+orientée objets. Ce système objet permet la déclaration de classes avec
 héritage multiple, polymorphisme et fonctions génériques effectuant du
 \textit{dispatch} multiple. Ces choix de caractéristiques ont été
 faits dans le but de donner le plus de liberté aux programmeurs de
@@ -3377,14 +3388,14 @@ jeux vidéo, tout en fournissant de bonnes performances, tant en temps
 sur processeur qu'en utilisation de la mémoire.
 
 Dans ce but, les structures de données utilisées pour l'implantation
-d'instances de classe ne possèdent pas d'espaces inutilisés et ne
+d'instances de classes ne possèdent pas d'espaces inutilisés et ne
 requièrent que trois indirections vectorielles afin d'accéder aux
 champs de celles-ci. De même, les fonctions génériques utilisent des
 mécanismes de tri pré-calculé afin d'accélérer le \textit{dispatch}
 d'instances de fonctions génériques de manière polymorphe.
 
 Il serait maintenant intéressant de modifier le système afin qu'il
-supporte un protocole de méta objets. Un tel protocole donnerait accès
+supporte un protocole de méta-objets. Un tel protocole donnerait accès
 à une introspection très développée et permettrait aux utilisateurs de
 modifier le comportement du système selon leurs besoins.
 
@@ -3394,7 +3405,7 @@ en ce qui concerne la modularité du code.
 
 Par contre, une attention particulière devrait être portée aux coûts
 en performance que ces modifications pourraient impliquer afin de
-respecter la philosophie de base de ce système objets.
+respecter la philosophie de base de ce système objet.
 
 \clearpage
 
@@ -4431,6 +4442,7 @@ sur un processeur de 1.6 GHz possédant 1 Go de mémoire principale.\\
   \label{Corout:ping-server}
 \end{figure}
 
+\renewcommand{\tablename}{\customizedTableName}
 \begin{table}
   \center
   \begin{tabular}{cccccc}
@@ -4453,6 +4465,7 @@ sur un processeur de 1.6 GHz possédant 1 Go de mémoire principale.\\
   \label{Corout:bench}
 \end{table}
 
+\renewcommand{\tablename}{\customizedTableName}
 \begin{table}
   \center
   \begin{tabular}{cccccc}
@@ -4470,7 +4483,7 @@ sur un processeur de 1.6 GHz possédant 1 Go de mémoire principale.\\
     \hline
   \end{tabular}
   \caption{Comparaison de performances relatives au système le plus
-    rapide (1.0) en fonction des données de la table
+    rapide (1.0) en fonction des données du tableau
     \ref{Corout:bench}}
   \label{Corout:bench-rel}
 \end{table}
@@ -4624,13 +4637,13 @@ première version est décrit dans la section \ref{Exp:sp1}.
 
 Par la suite, une deuxième version fut écrite afin de répondre à
 certaines lacunes que présentait la première version du jeu. Pour ce
-faire, le dévelop\-pement du système objets présenté dans le chapitre
+faire, le dévelop\-pement du système objet présenté dans le chapitre
 \ref{Chap:OO} fut entrepris. Cette démarche d'amélioration du jeu est
 décrite dans la section \ref{Exp:sp2}.
 
 Finalement, une version expérimentale fut développée. Cette version
 tentait d'intégrer un nouvelle approche face au contrôle de flot du
-jeu. L'idée était de tenter de fusionner le système objets et le
+jeu. L'idée était de tenter de fusionner le système objet et le
 système de coroutines afin que tous les objets du jeu soient eux-mêmes
 des coroutines, en espérant simplifier l'écriture d'entités du jeu. En
 expérimentant sur le contrôle de flot du jeu, il est possible de
@@ -5529,7 +5542,7 @@ Ainsi les animations du jeu peuvent être définies en utilisant cette
 forme spéciale. La figure \ref{Exp:cyclic-anim-def} illustre la
 définition de l'animation de marche utilisée par les sous-classes de
 \scheme{human-like}. On peut ainsi tirer profit du polymorphisme du
-système objets en plus du petit langage de définition d'animations
+système objet en plus du petit langage de définition d'animations
 afin de définir de manière claire et concise une animation cyclique.\\
 
 \begin{figure}[htb!]
@@ -5840,6 +5853,7 @@ de noter que les jeux possèdent un taux de rafraîchissement de 30
 images par secondes fixé dans le but d'avoir un comportement similaire
 aux versions originales de ces derniers.
 
+\renewcommand{\tablename}{\customizedTableName}
 \begin{table}
   \center
   \begin{tabular}{ccc}
@@ -5861,7 +5875,7 @@ aux versions originales de ces derniers.
 On constate que le jeu \textit{Space Invaders} utilise d'une manière
 plus intensive le processeur principal que \textit{Lode Runner} qui
 pourtant est un jeu plus complexe. Cette perte de performance est
-attribuée à l'utilisation intensive du système objets et de coroutines
+attribuée à l'utilisation intensive du système objet et de coroutines
 développés. En effet, \textit{Lode Runner} a fait une utilisation plus
 légère de ces derniers de manière à tirer profit de leurs abstractions
 aux endroits les plus utiles. Il en résulte ainsi en une amélioration
@@ -6064,7 +6078,7 @@ lorsque cette intégration est faite sur des plate-formes au matériel
 plus limité comme des consoles portables. Lua contient certains
 éléments de la programmation dite de haut niveau dont les fermetures,
 une gestion de mémoire automatique, l'optimisation d'appels terminaux
-et un système de coroutines. Il fourni aussi un système objets limité
+et un système de coroutines. Il fourni aussi un système objet limité
 à la Javascript~\cite{ECMA-262}, basé sur le prototypage d'objets.
 
 Ainsi, malgré le fait que ce dernier contient plusieurs aspects de la
@@ -6123,22 +6137,23 @@ Gambit-C ne possède pas de tels outils de développement intégrés, mais
 peuvent utiliser de manière indirecte les outils de développement
 offert pour les langages C et C++.
 
+\renewcommand{\tablename}{\customizedTableName}
 \begin{table}
-\begin{tabular}{cccc}
-Points de comparaison         & C++ & Lua & Scheme\\
-\hline \hline
-Typage                       & statique & dynamique & dynamique\\
-Gestion mémoire              & manuelle & automatique & automatique\\
-Fermetures                   & non & oui & oui\\
-Macros                       & textuelles & aucune & procédurales\\
-Réification de continuations & non & non & oui\\
-Mode usuel d'utilisation     & compilé & interprété & compilé et interprété\\
-Dépistage d'erreurs          & bas niveau & bas niveau & haut niveau\\
-IDE                          & très développé & de base & inexistant\\
+  \begin{tabular}{cccc}
+    Points de comparaison         & C++ & Lua & Scheme\\
+    \hline \hline
+    Typage                       & statique & dynamique & dynamique\\
+    Gestion mémoire              & manuelle & automatique & automatique\\
+    Fermetures                   & non & oui & oui\\
+    Macros                       & textuelles & aucune & procédurales\\
+    Réification de continuations & non & non & oui\\
+    Mode usuel d'utilisation     & compilé & interprété & compilé et interprété\\
+    Dépistage d'erreurs          & bas niveau & bas niveau & haut niveau\\
+    IDE                          & très développé & de base & inexistant\\
 \hline
-\end{tabular}
-\caption{Comparaison des langages C++, Lua et Scheme}
-\label{Rev:lang-comp}
+  \end{tabular}
+  \caption{Comparaison des langages C++, Lua et Scheme}
+  \label{Rev:lang-comp}
 \end{table}
 
 
@@ -6159,7 +6174,7 @@ cette compagnie a écrit plusieurs jeux sur la \textit{PlayStation 2}
 en utilisant le compilateur \textit{GOAL}/\textit{Game Oriented
   Assembly Lisp}, un système maison uniquement compilé vers du code
 machine pour le \textit{PlayStation 2} qui comprenait notamment un
-système objets et des coroutines. Ce dernier fut utilisé pour
+système objet et des coroutines. Ce dernier fut utilisé pour
 développer entièrement de nombreux jeux sur la console dont les jeux
 de des séries \textit{Crash Bandicoot} et \textit{Jak and Dexter}.
 
@@ -6251,7 +6266,7 @@ jeux vidéo \textit{Gamerizon inc}.
 
 L'utilisation de Scheme dans QuantZ a apporté plusieurs avantages
 technologiques. En effet, le dynamisme du langage a su profiter aux
-développeurs en leur permettant de débugger le jeu lors de son
+développeurs en leur permettant de débogger le jeu lors de son
 exécution. Cet aspect du langage permis la résolution rapide de
 problèmes et donc d'accélérer le dévelop\-pement du jeu.
 
@@ -6370,6 +6385,7 @@ l'élaboration de plusieurs librairies facilitant le développement
 ultérieur de nouveaux jeux, ce qui n'est probablement pas le cas des
 versions originales écrites en langage de bas niveau.
 
+\renewcommand{\tablename}{\customizedTableName}
 \begin{table}[htb!]
   \begin{tabular}{cccc}
     Titre & Année de sortie & Vitesse CPU & Durée de développement\\

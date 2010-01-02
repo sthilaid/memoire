@@ -9,6 +9,9 @@
 \usepackage{amssymb}
 \usepackage{placeins} % used for \FloatBarrier
 
+%\usepackage{hyperref}
+
+
 \usepackage{udem_these_fr}
 
 % Ajustement du formatage
@@ -3416,7 +3419,7 @@ permettant l'exécution parallèle de code, de façon matérielle ou
 logicielle. L'utilisation de \textit{threads} dans un jeu vidéo peut
 être très pertinente et permettrait d'exprimer de manière concise des
 concepts clés. Par exemple, l'implantation de parties multi-joueurs où
-ces derniers jouent à tour de rôles est bien représentée par un modèle
+ces derniers jouent à tour de rôle est bien représentée par un modèle
 parallèle, puisqu'il s'agit de deux parties distinctes jouées en même
 temps.
 
@@ -3445,17 +3448,18 @@ systèmes de coroutines dont un premier niveau permettrait
 l'implantation de parties multi-joueurs et un second niveau
 permettrait l'implantation du comportement d'entités dans le jeu. La
 figure \ref{Corout:usecase} illustre de manière générique cette
-idée. Dans ce schéma, les carrés noirs représentent des systèmes de
-coroutines et les coroutines sont représentées avec des lignes
-pointillées. L'utilisation de systèmes imbriqués permettrait ainsi
-d'exprimer chaque concept de manière modulaire et complètement
-transparente.\\
+idée. Dans ce schéma, les rectangles noirs représentent des systèmes
+de coroutines et les coroutines sont représentées avec des lignes
+pointillées. Ainsi, chaque joueur est lui-même un système de coroutine
+qui gère l'état de la partie de ce dernier. L'utilisation de
+systèmes imbriqués permettrait ainsi d'exprimer chaque concept de
+manière modulaire et complètement transparente.\\
 
 \begin{figure}[htb!]
   \center
   \includegraphics[scale=1.2]{corout-usecase-design}
   \caption{Exemple générique d'utilisation de systèmes de coroutines
-    cascadés}
+    cascadées}
   \label{Corout:usecase}
 \end{figure}
 
@@ -3468,14 +3472,14 @@ fonctionnalités de Gambit-C limite celle de coroutines au
 dévelop\-pement d'un seul concept dans un jeu.
 
 Afin de ne pas être limité par les fonctionnalités fournies par
-Gambit-C, l'expressivité du langage Scheme peut être mise à
-profit. En effet, grâce à la réification de continuations du calcul,
-la tâche de l'implantation d'un système de coroutine fait sur mesure
-est tout à fait accessible et réalisable sans changer le langage. Ce
-chapitre présente un système de \textit{threads} \emph{coopératifs}
-développé dans le but de bien répondre aux besoins de jeux vidéo quant
-à l'écriture de code s'exécutant en concurrence de manière sécuritaire
-tout en permettant l'utilisation récursive de ce système.
+Gambit-C, l'expressivité du langage Scheme peut être mise à profit. En
+effet, grâce à la réification de continuations du calcul, la tâche de
+l'implantation d'un système de coroutines fait sur mesure est tout à
+fait accessible et réalisable sans changer le langage. Ce chapitre
+présente un système de \textit{threads} coopératifs développé dans le
+but de bien répondre aux besoins de jeux vidéo quant à l'écriture de
+code s'exécutant en concurrence de manière sécuritaire tout en
+permettant l'utilisation récursive de ce système.
 
 
 \FloatBarrier
@@ -3488,7 +3492,7 @@ assurer l'intégrité des données. Toutefois, des synchronisations entre
 les différentes coroutines pourraient être encore nécessaires pour
 bien orchestrer l'exécution de ces dernières. Afin de permettre aux
 coroutines de communiquer entre elles, une synchronisation par passage
-de message avec \textit{pattern matching} similaire à celle utilisée
+de messages avec \textit{pattern matching} similaire à celle utilisée
 dans les systèmes Termite~\cite{Termite_paper} ou Erlang~\cite{Erlang}
 a été adoptée. Ce mécanisme permet de synchroniser naturellement et de
 manière élégante les coroutines.
@@ -3572,8 +3576,8 @@ attente bornée.\\
 L'objet créé pourra être par la suite ajouté à un nouveau système par
 la fonction d'initialisation \scheme{boot} ou encore par une coroutine
 d'une simulation existante avec la fonction
-\scheme{spawn-brother}. Ces fonction sont décrites les sous-sections
-qui suivent.
+\scheme{spawn-brother}. Ces fonctions sont décrites dans les
+sous-sections qui suivent.
 
 
 \FloatBarrier
@@ -3594,7 +3598,7 @@ liste sera la première à être exécutée. La création de \textit{timers}
 se fait par un appel à la fonction
 
 \begin{schemecode}
-(start-timer! <period> [time-multiplier: <time-mult-value>]))
+(start-timer! <period> [time-multiplier: <time-mult-value>])
 \end{schemecode}
 
 \noindent
@@ -3602,7 +3606,7 @@ qui s'occupe de créer un objet faisant abstraction du temps. Ce
 dernier sera rafraîchi selon la période (en secondes) indiquée en
 temps réel. On peut ainsi faire varier la granularité de la simulation
 afin de l'adapter aux besoins existants. Le paramètre optionnel
-\scheme{<time-mult-value>}, si spécifié, accélérera la simulation de
+\scheme{<time-mult-value>}, si spécifié, accélèrera la simulation de
 ce facteur. Ainsi, le temps dans la simulation passera deux fois plus
 rapidement que le temps réel en utilisant une valeur de multiplicateur
 de temps de deux. La fonction \scheme{(pause-timer! <timer>)} peut
@@ -3630,14 +3634,14 @@ coroutines de manière cascadés, \ie qu'il est possible de créer des
 coroutines qui sont elles-mêmes des systèmes de coroutines. De tels
 systèmes récursifs comportent de nombreux avantages. En effet,
 l'utilisation de la récursivité facilite grandement la modularité. Il
-devient possible de modulariser les différents aspects d'utilisations
+devient possible de modulariser les différents aspects d'utilisation
 dans leurs propres systèmes. Par exemple, dans le cadre de jeux
 simples, on peut implanter des parties multi-joueurs en utilisant une
 coroutine par partie. Ces dernières peuvent alors elles-mêmes contenir
-un système de coroutine utilisé pour la partie.
+un système de coroutines utilisé pour la partie.
 
 La procédure de création de ces derniers est obtenue en démarrant un
-nouveau système de coroutine à l'intérieur d'une coroutine
+nouveau système de coroutines à l'intérieur d'une coroutine
 existante. Lorsque des coroutines démarrent un nouveau système de
 coroutines, l'objet d'abstraction du temps (\textit{timer}) du système
 primordial est automatiquement utilisé pour les systèmes récursifs de
@@ -3653,7 +3657,7 @@ système de coroutines courant. Si le système courant ne se retrouve
 pas dans un système cascadé, alors rien ne se produira. Une fonction
 similaire, \scheme{(super-kill-all! <return-value>)} terminera
 \emph{tous} les systèmes de coroutines se retrouvant dans
-l'arborescence de système de coroutines présentement active. Un
+l'arborescence de système de coroutines présentement actives. Un
 exemple de système de coroutines en cascade est donné dans la figure
 \ref{Corout:cascade}.  On constate que les appels à
 \scheme{super-yield} ont bien effectué les changements de contextes
@@ -3695,8 +3699,7 @@ Puisque le contrôle du flot d'exécution entre les coroutines doit être
 explicité par l'utilisateur, une bonne diversité de fonctions
 permettent la manipulation de celui-ci. Il est important de noter que,
 sauf avec avis contraire, toutes les fonctions décrites dans cette
-section doivent être exécutées \emph{par} une coroutine, \ie dans leur
-corps.
+section doivent être exécutées par une coroutine, \ie dans leur corps.
 
 La fonction la plus simple de manipulation du flot d'exécution est
 \scheme{(yield)}. Celle-ci arrête temporairement la coroutine actuelle
@@ -3706,8 +3709,8 @@ dans la file de coroutines prêtes, tel qu'illustré dans la figure
 \ref{Corout:system-schema}. La coroutine effectuant l'appel à la
 fonction \scheme{yield} sera alors placée à la fin de cette file
 d'attente. Il en résulte que le retour du contrôle à cette coroutine
-ne sera exécuté uniquement lorsque toutes les autres coroutines prêtes
-auront décidé de passer la main à la coroutine suivante. Il est
+ne sera exécuté uniquement que lorsque toutes les autres coroutines
+prêtes auront décidé de passer la main à la coroutine suivante. Il est
 également possible de choisir explicitement à quelle coroutine le
 contrôle sera passé avec la fonction \scheme{(yield-to <corout>)}.
 
@@ -3715,7 +3718,7 @@ Une coroutine peut aussi décider de se mettre en attente pour une
 certaine période de temps avec la fonction \scheme{(sleep-for <sec>)}
 pour un certain nombre de secondes. Il en résultera que la coroutine
 actuelle sera placée dans une file d'attente séparée et ne sera
-réenfilée dans la file de coroutines prêtes uniquement lorsque le
+réenfilée dans la file de coroutines prêtes uniquement que lorsque le
 délai prescrit sera dépassé. Cela n'implique pas que la coroutine sera
 exécutée à ce moment-là, car si cette file contient déjà des
 coroutines en attente, elle devra attendre son tour pour poursuivre
@@ -3786,7 +3789,7 @@ spécifiée.
 Une certaine introspection est très utile pour un programmeur, surtout
 pour des fins de déboggage.  Un environnement dynamique est disponible
 pour les coroutines lors de leurs exécutions. Cet environnement donne
-accès à de l'information sur le système de coroutine en cours
+accès à de l'information sur le système de coroutines en cours
 d'exécution. Il comprend les paramètres:
 
 \begin{itemize}
@@ -3802,8 +3805,8 @@ d'exécution. Il comprend les paramètres:
 
 
 \subsection{Système de communication inter-coroutines}
-Que ce soit afin d'informer une partie du score d'un autre joueur ou
-d'un vaisseau spatial attendant le bon moment pour effectuer son
+Que ce soit afin d'informer une partie du pointage d'un autre joueur
+ou d'un vaisseau spatial attendant le bon moment pour effectuer son
 déplacement, la synchronisation des entités d'un jeu est primordiale.
 Le mécanisme principal de synchronisation des coroutines pour ce
 système est basé sur le passage de messages, tel que fait dans le
@@ -3880,7 +3883,7 @@ différents qui peuvent être utilisés.\\
       (after 2                    'timeout!))      ; timeout
   \end{schemecode}
   \caption{Exemple de patrons pouvant être utilisés dans le filtrage
-    par motifs de la forme spécial \scheme{recv}}
+    par motifs de la forme spéciale \scheme{recv}}
   \label{Corout:recv-pat}
 \end{figure}
 
@@ -3898,12 +3901,12 @@ appliquer à tous les appels de la forme spéciale de réception de
 messages par filtrage de motifs.
 
 Le filtrage par patron présenté se conforme à la sémantique définie
-par les formes équivalentes dans les système Termite~\cite{Termite} et
-Erlang~\cite{Erlang} par le fait que la sélection du message reçu se
-fait sur le premier message reçu qui correspond à au moins un patron
-de filtrage. Ce choix semble raisonnable puisqu'il en résulte que la
-sélection d'un message est complètement déterministe. En effet, la
-réception de nouveaux messages (qui est indéterministe dû à
+par les formes équivalentes dans les systèmes Termite~\cite{Termite}
+et Erlang~\cite{Erlang} par le fait que la sélection du message reçu
+se fait sur le premier message reçu qui correspond à au moins un
+patron de filtrage. Ce choix semble raisonnable puisqu'il en résulte
+que la sélection d'un message est complètement déterministe. En effet,
+la réception de nouveaux messages (qui est indéterministe dû à
 l'incertitude qu'apporte la fonction \scheme{sleep-for}) n'influence
 pas le choix du message. Si un message déjà reçu correspond à un
 patron, il sera choisi peu importe l'arrivée d'un nouveau message. Il
@@ -3915,7 +3918,7 @@ et, par la suite, d'envoyer à toutes les coroutines inscrites des
 messages de manière simultanée. Quoi que très primitif, ce système
 permet d'émuler la base d'un système de programmation
 réactive~\cite{FRP}. Les fonctions de gestion et d'utilisation de
-listes de diffusions sont:
+listes de diffusion sont:
 
 \begin{itemize}
 \item \scheme{(subscribe <list-id> <corout>)} : Inscription de la
@@ -4001,7 +4004,7 @@ la figure \ref{Corout:corout-class}. Elle contient toutes les
 informations essentielles au fonctionnement de celle-ci, dont entre
 autres sa continuation (\scheme{kont}), sa boîte de messagerie, une
 sauvegarde de l'environnement d'un sous-système de coroutines
-(\scheme{state-env}), \textit{etc}\\
+(\scheme{state-env}), \textit{etc}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -4034,7 +4037,7 @@ correctement avec la valeur de retour $1$.
 La variable d'état \scheme{sleeping?} permet d'indiquer à
 l'ordonnanceur si la coroutine qui vient de céder le contrôle a été
 mise en veille ou non, afin de savoir si cette dernière doit retourner
-dans la file d'attente des coroutine prêtes. La figure
+dans la file d'attente des coroutines prêtes. La figure
 \ref{Corout:state-diag} illustre les états possibles contenus dans
 \scheme{sleeping?}.
 
@@ -4059,15 +4062,15 @@ trouve ou non, tel qu'illustré dans la figure
 
 
 \FloatBarrier
-\subsection{Timers}
-Les timers sont aussi implantés comme des structures
-\textit{define-type}. Leurs rôles est de fournir une abstraction
+\subsection{\textit{Timers}}
+Les \textit{timers} sont aussi implantés comme des structures
+\textit{define-type}. Leur rôle est de fournir une abstraction
 temporelle pour le déroulement du système de coroutines, qui peut être
 perçu comme une simulation. Cette classe très simple contient des
 champs afin de tenir compte du temps courant de la simulation, de la
-période du timer, \textit{etc}.
+période du \textit{timer}, \textit{etc}.
 
-Les timers doivent être rafraîchis régulièrement selon une période
+Les \textit{timers} doivent être rafraîchis régulièrement selon une période
 fixe. Ainsi, ils doivent être exécutés complètement à l'extérieur du
 système de coroutines pour y arriver et sont donc implantés en
 utilisant le système de \textit{threads} de Gambit-C. Il en résulte
@@ -4113,7 +4116,7 @@ dynamiques de Gambit-C. Les paramètres d'états de l'ordonnanceur sont:
 \end{itemize}
 
 La récursion du système fonctionne grâce à la sauvegarde de l'état du
-système actuel dans le champs \scheme{state-env} d'un objet de
+système actuel dans le champ \scheme{state-env} d'un objet de
 coroutine et grâce à la restauration de l'état de la coroutine parent
 située dans le paramètre d'environnement \scheme{parent-state}.
 
@@ -4124,7 +4127,7 @@ traitée. Si cette dernière a terminé son exécution, sa valeur de
 retour est sauvegardée, sinon elle est automatiquement remise dans la
 file d'attente des coroutines prêtes. Par la suite, la file
 prioritaire de coroutines en attente sur le temps est regardée afin de
-réveiller toutes coroutines ayant dépassé leur délai de
+réveiller toute coroutine ayant dépassé son délai de
 sommeil. Finalement, la première coroutine disponible dans la file de
 coroutines prêtes est choisie comme la prochaine et son travail est
 poursuivi par un appel à \scheme{resume-coroutine}. Si toutefois
@@ -4212,6 +4215,8 @@ ignorée par celles-ci.\\
   \label{Corout:yield}
 \end{figure}
 
+\medskip
+
 \begin{figure}[htb!]
   \begin{schemecode}
 (define (resume-coroutine)
@@ -4228,6 +4233,7 @@ ignorée par celles-ci.\\
   \label{Corout:resume-corout}
 \end{figure}
 
+\clearpage
 
 \FloatBarrier
 \subsection{Système de messagerie}
@@ -4242,11 +4248,11 @@ file d'attente. Après cet ajout, le système vérifie si la coroutine
 réceptrice était en attente d'un message et si c'est le cas, alors
 cette dernière est remise en action dans l'ordonnanceur. La figure
 \ref{Corout:!} illustre ce procédé d'acheminement de
-message. Puisqu'il est possible de spécifier une valeur d'attente
+messages. Puisqu'il est possible de spécifier une valeur d'attente
 maximale de messages, la coroutine en attente pourrait se retrouver
 dans la file d'attente sur le temps des coroutines. Afin de distinguer
 une telle attente bornée d'un appel à \scheme{sleep-for}, l'état
-\scheme{interruptible?} du champs \scheme{sleeping?} d'une coroutine
+\scheme{interruptible?} du champ \scheme{sleeping?} d'une coroutine
 est utilisé, tel que schématisé dans la figure
 \ref{Corout:state-diag}.\\
 
@@ -4270,7 +4276,7 @@ est utilisé, tel que schématisé dans la figure
 Pour la réception de messages, la coroutine actuelle vérifie si un
 message est disponible dans sa boîte de réception et, si c'est le cas,
 elle retourne le premier message enfilé dans celle-ci. Lorsqu'aucun
-message n'est pas disponible, la coroutine attend alors jusqu'à la
+message n'est disponible, la coroutine attend alors jusqu'à la
 réception d'un nouveau message avec une attente bornée dans le temps
 ou pas. Pour une attente bornée, la coroutine est mise en veille pour
 la durée désirée, en spécifiant qu'elle peut être interrompue par la
@@ -4304,7 +4310,7 @@ du procédé employé.\\
 \end{figure}
 
 L'implantation de la forme spéciale de réception de messages
-\scheme{recv} est complexe et ne sera pas expliquée en détails. Cette
+\scheme{recv} est complexe et ne sera pas expliquée en détail. Cette
 dernière est implantée par une macro Scheme qui transforme les
 patrons de filtrage donnés dans une deuxième forme spéciale de
 filtrage par motifs appelée \scheme{match}. Le code généré par la
@@ -4320,7 +4326,8 @@ conforme à un des patrons de filtrage sera retenu. La figure
  message ne correspond à ce patron, une vérification est faite parmi
  les patrons dynamiques afin de trouver un message pouvant être
  utilisé. Si aucun message n'est trouvé, alors la coroutine est mise
- en veille pour une seconde et pourrait être interrompue par l'arrivée
+ en veille pour une seconde, tel que spécifié par le patron
+ \scheme{(after 1 ...)}, et pourrait être interrompue par l'arrivée
  d'un nouveau message. Il est intéressant de noter que lorsqu'un
  message est trouvé dans la boîte aux lettres d'une coroutine, un
  deuxième appel à la macro \scheme{match} est fait afin d'exécuter le
@@ -4414,8 +4421,8 @@ sur un processeur de 1.6 GHz possédant 1 Go de mémoire principale.\\
       \textless{}(after 2)\textgreater{})
   \end{schemecode}
   \caption{Patron de filtrage utilisé pour les tests de
-    performances. Le message reçu par ce dernier est celui attendu par
-    la deuxième branche.}
+    performance. Le message reçu par ce dernier est celui attendu par
+    la deuxième branche}
   \label{Corout:bench-pattern}
 \end{figure}
 
@@ -4437,8 +4444,8 @@ sur un processeur de 1.6 GHz possédant 1 Go de mémoire principale.\\
     (time-expr (boot (list c1 c2))))
   \end{schemecode}
   \caption{Test de performance \scheme{ping-server} utilisé pour
-    comparé une utilisation réaliste de la réception de messages avec
-    filtrage de motifs.}
+    comparer une utilisation réaliste de la réception de messages avec
+    filtrage de motifs}
   \label{Corout:ping-server}
 \end{figure}
 
@@ -4495,9 +4502,9 @@ concurrente. On constate que le changement de contexte est environ six
 fois plus lent que celui effectué par Gambit-C. Puisque le code de
 \scheme{yield} est déjà très épuré, ce test comparatif indique qu'il
 s'agit plutôt de l'ordonnanceur de notre système qui est plus lent que
-celui de Gambit-C. Toutefois, cette différence de performances est
-acceptable pour les utilisations légères de notre système dans un jeu
-vidéo.
+celui de Gambit-C. Toutefois, cette différence de performance est
+acceptable pour les utilisations raisonnables de notre système dans un
+jeu vidéo.
 
 En ce qui concerne l'envoi et la réception de messages simples, notre
 système se trouve à être environ cinq fois plus lent que le système le
@@ -4505,18 +4512,18 @@ plus rapide pour ce genre d'opération, soit Gambit-C. L'utilisation
 d'attentes bornées par le temps semble toutefois ralentir d'avantage
 les performances observées, tout comme pour le système Termite.
 L'écart à Gambit-C se justifie probablement par l'utilisation de
-structures de données moins efficace dans notre cas. Malgré tout, les
+structures de données moins efficaces dans notre cas. Malgré tout, les
 performances observées demeurent acceptables.
 
 La comparaison de filtrage par motif entre notre système, Termite et
 Erlang indique que notre système et Termite offrent des performances
 équivalentes, soient environ cinq fois plus lentes que celles offertes
-par Erlang. Encore une fois, l'utilisation d'attentes bornées à
-ralentit d'un facteur de deux l'exécution de notre système et celle de
+par Erlang. Encore une fois, l'utilisation d'attentes bornées a
+ralenti d'un facteur de deux l'exécution de notre système et celle de
 Termite.  Ces résultats ne sont pas très surprenants puisque Erlang
 est réputé comme étant très efficace. Toutefois, plusieurs
-optimisations sur la réception de message par filtrage pourraient être
-effectuées dans notre système afin d'améliorer celles-ci.
+optimisations sur la réception de messages par filtrage pourraient
+être effectuées dans notre système afin d'améliorer celles-ci.
 
 
 \FloatBarrier
@@ -4563,7 +4570,7 @@ jeux vidéo en Scheme, des jeux doivent être créés, en augmentant
 graduellement la complexité de ceux-ci, pour permettre de trouver et
 résoudre de manière itérative les problèmes reliés à leur
 dévelop\-pement. Un jeu simple comprend les problèmes les plus
-fondamentaux qui peuvent être obtenus, soient une détection de
+fondamentaux qui peuvent être rencontrés, soient une détection de
 collisions, des animations, un concept de niveaux,
 \textit{etc}. Ainsi, ces problèmes peuvent être adressés dans un
 premier temps, puis de nouveaux problèmes peuvent être entrepris par
@@ -4571,30 +4578,31 @@ la suite en développant un jeu plus complexe. Aussi, cette approche
 permet de bâtir une infrastructure de dévelop\-pement de jeux vidéo
 qui réduit la difficulté du dévelop\-pement de jeux plus complexes.
 
-Le jeu choisi pour la première phase de dévelop\-pement est \textit{Space Invaders}
-(1978). Ce dernier date de la période des jeux d'arcade et, tout en
-étant très simple, adresse plusieurs problèmes fondamentaux
-qu'impliquent les jeux vidéo modernes: des interactions avec usager
-rapides, des niveaux, de la détection de collisions et même des
-parties multi-joueurs. Puisque le graphisme de ce jeux est
-rudimentaire, il constitue en un très bon choix pour un premier jeu,
-car il permet de concentrer le dévelop\-pement sur le moteur de
-celui-ci. Le dévelop\-pement de ce jeu est traité dans la section
-\ref{Exp:SI}. Son dévelop\-pement a mené à la création du système
-orienté objets décrit dans le chapitre \ref{Chap:OO} et du système de
-coroutines présenté dans le chapitre \ref{Chap:corout}.
+Le jeu choisi pour la première phase de dévelop\-pement est
+\textit{Space Invaders} (1978). Ce dernier date de la période des jeux
+d'arcade et, tout en étant très simple, fait face à plusieurs
+problèmes fondamentaux qu'impliquent les jeux vidéo modernes: des
+interactions rapides avec usager, des niveaux, de la détection de
+collisions et même des parties multi-joueurs. Puisque le graphisme de
+ce jeu est rudimentaire, il constitue un très bon choix pour un
+premier jeu, car il permet de concentrer le dévelop\-pement sur le
+moteur de celui-ci. Le dévelop\-pement de ce jeu est traité dans la
+section \ref{Exp:SI}. Son dévelop\-pement a mené à la création du
+système orienté objets décrit dans le chapitre \ref{Chap:OO} et du
+système de coroutines présenté dans le chapitre \ref{Chap:corout}.
 
-Par la suite, le jeu \textit{Lode Runner} (1983) a été développé. Ce dernier date de
-l'époque des premiers ordinateurs personnels et est plus élaboré. Par
-contre, c'est la version arcade du jeu (1984) qui a été reprise. Tout
-en conservant les problèmes fondamentaux traités dans \textit{Space Invaders}, ce jeu
-étend le concept de niveaux déjà traités, introduit la notion
-d'intelligence artificielle et présente des entités possédant des
-états plus complexes. De plus, le dévelop\-pement de \textit{Lode Runner} a pour but de
-consolider les techniques développées pour la création du premier
-jeu. Le dévelop\-pement de ce jeu est traité dans la section
-\ref{Exp:ld}.  Les outils et techniques déjà développés ont permis
-d'aisément résoudre les problèmes rencontrés.
+Par la suite, le jeu \textit{Lode Runner} (1983) a été développé. Ce
+dernier date de l'époque des premiers ordinateurs personnels et est
+plus élaboré. Par contre, c'est la version arcade du jeu (1984) qui a
+été reprise. Tout en conservant les problèmes fondamentaux traités
+dans \textit{Space Invaders}, ce jeu étend le concept de niveaux déjà
+traités, introduit la notion d'intelligence artificielle et présente
+des entités possédant des états plus complexes. De plus, le
+dévelop\-pement de \textit{Lode Runner} a pour but de consolider les
+techniques développées pour la création du premier jeu. Le
+dévelop\-pement de ce jeu est traité dans la section \ref{Exp:ld}.
+Les outils et techniques déjà développés ont permis d'aisément
+résoudre les problèmes rencontrés.
 
 Ainsi, ce chapitre a pour but d'expliquer le cheminement du travail
 nécessaire à l'écriture de ces deux jeux afin de répondre à la
@@ -4603,11 +4611,11 @@ problématique de base traitée par ce document.
 
 \FloatBarrier
 \section{Dévelop\-pement de \textit{Space Invaders}} \label{Exp:SI}
-Ce jeu consiste à \og sauver la galaxie \fg en éliminant une armée
+Ce jeu consiste à \og sauver la galaxie \fg~en éliminant une armée
 d'envahisseurs extra-terrestre grâce à un vaisseau spatial équipé de
-lasers et bénéficiant de la présence de trois boucliers. Le joueur ne
-peut que se déplacer de gauche à droite et tirer des lasers. Les
-ennemis sont placés en formations et se déplacent aussi latéralement
+missiles et bénéficiant de la présence de quatre boucliers. Le joueur
+ne peut que se déplacer de gauche à droite et tirer des missiles. Les
+ennemis sont placés en formation et se déplacent aussi latéralement
 jusqu'à ce qu'ils frappent un côté de l'écran. Ils descendent alors
 d'une rangée, se rapprochant ainsi du joueur. La vitesse de
 déplacement des ennemis est inversement proportionnelle à leur
@@ -4667,19 +4675,19 @@ alors été identifiés:
 \item Animations
 \item Structures de données
 \item Détection et résolution de collisions
-\item Parties multi-joueurs
+\item Parties multi-joueurs.
 \end{itemize}
 
 
 \FloatBarrier
 \subsubsection{Rendu graphique}
 Afin d'effectuer le rendu graphique du jeu, une librairie de lecture
-et chargement d'images a dû être écrite. Plutôt que d'utiliser une
+et de chargement d'images a dû être écrite. Plutôt que d'utiliser une
 librairie C déjà existante pour faire ce travail, le choix de
 l'écriture de cette librairie visait à limiter les dépendances
-externes et à avoir autant que possible de code en Scheme. Par
-contre, les librairies SDL~\cite{SDL} et \textit{OpenGL}~\cite{OpenGL}
-ont été utilisées afin de simplifier la gestion d'entrées/sorties, le
+externes et à avoir autant que possible de code en Scheme. Par contre,
+les librairies SDL~\cite{SDL} et \textit{OpenGL}~\cite{OpenGL} ont été
+utilisées afin de simplifier la gestion d'entrées/sorties, le
 fenêtrage et le rendu de l'application. L'utilisation des interfaces
 aux fonctions étrangères (\textit{Foreign Function Interface}) du
 système Gambit-C ont fait en sorte que la tâche d'accès et
@@ -4689,20 +4697,23 @@ Cette librairie de lecture et de chargement d'images s'occupe de lire
 des images en format textuel \textit{ppm}, qui est l'un des formats
 les plus simples pour décrire une image \textit{bitmap}. Le système
 s'attend à lire des images sous forme de \og fontes \fg, \ie contenant
-plusieurs sous-images. Ce choix semble raisonnable car une entité de
+plusieurs sous images. Ce choix semble raisonnable car une entité de
 jeu vidéo est souvent représentée par plusieurs images. Ceci permet
 donc de garder ces dernières dans une même image. Un fichier
 descriptif, sous forme de S-expressions, doit être présent afin de
 permettre une interprétation correcte de la fonte lue. Par exemple,
 l'image fournie dans la figure \ref{Exp:font} doit être accompagnée
 d'un fichier de même nom, portant une extension \emph{.scm} contenant
-la description \scheme{((colors: (white green red)) (chars: (0
-  1)))}.\\
+la description \scheme{((colors: (white green red)) (chars: (0 1)))}
+qui défini symboliquement les couleurs de chacunes des sous fontes
+présentes dans l'images ainsi que chacun des caractères présents (qui
+sont pour cet exemple les états $0$ et $1$ de l'animation
+illustrée).\\
 
 \begin{figure}[htb!]
   \center
   \includegraphics[scale=0.3]{font-example}
-  \caption{Exemple de fonte utilisée dans \textit{Space Invaders}.}
+  \caption{Exemple de fonte utilisée dans \textit{Space Invaders}}
   \label{Exp:font}
 \end{figure}
 
@@ -4724,7 +4735,7 @@ le comportement à entreprendre lorsque l'image est agrandie. Par
 défaut, l'image est lue dynamiquement et est étirée lorsqu'elle est
 agrandie, mais elle peut être lue dynamiquement et/ou répétée lorsque
 agrandie dans la direction de l'axe des X ou des Y. Cette librairie
-est très simple puisqu'elle ne traite que des fontes aux sous-images
+est très simple puisqu'elle ne traite que des fontes aux sous images
 de tailles uniformes. Ce choix fut effectué puisqu'il était bien
 adapté aux jeux développés et dans le but de ne pas trop complexifier
 la tâche de la création des jeux.
@@ -4738,18 +4749,18 @@ départ. Dans la première version développée, une simulation par
 du fait que dans un jeu vidéo, la progression d'entités peut être
 considérée comme une série d'évènements discrets. Par exemple, le
 laser avance, le joueur se déplace à droite, le vaisseau ennemi
-explose, \textit{etc}. Ainsi, un petit système de simulation par évènements
-discrets a été développé et utilisé. Ce dernier fut implanté de
-manière très simple en utilisant un monceau triant les évènements
-ordonnancés de manière croissante en fonction du temps de leurs
-arrivée dans la simulation. Ces évènements étaient des \textit{thunk},
-fermetures Scheme sans arguments, effectuant le travail à
-accomplir par l'évènement. Lorsqu'un évènement se termine,
-l'ordonnanceur choisi alors le prochain et appelle le corps de
+explose, \textit{etc}. Ainsi, un petit système de simulation par
+évènements discrets a été développé et utilisé. Ce dernier fut
+implanté de manière très simple en utilisant un monceau triant les
+évènements ordonnancés de manière croissante en fonction du temps de
+leur arrivée dans la simulation. Ces évènements étaient des
+\textit{thunk}, fermetures Scheme sans arguments, effectuant le
+travail à accomplir par l'évènement. Lorsqu'un évènement se termine,
+l'ordonnanceur choisit alors le prochain et appelle le corps de
 celui-ci. Il est également possible pour un évènement d'ordonnancer un
 autre évènement grâce à la forme spéciale \scheme{(in <secs> <thunk>)}
 qui enregistre cette nouvelle fermeture dans le système de manière à
-ce qu'elle se fasse appelée dans \scheme{<secs>}
+ce qu'elle se fasse appeler dans \scheme{<secs>}
 secondes. Contrairement aux simulations à évènements discrets
 habituelles, les attentes du système entre les évènements sont
 effectuées par l'ordonnanceur de manière à respecter les délais
@@ -4799,15 +4810,15 @@ le vaisseau mère des ennemis.\\
   mothership-event)
   \end{schemecode}
   \caption{Évènement représentant le vaisseau ennemi de type
-    \textit{mothership}.}
+    \textit{mothership}}
   \label{Exp:mother-ev}
 \end{figure}
 
 Cet exemple illustre bien deux désavantages provenant de l'utilisation
 d'évènements discrets pour implanter le comportement d'entités dans un
 jeu. Le premier désavantage est que la plupart des évènements sont
-récursifs, et donc ils se réordonnancent par eux-mêmes un peu plus
-tard dans le temps. Ceci résulte en une écriture moins intuitive de ce
+récursifs, et donc ils se réordonnent par eux-mêmes un peu plus tard
+dans le temps. Ceci résulte en une écriture moins intuitive de ce
 comportement. Aussi, lorsqu'un évènement est déjà prévu, il est
 possible que l'état du jeu change entre temps rendant cet évènement
 désuet. Pour le vaisseau mère, il est possible que son prochain
@@ -4818,10 +4829,10 @@ jeu attendu et l'état réel lorsque se produit un évènement.
 
 Aussi, il est important de faire bien attention à doser le calcul
 effectué par un évènement de manière à ne pas monopoliser le temps du
-processeur utilisé. Ainsi, les évènements sont souvent réordonnancés
-avec un intervalle de temps de zéro, de manière à laisser la chance
-aux autres évènements de s'exécuter, tout en forçant l'évènement
-courant de se poursuivre le plus tôt possible.
+processeur utilisé. Ainsi, les évènements sont souvent réordonnés avec
+un intervalle de temps de zéro, de manière à laisser la chance aux
+autres évènements de s'exécuter, tout en forçant l'évènement courant
+de se poursuivre le plus tôt possible.
 
 Toutefois, cette approche semble avoir été très bénéfique pour la
 création d'animations. En effet, en combinant des évènements discrets
@@ -4890,19 +4901,19 @@ des structures employées.\\
 \end{figure}
 
 L'avantage principal de l'utilisation de ces structures est qu'elles
-sont très performantes (voir la table \ref{OO:bench}). Par contre,
+sont très performantes (voir le tableau \ref{OO:bench}). Par contre,
 elles ne permettent pas d'avoir des champs communs à toutes les
 instances d'un type donné. Il en résulte que l'expression du fait que
 toutes les instances du type \scheme{player-ship} doivent être
 associées à une boîte englobante (\textit{bounding box}) de 13 par 8
 pixels est difficile à exprimer. Ces informations pourraient être
-ajoutées dans chaque instances, mais il en résulterait un gaspillage
+ajoutées dans chaque instance, mais il en résulterait un gaspillage
 important d'espace mémoire puisque ces données sont communes à toutes
 les instances de ce type. Ainsi, pour cette version de \textit{Space
   Invaders}, un système manuel de type \emph{très rudimentaire} a été
 utilisé. Une structure de données décrivant un type est créée. Cette
 dernière contient les données communes aux instances de ce type. Un
-pointeur vers le bon type est par la suite ajouté dans le champs
+pointeur vers le bon type est par la suite ajouté dans le champ
 \scheme{game-object-type} de chacune des instances du
 jeu. L'utilisation de ce petit système de type demande ainsi une
 écriture de code fastidieuse qui ne devrait pas être nécessaire.
@@ -4931,14 +4942,14 @@ dans la figure \ref{Exp:dc-si1}.\\
   \label{Exp:dc-si1}
 \end{figure}
 
-Par contre, Un problème majeur relié à l'utilisation de ces structures
-de données est apparu lorsque la résolution de collisions a due être
-implantée. En effet, cette dernière dépend du types des \emph{deux}
+Par contre, un problème majeur relié à l'utilisation de ces structures
+de données est apparu lorsque la résolution de collisions a dû être
+implantée. En effet, cette dernière dépend du type des \emph{deux}
 objets entrant mutuellement en collision. La figure
 \ref{Exp:si1-col-res} illustre bien le problème rencontré. On constate
 que les types des objets doivent être analysés manuellement de manière
 à utiliser la bonne fonction de résolution. Cette dernière se doit
-aussi d'analyser le type de l'objet reçu de manière a choisir la bonne
+aussi d'analyser le type de l'objet reçu de manière à choisir la bonne
 résolution à adopter. Il en résulte du code très lourd, où
 l'introduction d'erreurs est facile.\\
 
@@ -4963,36 +4974,36 @@ l'introduction d'erreurs est facile.\\
 
 \FloatBarrier
 \subsubsection{Parties multi-joueurs}
-Les parties multi-joueurs de \textit{Space Invaders} sont très simples. Chaque joueur joue
-en alternance jusqu'à se que son vaisseau se fasse détruire. Ainsi,
-cela implique de conserver deux parties du jeu en \emph{parallèle}, où
-une seule des deux avance à la fois. Avec un flot de contrôle sous
-forme de simulation par évènements discrets, cela implique d'avoir
-deux simulations exécutées en parallèle. Puisque le système de
-simulation ne permet pas d'arrêter une simulation et d'en avoir une
-deuxième se produisant en même temps, une autre approche a été
-utilisée. Un système de coroutines dans lequel les simulations sont
-exécutées à l'intérieur de coroutines différentes a été développé et
-utilisé. Ainsi, le changement de contexte peut être manuellement
-utilisé lorsqu'un joueur meurt afin de réactiver la partie du prochain
-joueur.
+Les parties multi-joueurs de \textit{Space Invaders} sont très
+simples. Chaque joueur joue en alternance jusqu'à ce que son vaisseau
+se fasse détruire. Ainsi, cela implique de conserver deux parties du
+jeu en \emph{parallèle}, où une seule des deux avance à la fois. Avec
+un flot de contrôle sous forme de simulation par évènements discrets,
+cela implique d'avoir deux simulations exécutées en parallèle. Puisque
+le système de simulation ne permet pas d'arrêter une simulation et
+d'en avoir une deuxième se produisant en même temps, une autre
+approche a été utilisée. Un système de coroutines dans lequel les
+simulations sont exécutées à l'intérieur de coroutines différentes a
+été développé et utilisé. Ainsi, le changement de contexte peut être
+manuellement utilisé lorsqu'un joueur meurt afin de réactiver la
+partie du prochain joueur.
 
-C'est de cette idée qu'est né le système de coroutine présenté dans le
-chapitre \ref{Chap:corout}. Il fut initialement beaucoup plus simple
-que celui présenté dans ce chapitre, mais les composantes de base
-restent les mêmes. La figure \ref{Exp:si-mort} résume la procédure
-utilisée lors de la mort d'un joueur. Après avoir effectué la gestion
-des objets dans le niveau, un mutex est bloqué afin de permettre
-l'arrêt des animations du jeu, chose requise pour l'animation de mort
-d'un joueur. Par la suite, l'animation de mort d'un joueur est lancée,
-avec \scheme{continuation} pour continuation. Cette dernière, dans le
-cas où le joueur n'a pas terminé sa partie, s'occupe d'informé la
-coroutine de l'autre de certaines informations et d'effectuer le
-changement de contexte. Il est intéressant de noter que juste avant ce
-changement, un évènement très prioritaire doit être ordonnancé de
-manière à se qu'il survienne immédiatement au retour du contexte de la
-coroutine. Il s'agit de l'animation ré-introduisant la partie du
-joueur actuel.\\
+C'est de cette idée qu'est né le système de coroutines présenté dans
+le chapitre \ref{Chap:corout}. Il fut initialement beaucoup plus
+simple que celui présenté dans ce chapitre, mais les composantes de
+base restent les mêmes. La figure \ref{Exp:si-mort} résume la
+procédure utilisée lors de la mort d'un joueur. Après avoir effectué
+la gestion des objets dans le niveau, un mutex est bloqué afin de
+permettre l'arrêt des animations du jeu, chose requise pour
+l'animation de mort d'un joueur. Par la suite, l'animation de mort
+d'un joueur est lancée, avec \scheme{continuation} pour
+continuation. Cette dernière, dans le cas où le joueur n'a pas terminé
+sa partie, s'occupe d'informer la coroutine de l'autre de certaines
+informations et d'effectuer le changement de contexte. Il est
+intéressant de noter que juste avant ce changement, un évènement très
+prioritaire doit être ordonnancé de manière à ce qu'il survienne
+immédiatement au retour du contexte de la coroutine. Il s'agit de
+l'animation ré-introduisant la partie du joueur actuel.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5026,28 +5037,33 @@ joueur actuel.\\
 Ainsi, l'écriture de cette première version de \textit{Space Invaders} a permis
 d'identifier plusieurs problèmes reliés au dévelop\-pement de jeux vidéo
 (détection et résolution de collisions, parties multi-joueurs,
-\textit{etc}). En plus de permettre d'expérimenter sur le type de flot de
+\textit{etc}.). En plus de permettre d'expérimenter sur le type de flot de
 contrôle utilisé pour développer ce jeu, Scheme a permis de faire
 rapidement plusieurs outils non triviaux pour l'implantation du jeu,
 dont un système de fontes et un petit système de coroutines.
 
 Par contre, certains problèmes ne possèdent pas des solutions
-satisfaisantes. En effet, la résolution de collision est très
+satisfaisantes. En effet, la résolution de collisions est très
 fastidieuse et aurait besoin d'être modularisée et améliorée. Aussi,
 la technique de flot de contrôle expérimentale utilisée (simulation
-par évènements discrets), fonctionne bien pour certains aspects tel
+par évènements discrets), fonctionne bien pour certains aspects tels
 que la description d'animations, mais ne semble pas naturelle pour
-d'autres. Ainsi, le flot de contrôle pourrait aussi être amélioré de
-manière à exprimer de manière plus naturelle le comportement des
-entités du jeu.
+d'autres. Traditionnellement, une boucle de jeu (\textit{game loop}),
+conserve un contrôle étroit sur le contrôle de flot du jeu, mais
+implique que le comportement des entités sont directement dépendant de
+cette façon de procéder.  Ainsi, le contrôle de flot pourrait aussi
+être amélioré de manière à exprimer naturellement le comportement des
+entités du jeu, soit en utilisant une approche traditionnelle ou en
+expérimentant de nouveau sur une méthode de gestion de contrôle de
+flot qui serait plus intuitive.
 
 
 \FloatBarrier
-\subsection{Version orientée objet} \label{Exp:sp2}
-Une nouvelle version de \textit{Space Invaders} fut développée afin de pallier à une
-lacune existante dans la première version écrite: le problème relié
-aux types de structures de données qui engendrait des cascades
-fastidieuses de vérifications de types pour la résolution de
+\subsection{Version orientée objets} \label{Exp:sp2}
+Une nouvelle version de \textit{Space Invaders} fut développée afin de
+pallier à une lacune existante dans la première version écrite: le
+problème relié aux types de structures de données qui engendrait des
+cascades fastidieuses de vérifications de types pour la résolution de
 collisions (voir la figure \ref{Exp:si1-col-res}).
 
 Initialement, plusieurs systèmes objets existant pour Gambit-C furent
@@ -5062,24 +5078,24 @@ dévelop\-pement de ce système fait l'objet du chapitre \ref{Chap:OO}.
 
 Dans cette nouvelle version du jeu, les objets sont ainsi déclarés
 comme des classes appartenant à une hiérarchie multiple tirant profit
-pour apposer des propriétés aux objets du jeux. La figure
+pour apposer des propriétés aux objets du jeu. La figure
 \ref{Exp:sp2-class} illustre un échantillon de la hiérarchie de
 classes utilisée dans le jeu. On constate que les champs communs à
 toutes les instances ont été ajoutés comme membres de classe. Une
 classe abstraite, \scheme{sprite-obj}, a aussi été ajoutée afin de
 donner la propriété de \textit{sprite} aux objets dont le rendu dépend
-d'images dans une fonte. La classe \scheme{invader-ship} sous-classe
-ces deux dernières tout en ajoutant les deux champs communs à tous les
-types d'\textit{invader}. Cette dernière est elle-même sous-classée
-par les trois types d'ennemis existant (à l'exception du vaisseau mère
-qui est traité à part). Puisque chaque type d'\textit{invader} possède
-sa propre classe, on peut alors spécifier les valeurs des champs de
-classes pour chacune de celles-ci de manière simple et
-claire. L'utilisation de ces champs pourra être, par la suite, faite
-de manière complètement uniforme et transparente. La macro
-\scheme{setup-static-fields} a été écrite afin de permettre d'assigner
-les champs de classes pour les classes enfants de
-\scheme{game-object}.\\
+d'images dans une fonte. La classe \scheme{invader-ship} hérite des
+classes \scheme{game-object} et \scheme{sprite-obj} tout en ajoutant
+les deux champs communs à tous les types d'\textit{invader}. Cette
+dernière est elle-même sous classée par les trois types d'ennemis
+existant (à l'exception du vaisseau mère qui est traité à
+part). Puisque chaque type d'\textit{invader} possède sa propre
+classe, on peut alors spécifier les valeurs des champs de classes pour
+chacune de celles-ci de manière simple et claire. L'utilisation de ces
+champs pourra être, par la suite, faite de manière complètement
+uniforme et transparente. La macro \scheme{setup-static-fields} a été
+écrite afin de permettre d'assigner les champs de classes pour les
+classes enfants de \scheme{game-object}.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5106,9 +5122,9 @@ L'attrait principal du dévelop\-pement et de l'intégration du système
 objet pour la création du jeu réside dans l'utilisation des fonctions
 génériques. Leur utilisation permet d'implanter des opérations
 spécifiques aux objets de manière complètement transparente. Il en
-résulte ainsi que l'écriture de ces parties du code sont plus élégante
-et solides face aux changements éventuels des structures de données ou
-de l'architecture du jeu.
+résulte ainsi que l'écriture de ces parties du code sont plus
+élégantes et solides face aux changements éventuels des structures de
+données ou de l'architecture du jeu.
 
 Trois fonctions génériques ont été utilisées pour améliorer \textit{Space Invaders}:
 \scheme{detect-collision?}, \scheme{resolve-collision!} et
@@ -5148,55 +5164,57 @@ précédente du jeu.\\
                collision-obj)
         \#f)))
   \end{schemecode}
-  \caption{Exemple de déclarations d'instance de la fonction générique
-    \scheme{resolve-collision!} dans \textit{Space Invaders}}
+  \caption{Exemple de déclarations d'instances de la fonction
+    générique \scheme{resolve-collision!} dans \textit{Space
+      Invaders}}
   \label{Exp:si2-genfun}
 \end{figure}
 
 La deuxième version du jeu apporte ainsi plusieurs améliorations face
-au dévelop\-pement de jeu vidéo en Scheme grâce à l'utilisation de
-la programmation orientée objet. La modularité et l'abstraction du
-code de la première version a été améliorée de grâce à l'utilisation
-d'une hiérarchie de classes annotée de propriétés et comportant des
-membres de classe et des fonctions génériques pour effectuer de
-manière transparente les actions de base sur les instances de ces
-classes. Par contre, un problème n'a toujours pas été adressé dans
-cette nouvelle itération du jeu. En effet, le flot de contrôle
-implanté par une simulation à évènement discret n'a pas été modifié
-afin de mieux être adapter aux comportements des entités du jeu.
+au dévelop\-pement de jeu vidéo en Scheme grâce à l'utilisation de la
+programmation orientée objet. La modularité et l'abstraction du code
+de la première version ont été améliorées grâce à l'utilisation d'une
+hiérarchie de classes annotée de propriétés et comportant des membres
+de classes et des fonctions génériques pour effectuer de manière
+transparente les actions de base sur les instances de ces classes. Par
+contre, un problème n'a toujours pas été adressé dans cette nouvelle
+itération du jeu. En effet, le flot de contrôle implanté par une
+simulation à évènements discrets n'a pas été modifié afin de mieux
+être adapté aux comportements des entités du jeu.
 
 
 \FloatBarrier
 \subsection{Version avec flot de contrôle sous forme de coroutines} \label{Exp:sp3}
-Après deux versions du jeu, \textit{Space Invaders} possède toujours certains problèmes
-dont celui du flot de contrôle utilisé qui n'est très bien adapté aux
-objets du jeu. Afin d'adresser ce problème, le système de coroutines
-utilisé pour l'implantation de parties multi-joueurs a été étendu de
-manière à ce que le flot de contrôle des entités du jeu soit exprimé
-plutôt sous forme de \emph{coroutines}. Ce système est présenté dans
-le chapitre \ref{Chap:corout}. Cette approche est aussi expérimentale,
-mais l'utilisation d'une simulation à évènements discrets a laissée
-croire que la description du comportent des entités sous forme de
-\textit{threads} serait plus naturelle. En effet, en utilisant des
-évènements discrets, le corps des évènements devait faire en sorte que
-l'évènement se poursuive en se réordonnançant un peu plus tard,
-donnant ainsi la chance aux autres évènements de s'exécuter. Ce
-phénomène correspond très bien à la fonction \scheme{yield} du système
-de coroutine qui interrompt de manière temporaire l'exécution d'une
-coroutine afin de laisser la chance aux autres coroutines de continuer
-leur travail.
+Après deux versions du jeu, \textit{Space Invaders} possède toujours
+certains problèmes dont celui du flot de contrôle utilisé qui n'est
+très bien adapté aux objets du jeu. Afin d'adresser ce problème, le
+système de coroutines utilisé pour l'implantation de parties
+multi-joueurs a été étendu de manière à ce que le flot de contrôle des
+entités du jeu soit exprimé plutôt sous forme de \emph{coroutines}. Ce
+système est présenté dans le chapitre \ref{Chap:corout}. Cette
+approche est aussi expérimentale, mais l'utilisation d'une simulation
+à évènements discrets a laissée croire que la description du
+comportent des entités sous forme de \textit{threads} serait plus
+naturelle. En effet, en utilisant des évènements discrets, le corps
+des évènements devait faire en sorte que l'évènement se poursuive en
+se réordonnant un peu plus tard, donnant ainsi la chance aux autres
+évènements de s'exécuter. Ce phénomène correspond très bien à la
+fonction \scheme{yield} du système de coroutine qui interrompt de
+manière temporaire l'exécution d'une coroutine afin de laisser la
+chance aux autres coroutines de continuer leur travail.
 
 Ainsi, dans cette nouvelle version du jeu, \emph{tous} les objets sont
-maintenant des coroutines exécutant leurs comportement de manière
+maintenant des coroutines exécutant leurs comportements de manière
 indépendante. Pour ce, une version orientée objet du système de
 coroutine fut produite. La figure \ref{Exp:si3-class} illustre
-l'intégration du système de coroutine aux objets du jeu. L'utilisation
-de constructeurs permet l'appel du constructeur de base des coroutines
-afin de spécifier le comportement que devra entreprendre l'objet. Ce
-corps est déterminé de manière dynamique avec la fonction générique
-\scheme{behaviour} et sera exécuté dans un environnement contenant des
-gestionnaires de messages dynamiques, communs à tous les objets,
-permettant de pauser le jeu ou de détruire ceux-ci.\\
+l'intégration du système de coroutines aux objets du
+jeu. L'utilisation de constructeurs permet l'appel du constructeur de
+base des coroutines afin de spécifier le comportement que devra
+entreprendre l'objet. Ce corps est déterminé de manière dynamique avec
+la fonction générique \scheme{behaviour} et sera exécuté dans un
+environnement contenant des gestionnaires de messages dynamiques,
+communs à tous les objets, permettant de pauser le jeu ou de détruire
+ceux-ci.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5227,7 +5245,7 @@ Malgré l'idéologie prometteuse d'avoir des objets agissant de manière
 indépendante, l'implantation du comportement des entités du jeu est
 devenu très rapidement \emph{infernale}. En effet, puisque toutes les
 entités possèdent leurs fils d'exécution et que ceux-ci sont tous
-aussi prioritaires, la \emph{synchronisation} entre ces dernière est
+aussi prioritaires, la \emph{synchronisation} entre ces dernières est
 primordiale et implique des protocoles de communication complexes
 entre les objets. Ces protocoles doivent régir tout le comportent du
 jeu et, en bout de ligne, le flot de contrôle devient soudainement
@@ -5235,13 +5253,13 @@ très difficile à exprimer. Ainsi, des méta-objets ont dû être
 introduits afin d'effectuer la synchronisation entre les objets de
 base, comme les ennemis. La figure \ref{Exp:inv-cnt} donne le
 comportement du méta-objet régissant l'activité d'une rangée
-d'\textit{invader}. Ce dernier utilise des listes de diffusion pour
-envoyer des messages aux \textit{invader} de la rangée qu'il
+d'\textit{invaders}. Ce dernier utilise des listes de diffusion pour
+envoyer des messages aux \textit{invaders} de la rangée qu'il
 coordonne. Il possède deux états: l'état initial qui attend la
 réception d'un message lui indiquant que c'est le tour de sa rangée de
 se déplacer et un deuxième état consistant à une barrière de
 synchronisation effectuant l'attente de la réception du message
-\scheme{moved} de la part de tous les \textit{invader} de la
+\scheme{moved} de la part de tous les \textit{invaders} de la
 rangée. Puis, il vérifie si une collision s'est produite avec un mur
 durant se déplacement et effectue la gestion de cette collision en
 prévenant les autres contrôleurs de la situation.
@@ -5254,7 +5272,7 @@ de profilage minimaliste de coroutines afin de visualiser quelles
 coroutines monopolisaient le contrôle de l'ordonnanceur pour une durée
 trop longue. Il fut ainsi possible d'optimiser certaines coroutines
 afin d'améliorer les performances globales du système. Toutefois, même
-après avoir effectuer ces optimisations, les performances du jeu
+après avoir effectué ces optimisations, les performances du jeu
 demeurèrent très mauvaises et donc, la troisième itération de \textit{Space Invaders} fut
 abandonnée en cours de route. La majeur partie de la logique du jeu
 fut implantée sous forme de coroutines. Cette version a permis
@@ -5302,25 +5320,25 @@ contrôle.\\
   (init-state))
   \end{schemecode}
   \caption{Comportement du méta-objet \scheme{invader-controller} qui
-    régi le comportement d'une rangée d'\textit{invaders}}
+    régit le comportement d'une rangée d'\textit{invaders}}
   \label{Exp:inv-cnt}
 \end{figure}
 
 
 \FloatBarrier
 \subsection{Conclusion}
-Ainsi, le dévelop\-pement de \textit{Space Invaders} en Scheme fut très riche en
-expériences. Il a permis de trouver plusieurs problèmes reliés au
-dévelop\-pement de jeux vidéo. Ces derniers ont été résolus en utilisant
-le mieux possible les avantages qu'offrent un langage de haut niveau
-tel que Scheme fournissant des fonctions d'ordres supérieures,
-permettant un style de programmation CPS, \textit{etc}.
+Ainsi, le dévelop\-pement de \textit{Space Invaders} en Scheme fut
+très riche en expériences. Il a permis de trouver plusieurs problèmes
+reliés au dévelop\-pement de jeux vidéo. Ces derniers ont été résolus
+en utilisant le mieux possible les avantages qu'offre un langage de
+haut niveau tel que Scheme fournissant des fonctions d'ordres
+supérieures, permettant un style de programmation CPS, \textit{etc}.
 
 La création d'un système de programmation orienté objet a grandement
 permis d'améliorer la qualité du code écrit lors du dévelop\-pement de
 la première version du jeu grâce à l'utilisation des fonctions
 génériques permettant de faire un choix dynamique de procédures en
-fonctions des objets passés en paramètres. Notamment, la résolution de
+fonction des objets passés en paramètre. Notamment, la résolution de
 collisions , qui dépend du type des deux objets en question, a pu être
 écrite de manière très élégante et modulaire grâce aux fonctions
 génériques.
@@ -5341,9 +5359,10 @@ approximativement 1~\% du temps processeur requis pour le rendu d'une
 image.
 
 Il serait maintenant intéressant d'implanter un jeu plus complexe afin
-de valider si les techniques utilisées pour \textit{Space Invaders} sont toujours
-applicables et de voir si elles s'étendent bien aux nouveaux défis de
-programmations résultant de l'implantation d'un tel jeu.
+de valider si les techniques utilisées pour \textit{Space Invaders}
+sont toujours applicables et de voir si elles s'étendent bien aux
+nouveaux défis de programmation résultant de l'implantation d'un tel
+jeu.
 
 
 \FloatBarrier
@@ -5352,8 +5371,8 @@ Après avoir développé \textit{Space Invaders}, un deuxième jeu a dû
 être développé afin de consolider les techniques développées. Le jeu
 \textit{Lode Runner} a été choisi dans le but de remplir cette tâche
 pour plusieurs raisons. Principalement, ce jeu contient de nouveaux
-éléments qui n'étaient pas présent dans \textit{Space Invaders}, tel
-que le concept d'intelligence artificielle, et étendait d'autre
+éléments qui n'étaient pas présents dans \textit{Space Invaders}, tel
+que le concept d'intelligence artificielle, et étendait d'autres
 concepts qui y étaient très primitifs comme le concept de niveaux et
 d'états d'entités.
 
@@ -5361,12 +5380,12 @@ Ce jeu consiste à tenter de capturer tout l'or dispersé dans le niveau
 en évitant d'entrer en contact avec les robots ennemis. Pour y
 arriver, le joueur doit grimper des échelles, passer sur des cordes
 raides et utiliser son pistolet laser pour percer des trous au sol
-près du joueur. Ces derniers se referment après un délais prescrits et
+près du joueur. Ces derniers se referment après un délai prescrit et
 donc le joueur doit se dépêcher afin d'éviter de rester pris au piège
 à l'intérieur d'un trou. Lorsque tout l'or est en possession du
 joueur, une échelle de sortie apparaît et mène le joueur au niveau
 suivant. La joueur dispose de trois vies pour progresser dans les
-niveaux du jeu et obtenir le meilleur score possible. La figure
+niveaux du jeu et obtenir le meilleur pointage possible. La figure
 \ref{Exp:ld-screen} illustre une capture d'écran du jeu développé.\\
 
 \begin{figure}[htb!]
@@ -5380,18 +5399,19 @@ niveaux du jeu et obtenir le meilleur score possible. La figure
 \FloatBarrier
 \subsection{Logique du jeu}
 Afin de développer ce jeu, les meilleures techniques utilisées pour le
-dévelop\-pement de \textit{Space Invaders} ont été réutilisées et raffinées pour les besoins
-plus grands de \textit{Lode Runner}. Par contre, le flot de contrôle de la logique du
-jeu est régi de manière beaucoup plus conservatrice en utilisant une
-boucle principale (\textit{Game Loop}). Celle-ci effectue le travail à
-faire pour chaque image du jeu rendue. Pour ce faire, une fonction
-générique \scheme{advance-frame!} est appelée avant le rendu de chaque
-image de manière à effectuer le travail que doivent accomplir les
-objets du niveau en cours. La figure \ref{Exp:lr-main} illustre une
-partie de la boucle principale du jeu et l'instance de cette fonction
-générique pour un niveau de jeu. Cette figure illustre la simplicité
-du flot de contrôle du jeu résultante grâce à l'utilisation de
-fonction génériques et de fonctions d'ordre supérieures.\\
+dévelop\-pement de \textit{Space Invaders} ont été réutilisées et
+raffinées pour les besoins plus grands de \textit{Lode Runner}. Par
+contre, le flot de contrôle de la logique du jeu est régi de manière
+beaucoup plus conservatrice en utilisant une boucle principale
+(\textit{Game Loop}). Celle-ci effectue le travail à faire pour chaque
+image du jeu rendue. Pour ce faire, une fonction générique
+\scheme{advance-frame!} est appelée avant le rendu de chaque image de
+manière à effectuer le travail que doivent accomplir les objets du
+niveau en cours. La figure \ref{Exp:lr-main} illustre une partie de la
+boucle principale du jeu et l'instance de cette fonction générique
+pour un niveau de jeu. Cette figure illustre la simplicité résultante
+du flot de contrôle du jeu grâce à l'utilisation de
+fonction génériques et de fonctions d'ordres supérieures.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5429,15 +5449,15 @@ celui-ci.
 
 \FloatBarrier
 \subsection{Gestion de l'état des objets}
-Les entités du jeu \textit{Lode Runner} sont sensiblement plus complexes que celles
-présentent dans le jeu précédant. En effet, ces dernières possèdent
-sont animés et réagissent différemment en fonction du contexte de
-celles-ci. Encore une fois, ce sujet est traité de manière
-traditionnelle en utilisant des états d'objets et des machines à états
-afin de régir leurs comportements et les animations de ceux-ci. La
+Les entités du jeu \textit{Lode Runner} sont sensiblement plus
+complexes que celles présentes dans le jeu précédent. En effet, ces
+nouvelles entités sont animées et réagissent différemment en fonction
+du contexte de celles-ci. Encore une fois, ce sujet est traité de
+manière traditionnelle en utilisant des états d'objets et des machines
+à états afin de régir leurs comportements et leurs animations. La
 figure \ref{Exp:hl} donne le contenu de la classe \scheme{human-like}
 qui sert de base aux classes \scheme{player} et \scheme{robot} qui
-implantent respectivement les instances du joueurs et des robots
+implantent respectivement les instances du joueur et des robots
 ennemis. Elle démontre bien la complexité de l'état de ces entités.\\
 
 \begin{figure}[htb!]
@@ -5468,9 +5488,9 @@ entités appartenant à la hiérarchie de la classe
 chaque objet est vérifié et mis-à-jour. Puisque les états possibles
 d'une instance de la classe \scheme{human-like} ne sont pas
 orthogonaux, \ie que plusieurs états correspondant à des animations
-différentes peuvent être présent en même temps, l'ordre de la
-modification de l'état est significative. Si ces derniers avaient été
-orthogonaux, la gestion de ceux-ci aurait pu être effectuée en
+différentes peuvent être présents en même temps, l'ordre de la
+modification de l'état est significatif. Si ces derniers avaient été
+orthogonaux, la gestion de ces états aurait pu être effectuée en
 utilisant la discrimination de méthodes sur les valeurs de ces
 états. Le code résultant aurait donc été très limpide.\\
 
@@ -5505,7 +5525,7 @@ manière cyclique. Puisque ce genre d'animation est fréquent dans le
 jeu, il fut abstrait dans une forme spéciale afin de simplifier la
 définition de celles-ci. La figure \ref{Exp:cyclic-anim-dsl} présente
 cette dernière qui construit une définition de fonction qui met-à-jour
-les champs \scheme{cycle-member} et \scheme{state-member} afin de
+les champ \scheme{cycle-member} et \scheme{state-member} afin de
 produire correctement le rendu de l'animation. Le champs
 \scheme{cycle-member} de l'instance reçue contiendra un nombre
 correspondant à l'état actuel de l'animation. Cet état est conservé
@@ -5534,9 +5554,11 @@ de l'état actuel de l'entité.\\
            (,other-actions-fun ,obj))))))
   \end{schemecode}
   \caption{Forme spéciale utilisée afin de simplifier la définition
-    d'animations cycliques d'entité du jeu \textit{Lode Runner}}
+    d'animations cycliques d'entités du jeu \textit{Lode Runner}}
   \label{Exp:cyclic-anim-dsl}
 \end{figure}
+
+\medskip
 
 Ainsi les animations du jeu peuvent être définies en utilisant cette
 forme spéciale. La figure \ref{Exp:cyclic-anim-def} illustre la
@@ -5562,12 +5584,12 @@ afin de définir de manière claire et concise une animation cyclique.\\
 
 En plus de considérer les objets du jeu comme des machines à états,
 les niveaux eux-mêmes peuvent aussi être considérés comme tels. En
-effet, on peut subdiviser le flot d'un niveau en 6 états différents:
+effet, on peut subdiviser le flot d'un niveau en six états différents:
 \scheme{pre-game}, \scheme{start}, \scheme{in-game}, \scheme{paused},
 \scheme{game-over} et \scheme{level-cleared}.  La figure
 \ref{Exp:lr-state-diag} illustre les transitions possibles entre ces
 derniers. Chaque état est justifié par un comportement différent du
-niveau, soit par une gestion différente des entrées du joueurs comme
+niveau, soit par une gestion différente des entrées du joueur comme
 c'est le cas pour l'état \scheme{paused} ou encore par un rendu
 graphique différent du niveau.\\
 
@@ -5581,17 +5603,17 @@ graphique différent du niveau.\\
 Afin d'implémenter ce système de machines à états, un petit langage
 spécifique au domaine a été développé. Ce dernier tire avantage de la
 discrimination de méthodes sur des valeurs du système de programmation
-orienté objet utilisé afin de valider les transitions effectuées. Sans
-trop entrer dans les détails, il ne suffit que de sous-classer la
-classe \scheme{state-machine} par les objets de niveaux et ensuite
-d'effectuer la déclaration de la machine à états faite selon
-l'interface présentée dans la figure \ref{Exp:def-state}. Les états
-sont normalement décrits par des symboles. Les actions de transition
-peuvent être n'importe quelles expression Scheme. Aussi, lors de
-la description des transitions, il est possible d'utiliser le symbole
-\scheme{*} afin de représenter tous les états possibles ou sinon
-d'utiliser une sous-liste contenant les états de provenances ou
-d'arrivées pour cette transition. La figure
+orientée objet utilisé afin de valider les transitions
+effectuées. Sans trop entrer dans les détails, il ne suffit que de
+sous-classer la classe \scheme{state-machine} par les objets de
+niveaux et ensuite d'effectuer la déclaration de la machine à états
+faite selon l'interface présentée dans la figure
+\ref{Exp:def-state}. Les états sont normalement décrits par des
+symboles. Les actions de transition peuvent être n'importe quelle
+expression Scheme. Aussi, lors de la description des transitions, il
+est possible d'utiliser le symbole \scheme{*} afin de représenter tous
+les états possibles ou sinon d'utiliser une sous-liste contenant les
+états de provenances ou d'arrivées pour cette transition. La figure
 \ref{Exp:lr-lvl-state-machine} illustre la définition de la machine à
 états des niveaux du jeu.\\
 
@@ -5633,8 +5655,8 @@ distinction entre ces états. Par exemple, la fonction
 \scheme{level-start-transition} qui sert à faire le compte à rebours
 du début de la partie s'occupe d'ajouter un nouvel objet représentant
 une chaîne de caractères qui contient le compte à rebours. Ce dernier
-utilise la récursivité afin de se recréé avec le rebours mis-à-jour à
-tous les 60 images rendues, tel qu'illustrer dans la figure
+utilise la récursivité afin de se recréer avec le rebours mis-à-jour à
+toutes les 60 images rendues, tel qu'illustré dans la figure
 \ref{Exp:lr-start-transition}.\\
 
 \begin{figure}[htb!]
@@ -5662,31 +5684,31 @@ tous les 60 images rendues, tel qu'illustrer dans la figure
   \label{Exp:lr-start-transition}
 \end{figure}
 
-Ainsi, les macros et les fonctions d'ordre supérieures de Scheme
-ont permis d'exprimer de manière élégante et modulaire les concepts
-reliés à la déclarations de machines à états pour les entités ainsi
-que les niveau du jeu \textit{Lode Runner}.
+Ainsi, les macros et les fonctions d'ordres supérieures de Scheme ont
+permis d'exprimer de manière élégante et modulaire les concepts reliés
+à la déclaration de machine à états pour les entités ainsi que les
+niveaux du jeu \textit{Lode Runner}.
 
 
 \FloatBarrier
 \subsection{Détection et résolution de collisions}
-Une nette amélioration apportée au jeu, en comparaison celui développé
-précédemment, est l'utilisation d'une grille pour accélérer la
-détection de collisions. Le principe est simple: une grille
+Une nette amélioration apportée au jeu, en comparaison de celui
+développé précédemment, est l'utilisation d'une grille pour accélérer
+la détection de collisions. Le principe est simple: une grille
 bidimensionnelle contenant un nombre de subdivisions variable est
 créée. Lorsqu'un objet est ajouté au jeu, il est ajouté dans chacune
-des cases de la grilles auxquelles il entre en contacte et,
+des cases de la grille auxquelles il entre en contact et,
 réciproquement, cet objet possède des pointeurs vers chacune de ces
 cases de la grille. Si la grille est assez fine, alors la détection de
-collisions devient triviale: il ne suffit que de regarder dans cases
-de la grille qui touchent l'objet en question afin de voir si d'autres
+collisions devient triviale: il ne suffit que de regarder les cases de
+la grille qui touchent l'objet en question afin de voir si d'autres
 objets s'y trouvent et si c'est le cas, alors une collision est
 détectée. Bien sûr, la taille de la grille influence le travail
 nécessaire lors de chaque ajout et déplacement d'objets. Toutefois,
-puisque dans \textit{Lode Runner} la plupart des objets sont statiques, on obtient une
-bonne accélération de la détection de collisions. La figure
-\ref{Exp:lr-col-detection} illustre l'algorithme de détection de
-collisions utilisé.\\
+puisque dans \textit{Lode Runner} la plupart des objets sont
+statiques, on obtient une bonne accélération de la détection de
+collisions. La figure \ref{Exp:lr-col-detection} illustre l'algorithme
+de détection de collisions utilisé.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5701,26 +5723,27 @@ collisions utilisé.\\
   \label{Exp:lr-col-detection}
 \end{figure}
 
-La résolution de collisions est effectué de manière très similaire à
-ce qui a été utilisé pour \textit{Space Invaders}. Une fonction générique
-\scheme{resolve-collision} s'occupe de choisir dynamiquement la bonne
-instance de cette fonction générique en discriminant sur les objets
-concernés par la collision.
+La résolution de collisions est effectuée de manière très similaire à
+ce qui a été utilisé pour \textit{Space Invaders}. Une fonction
+générique \scheme{resolve-collision} s'occupe de choisir dynamiquement
+la bonne instance de cette fonction générique en discriminant sur les
+objets concernés par la collision.
 
 
 \FloatBarrier
 \subsection{Rendu graphique}
 Il est intéressant de noter que le rendu graphique est légèrement plus
-complexe que pour le jeu \textit{Space Invaders}, car il est possible d'avoir des objets
-qui se superposent. Afin de résoudre les problèmes de visibilités qui
-en résultent, l'algorithme du peintre a été utilisé. Ce dernier est
-implanté en utilisant des couches sur lesquelles doivent apparaître
-les objets afin de donner des priorités de rendu. Comme l'indique la
-figure \ref{Exp:layers}, le joueur se trouve sur la couche
-\scheme{human-like-layer} qui est prioritaire faces aux couches des
-objets du jeu, résultant en l'affichage du joueur par dessus ces
-derniers. Tous les objets sont triés lorsqu'ils sont ajoutés au niveau
-afin d'éviter à faire ce tri lors du rendu de chaque images.\\
+complexe que pour le jeu \textit{Space Invaders}, car il est possible
+d'avoir des objets qui se superposent. Afin de résoudre les problèmes
+de visibilité qui en résultent, l'algorithme du peintre a été
+utilisé. Ce dernier est implanté en utilisant des couches sur
+lesquelles doivent apparaître les objets afin de donner des priorités
+de rendu. Comme l'indique la figure \ref{Exp:layers}, le joueur se
+trouve sur la couche \scheme{human-like-layer} qui est prioritaire
+face aux couches des objets du jeu, résultant en l'affichage du joueur
+par-dessus ces derniers. Tous les objets sont triés lorsqu'ils sont
+ajoutés au niveau afin d'éviter de faire ce tri lors du rendu de
+chaque image.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5738,7 +5761,7 @@ afin d'éviter à faire ce tri lors du rendu de chaque images.\\
 
 
 \FloatBarrier
-\subsection{Intelligence Artificielle}
+\subsection{Intelligence artificielle}
 L'intelligence artificielle du jeu fut implantée de manière directe en
 utilisant des fermetures afin d'abstraire les différents algorithmes
 potentiels (proposant différentes difficultés aux joueurs). Seuls deux
@@ -5752,7 +5775,7 @@ fermetures contenant ces algorithmes sont utilisées de manière
 dynamique en fonction du niveau de difficulté choisi par le joueur. Il
 est ainsi possible de modifier durant la partie la difficulté. Aussi,
 l'utilisation de fermetures donne la possibilité d'en créer de
-nouvelles contenant de l'information plus spécialisées pour l'état
+nouvelles contenant de l'information plus spécialisée pour l'état
 actuel du jeu. L'implantation du choix dynamique de l'algorithme
 d'intelligence artificielle est présenté dans la figure
 \ref{Exp:dyn-ai}.\\
@@ -5765,6 +5788,8 @@ d'intelligence artificielle est présenté dans la figure
   \caption{Algorithme trivial d'intelligence artificielle des robots}
   \label{Exp:ai-imm}
 \end{figure}
+
+\medskip
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -5788,6 +5813,8 @@ d'intelligence artificielle est présenté dans la figure
   \label{Exp:ai-seek}
 \end{figure}
 
+\medskip
+
 \begin{figure}[htb!]
   \begin{schemecode}
 (define (get-ai-fun difficulty)
@@ -5804,6 +5831,7 @@ d'intelligence artificielle est présenté dans la figure
   \label{Exp:dyn-ai}
 \end{figure}
 
+\clearpage
 
 \FloatBarrier
 \subsection{Conclusion}
@@ -5819,7 +5847,7 @@ des notions d'états des objets. Puisque le langage Scheme offre
 le meilleur des deux mondes, \ie qu'il offre un langage fonctionnel
 permettant des mutations, ce type de contrôle de flot a permis de
 tirer profit des avantages qu'offrent la programmation fonctionnelle
-(fonctions d'ordre supérieures, fermetures, \textit{etc}.) tout en utilisant
+(fonctions d'ordres supérieures, fermetures, \textit{etc}.) tout en utilisant
 un modèle éprouvé de flot de contrôle et de modularisation.
 
 La gestion des états plus complexes des objets du jeu a pu être écrite
@@ -5832,26 +5860,26 @@ L'ajout d'une grille pour accélérer la détection de collisions semble
 peut-être peu significative puisque \textit{Lode Runner} ne contient pas une très
 grande quantité d'objets, mais ce système a été ajouté dans le but de
 facilement et rapidement implanter des jeux qui seront plus complexes
-et qui nécessiteraient de tels optimisations.
+et qui nécessiteraient de telles optimisations.
 
-Tout comme ce fut le cas pour \textit{Space Invaders}, la gestion mémoire automatique n'a
-pas posé de problèmes pour le dévelop\-pement de ce jeu. En effet,
-malgré un plus grand nombre d'objets présents, ceux-ci demeurent en
-trop faible quantité pour éprouver la gestion mémoire sur des
-ordinateurs récents.
+Tout comme ce fut le cas pour \textit{Space Invaders}, la gestion
+mémoire automatique n'a pas posé de problèmes pour le dévelop\-pement
+de ce jeu. En effet, malgré un plus grand nombre d'objets présents,
+ceux-ci demeurent en trop faible quantité pour éprouver la gestion
+mémoire sur des ordinateurs récents.
 
 \FloatBarrier
 \section{Performances}
-La performances des jeux développés a été évaluée sur plusieurs
+La performance des jeux développés a été évaluée sur plusieurs
 aspects. Ces derniers mesurent l'efficacité des jeux sur l'utilisation
 de ressources (processeur et mémoire), ainsi que sur l'impact du
 système de gestion automatique de mémoire. Le tableau \ref{Exp:perf}
 illustre les résultats obtenus face à ces points de comparaison. Les
 résultats présentés dans ce tableau ont été obtenus en jouant durant
-environ une minute aux versions compilées des jeux. Il est important
-de noter que les jeux possèdent un taux de rafraîchissement de 30
-images par secondes fixé dans le but d'avoir un comportement similaire
-aux versions originales de ces derniers.
+environ une minute avec les versions compilées des jeux. Il est
+important de noter que les jeux possèdent un taux de rafraîchissement
+de 30 images par seconde. Ce taux a été fixé dans le but d'avoir un
+comportement similaire aux versions originales de jeux implantés.
 
 \renewcommand{\tablename}{\customizedTableName}
 \begin{table}
@@ -5861,7 +5889,7 @@ aux versions originales de ces derniers.
     Points de comparaison & \textit{Space Invaders} & \textit{Lode Runner}\\
     \hline \hline
     Utilisation du processeur & 40~\% & 30~\%\\
-    Nombres d'images par secondes & 29.8 & 29.0\\
+    Nombre d'images par seconde & 29.8 & 29.0\\
     Durée minimum de pause du GC & 0.0020~s & 0.0033~s\\
     Durée moyenne de pause du GC & 0.0025~s & 0.0045~s\\
     Durée maximum de pause du GC & 0.0037~s & 0.0096~s\\
@@ -5875,21 +5903,21 @@ aux versions originales de ces derniers.
 On constate que le jeu \textit{Space Invaders} utilise d'une manière
 plus intensive le processeur principal que \textit{Lode Runner} qui
 pourtant est un jeu plus complexe. Cette perte de performance est
-attribuée à l'utilisation intensive du système objet et de coroutines
+attribuée à l'utilisation intensive des systèmes objet et de coroutine
 développés. En effet, \textit{Lode Runner} a fait une utilisation plus
-légère de ces derniers de manière à tirer profit de leurs abstractions
-aux endroits les plus utiles. Il en résulte ainsi en une amélioration
-des performances d'environ 10~\%. Une comparaison de ces performances
-avec les versions originales de ces jeu est présentée dans le tableau
-\ref{Rev:comp} du chapitre \ref{Rev:comp-section}.
+légère de ces systèmes de manière à tirer profit de leurs abstractions
+aux endroits les plus appropriés. Il en résulte ainsi en une
+amélioration des performances d'environ 10~\%. Une comparaison de ces
+performances avec les versions originales des jeux est présentée dans
+le tableau \ref{Rev:comp} du chapitre \ref{Rev:comp-section}.
 
 En ce qui concerne l'utilisation de la mémoire, les deux jeux
 présentent des profils acceptables. En effet, l'utilisation moyenne de
-la mémoire varie entre un et deux méga-octets, ce qui correspond à
-très peu sur des plate-formes modernes.
+la mémoire varie entre un et deux méga-octets, ce qui correspond à une
+très faile utilisation de la mémoire sur des plate-formes modernes.
 
 Finalement, on peut observer que les pauses dues à la récupération de
-mémoire automatique furent de très courtes durées. Ainsi, celles-ci
+mémoire automatique furent de très courte durées. Ainsi, celles-ci
 n'ont eu aucun impact sur la fluidité du jeu tel que
 requis. Toutefois, la faible utilisation mémoire vient biaiser cette
 observation. On ne peut donc pas conclure dans l'absolu sur l'impacte
@@ -5904,7 +5932,7 @@ croissantes en utilisant le langage Scheme. Le dévelop\-pement du
 premier jeu, \textit{Space Invaders}, a permis d'identifier et de
 répondre aux besoins fondamentaux de jeux vidéo: rendu graphique,
 détection de collisions, \textit{etc}. Pour ce faire, un système de
-programmation orienté objet et un système de coroutines ont été
+programmation orientée objet et un système de coroutines ont été
 ajoutés au langage Scheme. Aussi, le premier jeu a permis de vérifier
 la difficulté inhérente au changement de l'architecture du flot de
 contrôle du moteur en passant d'un flot contrôlé par une simulation
@@ -5917,15 +5945,15 @@ un jeu plus complexe. Ainsi, \textit{Lode Runner} fut développé en
 utilisant les abstractions de haut niveau que permettent les fonctions
 de première classe combinées avec un système d'objets très polyvalent
 et la conception de nouvelles formes spéciales. En utilisant, cette
-fois-ci, une approche conservatrice sur le flot de contrôle. Le
+fois-ci, une approche conservatrice sur le contrôle de flot, le
 résultat fut très clair: le jeu a été développé rapidement et sans
 problèmes importants.
 
-Malgré les problèmes reliés à l'ordonnancement des tâche dans
+Malgré les problèmes reliés à l'ordonnancement des tâches dans
 \textit{Space Invaders}, l'analyse des performances de ces jeux a
-permis de démontrer qu'ils correspondent bien aux besoins nécessaire
+permis de démontrer qu'ils correspondent bien aux besoins nécessaires
 pour le développement d'un jeu. L'utilisation de la mémoire est
-demeurée faible et les pauses dues à la récupérations mémoire sont
+demeurée faible et les pauses dues à la récupération mémoire sont
 minimes. De plus, \textit{Lode Runner} présente une utilisation du CPU
 relativement faible. Par contre, puisque ces jeux ont été
 originalement développés trente ans auparavant, ils ne peuvent qu'être
@@ -5940,8 +5968,8 @@ futur par le développement de jeux modernes en Scheme.
 Il serait maintenant intéressant de voir quel serait l'impact de
 l'implantation en Scheme d'un jeu de qualité commerciale afin de
 tester plus profondément les limites que pourrait imposer le langage
-sur des jeux plus exigeant tant en utilisation processeur qu'en
-utilisation de la mémoire.
+sur des jeux plus exigeants tant en utilisation processeur qu'en
+utilisation mémoire.
 
 
 
@@ -5951,11 +5979,11 @@ utilisation de la mémoire.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Travaux reliés}
-Les langages de programmation de la famille Lisp ont déjà été
-utilisés pour produire des jeux vidéo commerciaux de très bonne
+Les langages de programmation de la famille Lisp ont déjà été utilisés
+pour produire des jeux vidéo commerciaux de très bonne
 qualité. Certains parmi ceux-ci seront cités et une revue de
 l'expérience acquise par les développeurs de ces derniers sera exposée
-dans le but de comparer leurs expériences avec celle acquise pour le
+dans le but de comparer leurs expériences avec celles acquises pour le
 dévelop\-pement de \textit{Space Invaders} et de \textit{Lode Runner}.
 
 Avant tout, nous comparerons les différents langages utilisés dans
@@ -5976,14 +6004,13 @@ langages dans le but de les comparer à Scheme afin de mettre en
 lumière la possibilité de les remplacer par ce dernier.
 
 Les critères de comparaison utilisés dans cette section comprennent
-les fonctionnalités offertes par ces langages, le typage utilisé dans
-ceux-ci, le niveau d'abstraction du langage ainsi que les modes
-d'utilisations de celui-ci. 
+les fonctionnalités offertes par ces langages, leur typage, leur
+niveau d'abstraction ainsi que leurs modes d'utilisations.
 
 
 \FloatBarrier
 \subsection{C++}
-Le langage principalement utilisé pour le dévelop\-pement de jeu vidéo
+Le langage principalement utilisé pour le dévelop\-pement de jeux vidéo
 est sans aucun doute le langage C++~\cite{cplusplus}. Ce dernier est
 une version orientée objet du langage C\cite{Ritchie-C-dev} qui est
 aussi très répandu et apprécié pour être un langage suffisamment de
@@ -6017,12 +6044,12 @@ semble aussi une bonne approche sur des plate-formes évoluées afin
 d'optimiser les performances du jeu.
 
 Un net avantage du langage C++ face à Scheme est la quantité
-astronomique de librairies de tout genres disponibles aux
+astronomique de librairies de tous genres disponibles aux
 programmeurs. Toutefois, l'interface aux fonctions étrangères de
 Gambit-C rend accessible l'utilisation de ces librairies en Scheme
 avec peu d'efforts. Dans le cadre des travaux présentés dans le
-chapitre \ref{Chap:exp}, l'utilisation de telles librairie a été
-minimisé dans le but d'avoir la plus grande base de code Scheme
+chapitre \ref{Chap:exp}, l'utilisation de telles librairies a été
+minimisée dans le but d'avoir la plus grande base de code Scheme
 possible afin de ne pas biaiser l'expérience faite. L'utilisation de
 librairies C/C++ pour le dévelop\-pement d'applications commerciales
 représente certainement un net avantage. Par exemple, le chargement
@@ -6051,15 +6078,15 @@ l'intérêt d'un environnement de développement intégré en utilisant ces
 outils de manière externes au développement du code Scheme.
 
 Il est également important de souligner le facteur de la main d'oeuvre
-pour l'adoption de Scheme pour remplacer C++. En effet, la
-quantité de programmeurs maîtrisant le langage Scheme est très
-restreinte en comparaison aux nombres de programmeurs C++ et donc,
-même si Scheme pourrait se révéler un meilleur choix
-technologique pour le dévelop\-pement d'un jeu, il est possible que
-l'embauche de suffisamment de programmeurs Scheme soit trop
-difficile et coûteux vis-à-vis l'embauche de programmeurs C++ beaucoup
-plus nombreux. Un tel phénomène pourrait ainsi rendre C++ plus
-attrayant et moins risqué pour aux yeux d'une entreprise.
+pour l'adoption de Scheme pour remplacer C++. En effet, la quantité de
+programmeurs maîtrisant le langage Scheme est très restreinte en
+comparaison au nombre de programmeurs C++ et donc, même si Scheme
+pourrait se révéler un meilleur choix technologique pour le
+dévelop\-pement d'un jeu, il est possible que l'embauche de
+suffisamment de programmeurs Scheme soit trop difficile et coûteuse
+vis-à-vis l'embauche de programmeurs C++ beaucoup plus nombreux. Un
+tel phénomène pourrait ainsi rendre C++ plus attrayant et moins risqué
+aux yeux d'une entreprise.
 
 
 \FloatBarrier
@@ -6078,15 +6105,15 @@ lorsque cette intégration est faite sur des plate-formes au matériel
 plus limité comme des consoles portables. Lua contient certains
 éléments de la programmation dite de haut niveau dont les fermetures,
 une gestion de mémoire automatique, l'optimisation d'appels terminaux
-et un système de coroutines. Il fourni aussi un système objet limité
+et un système de coroutines. Il fournit aussi un système objet limité
 à la Javascript~\cite{ECMA-262}, basé sur le prototypage d'objets.
 
 Ainsi, malgré le fait que ce dernier contient plusieurs aspects de la
 programmation de haut niveau, Lua possède plusieurs différences au
-langage Scheme. Il ne supporte pas la réification de
-continuations et ne possède pas de système de macros. Ainsi, l'absence
-de ces fonctionnalités rend l'abstraction et la modularité, utile pour
-de gros projets, moins accessible. Il en résulte que Lua est moins
+langage Scheme. Il ne supporte pas la réification de continuations et
+ne possède pas de système de macros. Ainsi, l'absence de ces
+fonctionnalités rend l'abstraction et la modularité, utiles pour de
+gros projets, moins accessibles. Il en résulte que Lua est moins
 approprié pour écrire le moteur de jeux vidéo non triviaux. Toutefois,
 puisque l'interprète du langage est très rapide, il pourrait être
 envisagé pour le dévelop\-pement de jeux à plus petite échelle.
@@ -6095,10 +6122,10 @@ Plusieurs environnements de développements intégrés sont disponibles
 pour Lua, mais ceux-ci demeurent très rudimentaires et supportent des
 fonctionnalités de base tels des déboggeurs visuels. 
 
-Pour les mêmes raison que Lua, d'autre langages de programmations sont
-également utilisés afin d'effectuer le \textit{scripting} de
+Pour les mêmes raisons que Lua, d'autres langages de programmations
+sont également utilisés afin d'effectuer le \textit{scripting} de
 jeux. Parmi ceux-ci, on retrouve principalement Python~\cite{Python}
-et Javascript~\cite{ECMA-262} qui sont très similaire à Lua et donc
+et Javascript~\cite{ECMA-262} qui sont très similaires à Lua et donc
 constituent eux aussi un sous ensemble de Scheme.
 
 
@@ -6112,7 +6139,7 @@ l'architecture de la plate-forme utilisée. Puisqu'il n'offre que très
 peu de fonctionnalités de haut niveau, il constitue un choix idéal
 pour l'implantation de jeux sur des plate-formes aux ressources très
 limitées, tel que c'est le cas sur les consoles portables ou sur les
-téléphones cellulaire.
+téléphones cellulaires.
 
 Le langage Lua, quant à lui, est un sous-ensemble du langage
 Scheme. La présence de gestion de mémoire automatique, de fermeture et
@@ -6120,10 +6147,10 @@ d'un typage dynamique font de lui un très bon candidat comme langage
 de script afin d'évaluer dynamiquement des parties expérimentales du
 jeu dans le but de raffiner le \textit{gameplay}.
 
-Scheme offre beaucoup de fonctionnalités de haut niveau tels que des
+Scheme offre beaucoup de fonctionnalités de haut niveau telles que des
 fermetures, de la réification de continuations ou encore des macros
-procédurales. Son coût plus élevé en allocations mémoires fait de lui
-un excellent choix pour le dévelop\-pement de moteurs de jeu sur des
+procédurales. Son coût plus élevé en allocation mémoire fait de lui un
+excellent choix pour le dévelop\-pement de moteurs de jeu sur des
 plate-formes modernes ou comme engin de \textit{scripting} sur des
 plate-formes plus limitées sur la mémoire.
 
@@ -6161,41 +6188,43 @@ offert pour les langages C et C++.
 \section{Jeux en Lisp}
 Malgré la domination du langage C++ dans l'industrie du jeu vidéo,
 certains jeux ont déjà été reconnus pour utiliser Lisp ou Scheme à
-différents degrés dans leur dévelop\-pement. Ceux-ci sont mis en lumière
-dans cette section afin de permettre de comparer l'expérience acquise
-par ces développeurs à celle acquise dans notre travail.
+différents degrés dans leur dévelop\-pement. Ceux-ci sont mis en
+lumière dans cette section afin de permettre de comparer l'expérience
+acquise par ces développeurs à celles acquises dans notre travail.
 
 
 \FloatBarrier
 \subsection{Naughty Dog}
 La compagnie Naughty Dog~\cite{ND} est bien connue pour utiliser des
 dialectes de Lisp dans le dévelop\-pement de jeux vidéo. En effet,
-cette compagnie a écrit plusieurs jeux sur la \textit{PlayStation 2}
+cette compagnie a écrit plusieurs jeux sur le \textit{PlayStation 2}
 en utilisant le compilateur \textit{GOAL}/\textit{Game Oriented
   Assembly Lisp}, un système maison uniquement compilé vers du code
 machine pour le \textit{PlayStation 2} qui comprenait notamment un
-système objet et des coroutines. Ce dernier fut utilisé pour
-développer entièrement de nombreux jeux sur la console dont les jeux
-de des séries \textit{Crash Bandicoot} et \textit{Jak and Dexter}.
+système objet et des coroutines. Ainsi, le compilateur \textit{GOAL}
+fut utilisé pour développer entièrement de nombreux jeux sur la
+console dont les jeux des séries \textit{Crash Bandicoot} et
+\textit{Jak and Dexter}.
 
 Scott Shumaker, programmeur chef chez Naughty Dog, a commenté leur
 utilisation de GOAL dans un article sur le site web consacré au
-dévelop\-pement de jeux vidéo Gamasutra~\cite{ND_GOAL}. Dans ce dernier,
-il mentionne que le dévelop\-pement de leur propre compilateur de Lisp
-leur a permis d'utiliser plusieurs techniques qui n'auraient pas pu
-être envisagées avec d'autres langages. Entre autres, leur système,
-malgré le fait qu'il ne comprenait pas d'interprète, permettait la
-compilation de code et le chargement de celui-ci directement dans le
-jeu qui était en cours d'exécution sur une console \textit{PlayStation
-  2}. Ils obtenaient ainsi de la programmation très dynamique basée
-sur du prototypage. Il mentionne également que GOAL comprenait un
-système de coroutine. Un exemple de code simplifié pour GOAL est donné
-dans la figure \ref{Rev:goal}. Le code présenté a été simplifié dans
-le but d'illustrer l'utilisation des coroutines de ce jeu. On constate
-que le code conserve l'état de la variable \scheme{ii} qui se trouve a
-être, dans cet exemple, un compteur d'images rendues pour une
-animation nommée \scheme{idle}. L'utilisation de coroutine leur a
-permis de conserver l'état du calcul en cours de manière triviale.\\
+dévelop\-pement de jeux vidéo Gamasutra~\cite{ND_GOAL}. Dans ce
+dernier, il mentionne que le dévelop\-pement de leur propre
+compilateur de Lisp leur a permis d'utiliser plusieurs techniques qui
+n'auraient pas pu être envisagées avec d'autres langages. Entre
+autres, leur système, malgré le fait qu'il ne comprenait pas
+d'interprète, permettait la compilation de code et le chargement de
+celui-ci directement dans le jeu qui était en cours d'exécution sur
+une console \textit{PlayStation 2}. Ils obtenaient ainsi de la
+programmation très dynamique basée sur du prototypage. Il mentionne
+également que GOAL comprenait un système de coroutines. Un exemple de
+code simplifié pour GOAL est donné dans la figure \ref{Rev:goal}. Le
+code présenté a été simplifié dans le but d'illustrer l'utilisation
+des coroutines de ce jeu. On constate que le code conserve l'état de
+la variable \scheme{ii} qui se trouve à être, dans cet exemple, un
+compteur d'images rendues pour une animation nommée
+\scheme{idle}. L'utilisation de coroutines leur a permis de conserver
+l'état du calcul en cours de manière triviale.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -6203,7 +6232,7 @@ permis de conserver l'état du calcul en cours de manière triviale.\\
   (set! frame-num ii)
   (suspend))
   \end{schemecode}
-  \caption{Exemple de code pour GOAL utilisant le système de coroutines}
+  \caption{Exemple de code en GOAL utilisant le système de coroutines}
   \label{Rev:goal}
 \end{figure}
 
@@ -6217,20 +6246,20 @@ utilisé.
 
 Ils ont par la suite créé les jeux \textit{Uncharted: Drake's fortune}
 et \textit{Uncharted 2: Among Thieves} qui sont rapidement devenus
-très populaires pour leurs scènes d'action et leurs rendus graphiques
+très populaires pour leurs scènes d'actions et leurs rendus graphiques
 exceptionnels. Dan Liebgold de Naughty Dog a donné une conférence sur
 le dévelop\-pement du jeu \textit{Uncharted: Drake's
   fortune}~\cite{ND_DRAKE} et mentionna qu'ils ont utilisé le langage
-Scheme afin d'exprimer les données du jeu de manière dynamique,
-mais que le moteur du jeu est écrit en C++. Ils profitent ainsi des
+Scheme afin d'exprimer les données du jeu de manière dynamique, mais
+que le moteur du jeu est écrit en C++. Ils profitent ainsi des
 performances qu'offrent C++ pour les zones critiques du jeu et
 utilisent un langage de plus haut niveau pour la description des
-données. Ils ainsi utilisent un schéma de compilation dynamique
+données. Ils utilisent ainsi un schéma de compilation dynamique
 similaire à celui utilisé par GOAL. La figure \ref{Rev:Drake} illustre
 la construction de données utilisées dans ce jeu. Cet exemple de code
-illustre bien le type d'utilisation faite du langage Scheme, \ie
-que Scheme est utilisé non seulement comme langage de script,
-mais aussi pour la définition des données du langage.\\
+illustre bien le type d'utilisation faite du langage Scheme, \ie que
+Scheme est utilisé non seulement comme langage de script, mais aussi
+pour la définition des données du langage.\\
 
 \begin{figure}[htb!]
   \begin{schemecode}
@@ -6255,64 +6284,65 @@ mais aussi pour la définition des données du langage.\\
 
 
 \FloatBarrier
-\subsection{QuantZ}
-Récemment, le jeu QuantZ~\cite{Quantz} fut développé presque
+\subsection{\textit{QuantZ}}
+Récemment, le jeu \textit{QuantZ}~\cite{Quantz} fut développé presque
 exclusivement en utilisant le langage Scheme et le compilateur
-Gambit-C. Ce dernier constitue un jeu de puzzle 3D similaire à Tetris
-où le but est d'agencer des billes de même couleur sur un cube. Les
-informations relatives au dévelop\-pement de ce jeu ont été acquises par
-l'auteur qui est toujours employé par le studio de dévelop\-pement de
-jeux vidéo \textit{Gamerizon inc}.
+Gambit-C. Ce dernier constitue un jeu de casse-tête 3D similaire à
+\textit{Tetris} où le but est d'agencer des billes de même couleur sur
+un cube. Les informations relatives au dévelop\-pement de ce jeu ont
+été acquises par l'auteur qui est toujours employé par le studio de
+dévelop\-pement de jeux vidéo \textit{Gamerizon inc}.
 
-L'utilisation de Scheme dans QuantZ a apporté plusieurs avantages
-technologiques. En effet, le dynamisme du langage a su profiter aux
-développeurs en leur permettant de débogger le jeu lors de son
-exécution. Cet aspect du langage permis la résolution rapide de
+L'utilisation de Scheme dans \textit{QuantZ} a apporté plusieurs
+avantages technologiques. En effet, le dynamisme du langage a su
+profiter aux développeurs en leur permettant de débogger le jeu lors
+de son exécution. Cet aspect du langage permit la résolution rapide de
 problèmes et donc d'accélérer le dévelop\-pement du jeu.
 
-Aussi, la syntaxe sous formes de S-expressions des programmes
-Scheme a été utilisée à profit en créant un système d'analyse de
-code permettant d'extraire toutes les chaînes de caractères présentent
-dans le jeu afin de créer des outils d'internationalisation. Ces
-outils permettent notamment la création automatique de fontes
-optimisées par langues qui contiennent uniquement les caractères
-utilisées dans celles-ci. L'utilisation de la fonction Scheme
-\scheme{read} combinée à la récursivité du langage ont facilement
-permis d'écrire un analyseur de code. Cette tâche aurait été beaucoup
-plus complexe dans un autre langage de programmation.
+Aussi, la syntaxe sous formes de S-expressions des programmes Scheme a
+été utilisée à profit en créant un système d'analyse de code
+permettant d'extraire toutes les chaînes de caractères présentent dans
+le jeu afin de créer des outils d'internationalisation. Ces outils
+permettent notamment la création automatique de fontes optimisées par
+langue qui contiennent uniquement les caractères utilisées dans
+chacune. L'utilisation de la fonction Scheme \scheme{read} combinée à
+la récursivité du langage ont facilement permis d'écrire un analyseur
+de code. Cette tâche aurait été beaucoup plus complexe dans un autre
+langage de programmation.
 
-Les fermetures disponible en Scheme ont été utilisées comme base d'un
+Les fermetures disponibles en Scheme ont été utilisées comme base d'un
 système d'interface graphique complet permettant la création de
 fenêtres, de boutons, \textit{etc}. En utilisant ces fermetures pour
 conserver l'état de ces entités, on obtient ainsi un résultat
-similaire à l'utilisation d'un système de programmation orienté objet,
-où l'état est conservé dans ces fermetures, mais ne fournissant pas de
-fonctions génériques.
+similaire à l'utilisation d'un système de programmation orientée
+objet, où l'état est conservé dans ces fermetures, mais ne fournissant
+pas de fonctions génériques.
 
-Afin d'éviter d'avoir des problèmes de pauses aléatoires dues à la
-gestion de mémoire automatique, plusieurs techniques ont été utilisées
-dans le dévelop\-pement de ce jeu. Dans un premier temps, le
-gestionnaire de mémoire est appelé explicitement avant le rendu de
-chaque image afin d'éviter d'accumuler trop de données mortes dans la
-mémoire et causer ainsi de longues pauses durant l'exécution du
-jeu. Aussi, la sérialisation de données disponible dans Gambit-C a été
-utilisée afin de transformer de grosses structures de données
-statiques (préférences, scores de joueurs, ...) afin que celles-ci ne
-soient pas traversées par le gestionnaire avant le rendu de chaque
-image du jeu.
+Afin d'éviter des problèmes de pauses aléatoires dues à la gestion
+mémoire automatique, plusieurs techniques ont été utilisées dans le
+dévelop\-pement de ce jeu. Dans un premier temps, le gestionnaire de
+mémoire est appelé explicitement avant le rendu de chaque image afin
+d'éviter d'accumuler trop de données mortes dans la mémoire et causer
+ainsi de longues pauses durant l'exécution du jeu. Aussi, la
+sérialisation de données disponible dans Gambit-C a été utilisée afin
+de transformer de grosses structures de données statiques
+(préférences, pointage de joueurs, ...) afin que celles-ci ne soient
+pas traversées par le gestionnaire avant le rendu de chaque image du
+jeu.
 
 L'état du jeu a été implanté en utilisant un mécanisme de
 programmation fonctionnelle réactive basée sur Scheme permettant
 l'écriture élégante de niveaux grâce à la propagation de signaux
 correspondant à l'état du jeu. Aussi, le moteur de physique du jeu,
-écrit en C, a pu être intégrer sans problèmes au reste du moteur de
-QuantZ en utilisant l'interface aux fonctions étrangères de Gambit-C.
+écrit en C, a pu être intégré sans problèmes au reste du moteur de
+\textit{QuantZ} en utilisant l'interface aux fonctions étrangères de
+Gambit-C.
 
-Ainsi, le jeu QuantZ représente un exemple concret d'un jeu commercial
-ayant utilisé Scheme comme langage principal de
-dévelop\-pement. L'utilisation faite du langage a su tirer profit de la
-plupart des particularité de Scheme dont notamment l'utilisation
-de fonctions de premier ordre et du dynamisme du système Gambit-C.
+Ainsi, le jeu \textit{QuantZ} représente un exemple concret d'un jeu
+commercial ayant utilisé Scheme comme langage principal de
+dévelop\-pement. L'utilisation faite du langage a su tirer profit de
+la plupart des particularité de Scheme dont notamment l'utilisation de
+fonctions de première classe et du dynamisme du système Gambit-C.
 
 \FloatBarrier
 \section{Autres version des jeux développés}
@@ -6326,21 +6356,22 @@ dans le but de les comparer aux versions écrites pour ce mémoire.
 Tel que mentionné dans le chapitre \ref{Chap:JV}, le jeu original de
 \textit{Space Invaders} date de 1978 sur console arcade.  Le
 concepteur avait dû, à l'époque, non seulement concevoir le jeu, mais
-aussi le matériel sur lequel le jeu fonctionnait, lui prenant environ
-un an de développement à lui seul. Le processeur utilisé était un 8080
-d'Intel offrant une vitesse d'horloge allant jusqu'à 2 MHz. Le tableau
-\ref{Rev:comp} illustre ces différences avec le jeu développé pour
-ce mémoire. On constate que l'effort de production du jeu original
-était plus grand, mais en tenant compte du fais que le développement
-initial comprenais aussi la mise au point du matériel utilisé, on peut
-estimer des temps de développement équivalents pour les deux
-versions. Toutefois, le code original, écrit en langage assembleur est
-certainement très spécifique au jeu écrit, tandis que le code écrit
-pour ce mémoire apporte des librairies qui permettent de développer
-d'autres jeux vidéo plus facilement. Aussi, on constate un facteur de
-1000 entre la vitesse d'horloges de l'architecture originales face aux
-architecture modernes des processeurs.
-
+aussi le matériel sur lequel le jeu fonctionnait. À lui seul, le
+développement complet du jeu lui prit environ un an. Le processeur
+utilisé était un 8080 d'Intel offrant une vitesse d'horloge allant
+jusqu'à 2 MHz. Le tableau \ref{Rev:comp} illustre ces différences avec
+le jeu développé pour ce mémoire. On constate que l'effort de
+production du jeu original était plus grand, mais en tenant compte du
+fais que le développement initial comprenais aussi la mise au point du
+matériel utilisé, on peut estimer des temps de développement
+équivalents pour les deux versions. Toutefois, le code original, écrit
+en langage assembleur est certainement très spécifique au jeu écrit.
+Par contre, le code écrit pour la version utilisée dans ce mémoire
+apporte des librairies qui permettent de développer d'autres jeux
+vidéo plus facilement. D'autre part, un facteur de mile entre la
+vitesse d'horloge de l'architecture originale face aux architecture
+modernes des processeurs est observé, pouvant laissé croire que notre
+implantation est moins efficaces de ce facteur.
 
 En ce qui concerne le jeu \textit{Lode Runner}, la version finale du
 jeu fut publiée en 1983 sur l'ordinateur \textit{Apple II+} et écrit
@@ -6350,8 +6381,8 @@ réécriture du code source. De plus, ce concepteur effectuait à temps
 partiel, puis à temps plein le développement du jeu. On peut toutefois
 estimer le développement total à environ un an, en incluant la
 conception des 150 niveaux du jeu et l'écriture de toutes les versions
-du code. La vitesse d'horloge du processeur utilisé était également
-d'environ 1 MHz.
+du code. La vitesse d'horloge du processeur utilisé était
+similairement de 1 MHz.
 
 En assumant que les jeux originaux utilisaient 30 images par secondes
 pour leur rendu graphique et en tenant compte des performances des
@@ -6365,22 +6396,21 @@ faites pour ce mémoire peut être expliquée par plusieurs
 facteurs. D'une part, les jeux originaux sont écrits directement en
 langage assembleur et donc, beaucoup d'optimisations de très bas
 niveaux ont pu être faites grâce à l'accès presque direct aux
-ressources du matériels, ce qui n'est pas possible pour des jeux
-écrits en Scheme et qui sont exécutés dans un système d'exploitation
-complexe exécutant des dizaines de processus de manière
-concurrente. D'autre part, comme il a déjà été mentionné, les jeux
-écrits pour la rédaction de ce documents possèdent de puissante
-abstractions tels un système de programmation orienté objet ou un
-système de coroutine. Ces dernières imposent un coût de performances
-tels que mentionné dans les tableaux \ref{OO:bench} et
-\ref{Corout:bench}.  Les abstractions du langage Scheme apportent
-elles aussi un certain coût de performance en comparaison à du code
-écrit en langage assembleur.
+ressources du matériel, ce qui n'est pas possible pour des jeux écrits
+en Scheme et qui sont exécutés dans un système d'exploitation complexe
+exécutant des dizaines de processus de manière concurrente. D'autre
+part, comme il a déjà été mentionné, les jeux écrits pour la rédaction
+de ce document possèdent de puissantes abstractions tels un système de
+programmation orientée objet ou un système de coroutines. Ces
+dernières imposent un coût de performances tel que mentionné dans les
+tableaux \ref{OO:bench} et \ref{Corout:bench}.  Les abstractions du
+langage Scheme apportent elles aussi un certain coût de performance en
+comparaison à du code écrit directement en langage assembleur.
 
 Les temps de développement des versions réécrite des jeux sont
 comparable aux temps requis pour le développement des premières
 versions officielles de ces derniers. Toutefois, le temps de
-développements de 6 mois pris pour la réécriture comprend
+développements de six mois pris pour la réécriture comprend
 l'élaboration de plusieurs librairies facilitant le développement
 ultérieur de nouveaux jeux, ce qui n'est probablement pas le cas des
 versions originales écrites en langage de bas niveau.
@@ -6402,18 +6432,24 @@ versions originales écrites en langage de bas niveau.
   \label{Rev:comp}
 \end{table}
 
+Ainsi, la réécriture d'anciens jeux en utilisant des langages de haut
+niveaux implique un coût de performance qui est compensé par un
+développement qui semble non seulement plus rapide, mais qui favorise
+la réutilisation de code pour le développement ultérieurs de nouveaux
+jeux.
+
 \FloatBarrier
 \section{Conclusion}
-Ainsi, plusieurs langages sont utilisés dans l'industrie du jeu vidéo
-dont, notamment les langages Lua et C++. Après une comparaison au
-langage Scheme, on constate que ces derniers répondent à des besoins
-précis présents dans les jeux vidéo. Lua propose un dévelop\-pement
-plus dynamique tandis que C++ permet d'obtenir de très bonnes
-performances au coût d'avoir moins de puissance d'abstraction. Le
-choix du langage le plus approprié pour le dévelop\-pement d'un jeu
-devrait donc être fait en prenant en considération le matériel utilisé
-afin d'obtenir le plus de puissance expressive que possible, sans
-toutefois avoir un coût relié à ces abstractions trop élevé.
+Plusieurs langages sont utilisés dans l'industrie du jeu vidéo dont,
+notamment les langages Lua et C++. Après une comparaison au langage
+Scheme, on constate que ces derniers répondent à des besoins précis
+présents dans les jeux vidéo. Lua propose un dévelop\-pement plus
+dynamique tandis que C++ permet d'obtenir de très bonnes performances
+au coût d'avoir moins de puissance d'abstraction. Le choix du langage
+le plus approprié pour le dévelop\-pement d'un jeu devrait donc être
+fait en prenant en considération le matériel utilisé afin d'obtenir le
+plus de puissance expressive que possible, sans toutefois avoir un
+coût relié à ces abstractions trop élevées.
 
 La présence d'environnement de développement intégrées rend attrayant
 l'utilisation des langages C++ et Lua, mais la plupart des
@@ -6421,10 +6457,10 @@ fonctionnalité offertes peuvent être utilisées pour le langage Scheme
 de manière indirecte.
 
 Aussi, Lisp et Scheme ont déjà été utilisés dans l'industrie du jeu
-vidéo pour développer des jeux de grandes qualités tels \textit{Jak
-  and Dexter}, \textit{Uncharted: Drake's Fortune} et
+vidéo pour développer des jeux de grande qualité tels \textit{Jak and
+  Dexter}, \textit{Uncharted: Drake's Fortune} et
 \textit{QuantZ}. L'expérience acquise par les développeurs de ces jeux
-est très positive. On constate de manière unanime ces langages leurs
+est très positive. On constate de manière unanime ces langages leur
 ont fourni un environnement de dévelop\-pement
 dynamique. L'extensibilité du langage a aussi joué à l'avantage de
 ceux-ci. Ainsi, malgré la faible adoption de Scheme pour l'écriture de
@@ -6445,44 +6481,44 @@ assembleur.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \chapter{Conclusion}
 L'expérience acquise lors du dévelop\-pement des jeux \textit{Space
-  Invaders} et \textit{Lode Runner} permet donc de faire le point sur
-les forces et les faiblesses de l'utilisation d'un langage de
+  Invaders} et \textit{Lode Runner} permet de faire le point sur les
+forces et les faiblesses de l'utilisation d'un langage de
 programmation fonctionnelle et dynamique tel que Scheme pour le
 dévelop\-pement de jeux vidéo.
 
-L'expressivité du langage Scheme, notamment grâce aux fonctions
-de première classes et aux macros procédurales, a permis de développer
-un système de programmation orientée objet et l'intégrer directement
+L'expressivité du langage Scheme, notamment grâce aux fonctions de
+première classe et aux macros procédurales, a permis de développer un
+système de programmation orientée objet et de l'intégrer directement
 au langage. Aussi, la réification de continuations a rendu possible le
 dévelop\-pement d'un système de coroutines élaboré.  L'utilisation de
-ces systèmes dans la programmation de jeu vidéo fut très bénéfique
-quant à l'amélioration du code produit grâce à l'introduction d'une
-bonne modularité fournie par les fonctions génériques du système
-objets et une grande simplicité pour l'implantation de parties
-multi-joueurs grâce à l'utilisation de coroutines pour encapsuler les
-parties se déroulant en parallèle. Le coût de dévelop\-pement de tels
-modules, en utilisant des langages donnant accès à moins de puissance
+ces systèmes dans la programmation de jeux vidéo fut bénéfique quant à
+l'amélioration du code produit grâce à l'introduction d'une bonne
+modularité fournie par les fonctions génériques du système objet et
+une grande simplicité pour l'implantation de parties multi-joueurs
+grâce à l'utilisation de coroutines pour encapsuler les parties se
+déroulant en parallèle. Le coût de dévelop\-pement de tels modules, en
+utilisant des langages donnant accès à moins de puissance
 d'abstraction, aurait certainement rendu le dévelop\-pement de ceux-ci
-très difficile. Par conséquent, Scheme s'est révélé un langage
-très puissant pour le dévelop\-pement de ces outils indispensables.
+plus difficile. Par conséquent, Scheme s'est révélé un langage
+puissant pour le dévelop\-pement de ces outils indispensables.
 
-Le dynamisme du langage a également joué un rôle implicite très
-important pour le dévelop\-pement de ces jeux. En effet, la présence
-d'un déboggeur dynamique et efficace a apporté une grande flexibilité
-au dévelop\-pement et permis de développer efficacement ces deux
-jeux. En effet, malgré le fait que les erreurs de programmation sont
-signalées durant l'exécution du jeu, la résolution de celles-ci se
-font très rapidement grâce à la possibilité d'introspection de l'état
-du programme et d'évaluation dynamique de code.
+Le dynamisme du langage a également joué un rôle implicite important
+pour le dévelop\-pement de ces jeux. En effet, la présence d'un
+déboggeur dynamique et efficace a apporté une grande flexibilité au
+dévelop\-pement et permis de développer efficacement ces deux jeux. En
+effet, malgré le faite que les erreurs de programmation sont signalées
+durant l'exécution du jeu, la résolution de celles-ci se font
+rapidement grâce à la possibilité d'introspection de l'état du
+programme et d'évaluation dynamique de code.
 
 Aussi, le langage Scheme a permis d'expérimenter sur le contrôle de
 flot des jeux en permettant de développer des systèmes non-triviaux de
 simulation à évènements discrets et de simulation par agents
 (coroutines). La modification du flot de contrôle du premier jeu a pu
 être fait sans trop d'efforts grâce aux abstractions faites, entre
-autres, par le système d'objets.
+autres, par le système objet.
 
-Toutefois, la modularité de programmes apporte généralement des coût
+Toutefois, la modularité de programmes apporte généralement des coûts
 en performance pour ceux-ci. Ainsi, une difficulté d'utiliser un
 langage comme Scheme face à la programmation de jeux vidéo réside
 entre trouver le bon équilibre entre le niveau d'abstraction et la
@@ -6491,14 +6527,14 @@ en fonction de l'architecture du matériel sur lequel le jeu sera
 déployé. S'il s'agit d'une plate-forme au matériel très limité, alors
 le coût d'abstraction pourrait s'avérer trop grand. Dans un tel cas,
 l'utilisation de langages de plus bas niveau, comme C++, semble plus
-appropriée afin de bâtir le moteur du jeu, mais Scheme pourrait
-alors être utilisé comme langage de script afin de développer
-dynamiquement le \textit{gameplay} du jeu. Par contre, s'il s'agit de
-plate-formes performantes, comme c'est le cas pour les jeux développés
-dans le cadre de ce mémoire, alors la possibilité de modulariser le
-code devient plus accessible et les performances deviennent moins
-critiques, face à la réutilisabilité potentielle du code
-écrit. Scheme devient alors un candidat idéal.
+appropriée afin de bâtir le moteur du jeu, mais Scheme pourrait alors
+être utilisé comme langage de script afin de développer dynamiquement
+le \textit{gameplay} du jeu. Par contre, s'il s'agit de plate-formes
+performantes, comme c'est le cas pour les jeux développés dans le
+cadre de ce mémoire, alors la possibilité de modulariser le code
+devient plus accessible et les performances deviennent moins
+critiques, face à la réutilisabilité potentielle du code écrit. Scheme
+devient alors un candidat pourrait être idéal.
 
 Un problème potentiel qui n'a pas été adressé dans ce mémoire est
 relié à l'allocation et la gestion de mémoire automatique utilisée par
@@ -6508,12 +6544,12 @@ mémoire. Ainsi, il est possible que sur des systèmes où le coût
 d'allocation mémoire est élevé, l'utilisation d'un tel langage
 devienne trop coûteux. De même, la présence du gestionnaire
 automatique de mémoire pourrait potentiellement engendrer des pauses
-de durées aléatoires du jeu qui sont très indésirables. Ces phénomènes
-n'ont par contre pas été observés dans les jeux développés pour ce
-mémoire, puisqu'ils demeuraient trop simples. Des jeux plus modernes
-possèdent généralement un plus grand nombre d'entités de manière
-simultanée durant une partie, augmentant ainsi le stress sur la
-mémoire et donc, sur la récupération automatique de celle-ci.
+de durées aléatoires du jeu qui sont indésirables. Ces phénomènes
+n'ont pas été observés dans les jeux développés pour ce mémoire
+puisqu'ils demeuraient trop simples. Des jeux plus modernes possèdent
+généralement un plus grand nombre d'entités de manière simultanée
+durant une partie, augmentant ainsi le stress sur la mémoire et donc,
+sur la récupération automatique de celle-ci.
 
 Il serait donc intéressant d'utiliser les techniques présentées dans
 ce mémoire afin de développer des jeux de plus grande envergure dans

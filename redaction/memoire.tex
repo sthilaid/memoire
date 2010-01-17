@@ -33,8 +33,8 @@
 \usepackage{fancyhdr}
 \pagestyle{fancy}
 \fancyhf{} % clear all header and footer fields
-%\fancyhead[C]{--------- TOTO -----------}
-\fancyfoot[C]{\thepage}
+%\fancyfoot[C]{\thepage}
+\fancyhead[RO,LE]{\thepage}
 \renewcommand{\headrulewidth}{0pt}
 \renewcommand{\footrulewidth}{0pt}
 
@@ -221,7 +221,7 @@ coût moyen de dévelop\-pement d'un jeu sur une console moderne se situe
 entre 20 et 30 millions de dollars~\cite{cbc_ubisoft}. Si l'on estime
 le salaire moyen d'un artiste ou d'un développeur de jeux vidéo à 60
 000~\$ par année, cela reviendrait à un travail d'environ 300 à 500
-années-hommes.
+années*hommes.
 
 Puisque la création d'un jeu vidéo peut nécessiter autant d'efforts,
 il semble très intéressant de faciliter le dévelop\-pement de ces
@@ -6349,7 +6349,12 @@ fonctions de première classe et du dynamisme du système Gambit-C.
 \label{Rev:comp-section}
 
 Cette section présente les versions originales des jeux développés
-dans le but de les comparer aux versions écrites pour ce mémoire.
+dans le but de les comparer aux versions écrites pour ce
+mémoire. Puisque le code source des versions originales n'est pas
+disponible, une comparaison algorithmique ne peut pas être
+effectuée. Ainsi, une approche plus pratique est utilisée en
+effectuant une comparaison de performance des différentes versions de
+\textit{Space Invaders} et de \textit{Lode Runner}.
 
 \subsection{\textit{Space Invaders}}
 
@@ -6420,11 +6425,11 @@ versions originales écrites en langage de bas niveau.
   \begin{tabular}{cccc}
     Titre & Année de sortie & Vitesse CPU & Durée de développement\\
     \hline \hline 
-    Space Invaders (original) & 1978 & 2 MHz & 1 Année/Homme\\
-    Space Invaders (mémoire) & 2008 & 1.6 GHz & 1/2 Année/Homme\\
+    Space Invaders (original) & 1978 & 2 MHz & 1 année*homme\\
+    Space Invaders (mémoire) & 2008 & 1.6 GHz & 1/2 année*homme\\
     \hline
-    Lode Runner (original) & 1983 & 1 MHz & 1/2 Année/Homme\\
-    Lode Runner (mémoire) & 2009 & 1.6 GHz & 1 Année/Homme\\
+    Lode Runner (original) & 1983 & 1 MHz & 1/2 année*homme\\
+    Lode Runner (mémoire) & 2009 & 1.6 GHz & 1 année*homme\\
     \hline
   \end{tabular}
   \caption{Comparaison entre les versions originales et réécrites des
